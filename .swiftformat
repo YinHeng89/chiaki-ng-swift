@@ -1,0 +1,7 @@
+--swift-version 6.2
+--indent 4
+--max-width 110
+--wrap-ternary before-operators
+--wrap-string-interpolation false
+--exclude .build,.swiftpm,lib
+--rules indent,linebreaks,linebreakAtEndOfFile,trailingSpace,consecutiveBlankLines,blankLinesAtStartOfScope,blankLinesAtEndOfScope,semicolons,wrap,wrapArguments,wrapIfStatementBodies,wrapGuardStatementBodies,wrapIfExpressionBodies,wrapFunctionBodies,wrapPropertyBodies,wrapLoopBodies,wrapCaseBodies

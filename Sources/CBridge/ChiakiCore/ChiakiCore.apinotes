@@ -1,0 +1,532 @@
+---
+Name: ChiakiCore
+Namespaces:
+- Name: libchiaking
+  Namespaces:
+  - Name: catalog
+    Tags:
+    - Name: CacheEntriesReason
+      EnumExtensibility: closed
+    - Name: CacheId
+      EnumExtensibility: closed
+    - Name: CachesReason
+      EnumExtensibility: closed
+    - Name: CaptureDownloadReason
+      EnumExtensibility: closed
+    - Name: ClearCacheReason
+      EnumExtensibility: closed
+    - Name: ClearCachesReason
+      EnumExtensibility: closed
+    - Name: CloudAccess
+      Tags:
+      - Name: Availability
+        EnumExtensibility: closed
+    - Name: CloudAccessReason
+      EnumExtensibility: closed
+    - Name: CloudCaptureReason
+      EnumExtensibility: closed
+    - Name: ConceptDetailsReason
+      EnumExtensibility: closed
+    - Name: Explanation
+      Tags:
+      - Name: Outcome
+        EnumExtensibility: closed
+      - Name: Rule
+        EnumExtensibility: closed
+    - Name: FetchActivity
+      EnumExtensibility: closed
+    - Name: FetchStep
+      EnumExtensibility: closed
+    - Name: GamesReason
+      EnumExtensibility: closed
+    - Name: HeldAs
+      EnumExtensibility: closed
+    - Name: HideReason
+      EnumExtensibility: closed
+    - Name: ImageReason
+      EnumExtensibility: closed
+    - Name: LaunchCheck
+      EnumExtensibility: closed
+    - Name: LaunchCheckReason
+      EnumExtensibility: closed
+    - Name: LaunchRefusal
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: Library
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: LibraryReason
+      EnumExtensibility: closed
+    - Name: LibraryState
+      EnumExtensibility: closed
+    - Name: ListOrigin
+      EnumExtensibility: closed
+    - Name: ListStreamability
+      EnumExtensibility: closed
+    - Name: MyGame
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: MyGames
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: NotAGame
+      EnumExtensibility: closed
+    - Name: OwnedTitle
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: OwnershipAnswer
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: OwnershipRecheckReason
+      EnumExtensibility: closed
+    - Name: OwnershipState
+      EnumExtensibility: closed
+    - Name: Platform
+      EnumExtensibility: closed
+    - Name: PlayPath
+      EnumExtensibility: closed
+    - Name: PlayedGamesReason
+      EnumExtensibility: closed
+    - Name: PlusInclusion
+      Tags:
+      - Name: Source
+        EnumExtensibility: closed
+    - Name: ProductDetailsReason
+      EnumExtensibility: closed
+    - Name: RecentlyPlayedReason
+      EnumExtensibility: closed
+    - Name: ReleaseDate
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+      - Name: State
+        EnumExtensibility: closed
+    - Name: ServiceGeneration
+      EnumExtensibility: closed
+    - Name: Standing
+      EnumExtensibility: closed
+    - Name: StepOutcome
+      EnumExtensibility: closed
+    - Name: StorePage
+      Tags:
+      - Name: Source
+        EnumExtensibility: closed
+    - Name: StorePageReason
+      EnumExtensibility: closed
+    - Name: StorefrontAnswer
+      Tags:
+      - Name: Streaming
+        EnumExtensibility: closed
+    - Name: StorefrontReason
+      EnumExtensibility: closed
+    - Name: StreamRefusal
+      Tags:
+      - Name: Holding
+        Tags:
+        - Name: State
+          EnumExtensibility: closed
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: StreamableList
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: StreamableListReason
+      EnumExtensibility: closed
+    - Name: Title
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: TrialOffer
+      EnumExtensibility: closed
+  - Name: consoles
+    Tags:
+    - Name: Console
+      Tags:
+      - Name: Unchanged
+        EnumExtensibility: closed
+    - Name: ConsoleName
+      Tags:
+      - Name: Source
+        EnumExtensibility: closed
+    - Name: ConsoleStore
+      Tags:
+      - Name: Error
+        EnumExtensibility: closed
+    - Name: Firmware
+      Tags:
+      - Name: Family
+        EnumExtensibility: closed
+    - Name: GameInvitation
+      Tags:
+      - Name: Joining
+        EnumExtensibility: closed
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: GamePlatform
+      EnumExtensibility: closed
+    - Name: Generation
+      EnumExtensibility: closed
+    - Name: Host
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: InstalledTitle
+      Tags:
+      - Name: LastUse
+        Tags:
+        - Name: Known
+          EnumExtensibility: closed
+    - Name: InternetPairingStage
+      EnumExtensibility: closed
+    - Name: InvitationJoinFailure
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: InvitationTarget
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: PairingFailure
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: PairingStep
+      EnumExtensibility: closed
+    - Name: Presence
+      EnumExtensibility: closed
+    - Name: RegistrationTarget
+      EnumExtensibility: closed
+    - Name: Route
+      EnumExtensibility: closed
+    - Name: SearchFailure
+      EnumExtensibility: closed
+    - Name: SearchRanges
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: StartFailure
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: StartState
+      EnumExtensibility: closed
+    - Name: TitlesUnavailable
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: Unreachable
+      EnumExtensibility: closed
+    - Name: WakeRefusal
+      EnumExtensibility: closed
+  - Name: controllers
+    Tags:
+    - Name: ControllerButton
+      EnumExtensibility: closed
+    - Name: ControllerFeedback
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: ControllerKind
+      EnumExtensibility: closed
+    - Name: FeedbackInbox
+      Tags:
+      - Name: Admission
+        EnumExtensibility: closed
+      - Name: Overrun
+        EnumExtensibility: closed
+    - Name: FeedbackIntensity
+      EnumExtensibility: closed
+  - Name: diagnostics
+    Tags:
+    - Name: HttpArea
+      EnumExtensibility: closed
+    - Name: HttpSecretKind
+      EnumExtensibility: closed
+    - Name: SessionJournal
+      Tags:
+      - Name: Origin
+        EnumExtensibility: closed
+  - Name: kakusan
+    Tags:
+    - Name: Button
+      EnumExtensibility: closed
+    - Name: DeviceStore
+      Tags:
+      - Name: Error
+        EnumExtensibility: closed
+    - Name: EndReason
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: Kakusan
+      Tags:
+      - Name: PortGuessing
+        EnumExtensibility: closed
+      - Name: Unavailable
+        EnumExtensibility: closed
+    - Name: Progress
+      EnumExtensibility: closed
+    - Name: ProtocolReason
+      EnumExtensibility: closed
+    - Name: Recognition
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: Refusal
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: RememberRefusal
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: Replace
+      EnumExtensibility: closed
+    - Name: VisitOutcome
+      Tags:
+      - Name: Status
+        EnumExtensibility: closed
+  - Name: media
+    Tags:
+    - Name: AudioChannelPosition
+      EnumExtensibility: closed
+    - Name: AudioDecoder
+      Tags:
+      - Name: Layout
+        EnumExtensibility: closed
+    - Name: AudioError
+      EnumExtensibility: closed
+    - Name: AudioUnit
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: AudioVerdict
+      EnumExtensibility: closed
+    - Name: MediaFailure
+      EnumExtensibility: closed
+    - Name: VideoCodec
+      EnumExtensibility: closed
+    - Name: VideoVerdict
+      EnumExtensibility: closed
+  - Name: messages
+    Tags:
+    - Name: ChatMessage
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+  - Name: platform
+    Tags:
+    - Name: ConditionWaitStatus
+      EnumExtensibility: closed
+    - Name: HttpCredential
+      EnumExtensibility: closed
+    - Name: HttpError
+      EnumExtensibility: closed
+    - Name: HttpMethod
+      EnumExtensibility: closed
+    - Name: HttpProxyPolicy
+      EnumExtensibility: closed
+    - Name: HttpRedirectPolicy
+      EnumExtensibility: closed
+    - Name: IpFamily
+      EnumExtensibility: closed
+    - Name: LogSeverity
+      EnumExtensibility: closed
+    - Name: MutexKind
+      EnumExtensibility: closed
+    - Name: NetError
+      EnumExtensibility: closed
+    - Name: PlatformError
+      EnumExtensibility: closed
+    - Name: ThreadRole
+      EnumExtensibility: closed
+    - Name: TlsTrustMode
+      EnumExtensibility: closed
+  - Name: play
+    Tags:
+    - Name: CloudNoticeKind
+      EnumExtensibility: closed
+    - Name: CloudQuality
+      EnumExtensibility: closed
+    - Name: ConnectStep
+      EnumExtensibility: closed
+    - Name: ConsoleHandover
+      EnumExtensibility: closed
+    - Name: ConsoleQuit
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: ControllerChoice
+      EnumExtensibility: closed
+    - Name: DatacenterChoice
+      Tags:
+      - Name: How
+        EnumExtensibility: closed
+    - Name: DatacenterRefusal
+      EnumExtensibility: closed
+    - Name: DatacenterStore
+      Tags:
+      - Name: Error
+        EnumExtensibility: closed
+    - Name: EndReason
+      Tags:
+      - Name: Cause
+        EnumExtensibility: closed
+      - Name: Step
+        EnumExtensibility: closed
+    - Name: FeedbackStyle
+      EnumExtensibility: closed
+    - Name: ForwardedStream
+      Tags:
+      - Name: Refusal
+        EnumExtensibility: closed
+    - Name: InputRefusal
+      EnumExtensibility: closed
+    - Name: LaunchActivity
+      EnumExtensibility: closed
+    - Name: LaunchPhase
+      EnumExtensibility: closed
+    - Name: LaunchRefused
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+      - Name: NoServer
+        EnumExtensibility: closed
+    - Name: Leave
+      EnumExtensibility: closed
+    - Name: LoginPin
+      Tags:
+      - Name: Progress
+        EnumExtensibility: closed
+      - Name: Verdict
+        EnumExtensibility: closed
+    - Name: Microphone
+      Tags:
+      - Name: ConnectState
+        EnumExtensibility: closed
+    - Name: NatType
+      EnumExtensibility: closed
+    - Name: NatTypeFailure
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: NotShareable
+      EnumExtensibility: closed
+    - Name: Outcome
+      Tags:
+      - Name: Ending
+        EnumExtensibility: closed
+      - Name: Phase
+        EnumExtensibility: closed
+    - Name: PlayTimeLimit
+      EnumExtensibility: closed
+    - Name: RestOutcome
+      EnumExtensibility: closed
+    - Name: SeatRefusal
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: SeatState
+      EnumExtensibility: closed
+    - Name: Session
+      Tags:
+      - Name: CreatePress
+        EnumExtensibility: closed
+      - Name: SystemUi
+        EnumExtensibility: closed
+    - Name: SessionState
+      EnumExtensibility: closed
+    - Name: SharedDatagram
+      Tags:
+      - Name: Media
+        EnumExtensibility: closed
+    - Name: StartRefusal
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+    - Name: TrophyGrade
+      EnumExtensibility: closed
+    - Name: Where
+      EnumExtensibility: closed
+  - Name: progress
+    Tags:
+    - Name: InternetRoute
+      Tags:
+      - Name: Kind
+        EnumExtensibility: closed
+      - Name: Purpose
+        EnumExtensibility: closed
+      - Name: Step
+        EnumExtensibility: closed
+    - Name: WaitReason
+      EnumExtensibility: closed
+  - Name: trophies
+    Tags:
+    - Name: Grade
+      EnumExtensibility: closed
+    - Name: Rarity
+      EnumExtensibility: closed
+    - Name: TrophyPlatform
+      EnumExtensibility: closed
+    - Name: TrophySet
+      EnumExtensibility: closed
+  - Name: users
+    Tags:
+    - Name: CredentialKind
+      EnumExtensibility: closed
+    - Name: CredentialStore
+      Tags:
+      - Name: Error
+        EnumExtensibility: closed
+    - Name: CredentialUse
+      EnumExtensibility: closed
+    - Name: HeldCredential
+      Tags:
+      - Name: Kept
+        EnumExtensibility: closed
+      - Name: State
+        EnumExtensibility: closed
+    - Name: Membership
+      Tags:
+      - Name: Known
+        EnumExtensibility: closed
+    - Name: NotRevealed
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+    - Name: PlusStatus
+      EnumExtensibility: closed
+    - Name: PsUser
+      Tags:
+      - Name: Invalid
+        EnumExtensibility: closed
+    - Name: QrSignInStep
+      EnumExtensibility: closed
+    - Name: SignInErrorKind
+      EnumExtensibility: closed
+    - Name: SignInState
+      EnumExtensibility: closed
+    - Name: SignedInUsers
+      Tags:
+      - Name: SignInAgainRefusal
+        Tags:
+        - Name: Kind
+          EnumExtensibility: closed
+    - Name: Tier
+      EnumExtensibility: closed
+    - Name: Unanswered
+      Tags:
+      - Name: Reason
+        EnumExtensibility: closed
+  Tags:
+  - Name: ChiakiNg
+    Tags:
+    - Name: Missing
+      EnumExtensibility: closed

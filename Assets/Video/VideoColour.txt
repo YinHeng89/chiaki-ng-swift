@@ -1,0 +1,315 @@
+#include <metal_stdlib>
+using namespace metal;
+struct ColourConfig {
+    uint tenBit;
+    uint fullRange;
+    uint bt2020;
+    uint pq;
+    uint toneMap;
+    uint diagnosticMode;
+    float referenceWhiteNits;
+    uint adjust;
+    float brightness;
+    float contrast;
+    float saturation;
+    float gamma;
+    uint deband;
+    uint frame;
+    float headroom;
+    float contentPeak;
+    float markerX;
+    float markerY;
+};
+struct LightLevels {
+    atomic_uint peak;
+    atomic_uint total;
+    atomic_uint samples;
+    atomic_uint above;
+    atomic_uint marker;
+    atomic_uint nearWhite;
+};
+float noise(float2 position, float salt, uint frame) {
+    float3 value = fract(float3(position.xyx) * 0.1031f + salt + float(frame % 1024u) * 0.0173f);
+    value += dot(value, value.yzx + 33.33f);
+    return fract((value.x + value.y) * value.z);
+}
+float3 debandRaw(texture2d<float, access::sample> y, texture2d<float, access::sample> uv, sampler sampling,
+                 float2 point, float3 raw, uint2 position, constant ColourConfig &config) {
+    if (!config.deband) {
+        return raw;
+    }
+    float2 lumaTexel = 1.0f / float2(y.get_width(), y.get_height());
+    float2 chromaTexel = 1.0f / float2(uv.get_width(), uv.get_height());
+    float2 cell = float2(position);
+    float3 value = raw;
+    for (uint pass = 1; pass <= 3; pass++) {
+        float angle = noise(cell, float(pass) * 1.7f, config.frame) * 6.2831853f;
+        float reach = noise(cell.yx, float(pass) * 3.1f, config.frame) * 8.0f * float(pass);
+        float2 along = float2(cos(angle), sin(angle)) * reach;
+        float2 across = float2(-along.y, along.x);
+        float luma = 0.25f * (y.sample(sampling, point + along * lumaTexel).r
+                              + y.sample(sampling, point - along * lumaTexel).r
+                              + y.sample(sampling, point + across * lumaTexel).r
+                              + y.sample(sampling, point - across * lumaTexel).r);
+        float2 chroma = 0.25f * (uv.sample(sampling, point + along * chromaTexel * 0.5f).rg
+                                 + uv.sample(sampling, point - along * chromaTexel * 0.5f).rg
+                                 + uv.sample(sampling, point + across * chromaTexel * 0.5f).rg
+                                 + uv.sample(sampling, point - across * chromaTexel * 0.5f).rg);
+        float threshold = (config.tenBit ? 0.0018f : 0.006f) / float(pass);
+        if (abs(luma - value.x) < threshold) {
+            value.x = luma;
+        }
+        value.yz = select(value.yz, chroma, abs(chroma - value.yz) < threshold);
+    }
+    value.x += (noise(cell * 1.37f, 7.3f, config.frame) - 0.5f) * (config.tenBit ? 0.0003f : 0.0015f);
+    return value;
+}
+float3 signedPower(float3 value, float exponent) {
+    return sign(value) * pow(abs(value), float3(exponent));
+}
+float3 shapeToWhite(float3 value, float3 shaped) {
+    return shaped + sign(value) * max(abs(value) - 1.0f, 0.0f);
+}
+float3 adjustPicture(float3 rgb, constant ColourConfig &config) {
+    if (!config.adjust) {
+        return rgb;
+    }
+    float3 encoded = signedPower(rgb, 1.0f / 2.2f);
+    float3 clipped = clamp(encoded, -1.0f, 1.0f);
+    encoded = shapeToWhite(encoded, (clipped - 0.5f) * config.contrast + 0.5f + config.brightness);
+    float luma = dot(encoded, float3(0.2126f, 0.7152f, 0.0722f));
+    encoded = mix(float3(luma), encoded, config.saturation);
+    clipped = clamp(encoded, -1.0f, 1.0f);
+    encoded = shapeToWhite(encoded, signedPower(clipped, 1.0f / config.gamma));
+    return signedPower(encoded, 2.2f);
+}
+float3 inverse709(float3 v) {
+    return select(v / 4.5f, pow(max((v + 0.099f) / 1.099f, 0.0f), float3(1.0f / 0.45f)), v >= 0.081f);
+}
+float3 pqNits(float3 value) {
+    const float m1 = 2610.0f/16384.0f, m2 = 2523.0f/32.0f;
+    const float c1 = 3424.0f/4096.0f, c2 = 2413.0f/128.0f, c3 = 2392.0f/128.0f;
+    float3 p = pow(clamp(value, 0.0f, 1.0f), float3(1.0f/m2));
+    return 10000.0f * pow(max(p-c1, 0.0f) / max(c2-c3*p, 1e-7f), float3(1.0f/m1));
+}
+float3 hdrHeatmap(float nits) {
+    if (nits < 100.0f) {
+        return mix(float3(0.02f, 0.10f, 0.55f), float3(0.0f, 0.85f, 1.0f), nits / 100.0f);
+    }
+    if (nits < 203.0f) {
+        return mix(float3(0.0f, 0.85f, 1.0f), float3(0.15f, 1.0f, 0.20f),
+                   (nits - 100.0f) / 103.0f);
+    }
+    if (nits < 400.0f) {
+        return mix(float3(0.15f, 1.0f, 0.20f), float3(1.0f, 0.92f, 0.0f),
+                   (nits - 203.0f) / 197.0f);
+    }
+    if (nits < 1000.0f) {
+        return mix(float3(1.0f, 0.92f, 0.0f), float3(1.0f, 0.05f, 0.0f),
+                   (nits - 400.0f) / 600.0f);
+    }
+    return mix(float3(1.0f, 0.05f, 0.0f), float3(1.0f, 0.0f, 1.0f),
+               min((nits - 1000.0f) / 3000.0f, 1.0f));
+}
+float3 rollOffHighlights(float3 rgb, float headroom, float peak) {
+    float top = max(rgb.r, max(rgb.g, rgb.b));
+    float knee = headroom * 0.75f;
+    if (peak <= headroom || top <= knee) {
+        return rgb;
+    }
+    float x = (top - knee) / (headroom - knee);
+    float w = (peak - knee) / (headroom - knee);
+    float y = min(x * (1.0f + x / (w * w)) / (1.0f + x), 1.0f);
+    return rgb * ((knee + (headroom - knee) * y) / top);
+}
+float3 linear709(float3 value, constant ColourConfig &config) {
+    float3 rgb = config.pq ? pqNits(value) / config.referenceWhiteNits : inverse709(max(value, 0.0f));
+    if(config.bt2020) {
+
+        rgb = float3(dot(rgb, float3(1.660491f,-0.587641f,-0.072850f)),
+                     dot(rgb, float3(-0.124550f,1.132900f,-0.008349f)),
+                     dot(rgb, float3(-0.018151f,-0.100579f,1.118730f)));
+    }
+    float luminance = max(dot(rgb, float3(0.2126f,0.7152f,0.0722f)), 0.0f);
+    float nits = luminance * (config.pq ? config.referenceWhiteNits : 100.0f);
+    if (config.diagnosticMode == 1) {
+        return hdrHeatmap(nits);
+    }
+    if (config.diagnosticMode == 2) {
+        float3 base = clamp(rgb, 0.0f, 1.0f) * 0.35f;
+        float extended = smoothstep(203.0f, 260.0f, nits);
+        float clipping = smoothstep(900.0f, 1000.0f, nits);
+        return mix(mix(base, float3(0.0f, 0.9f, 1.0f), extended),
+                   float3(1.0f, 0.0f, 1.0f), clipping);
+    }
+    rgb = adjustPicture(rgb, config);
+    if(config.toneMap) {
+        rgb = rollOffHighlights(rgb, config.headroom, config.contentPeak);
+    }
+    return rgb;
+}
+float3 decodeYUV(float3 raw, constant ColourConfig &config) {
+    float maxCode = config.tenBit ? 1023.0f : 255.0f;
+
+    float3 code = raw * (config.tenBit ? 65535.0f/64.0f : 255.0f);
+    float scale = config.tenBit ? 4.0f : 1.0f;
+    float y = config.fullRange ? code.x / maxCode : (code.x - 16.0f*scale)/(219.0f*scale);
+    float2 uv = (code.yz - 128.0f*scale) / (config.fullRange ? maxCode : 224.0f*scale);
+    float kr = config.bt2020 ? 0.2627f : 0.2126f;
+    float kb = config.bt2020 ? 0.0593f : 0.0722f;
+    float r = y + 2.0f*(1.0f-kr)*uv.y;
+    float b = y + 2.0f*(1.0f-kb)*uv.x;
+    float g = (y - kr*r - kb*b)/(1.0f-kr-kb);
+    return float3(r,g,b);
+}
+float3 convertYUV(float3 raw, constant ColourConfig &config) {
+    return linear709(decodeYUV(raw, config), config);
+}
+float3 sourceNits(float3 raw, constant ColourConfig &config) {
+    float3 rgb = decodeYUV(raw, config);
+    return config.pq ? pqNits(rgb) : inverse709(max(rgb, 0.0f)) * 100.0f;
+}
+float luminanceNits(float3 nits, constant ColourConfig &config) {
+    float kr = config.bt2020 ? 0.2627f : 0.2126f;
+    float kb = config.bt2020 ? 0.0593f : 0.0722f;
+    return max(dot(nits, float3(kr, 1.0f - kr - kb, kb)), 0.0f);
+}
+float3 markLight(float3 colour, uint2 position, uint2 size, constant ColourConfig &config) {
+    if (config.diagnosticMode != 1 || config.markerX < 0.0f) {
+        return colour;
+    }
+    float2 centre = float2(config.markerX, config.markerY) * float2(size);
+    float radius = max(float(size.y) / 90.0f, 6.0f);
+    float ring = abs(length(float2(position) + 0.5f - centre) - radius);
+    if (ring < 1.0f) {
+        return float3(1.0f);
+    }
+    if (ring < 2.5f) {
+        return float3(0.0f);
+    }
+    return colour;
+}
+kernel void colour_planes(texture2d<float, access::sample> y [[texture(0)]],
+                          texture2d<float, access::sample> uv [[texture(1)]],
+                          texture2d<half, access::write> output [[texture(2)]],
+                          constant ColourConfig &config [[buffer(0)]],
+                          uint2 position [[thread_position_in_grid]]) {
+    if(position.x >= output.get_width() || position.y >= output.get_height()) {
+        return;
+    }
+    constexpr sampler sampling(coord::normalized, address::clamp_to_edge, filter::linear);
+    float2 point = (float2(position)+0.5f)/float2(output.get_width(),output.get_height());
+    float3 raw = float3(y.sample(sampling,point).r,uv.sample(sampling,point).rg);
+    raw = debandRaw(y, uv, sampling, point, raw, position, config);
+    float3 colour = markLight(convertYUV(raw,config), position, uint2(output.get_width(), output.get_height()), config);
+    output.write(half4(float4(colour,1.0f)),position);
+}
+
+kernel void colour_planes_native(texture2d<float, access::sample> y [[texture(0)]],
+                                 texture2d<float, access::sample> uv [[texture(1)]],
+                                 texture2d<half, access::write> output [[texture(2)]],
+                                 constant ColourConfig &config [[buffer(0)]],
+                                 uint2 position [[thread_position_in_grid]]) {
+    if(position.x >= output.get_width() || position.y >= output.get_height()) {
+        return;
+    }
+    constexpr sampler sampling(coord::normalized, address::clamp_to_edge, filter::linear);
+    float2 point = (float2(position)+0.5f)/float2(output.get_width(),output.get_height());
+    float3 raw = float3(y.sample(sampling,point).r,uv.sample(sampling,point).rg);
+    raw = debandRaw(y, uv, sampling, point, raw, position, config);
+    float3 colour = markLight(convertYUV(raw,config), position, uint2(output.get_width(), output.get_height()), config);
+    output.write(half4(float4(colour,1.0f)),position);
+}
+
+kernel void test_colour(device const float4 *input [[buffer(0)]], device float4 *output [[buffer(1)]],
+                        constant ColourConfig &config [[buffer(2)]], uint i [[thread_position_in_grid]]) {
+    output[i] = float4(convertYUV(input[i].xyz,config),1.0f);
+}
+kernel void clamp_highlights(texture2d<float, access::read_write> image [[texture(0)]],
+                             constant float &limit [[buffer(0)]], uint2 position [[thread_position_in_grid]]) {
+    if (position.x >= image.get_width() || position.y >= image.get_height()) {
+        return;
+    }
+    float4 colour = image.read(position);
+    float top = max(colour.r, max(colour.g, colour.b));
+    if (top > limit) {
+        image.write(float4(colour.rgb * (limit / top), colour.a), position);
+    }
+}
+kernel void test_roll_off(device const float4 *input [[buffer(0)]], device float4 *output [[buffer(1)]],
+                          constant ColourConfig &config [[buffer(2)]], uint i [[thread_position_in_grid]]) {
+    output[i] = float4(rollOffHighlights(input[i].xyz, config.headroom, config.contentPeak), 1.0f);
+}
+kernel void test_deband(texture2d<float, access::sample> y [[texture(0)]],
+                        texture2d<float, access::sample> uv [[texture(1)]],
+                        device float4 *output [[buffer(0)]],
+                        constant ColourConfig &config [[buffer(1)]],
+                        uint2 position [[thread_position_in_grid]]) {
+    if (position.x >= y.get_width() || position.y >= y.get_height()) {
+        return;
+    }
+    constexpr sampler sampling(coord::normalized, address::clamp_to_edge, filter::linear);
+    float2 point = (float2(position) + 0.5f) / float2(y.get_width(), y.get_height());
+    float3 raw = float3(y.sample(sampling, point).r, uv.sample(sampling, point).rg);
+    output[position.y * y.get_width() + position.x] = float4(debandRaw(y, uv, sampling, point, raw, position, config), 1.0f);
+}
+kernel void fsrcnn_colour(texture2d<float, access::read> luma [[texture(0)]],
+                           texture2d<float, access::sample> uv [[texture(1)]],
+                           texture2d<half, access::write> output [[texture(2)]],
+                           texture2d<float, access::sample> source [[texture(3)]],
+                           constant ColourConfig &config [[buffer(0)]],
+                           uint2 position [[thread_position_in_grid]]) {
+    if (position.x >= output.get_width() || position.y >= output.get_height()) {
+        return;
+    }
+    uint2 sourcePosition = position / 2;
+    uint channel = (position.x % 2) * 2 + (position.y % 2);
+    float enhancedLuma = luma.read(sourcePosition)[channel];
+    constexpr sampler sampling(coord::normalized, address::clamp_to_edge, filter::linear);
+    float2 point = (float2(position) + 0.5f) / float2(output.get_width(), output.get_height());
+    float2 chroma = uv.sample(sampling, point).rg;
+    float plainLuma = source.sample(sampling, point).r;
+    float3 debanded = debandRaw(source, uv, sampling, point, float3(plainLuma, chroma), position, config);
+    float3 colour = convertYUV(float3(enhancedLuma + debanded.x - plainLuma, debanded.yz), config);
+    colour = markLight(colour, position, uint2(output.get_width(), output.get_height()), config);
+    output.write(half4(float4(colour, 1.0f)), position);
+}
+kernel void light_levels(texture2d<float, access::sample> y [[texture(0)]],
+                         texture2d<float, access::sample> uv [[texture(1)]],
+                         constant ColourConfig &config [[buffer(0)]],
+                         device LightLevels &levels [[buffer(1)]],
+                         constant uint &step [[buffer(2)]],
+                         uint2 cell [[thread_position_in_grid]]) {
+    constexpr sampler sampling(coord::normalized, address::clamp_to_edge, filter::nearest);
+    float2 size = float2(y.get_width(), y.get_height());
+    uint2 position = cell * step;
+    float top = 0.0f;
+    float sampled = 0.0f;
+    float bright = 0.0f;
+    float white = 0.0f;
+    if (position.x < y.get_width() && position.y < y.get_height()) {
+        float2 point = (float2(position) + 0.5f) / size;
+        float3 nits = sourceNits(float3(y.sample(sampling, point).r, uv.sample(sampling, point).rg), config);
+        top = clamp(max(nits.r, max(nits.g, nits.b)), 0.0f, 10000.0f);
+        sampled = 1.0f;
+        bright = top > config.referenceWhiteNits * 1.05f ? 1.0f : 0.0f;
+        white = top >= config.referenceWhiteNits * 0.9f && bright == 0.0f ? 1.0f : 0.0f;
+    }
+    float groupTop = simd_max(top);
+    float groupTotal = simd_sum(top);
+    float groupSamples = simd_sum(sampled);
+    float groupBright = simd_sum(bright);
+    float groupWhite = simd_sum(white);
+    if (simd_is_first()) {
+        atomic_fetch_max_explicit(&levels.peak, as_type<uint>(groupTop), memory_order_relaxed);
+        atomic_fetch_add_explicit(&levels.total, uint(round(groupTotal)), memory_order_relaxed);
+        atomic_fetch_add_explicit(&levels.samples, uint(groupSamples), memory_order_relaxed);
+        atomic_fetch_add_explicit(&levels.above, uint(groupBright), memory_order_relaxed);
+        atomic_fetch_add_explicit(&levels.nearWhite, uint(groupWhite), memory_order_relaxed);
+    }
+    if (cell.x == 0 && cell.y == 0 && config.markerX >= 0.0f) {
+        float2 point = clamp(float2(config.markerX, config.markerY), 0.0f, 1.0f);
+        float3 nits = sourceNits(float3(y.sample(sampling, point).r, uv.sample(sampling, point).rg), config);
+        atomic_store_explicit(&levels.marker, as_type<uint>(luminanceNits(nits, config)), memory_order_relaxed);
+    }
+}

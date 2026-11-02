@@ -1,0 +1,19 @@
+module ChiakiBridge {
+    header "../../../lib/bridge/include/chiaki_bridge/core.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/consoles.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/messages.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/trophies.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/sharing.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/network.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/catalog.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/caches.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/diagnostics.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/users.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/media.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/play.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/kakusan.hpp"
+    header "../../../lib/bridge/include/chiaki_bridge/stream_facts.hpp"
+    requires cplusplus
+    link "ChiakiRegistration"
+    export *
+}

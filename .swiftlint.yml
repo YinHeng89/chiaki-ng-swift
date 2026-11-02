@@ -1,0 +1,62 @@
+included:
+  - Assets
+  - Sources
+  - Tests
+
+excluded:
+  - .build
+  - .swiftpm
+  - lib
+
+disabled_rules:
+  - file_length
+  - type_body_length
+
+cyclomatic_complexity:
+  ignores_case_statements: true
+
+function_body_length:
+  warning: 60
+
+identifier_name:
+  excluded:
+    - id
+    - up
+    - ok
+    - x
+    - y
+    - dx
+    - dy
+    - _reduce
+    - ps4_8
+    - ps4_9
+    - ps4_10
+
+nesting:
+  type_level: 2
+
+custom_rules:
+  expanded_control_flow:
+    name: Expanded control flow
+    match_kinds:
+      - keyword
+    regex: '\b(?:if|guard|for|while|else|do|catch)\b[^\n{}]*\{[^\n}]+\}'
+    message: Put control-flow bodies on separate lines. Run make format.
+    severity: error
+  multiline_ternary:
+    name: Multiline ternary
+    regex: '[ \t]\?[ \t]+[^\n]+[ \t]:[ \t]'
+    message: Put ternary branches on separate lines. Run make format.
+    severity: error
+  reducer_without_ui:
+    name: Reducers stay free of UI frameworks
+    included: ".*Reducer\\.swift"
+    regex: '^import (SwiftUI|AppKit|UIKit|PlatformUI)\b'
+    message: Reducer files must not import SwiftUI, AppKit, UIKit or PlatformUI. Put presentation in a view file.
+    severity: error
+  exhaustive_progress_switches:
+    name: Progress switches stay exhaustive
+    included: "Sources/(ChiakiModels/Progress|ChiakiCoreBridge/Stream)/.*\\.swift"
+    regex: '(@unknown\s+)?\bdefault\s*:'
+    message: Name every case of a core enum so that a new core case fails to compile.
+    severity: error

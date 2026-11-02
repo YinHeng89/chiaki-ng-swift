@@ -1,0 +1,20 @@
+Controller drawings on the Controls binding board:
+
+  binding-dualsense.png       <- PS5 Button Icons and Controls, Controller Images/Solid/Solid Color 4k.png
+  binding-xbox.png            <- Xbox Series Button Icons and Controls, Controller Images/Solid/Solid Color 4k.png
+  binding-pro-controller.png  <- Switch Button Icons and Controls,
+                                 Controller Images/Pro Controller/Solid/Pro Controller Solid Colored 4k.png
+
+Author: Zacksly
+Source: https://zacksly.itch.io
+Licence: Creative Commons Attribution 3.0 Unported, https://creativecommons.org/licenses/by/3.0/
+
+Changes: cropped to the controller and scaled to 1200 pixels wide.
+
+  binding-dualshock4.png      <- DualShock 4 Button Icons and Controls, Controller Images/Solid/Solid Color 4k.png
+  binding-generic.png         <- Generic Controller Button Icons and Controls,
+                                 Controller Images/Solid/Solid Color 4k.png
+                                 (itself the Xbox Series pack with the platform branding removed)
+
+All five drawings are based on work by Zacksly (https://zacksly.itch.io), licensed under CC BY 3.0, and
+were cropped to the controller and scaled to 1200 pixels wide for chiaki-ng.

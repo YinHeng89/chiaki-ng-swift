@@ -1,0 +1,6 @@
+module ChiakiCore {
+    header "core.hpp"
+    requires cplusplus
+    link "ChiakiRegistration"
+    export *
+}

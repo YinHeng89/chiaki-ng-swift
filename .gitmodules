@@ -1,0 +1,4 @@
+[submodule "lib/chiaki-ng-core"]
+	path = lib/chiaki-ng-core
+	url = https://github.com/chiaki-ng/chiaki-ng-core.git
+	branch = main
