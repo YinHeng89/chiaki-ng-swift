@@ -17,7 +17,7 @@ chiaki-ng is licensed under the GNU Affero General Public Licenseersion 3 or (at
 
 ## Contributing
 
-Contributions are welcome. Before your first pull request is merged, CLA Assistant will ask you to sign the [chiaki-ng Contributor License Agreement](https://gist.github.com/streetpea/7ff632ca45180761deb851e7d738e6da). It lets the project keep chiaki-ng under the AGPL with the  OpenSSL and required application store exclusions.
+Contributions are welcome. Before your first pull request is merged, CLA Assistant will ask you to sign the [chiaki-ng Contributor License Agreement](https://gist.github.com/streetpea/d97e8adea343ab183cb31ab78139fcd8). It lets the project keep chiaki-ng under the AGPL with the  OpenSSL and required application store exclusions.
 
 The following projects greatly assisted with the implementation of this project, particularly Pylux.
 - [Pylux](https://github.com/ForWard-Technologies-LLC/Pylux)
