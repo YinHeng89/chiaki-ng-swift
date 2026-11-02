@@ -56,13 +56,13 @@ make CONFIGURATION=debug app
 make CONFIGURATION=release app
 ```
 
-Kakusan, which lets invited players join a live play session, is built by default. `CHIAKI_KAKUSAN=0` leaves it
-out of the native core and the app, hides every Kakusan screen and entry point, drops the `.kakusan` document type
-from the bundle and skips the Kakusan tests:
+Kakusan, which lets invited players join a live play session, is experimental and left out by default: release,
+App Store and TestFlight builds don't include it. `CHIAKI_KAKUSAN=1` builds it into the native core and the app, with
+its screens and entry points, the `.kakusan` document type and its tests:
 
 ```sh
-make CHIAKI_KAKUSAN=0 app
-CHIAKI_KAKUSAN=0 make test
+make CHIAKI_KAKUSAN=1 app
+CHIAKI_KAKUSAN=1 make test
 ```
 
 The build uses `CHIAKI_CODE_SIGN_IDENTITY` when set, then `.local-signing/identity`, and otherwise uses ad hoc signing.
