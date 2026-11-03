@@ -126,28 +126,59 @@ public struct CloudCaptureFileName: Equatable, Sendable {
     /// - Parameters:
     ///   - title: The game's name; when empty the capture is named as a screenshot or video clip.
     ///   - created: When the capture was taken, in the device's time zone.
-    ///   - fileExtension: The file extension, with or without its dot; when empty, `jpg` or `mp4`.
+    ///   - fileExtension: The file extension, with or without its dot; when empty or not one to five letters or
+    ///     digits, `jpg` or `mp4`.
     ///   - video: Whether it is a video clip.
     public init(title: String, created: Date, fileExtension: String, video: Bool) {
         let writer = DateFormatter()
         writer.locale = Locale(identifier: "en_US_POSIX")
         writer.dateFormat = "yyyy-MM-dd 'at' HH.mm.ss"
-        let cleaned = title.components(separatedBy: Self.forbidden).joined(separator: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleaned = Self.shortened(String(
+            title.components(separatedBy: Self.forbidden).joined(separator: " ")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .drop { $0 == "." || $0.isWhitespace }
+        ))
         let name = cleaned.isEmpty
             ? (video
                 ? "Video clip"
                 : "Screenshot")
             : cleaned
-        let suffix = fileExtension.hasPrefix(".")
-            ? String(fileExtension.dropFirst())
-            : fileExtension
-        let resolved = suffix.isEmpty
-            ? (video
+        let suffix = Self.normalized(fileExtension)
+        let resolved = Self.keeps(fileExtension)
+            ? suffix
+            : (video
                 ? "mp4"
                 : "jpg")
-            : suffix.lowercased()
         value = "\(name) \(writer.string(from: created)).\(resolved)"
+    }
+
+    /// The most bytes of the game's name a file name keeps, which leaves room for the date and extension within
+    /// the 255-byte limit on a file name.
+    private static let maximumTitleBytes = 200
+
+    /// Whether a file extension is one a capture's name keeps: one to five ASCII letters or digits, with or
+    /// without its dot, so it can't add folders to the path.
+    ///
+    /// - Parameter fileExtension: The file extension.
+    /// - Returns: Whether the name would keep it.
+    public static func keeps(_ fileExtension: String) -> Bool {
+        let suffix = normalized(fileExtension)
+        return (1...5).contains(suffix.count) && suffix
+            .allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
+    }
+
+    private static func normalized(_ fileExtension: String) -> String {
+        (fileExtension.hasPrefix(".")
+            ? String(fileExtension.dropFirst())
+            : fileExtension).lowercased()
+    }
+
+    private static func shortened(_ title: String) -> String {
+        var kept = title
+        while kept.utf8.count > maximumTitleBytes {
+            kept.removeLast()
+        }
+        return kept.trimmingCharacters(in: .whitespaces)
     }
 }
 
@@ -168,6 +199,9 @@ public enum CloudCaptureDownloadFailure: Error, Equatable, Sendable {
     /// The capture could not be added to the Photos library, because access to add was refused or the
     /// library rejected it.
     case photos(denied: Bool)
+
+    /// PSN gave a download address that isn't https, so the capture is not fetched.
+    case insecureAddress
 }
 
 /// The preview of a screenshot or clip a PS5 cloud console just took, shown in its toast.

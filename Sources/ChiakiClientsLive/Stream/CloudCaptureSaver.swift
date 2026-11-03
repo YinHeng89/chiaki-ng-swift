@@ -120,6 +120,9 @@ public actor CloudCaptureSaver {
             await log(.warning, "A cloud capture waits to be saved until the account signs in again")
         } catch .photos(denied: true) {
             await log(.warning, "A cloud capture waits to be saved until chiaki-ng may add to Photos")
+        } catch .insecureAddress {
+            try? await accounts.storage().captures.finish(galleryID: gallery)
+            await log(.warning, "Gave up saving a cloud capture because PSN's download address isn't https")
         } catch {
             await giveUpIfExhausted(capture, failure: error)
         }
@@ -135,6 +138,8 @@ public actor CloudCaptureSaver {
                 throw .signInRequired
             } catch .photos(denied: true) {
                 throw .photos(denied: true)
+            } catch .insecureAddress {
+                throw .insecureAddress
             } catch {
                 lastFailure = error
             }
@@ -175,6 +180,9 @@ public actor CloudCaptureSaver {
         let downloaded: URL
         let response: URLResponse
         let signed = !(file.url.query ?? "").isEmpty
+        guard file.url.scheme?.lowercased() == "https" else {
+            throw .insecureAddress
+        }
         do {
             (downloaded, response) = try await URLSession.shared.download(from: file.url)
         } catch {
@@ -189,9 +197,9 @@ public actor CloudCaptureSaver {
         let name = CloudCaptureFileName(
             title: capture.title,
             created: upload.created ?? Date(),
-            fileExtension: upload.fileExtension.isEmpty
-                ? file.fileType
-                : upload.fileExtension,
+            fileExtension: CloudCaptureFileName.keeps(upload.fileExtension)
+                ? upload.fileExtension
+                : file.fileType,
             video: upload.video
         )
         #if os(iOS)

@@ -157,6 +157,29 @@ private func cloudSource() -> StreamSource {
     #expect(clip.hasSuffix(".mp4"))
     #expect(CloudCaptureFileName(title: "", created: created, fileExtension: "", video: false).value
         .hasPrefix("Screenshot "))
+    let escaping = CloudCaptureFileName(title: "", created: created, fileExtension: "/../../x", video: false)
+        .value
+    #expect(!escaping.contains("/"))
+    #expect(escaping.hasSuffix(".jpg"))
+    #expect(CloudCaptureFileName(title: "", created: created, fileExtension: "webm/x", video: true).value
+        .hasSuffix(".mp4"))
+    #expect(CloudCaptureFileName(
+        title: "Gran Turismo",
+        created: created,
+        fileExtension: ".HEIC",
+        video: false
+    )
+    .value.hasSuffix(".heic"))
+    #expect(CloudCaptureFileName(title: "", created: created, fileExtension: "webm", video: true).value
+        .hasSuffix(".webm"))
+    #expect(CloudCaptureFileName(title: ".hack//G.U.", created: created, fileExtension: "jpg", video: false)
+        .value.hasPrefix("hack  G.U. "))
+    let long = CloudCaptureFileName(
+        title: String(repeating: "ゲーム", count: 100), created: created, fileExtension: "jpg", video: false
+    ).value
+    #expect(long.utf8.count <= 255)
+    #expect(CloudCaptureFileName.keeps(".mp4"))
+    #expect(!CloudCaptureFileName.keeps("../x"))
 }
 
 @Test func captureSavingDefaultsToPlayStationAndKeepsAnEarlierChoice() throws {
