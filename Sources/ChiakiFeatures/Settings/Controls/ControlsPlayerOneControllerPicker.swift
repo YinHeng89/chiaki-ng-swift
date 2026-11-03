@@ -15,7 +15,7 @@ struct ControlsPlayerOneControllerPicker: View {
         static let withoutControllerTitle = "Keyboard only"
     #else
         /// The choice that makes player 1 play with the on-screen controller alone.
-        static let withoutControllerTitle = "On-screen controller"
+        static let withoutControllerTitle = "Touch Controls"
     #endif
 
     /// Draws the picker.

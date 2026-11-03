@@ -148,6 +148,12 @@ public struct ScreenLayout: Equatable, Sendable {
         isCompact
     }
 
+    /// Whether a screen sets its two halves side by side: anywhere but a tall, narrow window such as a phone held
+    /// upright.
+    public var sideBySide: Bool {
+        !isCompact || isShort
+    }
+
     /// The padding that keeps a screen's content below the window's top chrome.
     ///
     /// A title bar's controls always need the regular padding. Without one, a compact screen keeps less.

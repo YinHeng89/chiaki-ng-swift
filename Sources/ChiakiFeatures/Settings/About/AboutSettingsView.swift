@@ -78,21 +78,23 @@ public struct AboutSettingsView: View {
             Text("who collaborated on chiaki-ng, without whom this would not have been possible.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
-            project("thestr4ng3r", note: "for the original chiaki", link: .originalChiaki)
-            Divider()
-            project("Chiaki-TV", author: "TechAntoHere", note: "(to be released)", link: nil)
-            Divider()
-            project("Pylux", author: "Forward Technologies LLC", link: .pylux)
-            Divider()
-            project("Pxplay", author: "grill2010", link: .pxplay)
-            Divider()
-            project("Cloudpad", author: "Chaz", link: .cloudpad)
-            Divider()
-            project("akira", author: "xlanor", link: .akira)
-            Divider()
+            ForEach(Self.projects, id: \.name) { project in
+                self.project(project.name, author: project.author, note: project.note, link: project.link)
+                Divider()
+            }
             contributors
         }
     }
+
+    /// The affiliated projects the About page thanks, in the order it lists them.
+    static let projects = [
+        AboutProject(name: "thestr4ng3r", note: "for the original chiaki", link: .originalChiaki),
+        AboutProject(name: "Chiaki-TV", author: "TechAntoHere", note: "(to be released)"),
+        AboutProject(name: "Pylux", author: "Forward Technologies LLC", link: .pylux),
+        AboutProject(name: "Pxplay", author: "grill2010", link: .pxplay),
+        AboutProject(name: "Cloudpad", author: "Chaz", link: .cloudpad),
+        AboutProject(name: "akira", author: "xlanor", link: .akira),
+    ]
 
     private func project(
         _ name: String, author: String? = nil, note: String? = nil, link: AboutReducer.Link?
@@ -407,4 +409,19 @@ struct WrappingRow: Layout {
             lineHeight = max(lineHeight, size.height)
         }
     }
+}
+
+/// An affiliated project the About page thanks: its name, who made it, a note and its page.
+struct AboutProject {
+    /// The project's name.
+    let name: String
+
+    /// Who made it, when credited.
+    var author: String?
+
+    /// A note shown after it.
+    var note: String?
+
+    /// Its page, when it has one.
+    var link: AboutReducer.Link?
 }

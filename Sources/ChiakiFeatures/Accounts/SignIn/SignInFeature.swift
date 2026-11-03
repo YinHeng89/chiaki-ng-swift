@@ -80,19 +80,23 @@ public struct SignInFeature {
         /// The certificate the shown page's connection was secured with, once a page has finished loading.
         public internal(set) var certificate: SignInCertificate?
 
-        /// Opens the screen, on a QR code for a new account and on the web sign-in page for one signing in again.
+        /// Whether the account may sign in on the web sign-in page; a phone signs in by QR code only.
+        public let offersBrowser: Bool
+
+        /// Opens the screen on a QR code, for a new account and for one signing in again alike.
         ///
-        /// - Parameter reconnecting: The account to sign in again, or `nil` for a new account.
-        public init(reconnecting: UUID? = nil) {
+        /// - Parameters:
+        ///   - reconnecting: The account to sign in again, or `nil` for a new account.
+        ///   - offersBrowser: Whether the account may sign in on the web sign-in page.
+        public init(reconnecting: UUID? = nil, offersBrowser: Bool = true) {
             self.reconnecting = reconnecting
-            method = reconnecting == nil
-                ? .qrCode
-                : .browser
+            self.offersBrowser = offersBrowser
+            method = .qrCode
         }
 
         /// Whether the person may switch between a QR code and the web sign-in page.
         public var offersQRCode: Bool {
-            reconnecting == nil
+            offersBrowser
         }
 
         /// The QR code to show, while one waits for approval.

@@ -280,7 +280,7 @@ extension MenuFocusTests {
         await waitUntil(harness) {
             trophies.current != nil
         }
-        await harness.send([.up, .up, .up, .right, .right])
+        await harness.send([.up, .up, .up, .up, .right, .right])
         await harness.pause(200)
         #expect(trophies.filter == .unearned)
         await harness.send([.down, .down])
@@ -290,7 +290,7 @@ extension MenuFocusTests {
             reads.value == 2 && trophies.shown.isEmpty
         }
         await harness.pause(300)
-        await harness.send(.up)
+        await harness.send([.up, .up])
         await harness.pause(200)
         await harness.send(.right)
         await harness.pause(200)

@@ -15,6 +15,8 @@ struct RootNavigationReducer: Reducer {
     /// Everything the application reacts to.
     typealias Action = RootFeature.Action
 
+    @Dependency(\.platform) private var platform
+
     /// Reacts to the user's requests from the root view, the library and opened files.
     var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -102,7 +104,10 @@ struct RootNavigationReducer: Reducer {
     private func accountRequested(_ view: Action.View, state: inout State) -> Effect<Action> {
         switch view {
         case .chooseSignIn:
-            return showFromWelcome(.signIn(SignInFeature.State()), state: &state)
+            return showFromWelcome(
+                .signIn(SignInFeature.State(offersBrowser: !platform.isPhone())),
+                state: &state
+            )
         case .chooseAccountID:
             return showFromWelcome(.accountIDEntry(AccountIDEntryFeature.State()), state: &state)
         case .showLibrary:
@@ -125,7 +130,10 @@ struct RootNavigationReducer: Reducer {
             guard state.route == .library, state.appData.selectProfile(id) else {
                 return .none
             }
-            return RootRouter.show(.signIn(SignInFeature.State(reconnecting: id)), state: &state)
+            return RootRouter.show(
+                .signIn(SignInFeature.State(reconnecting: id, offersBrowser: !platform.isPhone())),
+                state: &state
+            )
         default:
             return .none
         }

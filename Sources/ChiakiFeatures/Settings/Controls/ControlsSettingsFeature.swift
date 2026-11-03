@@ -42,6 +42,9 @@ public struct ControlsSettingsFeature {
         /// The controller listing that is running, if any.
         public internal(set) var inventoryAttempt: UUID?
 
+        /// Whether the shown bindings fill the pane on their own screen, as the touch interface shows them.
+        public internal(set) var showsMapping = false
+
         /// Creates the pane with nothing loaded.
         public init() {}
 
@@ -260,6 +263,12 @@ public struct ControlsSettingsFeature {
         /// Shows the keyboard's, a controller's or a player's bindings.
         case show(ControlsEditTarget)
 
+        /// Shows the keyboard's, a controller's or a player's bindings on their own screen.
+        case openMapping(ControlsEditTarget)
+
+        /// Leaves the bindings' own screen, ending any capture.
+        case closeMapping
+
         /// Forgets a disconnected controller, its preferences and its own preset.
         case forgetController(String)
 
@@ -372,13 +381,15 @@ public struct ControlsSettingsFeature {
                 }
                 state.mode = .idle
                 state.inventoryAttempt = nil
+                state.showsMapping = false
                 return commitEndingCapture(&state)
             case .loaded, .saved, .retry, .selectPreset, .duplicatePreset, .deletePreset, .renamePreset,
                  .resetPresetBindings, .setControllerPreferences, .assignControllerButton,
                  .captureControllerButton,
                  .capture, .captured, .cancelCapture, .clearBinding, .capturePlayerButton,
                  .removePlayerPreset,
-                 .undoChange, .changeExpired, .show, .forgetController, .captureButton,
+                 .undoChange, .changeExpired, .show, .openMapping, .closeMapping, .forgetController,
+                 .captureButton,
                  .captureTimedOut,
                  .assignBinding, .recordTouchpadShortcut, .recordedTouchpadShortcut, .cancelTouchpadShortcut,
                  .setTouchpadButtons, .setStreamMenuButtons, .refreshDevices, .devices, .devicesFailed,
@@ -444,6 +455,12 @@ private struct ControlsDevices: Reducer {
             return listed(devices, attempt: id, state: &state)
         case .show(let target):
             return show(target, state: &state)
+        case .openMapping(let target):
+            state.showsMapping = true
+            return show(target, state: &state)
+        case .closeMapping:
+            state.showsMapping = false
+            return endCapture(&state)
         case .forgetController(let key):
             return forget(key, state: &state)
         case .removePlayerPreset(let player):
@@ -492,6 +509,10 @@ private struct ControlsDevices: Reducer {
             return .none
         }
         state.editing = target
+        return endCapture(&state)
+    }
+
+    private func endCapture(_ state: inout State) -> Effect<Action> {
         guard state.capture != nil else {
             return .none
         }

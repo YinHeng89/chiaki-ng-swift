@@ -46,6 +46,9 @@ public struct PlatformClient: Sendable {
     /// Reads the time since the system started, the clock input events are stamped with.
     public var uptime: @Sendable () -> TimeInterval
 
+    /// Whether the app runs on a phone.
+    public var isPhone: @Sendable () -> Bool
+
     /// Presents the window full screen with the saved video fit when the picture settings ask for full screen
     /// streams.
     public var enterFullScreen: @Sendable () async -> Void
@@ -105,6 +108,7 @@ public struct PlatformClient: Sendable {
     ///   - networkChanged: Recovers after the network changed; by default nothing.
     ///   - quit: Asks the platform to quit the app; by default nothing.
     ///   - uptime: Reads the time since the system started; by default zero.
+    ///   - isPhone: Reads whether the app runs on a phone; by default it does not.
     ///   - enterFullScreen: Presents the window full screen for a stream; by default nothing.
     ///   - restoreWindow: Restores the window after a stream; by default nothing.
     ///   - prepareLaunch: Applies a launch's display preferences; by default nothing.
@@ -137,6 +141,9 @@ public struct PlatformClient: Sendable {
         },
         uptime: @escaping @Sendable () -> TimeInterval = {
             0
+        },
+        isPhone: @escaping @Sendable () -> Bool = {
+            false
         },
         enterFullScreen: @escaping @Sendable () async -> Void = {
         },
@@ -189,6 +196,7 @@ public struct PlatformClient: Sendable {
         self.networkChanged = networkChanged
         self.quit = quit
         self.uptime = uptime
+        self.isPhone = isPhone
         self.enterFullScreen = enterFullScreen
         self.restoreWindow = restoreWindow
         self.prepareLaunch = prepareLaunch

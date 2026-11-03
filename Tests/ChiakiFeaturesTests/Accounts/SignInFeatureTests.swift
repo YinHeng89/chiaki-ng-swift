@@ -100,7 +100,9 @@ import Testing
     @Test func reconnectingSignsInTheSameAccountAgain() async {
         let profile = profile
         let reconnecting = UUID(uuidString: "AAAAAAAA-0000-0000-0000-000000000000")!
-        let store = store(SignInFeature.State(reconnecting: reconnecting)) { _ throws(SignInFailure) in
+        var state = SignInFeature.State(reconnecting: reconnecting)
+        state.method = .browser
+        let store = store(state) { _ throws(SignInFailure) in
             try Self.captured()
         } signIn: { requested, _ in
             #expect(requested == reconnecting)
@@ -319,16 +321,21 @@ import Testing
         }
     }
 
-    @Test func reconnectingKeepsTheSignInPageAndNeverOffersACode() async {
-        let reconnecting = UUID(uuidString: "AAAAAAAA-0000-0000-0000-000000000000")!
-        let store = qrStore(SignInFeature.State(reconnecting: reconnecting)) { _, _ in
-            Issue.record("Reconnecting must not sign in with a QR code")
+    @Test func reconnectingStartsOnTheCodeLikeANewAccount() {
+        let state = SignInFeature
+            .State(reconnecting: UUID(uuidString: "AAAAAAAA-0000-0000-0000-000000000000")!)
+        #expect(state.method == .qrCode)
+        #expect(state.offersQRCode)
+    }
+
+    @Test func aPhoneNeverOffersTheSignInPage() async {
+        let store = qrStore(SignInFeature.State(offersBrowser: false)) { _, _ in
+            Issue.record("Choosing the sign-in page on a phone must not sign in")
             return .failure(.storage)
         }
-        #expect(store.state.method == .browser)
+        #expect(store.state.method == .qrCode)
         #expect(!store.state.offersQRCode)
-        await store.send(.view(.appeared))
-        await store.send(.view(.choose(.qrCode)))
+        await store.send(.view(.choose(.browser)))
     }
 
     @Test func onlyTheSignInPageAndSavingTakeTheScreenOver() {

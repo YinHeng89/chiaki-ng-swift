@@ -388,3 +388,42 @@ extension ControlsSettingsFeature.State {
     #expect(store.state.draft.playerPresets[1] == nil)
     #expect(store.state.draft.presets.count == 1)
 }
+
+@MainActor @Test func theMappingScreenOpensOnAPlayerAndClosingItTakesBackAnUnfinishedCapture() async {
+    let id = UUID()
+    let store = TestStore(initialState: ControlsSettingsFeature.State.loaded()) {
+        ControlsSettingsFeature()
+    } withDependencies: {
+        $0.uuid = .constant(id)
+        $0.continuousClock = TestClock()
+        $0.settings = .inMemory()
+    }
+    let original = store.state.draft
+    await store.send(.openMapping(.player(1))) {
+        $0.showsMapping = true
+        $0.editing = .player(1)
+    }
+    store.exhaustivity = .off(showSkippedAssertions: false)
+    await store.send(.capturePlayerButton(1, .cross))
+    #expect(store.state.draft.playerPresets[1] == id)
+    await store.send(.closeMapping)
+    #expect(!store.state.showsMapping)
+    #expect(store.state.capture == nil)
+    #expect(store.state.draft == original)
+    #expect(store.state.editing == .player(1))
+}
+
+@MainActor @Test func leavingThePaneClosesTheMappingScreen() async {
+    let store = TestStore(initialState: ControlsSettingsFeature.State.loaded()) {
+        ControlsSettingsFeature()
+    } withDependencies: {
+        $0.uuid = .constant(UUID())
+        $0.continuousClock = TestClock()
+        $0.settings = .inMemory()
+    }
+    store.exhaustivity = .off(showSkippedAssertions: false)
+    await store.send(.openMapping(.player(0)))
+    #expect(store.state.showsMapping)
+    await store.send(.stop)
+    #expect(!store.state.showsMapping)
+}

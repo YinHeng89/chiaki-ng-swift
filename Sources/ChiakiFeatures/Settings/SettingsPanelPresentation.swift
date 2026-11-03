@@ -148,9 +148,13 @@ struct SettingsPanelPresentation: ViewModifier {
                 }
             }
     }
+    private var touchRailHostsSettings: Bool {
+        layout.touch && navigator?.inputMode.mode != .controller
+    }
+
     private var settingsButton: some View {
         HStack(spacing: 12) {
-            if topControlsLayout?.settingsHost != .libraryBar, !root.streamPlaying {
+            if topControlsLayout?.settingsHost != .libraryBar, !root.streamPlaying, !touchRailHostsSettings {
                 SettingsButton {
                     setPresented(true, by: "the Settings button")
                 }

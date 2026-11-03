@@ -54,7 +54,7 @@ extension MenuFocusTests {
         await harness.open()
         harness.window.selectNextKeyView(nil)
         await harness.pause(150)
-        await harness.send(.right)
+        await harness.send([.left, .left, .right])
         await harness.send(.confirm)
         await harness.pause(900)
         return harness.window.firstResponder

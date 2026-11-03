@@ -217,6 +217,7 @@ public struct FlowTileRow<Focus: Hashable>: View {
     let focusedAction: MenuFocusState<Focus?>.Binding
     @State private var hovered: Focus?
     @Environment(\.screenLayout) private var layout
+    @Environment(\.menuNavigator) private var navigator
 
     /// Creates the row.
     ///
@@ -238,16 +239,28 @@ public struct FlowTileRow<Focus: Hashable>: View {
                         tile(choice)
                     }
                 }
-            Text(explained?.hint ?? " ")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: 380, minHeight: 44, alignment: .top)
-                .animation(.easeOut(duration: 0.15), value: explained?.focus)
-                .accessibilityHidden(true)
+            if showsHint {
+                Text(explained?.hint ?? " ")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 380, minHeight: 44, alignment: .top)
+                    .animation(.easeOut(duration: 0.15), value: explained?.focus)
+                    .accessibilityHidden(true)
+            }
         }
-        .padding(.top, 6)
+        .padding(.top, showsHint
+            ? 6
+            : 0)
+    }
+
+    private var showsHint: Bool {
+        #if os(iOS)
+            !layout.touch || navigator?.inputMode.mode == .controller
+        #else
+            true
+        #endif
     }
 
     private var explained: FlowTileChoice<Focus>? {

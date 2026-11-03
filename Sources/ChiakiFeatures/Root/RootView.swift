@@ -137,6 +137,9 @@ public struct RootView: View {
                 store.send(.view(.disappeared))
             }
             .environment(\.virtualGamepad, store.scope(state: \.virtualGamepad, action: \.virtualGamepad))
+        #if os(iOS)
+            .mobileTextEntryStage()
+        #endif
     }
 
     @ViewBuilder private func screen(size: CGSize) -> some View {
@@ -495,9 +498,21 @@ private struct RootLibraryScreen: View {
     let size: CGSize
 
     @Environment(\.screenLayout) private var layout
+    @Environment(\.menuNavigator) private var navigator
 
     /// The library with the registration and account failures below it.
     var body: some View {
+        if layout.touch, navigator?.inputMode.mode != .controller {
+            MobileLibraryView(
+                store: store.scope(state: \.library, action: \.library),
+                settings: store.scope(state: \.settings, action: \.settings)
+            )
+        } else {
+            classic
+        }
+    }
+
+    private var classic: some View {
         VStack(spacing: 18) {
             LibraryView(store: store.scope(state: \.library, action: \.library))
                 .environment(\.cloudLibraryHeight, max(360, size.height - 190))

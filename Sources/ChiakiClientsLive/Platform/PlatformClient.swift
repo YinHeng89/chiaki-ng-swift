@@ -11,6 +11,20 @@ import PlatformUI
 #endif
 
 extension PlatformClient {
+    private static let runsOnPhone: Bool = {
+        #if os(iOS)
+            var system = utsname()
+            uname(&system)
+            let machine = withUnsafeBytes(of: &system.machine) { bytes in
+                String(decoding: bytes.prefix { $0 != 0 }, as: UTF8.self)
+            }
+            let model = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] ?? machine
+            return model.hasPrefix("iPhone")
+        #else
+            false
+        #endif
+    }()
+
     /// The app's lifecycle: shuts the stream leases down, stops them for sleep, releases sleep through the
     /// power observer and drops stale connections after wake or a network change; quitting goes through the
     /// application. Text goes through the system pasteboard, offered files live in a folder of the process's
@@ -67,6 +81,9 @@ extension PlatformClient {
             },
             uptime: {
                 ProcessInfo.processInfo.systemUptime
+            },
+            isPhone: {
+                runsOnPhone
             },
             copy: { text in
                 await MainActor.run {

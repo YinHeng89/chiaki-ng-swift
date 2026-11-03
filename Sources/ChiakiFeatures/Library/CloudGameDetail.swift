@@ -27,6 +27,8 @@ struct CloudGameDetail: View {
     let heldFocus: () -> FocusItem?
     /// Whether Reduce Motion is on, which replaces the detail's growth and reveal animations with fades.
     @Environment(\.accessibilityReduceMotion) var reduceMotion
+    /// Whether the detail is closed from the touch rail, so it draws no Close button of its own.
+    @Environment(\.gameDetailClosesFromRail) var closesFromRail
     /// The screen's layout traits: a compact screen makes the panel fill the window, and touch sizes its
     /// controls for a finger.
     @Environment(\.screenLayout) var layout

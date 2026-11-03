@@ -62,6 +62,8 @@ import MenuFocus
         public var alerts = PSNAlertsFeature.State()
         /// The alerts shown over the library while no stream runs.
         public var toasts = CloudToastsReducer.State()
+        /// The page the touch library shows over the section.
+        public var mobile = MobileShellFeature.State()
 
         /// Creates the library.
         ///
@@ -141,6 +143,24 @@ import MenuFocus
         /// The sections the selected account can show.
         public var availableSections: [LibrarySection] {
             LibrarySection.allCases.filter { selectedProfile.permits($0.feature) }
+        }
+
+        /// Whether Back in the touch library has something to close: a pushed page, the open cloud game or the
+        /// open trophy title.
+        public var mobileCanGoBack: Bool {
+            mobile.page != .home || mobileSectionDetailOpen
+        }
+
+        /// Whether the shown section has its own detail open: the cloud game or the trophy title.
+        var mobileSectionDetailOpen: Bool {
+            switch section {
+            case .cloud:
+                cloudLibrary.selection != nil
+            case .trophies:
+                trophies.opened != nil
+            case .consoles:
+                false
+            }
         }
 
         /// Whether the account details are being refreshed.
@@ -266,6 +286,12 @@ import MenuFocus
         case cloudLibrary(CloudLibraryFeature.Action)
         /// The trophies section acted.
         case trophies(TrophiesFeature.Action)
+        /// The touch library moved between pages.
+        case mobile(MobileShellFeature.Action)
+        /// Back was tapped in the touch library.
+        case mobileBackTapped
+        /// A section was chosen in the touch library's rail.
+        case mobileSectionTapped(LibrarySection)
         /// What the library tells the app.
         case delegate(Delegate)
 
@@ -325,6 +351,9 @@ import MenuFocus
         Scope(state: \.toasts, action: \.toasts) {
             CloudToastsReducer()
         }
+        Scope(state: \.mobile, action: \.mobile) {
+            MobileShellFeature()
+        }
         CombineReducers {
             LibraryFocusRelay()
             LibraryCatalogWait()
@@ -358,6 +387,11 @@ import MenuFocus
                 case .selectedAccountChanged:
                     return followAccount(&state)
                 case .catalogChanged:
+                    if case .console(let id) = state.mobile.page,
+                       !state.linkedConsoles.contains(where: { $0.id == id }) {
+                        state.mobile.page = .home
+                        state.mobile.forward = false
+                    }
                     return showRecentlyPlayed(&state)
                 case .accountsRefreshed:
                     guard state.scenePhase == .active, let account = state.selectedAccount else {
@@ -381,16 +415,42 @@ import MenuFocus
                     return .send(.delegate(.requested(request)))
                 case .cloudStatus:
                     return leaveUnavailableSection(&state)
+                case .mobileBackTapped:
+                    guard state.mobile.page == .home, state.mobileSectionDetailOpen else {
+                        return .send(.mobile(.back))
+                    }
+                    return closeSectionDetail(state)
+                case .mobileSectionTapped(let section):
+                    let leftPage = state.mobile.page != .home
+                    state.mobile.page = .home
+                    state.mobile.forward = false
+                    guard section == state.section else {
+                        return .send(.sectionSelected(section))
+                    }
+                    return leftPage
+                        ? .none
+                        : closeSectionDetail(state)
                 case .consoleLoadElapsed, .contentFocusRequested, .focusMoved, .focusRequestHandled,
                      .accountTapped, .alertsTapped, .alertsPanelClosed, .alerts, .toasts,
                      .accountSheet, .discoveryUpdated, .discoverySearched, .discoveryFailed, .cloudLibrary,
-                     .trophies, .delegate:
+                     .trophies, .mobile, .delegate:
                     return .none
                 }
             }
         }
         .ifLet(\.$accountSheet, action: \.accountSheet) {
             LibraryAccountSheetFeature()
+        }
+    }
+
+    private func closeSectionDetail(_ state: State) -> Effect<Action> {
+        switch state.section {
+        case .cloud where state.cloudLibrary.selection != nil:
+            .send(.cloudLibrary(.select(nil)))
+        case .trophies where state.trophies.opened != nil:
+            .send(.trophies(.close))
+        case .cloud, .trophies, .consoles:
+            .none
         }
     }
 

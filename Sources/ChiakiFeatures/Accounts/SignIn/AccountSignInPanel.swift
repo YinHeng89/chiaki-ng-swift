@@ -15,6 +15,8 @@ public struct AccountSignInPanel: View {
     let size: CGSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.screenLayout) private var layout
+    @Environment(\.menuNavigator) private var navigator
+    @State private var certificateShown = false
 
     /// Creates the panel.
     ///
@@ -34,12 +36,95 @@ public struct AccountSignInPanel: View {
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
                     .accessibilityHidden(true)
-                panel(page, completing: store.isCompleting)
-                    .transition(AppMotion.transition(reduced: reduceMotion))
+                Group {
+                    if touchScreen {
+                        touchPanel(page, completing: store.isCompleting)
+                    } else {
+                        panel(page, completing: store.isCompleting)
+                    }
+                }
+                .transition(AppMotion.transition(reduced: reduceMotion))
             }
         }
         .animation(AppMotion.animation(reduced: reduceMotion), value: store.phase)
         .animation(AppMotion.animation(reduced: reduceMotion), value: store.certificate)
+    }
+
+    private var touchScreen: Bool {
+        #if os(iOS)
+            layout.touch && navigator?.inputMode.mode != .controller
+        #else
+            false
+        #endif
+    }
+
+    private func touchPanel(_ page: SignInPage, completing: Bool) -> some View {
+        VStack(spacing: 0) {
+            touchHeader
+            ZStack {
+                SignInWebView(page: page)
+                    .opacity(
+                        completing
+                            ? 0
+                            : 1
+                    )
+                if completing {
+                    completingProgress
+                }
+            }
+            .clipShape(.rect(cornerRadius: 16))
+            .padding([.horizontal, .bottom], 8)
+        }
+        .glassPanel(.modal)
+        .padding(.horizontal, sideMargin)
+        .padding(.vertical, 8)
+    }
+
+    private var touchHeader: some View {
+        HStack(spacing: 12) {
+            Button {
+                store.send(.view(.closePage))
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(width: 36, height: 36)
+            }
+            .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
+            .accessibilityLabel("Cancel sign-in")
+            VStack(alignment: .leading, spacing: 1) {
+                Text("PlayStation sign-in").font(.headline)
+                Text(
+                    "If your account uses a passkey, choose the QR code option. This window cannot use passkeys."
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            }
+            Spacer(minLength: 8)
+            if let certificate = store.certificate {
+                Button {
+                    certificateShown = true
+                } label: {
+                    Label(certificate.host, systemImage: "lock.fill")
+                        .font(.callout.monospaced().weight(.semibold))
+                        .lineLimit(1)
+                }
+                .buttonStyle(.glass)
+                .accessibilityHint("Shows the page's certificate")
+                .popover(isPresented: $certificateShown) {
+                    ScrollView {
+                        SignInCertificateBar(certificate: certificate)
+                            .padding(12)
+                    }
+                    .frame(idealWidth: 460, maxHeight: 320)
+                    .presentationCompactAdaptation(.popover)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
     }
 
     private func panel(_ page: SignInPage, completing: Bool) -> some View {

@@ -10,7 +10,7 @@ public struct InterfaceSettings: Codable, Equatable, Sendable {
     /// Creates settings.
     ///
     /// - Parameter railEdge: The edge the library rail sits on.
-    public init(railEdge: LibraryRailEdge = .left) {
+    public init(railEdge: LibraryRailEdge = .right) {
         self.railEdge = railEdge
     }
 
@@ -20,7 +20,7 @@ public struct InterfaceSettings: Codable, Equatable, Sendable {
     /// - Throws: `DecodingError` when the stored value is not a keyed container.
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        railEdge = (try? values.decodeIfPresent(LibraryRailEdge.self, forKey: .railEdge)) ?? .left
+        railEdge = (try? values.decodeIfPresent(LibraryRailEdge.self, forKey: .railEdge)) ?? .right
     }
 }
 

@@ -26,13 +26,34 @@ struct EntryScreen: View {
     @MenuFocusState private var consoleKindFocus: RegistrationFlow.ConsoleKind?
     @State private var hostWindow: PlatformWindow?
 
-    /// The view.
+    /// The touch welcome and sign-in on a touch screen, the scrolling column everywhere else.
     var body: some View {
+        if layout.touch, navigator?.inputMode.mode != .controller {
+            if touchScreen {
+                MobileEntryView(store: store, send: send)
+            } else {
+                column
+            }
+        } else {
+            column
+        }
+    }
+
+    private var touchScreen: Bool {
+        switch screen {
+        case .welcome, .signIn, .accountID:
+            true
+        default:
+            false
+        }
+    }
+
+    private var column: some View {
         ScrollView {
             ZStack {
                 Color.clear
                     .containerRelativeFrame(.vertical)
-                column
+                stack
             }
             .frame(maxWidth: .infinity)
         }
@@ -65,7 +86,7 @@ struct EntryScreen: View {
         })
     }
 
-    private var column: some View {
+    private var stack: some View {
         VStack(spacing: 0) {
             if presentation.usesSharedLogo {
                 ChiakiLogo(
@@ -571,7 +592,7 @@ enum EntryFocusGraph {
     /// - Returns: `true` on the welcome screen and every sign-in screen.
     static func tiled(_ screen: Screen) -> Bool {
         switch screen {
-        case .welcome, .signIn:
+        case .welcome, .signIn, .accountID:
             true
         default:
             false

@@ -27,6 +27,7 @@ public struct ControllerKeyboardPresentation: ViewModifier {
     private let presentationWindow: PlatformWindow?
     private let onDismiss: ((Bool) -> Void)?
     @Environment(\.menuNavigator) private var navigator
+    @Environment(\.touchKeyboard) private var touchKeyboard
     @State private var session: ControllerKeyboardSession?
     @State private var presentationID = UUID()
     @State private var activation = Activation()
@@ -72,6 +73,17 @@ public struct ControllerKeyboardPresentation: ViewModifier {
     public func body(content: Content) -> some View {
         activation.accepts = accepts
         return content
+        #if os(iOS)
+            .overlay {
+                if let touchKeyboard, navigator?.inputMode.mode != .controller {
+                    Color.clear
+                        .contentShape(.rect)
+                        .onTapGesture {
+                            touchKeyboard(touchRequest)
+                        }
+                }
+            }
+        #endif
             .onAppear {
                 registerActivation()
             }
@@ -107,6 +119,19 @@ public struct ControllerKeyboardPresentation: ViewModifier {
                     activation.id = nil
                 }
             }
+    }
+
+    private var touchRequest: TouchKeyboardRequest {
+        TouchKeyboardRequest(
+            title: title,
+            prompt: title,
+            text: $text,
+            kind: numberPad
+                ? .number
+                : .text,
+            multiline: allowsNewline,
+            secure: secure
+        )
     }
 
     private func registerActivation() {

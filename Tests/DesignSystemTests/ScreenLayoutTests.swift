@@ -71,3 +71,21 @@ import Testing
     #expect(!ScreenLayout(room: .wide).sheetsFillWidth)
     #expect(ScreenLayout(room: .compact).sheetMargin < ScreenLayout(room: .regular).sheetMargin)
 }
+
+@Test func screensSitSideBySideEverywhereButATallNarrowWindow() {
+    let sizes: [(CGSize, Bool)] = [
+        (CGSize(width: 852, height: 393), true),
+        (CGSize(width: 956, height: 440), true),
+        (CGSize(width: 393, height: 852), false),
+        (CGSize(width: 744, height: 1133), false),
+        (CGSize(width: 1133, height: 744), true),
+        (CGSize(width: 820, height: 1180), false),
+        (CGSize(width: 1180, height: 820), true),
+        (CGSize(width: 1366, height: 1024), true),
+        (CGSize(width: 1920, height: 1080), true)
+    ]
+    for (size, sideBySide) in sizes {
+        let layout = ScreenLayout.measured(size: size, safeArea: EdgeInsets())
+        #expect(layout.sideBySide == sideBySide, "\(size)")
+    }
+}

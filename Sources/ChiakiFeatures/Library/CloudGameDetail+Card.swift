@@ -159,18 +159,20 @@ extension CloudGameDetail {
     }
     /// The round glass Close button in the corner, which closes the detail and answers the Cancel shortcut,
     /// sized for a finger on touch.
-    var detailCloseButton: some View {
-        FocusButton {
-            closeDetail()
-        } label: {
-            Label("Close", systemImage: "xmark")
-                .labelStyle(.iconOnly)
-                .frame(width: 24, height: 24)
+    @ViewBuilder var detailCloseButton: some View {
+        if !closesFromRail {
+            FocusButton {
+                closeDetail()
+            } label: {
+                Label("Close", systemImage: "xmark")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 24, height: 24)
+            }
+            .menuFocused($focus, equals: .close)
+            .accessibilityIdentifier("cloud-close")
+            .glassControlStyle().focusBorderShape(.circle).keyboardShortcut(.cancelAction)
+            .padding(16)
         }
-        .menuFocused($focus, equals: .close)
-        .accessibilityIdentifier("cloud-close")
-        .glassControlStyle().focusBorderShape(.circle).keyboardShortcut(.cancelAction)
-        .padding(16)
     }
     /// Validates a store page address from the catalog.
     ///

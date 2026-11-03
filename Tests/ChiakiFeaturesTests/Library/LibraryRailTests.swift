@@ -126,13 +126,13 @@ private struct EdgeMoves {
     #expect(rail.move(from: .librarySection(.cloud), .up) == .stay)
 }
 
-@Test func interfaceSettingsDefaultToTheLeftAndSurviveUnknownEdges() throws {
-    #expect(InterfaceSettings().railEdge == .left)
+@Test func interfaceSettingsDefaultToTheRightAndSurviveUnknownEdges() throws {
+    #expect(InterfaceSettings().railEdge == .right)
     let decoded = try JSONDecoder().decode(
         InterfaceSettings.self,
         from: Data(#"{"railEdge":"diagonal"}"#.utf8)
     )
-    #expect(decoded.railEdge == .left)
+    #expect(decoded.railEdge == .right)
     let saved = try JSONDecoder().decode(
         InterfaceSettings.self,
         from: JSONEncoder().encode(InterfaceSettings(railEdge: .bottom))

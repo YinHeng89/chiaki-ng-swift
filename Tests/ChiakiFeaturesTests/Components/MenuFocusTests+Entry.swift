@@ -65,9 +65,12 @@ extension MenuFocusTests {
         #expect(sent.routes.last == .signIn(.view(.back)))
     }
 
-    @Test func reconnectingWalksSignInAndBackWithoutACodeChoice() async {
+    @Test func aSignInPageWithoutACodeChoiceWalksSignInAndBack() async {
+        var signIn = SignInFeature.State(reconnecting: UUID(), offersBrowser: false)
+        signIn.method = .browser
+        signIn.acknowledged = true
         let sent = EntryActionLog()
-        let harness = entryHarness(entryStore(.signIn(SignInFeature.State(reconnecting: UUID())), log: sent))
+        let harness = entryHarness(entryStore(.signIn(signIn), log: sent))
         let override = KeyWindowOverride(harness.window)
         defer {
             override.restore()

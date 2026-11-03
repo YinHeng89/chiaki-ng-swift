@@ -67,25 +67,27 @@ enum SignInCertificateReader {
             #endif
         }
 
-        private static func entries(_ section: [String: Any]?) -> [String: String] {
-            guard let items = section?[kSecPropertyKeyValue as String] as? [[String: Any]] else {
-                return [:]
-            }
-            var found: [String: String] = [:]
-            for item in items {
-                if let label = item[kSecPropertyKeyLabel as String] as? String,
-                   let value = item[kSecPropertyKeyValue as String] as? String {
-                    found[label] = value
+        #if os(macOS)
+            private static func entries(_ section: [String: Any]?) -> [String: String] {
+                guard let items = section?[kSecPropertyKeyValue as String] as? [[String: Any]] else {
+                    return [:]
                 }
+                var found: [String: String] = [:]
+                for item in items {
+                    if let label = item[kSecPropertyKeyLabel as String] as? String,
+                       let value = item[kSecPropertyKeyValue as String] as? String {
+                        found[label] = value
+                    }
+                }
+                return found
             }
-            return found
-        }
 
-        private static func date(_ entry: [String: Any]?) -> Date? {
-            guard let seconds = entry?[kSecPropertyKeyValue as String] as? Double else {
-                return nil
+            private static func date(_ entry: [String: Any]?) -> Date? {
+                guard let seconds = entry?[kSecPropertyKeyValue as String] as? Double else {
+                    return nil
+                }
+                return Date(timeIntervalSinceReferenceDate: seconds)
             }
-            return Date(timeIntervalSinceReferenceDate: seconds)
-        }
+        #endif
     }
 }
