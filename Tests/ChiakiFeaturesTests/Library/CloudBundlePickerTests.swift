@@ -104,7 +104,7 @@ private let single = CloudGame(
     #expect(store.state.bundleChoices.isEmpty)
 }
 
-@MainActor @Test func choosingAPlayableGameChecksThatGameOnTheBundleCard() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func choosingAPlayableGameChecksThatGameOnTheBundleCard() async throws {
     let asked = LockIsolated<[String]>([])
     let events: [CloudLaunchClearanceEvent] = [
         .check(.loadingLibrary), .check(.cloudStreaming), .check(.entitlement), .check(.cloudGame),
@@ -144,7 +144,7 @@ private let single = CloudGame(
     #expect(asked.value.isEmpty)
 }
 
-@MainActor @Test func leavingThePickerStopsTheChecksStillRunning() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func leavingThePickerStopsTheChecksStillRunning() async throws {
     let store = pickerStore(
         selecting: bundle, events: [.check(.loadingLibrary), .check(.cloudStreaming)], asked: LockIsolated([])
     )
@@ -160,7 +160,7 @@ private let single = CloudGame(
     #expect(store.state.launchChecks == nil)
 }
 
-@MainActor @Test func aRefusalForAChosenGameStaysWithThePicker() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func aRefusalForAChosenGameStaysWithThePicker() async throws {
     let refused = CloudClearanceRefusal(refusal: .purchaseNeeded)
     let store = pickerStore(
         selecting: bundle,

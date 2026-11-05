@@ -9,7 +9,7 @@ import Testing
 import ChiakiTestSupport
 
 extension MenuFocusTests {
-    @Test func theOtherVersionIsTheDetailsLastActionAndOpensThatVersion() async {
+    @Test(.enabled(if: PS5CloudLaunchBuild.included)) func theOtherVersionIsTheDetailsLastActionAndOpensThatVersion() async {
         let ps5 = "UP9000-PPSA01289_00-SACKBOYADVENTURE"
         let ps4 = "UP9000-CUSA18886_00-SACKBOYADVENTURE"
         let snapshot = CloudLibrarySnapshot(settledLocale: "en-GB", games: [

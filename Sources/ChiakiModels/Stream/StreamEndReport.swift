@@ -37,6 +37,9 @@ public enum CloudLaunchRefused: Equatable, Sendable {
     /// The title's edition is sold in a different PlayStation Store region than the account's, so it cannot be licensed to the account.
     case storeRegion
 
+    /// This build of the app leaves out PS Cloud launches.
+    case notBuilt
+
     /// PlayStation could not find the title for streaming.
     case titleNotFound
 

@@ -412,7 +412,7 @@ extension MenuFocusTests {
         #expect(harness.focusedFrame.integral == card)
     }
 
-    @Test func playTakesFocusWhenTheStoreCheckFinishesAndConfirmWaitsForIt() async throws {
+    @Test(.enabled(if: PS5CloudLaunchBuild.included)) func playTakesFocusWhenTheStoreCheckFinishesAndConfirmWaitsForIt() async throws {
         let snapshot = try CloudLibrarySnapshot.decode(Data("""
         {"schemaVersion":11,"nativeMode":true,"settledLocale":"en-GB","resolvedStoreLang":"en",
         "games":[
@@ -456,7 +456,7 @@ extension MenuFocusTests {
         #expect(store.selectedGame?.id == game)
     }
 
-    @Test func playIsFocusedOnceShortlyLoadingCloudDetailsArrive() async throws {
+    @Test(.enabled(if: PS5CloudLaunchBuild.included)) func playIsFocusedOnceShortlyLoadingCloudDetailsArrive() async throws {
         let snapshot = try CloudLibrarySnapshot.decode(Data("""
         {"schemaVersion":11,"nativeMode":true,"settledLocale":"en-GB","resolvedStoreLang":"en",
         "games":[

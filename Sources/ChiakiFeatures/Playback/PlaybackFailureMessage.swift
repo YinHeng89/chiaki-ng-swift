@@ -233,6 +233,8 @@ extension CloudLaunchRefused {
             "This title is no longer part of the PlayStation Plus streaming catalog."
         case .storeRegion:
             "This title is sold in a different PlayStation Store region than your account’s, so it can’t be licensed to you for streaming."
+        case .notBuilt:
+            "This build of the app can’t start PS Cloud titles."
         case .titleNotFound:
             "PlayStation couldn’t find this title for streaming."
         case .refusedByStreamService:

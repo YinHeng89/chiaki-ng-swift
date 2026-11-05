@@ -5,7 +5,7 @@ import Testing
 
 private let concept = "https://store.playstation.com/en-gb/concept/1"
 
-@Test func anOwnedGameThatCanAlsoBeAddedShowsItsTitleNoticeOnce() {
+@Test(.enabled(if: PS5CloudLaunchBuild.included)) func anOwnedGameThatCanAlsoBeAddedShowsItsTitleNoticeOnce() {
     let game = CloudGame(
         productId: "owned", name: "Owned", isOwned: true, conceptUrl: concept, standing: .inLibrary,
         canBeAddedToLibrary: true

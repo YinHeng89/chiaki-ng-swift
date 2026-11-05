@@ -11,7 +11,7 @@ import Testing
     #expect(CloudStanding.ownershipUnknown.label == "View in Store")
 }
 
-@Test func launchRequestsNeedACloudServiceAndAProduct() throws {
+@Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchRequestsNeedACloudServiceAndAProduct() throws {
     let game = CloudGame(productId: "UP9000-PPSA09006_00-FULLGAME00000000", name: "Owned", isOwned: true)
     #expect(try CloudLaunchRequest(accountID: UUID(), game: game).game == game)
     #expect(throws: CloudPlaybackFailure.invalidTitle) {

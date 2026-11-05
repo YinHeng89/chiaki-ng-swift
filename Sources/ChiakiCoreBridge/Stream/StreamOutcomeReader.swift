@@ -297,6 +297,8 @@ public enum StreamOutcomeReader {
             .outsideStreamingPlan
         case .store_region:
             .storeRegion
+        case .not_built:
+            .notBuilt
         }
     }
 

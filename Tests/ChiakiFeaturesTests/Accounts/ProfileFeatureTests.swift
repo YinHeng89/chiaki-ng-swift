@@ -82,7 +82,7 @@ private let localProfile = RegistrationFlow.Profile(
     await store.send(.enter)
 }
 
-@MainActor @Test func localProfileCannotStartCloudPlayback() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func localProfileCannotStartCloudPlayback() async throws {
     let game = try CloudLibrarySnapshot.decode(Data("""
     {"schemaVersion":11,"nativeMode":true,"settledLocale":"en-GB","resolvedStoreLang":"en",
     "games":[{"productId":"catalog-id","name":"Example","platform":"ps5","category":"owned",

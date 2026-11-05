@@ -24,6 +24,16 @@ let kakusan: [SwiftSetting] = kakusanIncluded
     ? [.define("CHIAKI_KAKUSAN")]
     : []
 
+let ps5CloudLaunchSwitch = ProcessInfo.processInfo.environment["CHIAKI_PS5_CLOUD_LAUNCH"] ?? "0"
+
+guard let ps5CloudLaunchIncluded = ["1": true, "0": false][ps5CloudLaunchSwitch] else {
+    fatalError("CHIAKI_PS5_CLOUD_LAUNCH must be 1 or 0")
+}
+
+let ps5CloudLaunch: [SwiftSetting] = ps5CloudLaunchIncluded
+    ? [.define("CHIAKI_PS5_CLOUD_LAUNCH")]
+    : []
+
 let coreBuildPath = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
     .appendingPathComponent(coreBuildDirectory).path
 
@@ -131,7 +141,7 @@ let package = Package(
                 .linkedFramework("CoreAudio", .when(platforms: [.macOS]))
             ] + upscalerFrameworks
         ),
-        .target(name: "ChiakiModels", swiftSettings: kakusan),
+        .target(name: "ChiakiModels", swiftSettings: kakusan + ps5CloudLaunch),
         .target(name: "ChiakiDiagnostics", dependencies: ["ChiakiModels", dependencies]),
         .target(
             name: "ChiakiPersistence",

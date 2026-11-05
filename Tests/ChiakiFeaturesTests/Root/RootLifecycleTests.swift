@@ -8,7 +8,7 @@ import Foundation
 import Testing
 
 @MainActor
-@Test
+@Test(.enabled(if: PS5CloudLaunchBuild.included))
 func switchingAccountsStopsOwnedCloudPlayback() async throws {
     let firstAccount = UUID()
     let secondAccount = UUID()
@@ -88,7 +88,7 @@ private func quitting() -> RootFeature.State {
     await store.finish()
 }
 
-@MainActor @Test func systemSleepStopsActivePlaybackThroughTheSleepPath() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func systemSleepStopsActivePlaybackThroughTheSleepPath() async throws {
     let playbackID = StreamSessionID()
     let account = UUID()
     let game = try CloudLibrarySnapshot.decode(Data("""
