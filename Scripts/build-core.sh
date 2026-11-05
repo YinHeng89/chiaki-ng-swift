@@ -78,7 +78,7 @@ if [[ "$platform" != macos ]]; then
         "${libraries[@]}" "$build_dir"/libSDL3.0.dylib
     exit 0
 fi
-core_tests=(accounts catalog chiaki_ng cloud consoles default_platform network)
+core_tests=(public chiaki_ng default_platform)
 core_targets=("${core_tests[@]/#/api_}")
 core_targets=("${core_targets[@]/%/_gtests}")
 kakusan_targets=()
