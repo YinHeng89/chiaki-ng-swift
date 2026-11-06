@@ -1,6 +1,11 @@
 /* chiaki-ng Simplified Chinese localization.
    Canonical source file: edit translations here. Keep format placeholders intact. */
 
+"App Language" = "应用语言";
+"Choose Follow System to use your device's preferred language." = "选择“跟随系统”以使用设备的首选语言。";
+"Follow System" = "跟随系统";
+"Language" = "语言";
+
 "    address: %@" = "    地址：%@";
 "    id: %@" = "    ID：%@";
 " (%@ active)" = " （%@ 个活跃）";

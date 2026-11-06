@@ -9,7 +9,7 @@ import SwiftUI
 // StringProtocol initializers and are never looked up in the string table.
 //
 // The overloads below give String values a more specific initializer that
-// routes the text through the zh-Hans table. Literals still work: the helper
+// routes the text through the selected table. Literals still work: the helper
 // performs the same key lookup, so existing .strings entries keep applying.
 //
 // This file lives in ChiakiModels and is re-exported by the UI modules, so no
@@ -46,7 +46,12 @@ private func chiakiFill(_ template: String, values: [String]) -> String {
 /// Falls back to a normalized key (numbers replaced by %@) so dynamically
 /// formatted strings such as "Uses 15 Mbps for 1080p." are translated too.
 public func chiakiLocalized(_ text: String) -> String {
-    let bundle = Bundle.main
+    let language = AppLanguage.current.resolved
+    guard language == .simplifiedChinese,
+          let path = Bundle.main.path(forResource: "zh-Hans", ofType: "lproj"),
+          let bundle = Bundle(path: path) else {
+        return text
+    }
     let direct = bundle.localizedString(forKey: text, value: text, table: nil)
     if direct != text {
         return direct
@@ -88,7 +93,8 @@ public func chiakiLocalizedPresetName(_ name: String) -> String {
         copyCount += 1
     }
     let localizedBase = chiakiLocalized(base)
-    return localizedBase + String(repeating: " 副本", count: copyCount)
+    let suffix = AppLanguage.current.resolved == .simplifiedChinese ? " 副本" : " copy"
+    return localizedBase + String(repeating: suffix, count: copyCount)
 }
 
 @inline(__always)
