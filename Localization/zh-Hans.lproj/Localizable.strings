@@ -430,7 +430,7 @@
 "Buttons" = "按键";
 "Buttons work by position: the bottom button, B, acts as Cross and confirms." = "按键按位置生效：下方的 B 键充当叉并承担确认。";
 "CE" = "CE";
-"Cabin" = "小木屋";
+"Cabin" = "小屋";
 "Caches" = "缓存";
 "Calibration" = "校准";
 "Cancel" = "取消";
@@ -1168,7 +1168,7 @@
 "Level: %d" = "等级：%d";
 "Level: %lld" = "等级：%lld";
 "Libraries" = "游戏库";
-"Library" = "图书室";
+"Library" = "游戏库";
 "Library just refreshed" = "游戏库刚刚刷新";
 "Library match" = "游戏库匹配";
 "Library token" = "游戏库令牌";
@@ -1859,6 +1859,18 @@
 "Sample Pre-order Unlocking Soon" = "示例预购即将解锁";
 "Sample Pre-order Without a Date" = "无日期的示例预购";
 "Sample Pre-order in Three Days" = "三天后的示例预购";
+"Sample console room: Attic" = "阁楼";
+"Sample console room: Basement" = "地下室";
+"Sample console room: Bedroom" = "卧室";
+"Sample console room: Cabin" = "小木屋";
+"Sample console room: Den" = "家庭活动室";
+"Sample console room: Garage" = "车库";
+"Sample console room: Guest Room" = "客房";
+"Sample console room: Kitchen" = "厨房";
+"Sample console room: Library" = "书房";
+"Sample console room: Loft" = "阁楼";
+"Sample console room: Office" = "办公室";
+"Sample console room: Workshop" = "工作间";
 "Sample consoles" = "示例主机";
 "Saturation" = "饱和度";
 "Save" = "保存";
@@ -2495,7 +2507,7 @@
 "Wireless" = "无线";
 "With layered art" = "使用分层图片";
 "Without layered art" = "不使用分层图片";
-"Workshop" = "工作间";
+"Workshop" = "工坊";
 "Writing the log file failed. Live events remain available here." = "日志文件写入失败。实时事件仍可在此查看。";
 "Xbox" = "Xbox";
 "You can't join this game." = "你无法加入此游戏。";

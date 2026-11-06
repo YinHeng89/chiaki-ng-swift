@@ -1,6 +1,6 @@
 # Simplified Chinese localization
 
-`zh-Hans.lproj/Localizable.strings` is the single source of truth for Simplified Chinese. Edit that file directly. The current workspace also contains older translation fragments and worklists from the migration; they are preserved snapshots, are not read by the build, and should not be edited or included in a changeset. Their translations have been folded into the canonical table.
+`zh-Hans.lproj/Localizable.strings` is the single source of truth for Simplified Chinese. Edit that file directly. Historical translation fragments and scan reports are migration artifacts, not build inputs; their translations are folded into the canonical table. The remaining worklists are review aids for candidate strings and are not translation sources.
 
 ## Translation rules
 
