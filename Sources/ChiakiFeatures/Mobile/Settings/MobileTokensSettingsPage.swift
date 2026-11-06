@@ -1,6 +1,7 @@
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import PlatformUI
 import SwiftUI
 
@@ -103,7 +104,7 @@ struct MobileTokensSettingsPage: View {
                     ProgressView()
                         .controlSize(.small)
                 }
-                Button(
+                FocusButton(
                     showing
                         ? "Hide"
                         : "Reveal"
@@ -157,7 +158,7 @@ struct MobileTokensSettingsPage: View {
                 .padding(10)
                 .background(.quaternary.opacity(0.5), in: .rect(cornerRadius: 12))
                 .accessibilityIdentifier("tokens-secret-\(name)")
-            Button("Copy") {
+            FocusButton("Copy") {
                 PlatformPasteboard.copyConcealed(text)
             }
             .buttonStyle(.bordered)

@@ -16,10 +16,12 @@ struct MobileInterfaceSettingsPage: View {
     var body: some View {
         MobileSettingsForm {
             MobileSettingsGroup("Menu") {
-                MobilePickerRow("Menu Position", selection: $store.draft.railEdge) {
-                    ForEach(LibraryRailEdge.allCases, id: \.self) { edge in
-                        Text(InterfaceSettingsView.title(edge)).tag(edge)
-                    }
+                MobilePickerRow(
+                    "Menu Position",
+                    selection: $store.draft.railEdge,
+                    choices: LibraryRailEdge.allCases
+                ) { edge in
+                    InterfaceSettingsView.title(edge)
                 }
             }
             .disabled(!store.isEditable)

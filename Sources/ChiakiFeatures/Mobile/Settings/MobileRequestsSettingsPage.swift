@@ -2,6 +2,7 @@ import ChiakiDiagnostics
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// The touch Requests page: the request totals, the log's actions and its filters, beside the recorded HTTP
@@ -132,7 +133,7 @@ struct MobileRequestsSettingsPage: View {
     private func check(
         _ title: String, detail: String? = nil, chosen: Bool, action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        FocusButton(action: action) {
             HStack(spacing: 12) {
                 MobileRowTitle(title: title, detail: detail)
                 Spacer(minLength: 8)
@@ -180,7 +181,7 @@ struct MobileRequestsSettingsPage: View {
     private func row(_ exchange: CoreHTTPExchange) -> some View {
         let shown = RequestRowPresentation(exchange)
         let opened = store.detail.exchange == exchange.id
-        return Button {
+        return FocusButton {
             store.send(
                 opened
                     ? .close
@@ -416,7 +417,7 @@ struct MobileRequestsSettingsPage: View {
                 HStack(spacing: 8) {
                     ForEach(Array(text.spans.enumerated()), id: \.offset) { index, span in
                         let secret = RequestsReducer.Secret(part, index)
-                        Button(
+                        FocusButton(
                             store.revealed.contains(secret)
                                 ? "Hide \(span.kind.title)"
                                 : "Reveal \(span.kind.title)"

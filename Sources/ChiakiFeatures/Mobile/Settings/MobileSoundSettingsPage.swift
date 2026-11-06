@@ -42,10 +42,8 @@ struct MobileSoundSettingsPage: View {
 
     private var mediaGroup: some View {
         MobileSettingsGroup(footer: SoundSettingsForm.mediaDetail(sound.draft.media)) {
-            MobilePickerRow("Stream Media", selection: $sound.draft.media) {
-                ForEach(StreamMedia.allCases, id: \.self) { media in
-                    Text(media.title).tag(media)
-                }
+            MobilePickerRow("Stream Media", selection: $sound.draft.media, choices: StreamMedia.allCases) { media in
+                media.title
             }
         }
     }
@@ -150,12 +148,10 @@ struct MobileSoundSettingsPage: View {
             detail: selection.wrappedValue.map(connected.contains) == false
                 ? "Not connected. The system default is used until it returns."
                 : nil,
-            selection: selection
-        ) {
-            Text("System default").tag(String?.none)
-            ForEach(choices, id: \.self) { name in
-                Text(name).tag(Optional(name))
-            }
+            selection: selection,
+            choices: [nil] + choices.map(Optional.init)
+        ) { name in
+            name ?? "System default"
         }
     }
 }

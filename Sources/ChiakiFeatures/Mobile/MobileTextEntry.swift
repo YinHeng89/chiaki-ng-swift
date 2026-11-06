@@ -140,6 +140,8 @@ private struct MobileTextEntryInput: ViewModifier {
 }
 
 /// A settings row showing a field's value, opening it in the editor above the keyboard when tapped.
+///
+/// With a controller the row is one focus stop, and Confirm opens the on-screen keyboard instead.
 struct MobileTextEntryRow: View {
     /// The title.
     let title: String
@@ -163,8 +165,31 @@ struct MobileTextEntryRow: View {
     var finished: (() -> Void)?
 
     @Environment(\.touchKeyboard) private var editor
+    @Environment(\.isEnabled) private var isEnabled
+    @MenuFocusState private var focused: Bool
 
     var body: some View {
+        field
+            .interactiveGrowth()
+            .focusWithoutGrowth()
+            .menuFocusable(isEnabled)
+            .menuFocusBinding($focused)
+            .environment(\.menuItemFocused, focused)
+            .focusHighlightShape(MobileRowFocus.shape)
+            .focusEffectDisabled()
+            .controllerKeyboard(
+                title: title,
+                text: $text,
+                isFocused: focused,
+                numberPad: kind == .number,
+                allowsNewline: multiline
+            ) { _ in
+                focused = true
+                finished?()
+            }
+    }
+
+    private var field: some View {
         Button {
             editor?(TouchKeyboardRequest(
                 title: title,

@@ -37,6 +37,8 @@ private struct MobileControlsForm: View {
     @State private var buttonCaptureID: UUID?
     @State private var keyboardTab = 0
     @State private var mappingTab = MobileControlsMappingTab.buttons
+    @State private var presetMenuAnchor = NativeMenuAnchorReference()
+    @State private var presetRenameRequest = 0
     @Environment(\.screenLayout) private var layout
     @Environment(\.touchKeyboard) private var touchKeyboard
 
@@ -171,19 +173,27 @@ private struct MobileControlsForm: View {
 
     private var playerOne: some View {
         MobileSettingsGroup("Player 1", footer: playerOneNote) {
-            MobilePickerRow("Plays With", selection: $store.draft.selectedControllerKey) {
-                Text("First available controller").tag(String?.none)
-                Text(ControlsPlayerOneControllerPicker.withoutControllerTitle)
-                    .tag(Optional(ControlsConfiguration.keyboardOnlyKey))
-                ForEach(store.listedDevices.filter { !$0.isKeyboard }, id: \.preferenceKey) { device in
-                    Text(device.name).tag(Optional(device.preferenceKey))
-                }
-            }
+            MobilePickerRow(
+                "Plays With",
+                selection: $store.draft.selectedControllerKey,
+                choices: [nil, ControlsConfiguration.keyboardOnlyKey]
+                    + store.listedDevices.filter { !$0.isKeyboard }.map { Optional($0.preferenceKey) },
+                label: playsWithTitle
+            )
             #if !os(macOS)
-                MobilePickerRow("Touch Controls", selection: $store.draft.virtualGamepad) {
-                    Text("Automatic").tag(VirtualGamepadPresence.automatic)
-                    Text("Always").tag(VirtualGamepadPresence.shown)
-                    Text("Off").tag(VirtualGamepadPresence.hidden)
+                MobilePickerRow(
+                    "Touch Controls",
+                    selection: $store.draft.virtualGamepad,
+                    choices: [.automatic, .shown, .hidden]
+                ) { presence in
+                    switch presence {
+                    case .automatic:
+                        "Automatic"
+                    case .shown:
+                        "Always"
+                    case .hidden:
+                        "Off"
+                    }
                 }
                 MobileToggleRow("On-Screen Touchpad", isOn: edited(\.onScreenTouchpad))
                 MobileToggleRow(
@@ -204,10 +214,12 @@ private struct MobileControlsForm: View {
             MobileValueRow("Button Mapping", value: store.editingPreset.name) {
                 store.send(.openMapping(store.editing))
             }
-            MobilePickerRow("Preset", selection: presetSelection) {
-                ForEach(store.draft.presets) { preset in
-                    Text(preset.name).tag(preset.id)
-                }
+            MobilePickerRow(
+                "Preset",
+                selection: presetSelection,
+                choices: store.draft.presets.map(\.id)
+            ) { id in
+                store.draft.presets.first { $0.id == id }?.name ?? ""
             }
             if case .player(let player) = store.editing, store.draft.playerPreset(player) != nil {
                 MobileButtonRow("Use Each Controller’s Bindings") {
@@ -273,12 +285,18 @@ private struct MobileControlsForm: View {
         ) {
             MobileToggleRow("Controller Combo", isOn: touchpadCombo)
             if store.draft.touchpadShortcut.buttons.count >= 2 {
-                MobilePickerRow("First Button", selection: touchpadButton(0)) {
-                    buttonOptions
-                }
-                MobilePickerRow("Second Button", selection: touchpadButton(1)) {
-                    buttonOptions
-                }
+                MobilePickerRow(
+                    "First Button",
+                    selection: touchpadButton(0),
+                    choices: Self.buttonChoices,
+                    label: BindingRow.buttonName
+                )
+                MobilePickerRow(
+                    "Second Button",
+                    selection: touchpadButton(1),
+                    choices: Self.buttonChoices,
+                    label: BindingRow.buttonName
+                )
             }
         }
         .disabled(!store.draft.onScreenTouchpad)
@@ -290,20 +308,29 @@ private struct MobileControlsForm: View {
             footer: "Press these controller buttons together during a stream to open the stream menu."
         ) {
             ForEach(0..<StreamMenuShortcut.buttonLimit.upperBound, id: \.self) { slot in
-                MobilePickerRow("Button \(slot + 1)", selection: streamMenuButton(slot)) {
-                    if slot >= StreamMenuShortcut.buttonLimit.lowerBound {
-                        Text("Not used").tag(StreamMenuShortcutCard.unused)
-                    }
-                    buttonOptions
+                MobilePickerRow(
+                    "Button \(slot + 1)",
+                    selection: streamMenuButton(slot),
+                    choices: (slot >= StreamMenuShortcut.buttonLimit.lowerBound
+                        ? [StreamMenuShortcutCard.unused]
+                        : []) + Self.buttonChoices
+                ) { code in
+                    code == StreamMenuShortcutCard.unused
+                        ? "Not used"
+                        : BindingRow.buttonName(code)
                 }
             }
         }
     }
 
-    private var buttonOptions: some View {
-        ForEach(Self.buttonChoices, id: \.self) { code in
-            Text(BindingRow.buttonName(code)).tag(code)
+    private func playsWithTitle(_ key: String?) -> String {
+        guard let key else {
+            return "First available controller"
         }
+        if key == ControlsConfiguration.keyboardOnlyKey {
+            return ControlsPlayerOneControllerPicker.withoutControllerTitle
+        }
+        return store.listedDevices.first { $0.preferenceKey == key }?.name ?? key
     }
 
     private func deviceRow(_ device: ControllerDevice) -> some View {
@@ -351,7 +378,7 @@ private struct MobileControlsForm: View {
                 .accessibilityHidden(true)
             Text(Self.sentence(for: change))
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Button("Undo") {
+            FocusButton("Undo") {
                 store.send(.undoChange(change.id))
             }
             .buttonStyle(.borderless)
@@ -406,7 +433,7 @@ private struct MobileControlsForm: View {
 
     private var mappingHeader: some View {
         HStack(spacing: 12) {
-            Button {
+            FocusButton {
                 store.send(.closeMapping)
             } label: {
                 Image(systemName: "chevron.left")
@@ -435,15 +462,20 @@ private struct MobileControlsForm: View {
 
     @ViewBuilder private var mappingControls: some View {
         if store.editing != .keyboard {
-            Picker("Controls", selection: $mappingTab) {
-                Text("Buttons").tag(MobileControlsMappingTab.buttons)
-                Text("More").tag(MobileControlsMappingTab.others)
-            }
-            .pickerStyle(.segmented)
+            FocusableSegments(
+                options: [MobileControlsMappingTab.buttons, .others],
+                title: { tab in
+                    tab == .buttons
+                        ? "Buttons"
+                        : "More"
+                },
+                selection: $mappingTab
+            )
             .fixedSize()
+            .accessibilityLabel("Controls")
         }
         if let change = store.change {
-            Button("Undo") {
+            FocusButton("Undo") {
                 store.send(.undoChange(change.id))
             }
             .buttonStyle(.glass)
@@ -487,6 +519,41 @@ private struct MobileControlsForm: View {
                 .frame(maxWidth: 160)
         }
         .buttonStyle(.glass)
+        .nativeMenuAnchor(presetMenuAnchor)
+        .interactiveGrowth()
+        .modifier(MenuButtonFocus(activate: presentPresetMenu))
+        .controllerKeyboard(
+            title: "Preset Name",
+            text: presetName,
+            isFocused: false,
+            presentationRequest: presetRenameRequest
+        )
+    }
+
+    private func presentPresetMenu() {
+        let presets = store.draft.presets
+        var entries: [(title: String, run: () -> Void)] = presets.map { preset in
+            (preset.name, { presetSelection.wrappedValue = preset.id })
+        }
+        if presets.count < ControlsConfiguration.presetLimit {
+            entries.append(("Duplicate Preset", {
+                store.send(.duplicatePreset(store.editingPreset.id, for: store.editing))
+            }))
+        }
+        entries.append(("Rename Preset", { presetRenameRequest += 1 }))
+        entries.append(("Reset Bindings", { store.send(.resetPresetBindings(store.editingPreset.id)) }))
+        if presets.count > 1 {
+            entries.append(("Delete Preset", { store.send(.deletePreset(store.editingPreset.id)) }))
+        }
+        presetMenuAnchor.presentMenu(
+            titles: entries.map(\.title),
+            selected: presets.firstIndex { $0.id == store.editingPreset.id }
+        ) { index in
+            guard entries.indices.contains(index) else {
+                return
+            }
+            entries[index].run()
+        }
     }
 
     private func captureControls(_ capture: ControlsCapture) -> some View {
@@ -496,11 +563,11 @@ private struct MobileControlsForm: View {
                 .foregroundStyle(Palette.accent)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-            Button("Clear") {
+            FocusButton("Clear") {
                 store.send(.clearBinding(capture.target, source: capture.source, owner: store.editing))
             }
             .buttonStyle(.glass)
-            Button("Cancel") {
+            FocusButton("Cancel") {
                 store.send(.cancelCapture)
             }
             .buttonStyle(.glassProminent)
@@ -513,7 +580,7 @@ private struct MobileControlsForm: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: 10)], spacing: 10) {
             ForEach(captureButtons(for: capture), id: \.self) { code in
                 let glyph = ControllerGlyphs.button(code, family: capture.family, layout: capture.layout)
-                Button {
+                FocusButton {
                     store.send(.captured(capture.id, code, ""))
                 } label: {
                     VStack(spacing: 4) {
@@ -1008,10 +1075,12 @@ private struct MobileControllerSettings: View {
                     isOn: nintendoLabels
                 )
             }
-            MobilePickerRow("Right Stick Gyro", selection: binding(\.stickGyro)) {
-                ForEach(StickGyroMode.allCases, id: \.self) { mode in
-                    Text(mode.title).tag(mode)
-                }
+            MobilePickerRow(
+                "Right Stick Gyro",
+                selection: binding(\.stickGyro),
+                choices: StickGyroMode.allCases
+            ) { mode in
+                mode.title
             }
         }
     }
@@ -1022,10 +1091,12 @@ private struct MobileControllerSettings: View {
             footer: card.hapticsCaption + " Both strengths follow the vibration intensity set on the PS5. "
                 + "The console sends haptics only to player 1's controller."
         ) {
-            MobilePickerRow("Haptics", selection: binding(\.hapticFeedback)) {
-                ForEach(HapticFeedback.allCases, id: \.self) { feedback in
-                    Text(feedback.title).tag(feedback)
-                }
+            MobilePickerRow(
+                "Haptics",
+                selection: binding(\.hapticFeedback),
+                choices: HapticFeedback.allCases
+            ) { feedback in
+                feedback.title
             }
             .disabled(!device.nativeHaptics && !device.rumble)
             slider("Haptic Strength", key: \.hapticStrength, range: 0...2.4, step: 0.1)
@@ -1046,10 +1117,12 @@ private struct MobileControllerSettings: View {
         ) {
             MobileToggleRow("Adaptive Triggers", isOn: binding(\.adaptiveTriggersEnabled))
                 .disabled(!device.adaptiveTriggers)
-            MobilePickerRow("Trigger Strength", selection: binding(\.triggerStrength)) {
-                ForEach(TriggerStrength.allCases, id: \.self) { strength in
-                    Text(strength.title).tag(strength)
-                }
+            MobilePickerRow(
+                "Trigger Strength",
+                selection: binding(\.triggerStrength),
+                choices: TriggerStrength.allCases
+            ) { strength in
+                strength.title
             }
             .disabled(!device.adaptiveTriggers || !preferences.adaptiveTriggersEnabled)
         }
@@ -1125,10 +1198,8 @@ private struct MobileLightbarGroup: View {
 
     var body: some View {
         MobileSettingsGroup(title, footer: footer) {
-            MobilePickerRow("Colour", selection: mode) {
-                ForEach(modes, id: \.self) { mode in
-                    Text(mode.title).tag(mode)
-                }
+            MobilePickerRow("Colour", selection: mode, choices: modes) { mode in
+                mode.title
             }
             if case .fixed(let selected) = value {
                 swatches(selected: selected)
@@ -1196,7 +1267,7 @@ private struct MobileLightbarGroup: View {
     private func swatches(selected: UInt32) -> some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 52), spacing: 8)], spacing: 8) {
             ForEach(ControllerLightbarSwatch.all) { swatch in
-                Button {
+                FocusButton {
                     update(.fixed(rgb: swatch.rgb))
                 } label: {
                     swatchLabel(swatch, selected: swatch.rgb == selected)
@@ -1271,7 +1342,7 @@ private struct MobileControlsTargetRow<Icon: View>: View {
     let choose: () -> Void
 
     var body: some View {
-        Button(action: choose) {
+        FocusButton(action: choose) {
             HStack(spacing: 12) {
                 icon
                     .frame(width: 44, height: 30)
@@ -1295,6 +1366,8 @@ private struct MobileControlsTargetRow<Icon: View>: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .focusWithoutGrowth()
+        .focusHighlightShape(MobileRowFocus.shape)
         .accessibilityAddTraits(
             selected
                 ? .isSelected

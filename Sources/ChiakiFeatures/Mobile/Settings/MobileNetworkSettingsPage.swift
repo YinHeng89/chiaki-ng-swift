@@ -191,10 +191,12 @@ struct MobileNetworkSettingsPage: View {
                 "Console Power",
                 footer: ConsolePowerSettingsView.detail(power.draft.leaveAction)
             ) {
-                MobilePickerRow("When Leaving a Console Stream", selection: $power.draft.leaveAction) {
-                    ForEach(ConsoleLeaveAction.allCases, id: \.self) { action in
-                        Text(ConsolePowerSettingsView.title(action)).tag(action)
-                    }
+                MobilePickerRow(
+                    "When Leaving a Console Stream",
+                    selection: $power.draft.leaveAction,
+                    choices: ConsoleLeaveAction.allCases
+                ) { action in
+                    ConsolePowerSettingsView.title(action)
                 }
             }
             .disabled(!power.isEditable)

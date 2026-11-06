@@ -1,6 +1,7 @@
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// The touch Remote Players page: this device's identity and the remembered devices, each renamed or forgotten in
@@ -127,12 +128,12 @@ struct MobileRemotePlayersSettingsPage: View {
                         .foregroundStyle(.secondary)
                 }
                 HStack(spacing: 10) {
-                    Button("Rename") {
+                    FocusButton("Rename") {
                         store.send(.startRename(peer.publicKey))
                     }
                     .buttonStyle(.bordered)
                     .disabled(store.rename != nil)
-                    Button("Forget Device", role: .destructive) {
+                    FocusButton("Forget Device", role: .destructive) {
                         store.send(.requestForget(peer.publicKey))
                     }
                     .buttonStyle(.bordered)
@@ -156,12 +157,12 @@ struct MobileRemotePlayersSettingsPage: View {
             MobileTextEntryRow(title: "Name", prompt: "Name", text: name)
                 .background(.fill.quaternary, in: .rect(cornerRadius: 14))
             HStack(spacing: 10) {
-                Button("Save") {
+                FocusButton("Save") {
                     rename.send(.view(.controlActivated(.save)))
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!rename.canSave)
-                Button("Cancel") {
+                FocusButton("Cancel") {
                     rename.send(.view(.controlActivated(.cancel)))
                 }
                 .buttonStyle(.bordered)
@@ -184,11 +185,11 @@ struct MobileRemotePlayersSettingsPage: View {
             Text("Forget \(peer.nickname)?")
                 .font(.body.weight(.semibold))
             HStack(spacing: 10) {
-                Button("Cancel") {
+                FocusButton("Cancel") {
                     store.send(.cancelForget)
                 }
                 .buttonStyle(.bordered)
-                Button("Forget Device", role: .destructive) {
+                FocusButton("Forget Device", role: .destructive) {
                     store.send(.confirmForget)
                 }
                 .buttonStyle(.borderedProminent)

@@ -77,10 +77,12 @@ struct MobileAccessibilitySettingsPage: View {
             footer: "These settings apply to PlayStation cloud system menus. "
                 + "Each game decides which settings it also uses."
         ) {
-            MobilePickerRow("Text Size", selection: textSize) {
-                ForEach(Array(PlayStationAccessibilitySettings.textSizeRange), id: \.self) { size in
-                    Text(Self.textSizeName(size)).tag(size)
-                }
+            MobilePickerRow(
+                "Text Size",
+                selection: textSize,
+                choices: Array(PlayStationAccessibilitySettings.textSizeRange)
+            ) { size in
+                Self.textSizeName(size)
             }
             MobileToggleRow("Bold Text", isOn: choice(\.boldTextOverride, default: \.boldText))
             MobileToggleRow(

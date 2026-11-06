@@ -112,51 +112,9 @@ struct MobileAccountView: View {
     }
 
     private var categories: some View {
-        let routes = settings.tabs
-        let everyday = routes.filter { !$0.isDeveloperTool && $0 != .about }
-        let tools = routes.filter(\.isDeveloperTool)
-        return VStack(alignment: .leading, spacing: 20) {
-            if routes.contains(.about) {
-                MobileGroup(title: nil) {
-                    categoryRow(.about)
-                }
-            }
-            MobileGroup(title: "Settings") {
-                ForEach(everyday, id: \.self, content: categoryRow)
-            }
-            if !tools.isEmpty {
-                MobileGroup(title: "Advanced") {
-                    ForEach(tools, id: \.self, content: categoryRow)
-                }
-            }
-        }
-    }
-
-    private func categoryRow(_ route: SettingsRoute) -> some View {
-        MobileRow(route.title, chevron: true) {
-            MobileRowIcon(symbol: route.symbol, color: Self.color(for: route))
-        } action: {
+        MobileSettingsCategories(settings: settings) { route in
             settings.send(.select(route))
             store.send(.mobile(.settingsOpened(route)))
-        }
-    }
-
-    private static func color(for route: SettingsRoute) -> Color {
-        switch route {
-        case .picture, .accessibility:
-            .blue
-        case .sound:
-            .pink
-        case .controls:
-            .green
-        case .interface:
-            .indigo
-        case .network:
-            .teal
-        case .remotePlayers:
-            .orange
-        case .developer, .entitlements, .caches, .requests, .tokens, .about:
-            .gray
         }
     }
 }
@@ -302,7 +260,7 @@ struct MobileRow<Icon: View>: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        FocusButton(action: action) {
             HStack(spacing: 12) {
                 icon
                 Text(title)
@@ -324,6 +282,8 @@ struct MobileRow<Icon: View>: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .focusWithoutGrowth()
+        .focusHighlightShape(MobileRowFocus.shape)
     }
 }
 

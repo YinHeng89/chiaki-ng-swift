@@ -1,4 +1,6 @@
+import ChiakiModels
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// A touch settings page: its groups in two columns on a wide screen and one column otherwise, scrolling as one.
@@ -135,11 +137,18 @@ struct MobileToggleRow: View {
         .toggleStyle(.switch)
         .tint(Palette.accent)
         .mobileRowPadding()
+        .contentShape(.rect)
+        .mobileRowFocus {
+            isOn.toggle()
+        }
     }
 }
 
 /// A settings row choosing one value from a menu, showing the current value at its trailing edge.
-struct MobilePickerRow<Value: Hashable, Options: View>: View {
+///
+/// A tap opens the menu. With a controller the row is one focus stop, and Confirm opens the same choices as a
+/// native menu anchored to the row.
+struct MobilePickerRow<Value: Hashable>: View {
     /// The title.
     let title: String
 
@@ -149,8 +158,13 @@ struct MobilePickerRow<Value: Hashable, Options: View>: View {
     /// The chosen value.
     @Binding var selection: Value
 
-    /// The menu's options, each tagged with its value.
-    @ViewBuilder let options: Options
+    /// The values offered, in order.
+    let choices: [Value]
+
+    /// A value's name in the menu.
+    let label: (Value) -> String
+
+    @State private var menuAnchor = NativeMenuAnchorReference()
 
     /// Creates a menu row.
     ///
@@ -158,17 +172,20 @@ struct MobilePickerRow<Value: Hashable, Options: View>: View {
     ///   - title: The title.
     ///   - detail: A line under the title.
     ///   - selection: The chosen value.
-    ///   - options: The menu's options, each tagged with its value.
+    ///   - choices: The values offered, in order.
+    ///   - label: A value's name in the menu.
     init(
         _ title: String,
         detail: String? = nil,
         selection: Binding<Value>,
-        @ViewBuilder options: () -> Options
+        choices: [Value],
+        label: @escaping (Value) -> String
     ) {
         self.title = title
         self.detail = detail
         _selection = selection
-        self.options = options()
+        self.choices = choices
+        self.label = label
     }
 
     var body: some View {
@@ -176,13 +193,31 @@ struct MobilePickerRow<Value: Hashable, Options: View>: View {
             MobileRowTitle(title: title, detail: detail)
             Spacer(minLength: 8)
             Picker(title, selection: $selection) {
-                options
+                ForEach(choices, id: \.self) { choice in
+                    Text(verbatim: label(choice)).tag(choice)
+                }
             }
             .pickerStyle(.menu)
             .labelsHidden()
             .tint(.secondary)
         }
         .mobileRowPadding()
+        .contentShape(.rect)
+        .nativeMenuAnchor(menuAnchor)
+        .mobileRowFocus(activate: presentChoices)
+        .accessibilityValue(label(selection))
+    }
+
+    private func presentChoices() {
+        menuAnchor.presentMenu(
+            titles: choices.map(label),
+            selected: choices.firstIndex(of: selection)
+        ) { index in
+            guard choices.indices.contains(index) else {
+                return
+            }
+            selection = choices[index]
+        }
     }
 }
 
@@ -211,10 +246,12 @@ struct MobileValueRow: View {
 
     var body: some View {
         if let action {
-            Button(action: action) {
+            FocusButton(action: action) {
                 content(chevron: true)
             }
             .buttonStyle(.plain)
+            .focusWithoutGrowth()
+            .focusHighlightShape(MobileRowFocus.shape)
         } else {
             content(chevron: false)
         }
@@ -267,7 +304,7 @@ struct MobileButtonRow: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        FocusButton(action: action) {
             HStack {
                 Text(title)
                     .foregroundStyle(
@@ -286,6 +323,8 @@ struct MobileButtonRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .focusWithoutGrowth()
+        .focusHighlightShape(MobileRowFocus.shape)
     }
 }
 
@@ -306,6 +345,11 @@ struct MobileSliderRow: View {
     /// The step between values, or `nil` for a continuous slider.
     var step: Double?
 
+    @Environment(\.mobileSliderAdjustment) private var adjustment
+    @Environment(\.isEnabled) private var isEnabled
+    @MenuFocusState private var focused: Bool
+    @State private var id = UUID()
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -320,9 +364,132 @@ struct MobileSliderRow: View {
             } else {
                 Slider(value: $value, in: range)
             }
+            if focused, adjustment != nil {
+                SliderAdjustmentPrompt(adjusting: adjusting)
+            }
         }
         .tint(Palette.accent)
         .mobileRowPadding()
+        .contentShape(.rect)
+        .interactiveGrowth()
+        .focusWithoutGrowth()
+        .menuFocusable(isEnabled && adjustment != nil)
+        .menuFocusBinding($focused)
+        .environment(\.menuItemFocused, focused)
+        .focusHighlightShape(MobileRowFocus.shape)
+        .focusEffectDisabled()
+        .onMenuKeyPress(keys: [.return, .space], phases: .down) { _ in
+            guard isEnabled, let adjustment else {
+                return .ignored
+            }
+            adjustment.confirm(id, value: $value)
+            return .handled
+        }
+        .onMenuKeyPress(keys: [.leftArrow, .rightArrow], phases: [.down, .repeat]) { press in
+            guard adjusting else {
+                return .ignored
+            }
+            nudge(
+                press.key == .leftArrow
+                    ? -1
+                    : 1
+            )
+            return .handled
+        }
+        .onChange(of: focused) { _, isFocused in
+            if !isFocused, adjusting {
+                adjustment?.leave()
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var adjusting: Bool {
+        adjustment?.isAdjusting(id) ?? false
+    }
+
+    private func nudge(_ steps: Double) {
+        let increment = step ?? (range.upperBound - range.lowerBound) / 20
+        value = min(range.upperBound, max(range.lowerBound, value + steps * increment))
+    }
+}
+
+/// Which phone settings slider the controller is adjusting, shared by the sliders and the screen that hosts them
+/// so Back and Up or Down can end an adjustment.
+///
+/// Confirm on a slider starts adjusting it and Confirm again keeps the new value; Back restores the value from
+/// when adjusting started.
+@MainActor
+@Observable
+final class MobileSliderAdjustment {
+    private var state = SliderAdjustment<UUID, Double>.navigating
+    @ObservationIgnored private var restore: ((Double) -> Void)?
+
+    /// Whether any slider is being adjusted.
+    var isAdjusting: Bool {
+        state.adjustingSlider != nil
+    }
+
+    /// Whether one slider is being adjusted.
+    ///
+    /// - Parameter slider: The slider's identity.
+    /// - Returns: `true` while that slider is being adjusted.
+    func isAdjusting(_ slider: UUID) -> Bool {
+        state.isAdjusting(slider)
+    }
+
+    /// Starts adjusting a slider, or keeps its new value when it is already being adjusted.
+    ///
+    /// - Parameters:
+    ///   - slider: The slider's identity.
+    ///   - value: The slider's value, which Back restores.
+    func confirm(_ slider: UUID, value: Binding<Double>) {
+        state.confirm(slider, current: value.wrappedValue)
+        restore = state.isAdjusting(slider)
+            ? { value.wrappedValue = $0 }
+            : nil
+    }
+
+    /// Keeps the adjusted value and stops adjusting.
+    func leave() {
+        state.leave()
+        restore = nil
+    }
+
+    /// Restores the value from when adjusting started and stops adjusting.
+    ///
+    /// - Returns: Whether a slider was being adjusted.
+    func cancel() -> Bool {
+        guard case .adjusting(_, let original) = state else {
+            return false
+        }
+        restore?(original)
+        leave()
+        return true
+    }
+}
+
+extension EnvironmentValues {
+    /// The controller adjustment shared by the phone settings sliders, or `nil` where no screen drives them with
+    /// a controller.
+    @Entry var mobileSliderAdjustment: MobileSliderAdjustment?
+}
+
+/// Makes a whole phone settings row one controller focus stop: Confirm runs the row's action and the outline
+/// hugs the row.
+struct MobileRowFocus: ViewModifier {
+    /// The outline of a focused row.
+    static let shape = FocusHighlightShape.roundedRectangle(16)
+
+    /// What Confirm does.
+    let activate: () -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .interactiveGrowth()
+            .focusWithoutGrowth()
+            .modifier(MenuButtonFocus(activate: activate))
+            .focusHighlightShape(Self.shape)
     }
 }
 
@@ -355,5 +522,13 @@ extension View {
         padding(.horizontal, 16)
             .padding(.vertical, 8)
             .frame(minHeight: 50)
+    }
+
+    /// Makes a settings row one controller focus stop.
+    ///
+    /// - Parameter activate: What Confirm does.
+    /// - Returns: The row with ``MobileRowFocus`` applied.
+    func mobileRowFocus(activate: @escaping () -> Void) -> some View {
+        modifier(MobileRowFocus(activate: activate))
     }
 }

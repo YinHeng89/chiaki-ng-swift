@@ -67,10 +67,12 @@ private struct MobileConsolePictureForm: View {
                 if let streamKind {
                     MobileStreamKindRow(selection: streamKind)
                 }
-                MobilePickerRow("Connection", selection: $routeChoice) {
-                    ForEach(PictureSettingsView.RouteChoice.allCases, id: \.self) { choice in
-                        Text(choice.title).tag(choice)
-                    }
+                MobilePickerRow(
+                    "Connection",
+                    selection: $routeChoice,
+                    choices: PictureSettingsView.RouteChoice.allCases
+                ) { choice in
+                    choice.title
                 }
                 .disabled(!store.isEditable)
             }
@@ -128,10 +130,8 @@ private struct MobileConsolePictureForm: View {
             "Codec",
             footer: "PS4 streams always use \(PictureSettings.Codec.h264.title)."
         ) {
-            MobilePickerRow("PS5", selection: ps5) {
-                ForEach(PictureSettings.Codec.choices, id: \.self) { codec in
-                    Text(codec.title).tag(codec)
-                }
+            MobilePickerRow("PS5", selection: ps5, choices: PictureSettings.Codec.choices) { codec in
+                codec.title
             }
             MobileToggleRow(
                 "Use HDR When the Screen Supports It",
@@ -194,10 +194,12 @@ private struct MobileCloudPictureFields: View {
                 if let streamKind {
                     MobileStreamKindRow(selection: streamKind)
                 }
-                MobilePickerRow("Service", selection: $service) {
-                    ForEach(CloudPictureSettingsView.Service.allCases, id: \.self) { choice in
-                        Text(choice.title).tag(choice)
-                    }
+                MobilePickerRow(
+                    "Service",
+                    selection: $service,
+                    choices: CloudPictureSettingsView.Service.allCases
+                ) { choice in
+                    choice.title
                 }
                 .disabled(!store.isEditable)
             }
@@ -228,10 +230,12 @@ private struct MobileCloudPictureFields: View {
                 }
                 .disabled(!store.isEditable)
                 MobileSettingsGroup("Stream Quality", footer: qualityDetail) {
-                    MobilePickerRow("Quality", selection: $store.draft.psCloudQuality) {
-                        ForEach(CloudStreamQuality.allCases, id: \.self) { choice in
-                            Text(choice.title).tag(choice)
-                        }
+                    MobilePickerRow(
+                        "Quality",
+                        selection: $store.draft.psCloudQuality,
+                        choices: CloudStreamQuality.allCases
+                    ) { choice in
+                        choice.title
                     }
                 }
                 .disabled(!store.isEditable)
@@ -239,10 +243,12 @@ private struct MobileCloudPictureFields: View {
         } trailing: {
             if service == .psCloud {
                 MobileSettingsGroup("Captures", footer: capturesFooter) {
-                    MobilePickerRow(captureSaveTitle, selection: $store.draft.captureSaving) {
-                        ForEach(CloudCaptureSaving.allCases, id: \.self) { choice in
-                            Text(choice.title).tag(choice)
-                        }
+                    MobilePickerRow(
+                        captureSaveTitle,
+                        selection: $store.draft.captureSaving,
+                        choices: CloudCaptureSaving.allCases
+                    ) { choice in
+                        choice.title
                     }
                 }
                 .disabled(!store.isEditable)
@@ -343,10 +349,12 @@ private struct MobileStreamKindRow: View {
     @Binding var selection: PictureSettingsContainerView.StreamKind
 
     var body: some View {
-        MobilePickerRow("Streams", selection: $selection) {
-            ForEach(PictureSettingsContainerView.StreamKind.allCases, id: \.self) { kind in
-                Text(kind.title).tag(kind)
-            }
+        MobilePickerRow(
+            "Streams",
+            selection: $selection,
+            choices: PictureSettingsContainerView.StreamKind.allCases
+        ) { kind in
+            kind.title
         }
     }
 }
@@ -379,17 +387,14 @@ private struct MobilePictureStreamGroup: View {
 
     var body: some View {
         MobileSettingsGroup("Stream", footer: footer) {
-            MobilePickerRow("Resolution", selection: $height) {
-                ForEach(resolutions, id: \.self) { value in
-                    Text(verbatim: "\(value)p").tag(value)
-                }
+            MobilePickerRow("Resolution", selection: $height, choices: resolutions) { value in
+                "\(value)p"
             }
             if fixedFrameRate {
                 MobileValueRow("Frame Rate", value: "60 fps")
             } else {
-                MobilePickerRow("Frame Rate", selection: $fps) {
-                    Text("30 fps").tag(30)
-                    Text("60 fps").tag(60)
+                MobilePickerRow("Frame Rate", selection: $fps, choices: [30, 60]) { rate in
+                    "\(rate) fps"
                 }
             }
             MobileToggleRow("Automatic Bitrate", isOn: $automaticBitrate)
@@ -452,20 +457,33 @@ private struct MobilePictureDisplayGroup: View {
 
     var body: some View {
         MobileSettingsGroup("Display", footer: footer) {
-            MobilePickerRow("Upscaled Output", selection: $output) {
-                ForEach(UpscaledOutput.available(for: height), id: \.self) { value in
-                    Text(value.title).tag(value)
-                }
+            MobilePickerRow(
+                "Upscaled Output",
+                selection: $output,
+                choices: UpscaledOutput.available(for: height)
+            ) { value in
+                value.title
             }
-            MobilePickerRow("Upscaling Method", selection: $upscaler) {
-                Text("MetalFX Spatial").tag(VideoUpscaler.metalFX)
-                Text("Advanced Spatial").tag(VideoUpscaler.advancedSpatial)
+            MobilePickerRow(
+                "Upscaling Method",
+                selection: $upscaler,
+                choices: [VideoUpscaler.metalFX, .advancedSpatial]
+            ) { upscaler in
+                upscaler == .metalFX
+                    ? "MetalFX Spatial"
+                    : "Advanced Spatial"
             }
             .disabled(output == .disabled)
-            MobilePickerRow("Presentation Frame Rate", selection: $presentation) {
-                Text("\(fps) fps (native)").tag(PresentationFrameRate.source)
-                Text("\(fps * 2) fps (2×)").tag(PresentationFrameRate.generated120)
-                    .disabled(![720, 1080].contains(height))
+            MobilePickerRow(
+                "Presentation Frame Rate",
+                selection: $presentation,
+                choices: [720, 1080].contains(height) || presentation == .generated120
+                    ? [PresentationFrameRate.source, .generated120]
+                    : [.source]
+            ) { rate in
+                rate == .source
+                    ? "\(fps) fps (native)"
+                    : "\(fps * 2) fps (2×)"
             }
             if let fullScreen {
                 MobileToggleRow(

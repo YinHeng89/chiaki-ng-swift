@@ -73,10 +73,8 @@ struct MobileDeveloperSettingsPage: View {
             MobileToggleRow("Show Live Log Button", isOn: $logging.draft.showLiveLogButton)
             MobileToggleRow("Capture API Requests and Responses", isOn: $logging.draft.captureAPI)
             MobileToggleRow("Redact Identifiers in Logs", isOn: $logging.draft.redactIdentifiers)
-            MobilePickerRow("Verbosity", selection: $logging.draft.level) {
-                ForEach(LogLevel.allCases, id: \.self) { level in
-                    Text(level.rawValue.capitalized).tag(level)
-                }
+            MobilePickerRow("Verbosity", selection: $logging.draft.level, choices: LogLevel.allCases) { level in
+                level.rawValue.capitalized
             }
         }
         .disabled(!logging.isEditable)
@@ -137,19 +135,19 @@ struct MobileDeveloperSettingsPage: View {
                     MobilePickerRow("Model", selection: Binding(
                         get: { sample.model },
                         set: { samples.setModel($0, at: index) }
-                    )) {
-                        ForEach(SampleConsole.Model.allCases, id: \.self) { model in
-                            Text(model.title).tag(model)
-                        }
+                    ),
+                        choices: SampleConsole.Model.allCases
+                    ) { model in
+                        model.title
                     }
                     .accessibilityIdentifier("sample-console-model-\(index)")
                     MobilePickerRow("Recently Played", selection: Binding(
                         get: { sample.shownRecentlyPlayed },
                         set: { samples.setRecentlyPlayed($0, at: index) }
-                    )) {
-                        ForEach(SampleConsole.RecentlyPlayed.allCases, id: \.self) { state in
-                            Text(state.title).tag(state)
-                        }
+                    ),
+                        choices: SampleConsole.RecentlyPlayed.allCases
+                    ) { state in
+                        state.title
                     }
                     .disabled(sample.model == .ps4)
                     .accessibilityIdentifier("sample-console-recently-played-\(index)")
@@ -176,14 +174,15 @@ struct MobileDeveloperSettingsPage: View {
         private var takionGroup: some View {
             MobileSettingsGroup("Takion Version") {
                 ForEach(TakionTarget.allCases, id: \.self) { target in
-                    MobilePickerRow(target.title, selection: $takion.draft[target]) {
-                        ForEach(developer.state.choices(for: target), id: \.self) { version in
-                            Text(DeveloperSettings.versionTitle(
-                                for: version,
-                                build: developer.state.buildTakionVersion(for: target)
-                            ))
-                            .tag(version)
-                        }
+                    MobilePickerRow(
+                        target.title,
+                        selection: $takion.draft[target],
+                        choices: developer.state.choices(for: target)
+                    ) { version in
+                        DeveloperSettings.versionTitle(
+                            for: version,
+                            build: developer.state.buildTakionVersion(for: target)
+                        )
                     }
                     MobileToggleRow(
                         "Negotiate Version",
@@ -198,12 +197,10 @@ struct MobileDeveloperSettingsPage: View {
             MobileSettingsGroup("Cloud Library") {
                 MobilePickerRow(
                     "Refresh Cooldown",
-                    selection: $takion.draft.libraryRefreshCooldownMinutes
-                ) {
-                    ForEach(DeveloperSettings.libraryRefreshCooldownChoices, id: \.self) { minutes in
-                        Text(DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes))
-                            .tag(minutes)
-                    }
+                    selection: $takion.draft.libraryRefreshCooldownMinutes,
+                    choices: DeveloperSettings.libraryRefreshCooldownChoices
+                ) { minutes in
+                    DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes)
                 }
             }
         }

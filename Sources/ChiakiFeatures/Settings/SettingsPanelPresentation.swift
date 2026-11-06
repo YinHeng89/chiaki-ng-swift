@@ -211,7 +211,14 @@ struct SettingsPanelPresentation: ViewModifier {
 
     private var presentedPanel: some View {
         GeometryReader { geometry in
-            if presented {
+            if presented, Self.showsPhoneSettings(on: layout) {
+                MobileSettingsPanel(settings: store, window: hostWindow) {
+                    setPresented(false, by: "the phone settings")
+                }
+                .transition(reduceMotion
+                    ? .opacity
+                    : .move(edge: .trailing).combined(with: .opacity))
+            } else if presented {
                 Dimming.light.color
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
@@ -501,6 +508,15 @@ extension SettingsPanelPresentation {
         layout.isCompact
             ? narrowestCompactPage
             : narrowestPage
+    }
+
+    /// Returns whether Settings opens as the phone's full-screen categories and pages instead of the wide panel,
+    /// which happens on compact touch screens such as an iPhone.
+    ///
+    /// - Parameter layout: The screen's layout.
+    /// - Returns: `true` on a compact touch screen.
+    static func showsPhoneSettings(on layout: ScreenLayout) -> Bool {
+        layout.touch && layout.isCompact
     }
 
     /// Returns whether closing the panel should move focus to the stream controls, which happens when the

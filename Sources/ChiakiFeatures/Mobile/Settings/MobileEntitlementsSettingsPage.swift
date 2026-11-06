@@ -1,6 +1,7 @@
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// The touch Entitlements page: the saved account to load, the service, filter and search over its cloud titles
@@ -41,14 +42,12 @@ struct MobileEntitlementsSettingsPage: View {
         MobileSettingsGroup("Account") {
             MobilePickerRow(
                 "Account",
-                selection: Binding(get: { store.account }, set: { store.send(.selectAccount($0)) })
-            ) {
-                if store.accounts.isEmpty {
-                    Text("No saved accounts").tag(UUID?.none)
-                }
-                ForEach(store.accounts) { account in
-                    Text(account.name).tag(UUID?.some(account.id))
-                }
+                selection: Binding(get: { store.account }, set: { store.send(.selectAccount($0)) }),
+                choices: store.accounts.isEmpty
+                    ? [nil]
+                    : store.accounts.map { UUID?.some($0.id) }
+            ) { id in
+                store.accounts.first { $0.id == id }?.name ?? "No saved accounts"
             }
             MobileButtonRow("Load Entitlements") {
                 store.send(.load)
@@ -75,20 +74,18 @@ struct MobileEntitlementsSettingsPage: View {
         MobileSettingsGroup {
             MobilePickerRow(
                 "Service",
-                selection: Binding(get: { store.service }, set: { store.send(.service($0)) })
-            ) {
-                ForEach(EntitlementService.allCases, id: \.self) { service in
-                    Text(service.rawValue).tag(service)
-                }
+                selection: Binding(get: { store.service }, set: { store.send(.service($0)) }),
+                choices: EntitlementService.allCases
+            ) { service in
+                service.rawValue
             }
             .accessibilityIdentifier("entitlements-service")
             MobilePickerRow(
                 "Filter",
-                selection: Binding(get: { store.filter }, set: { store.send(.filter($0)) })
-            ) {
-                ForEach(EntitlementFilter.allCases, id: \.self) { filter in
-                    Text(filter.rawValue).tag(filter)
-                }
+                selection: Binding(get: { store.filter }, set: { store.send(.filter($0)) }),
+                choices: EntitlementFilter.allCases
+            ) { filter in
+                filter.rawValue
             }
             search
         }
@@ -137,7 +134,7 @@ struct MobileEntitlementsSettingsPage: View {
 
     private func titleRow(_ title: ExplainedTitle) -> some View {
         let selected = store.selection == title.id
-        return Button {
+        return FocusButton {
             store.send(.select(
                 selected
                     ? nil

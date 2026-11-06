@@ -2,6 +2,7 @@ import ChiakiAssets
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import PlatformUI
 import SwiftUI
 
@@ -149,7 +150,7 @@ struct MobileAboutSettingsPage: View {
         @ViewBuilder detail: () -> some View
     ) -> some View {
         let shown = detail()
-        return Button {
+        return FocusButton {
             store.send(.open(link))
         } label: {
             HStack(spacing: 12) {
@@ -252,7 +253,7 @@ struct MobileAboutSettingsPage: View {
         .mobileRowPadding()
         .contentShape(.rect)
         if let link {
-            Button {
+            FocusButton {
                 store.send(.open(link))
             } label: {
                 label
@@ -265,7 +266,7 @@ struct MobileAboutSettingsPage: View {
     }
 
     private var contributorsRow: some View {
-        Button {
+        FocusButton {
             store.send(.toggleContributors)
         } label: {
             HStack(spacing: 8) {
@@ -302,7 +303,7 @@ struct MobileAboutSettingsPage: View {
     private var contributors: some View {
         WrappingRow(spacing: 6) {
             ForEach(store.contributors, id: \.self) { login in
-                Button {
+                FocusButton {
                     store.send(.openContributor(login))
                 } label: {
                     Text(login)
