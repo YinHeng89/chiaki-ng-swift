@@ -45,7 +45,7 @@ struct MobileCachesSettingsPage: View {
 
     private var controls: some View {
         MobileSettingsGroup {
-            MobileButtonRow("Refresh") {
+            MobileButtonRow(.commonRefresh) {
                 store.send(.load)
             }
             .disabled(store.busy)
@@ -57,13 +57,13 @@ struct MobileCachesSettingsPage: View {
                 }
             }
             .accessibilityIdentifier("caches-refresh")
-            MobileButtonRow("Clear All", destructive: true) {
+            MobileButtonRow(.mobileCachesClearAll, destructive: true) {
                 store.send(.askClear(.all))
             }
             .disabled(store.busy || !store.holdsAnything)
             .accessibilityIdentifier("caches-clear-all")
             if case .failed(let message) = store.phase {
-                failure(message)
+                failure(Text(message))
                     .textSelection(.enabled)
             }
         }
@@ -72,15 +72,15 @@ struct MobileCachesSettingsPage: View {
     private func cache(_ cache: CacheSummaryPresentation) -> some View {
         let opened = store.entries.cache == cache.id
         return MobileSettingsGroup(cache.title) {
-            MobileValueRow("Entries", value: cache.entries)
-            MobileValueRow("Size", value: cache.size)
+            MobileValueRow(.mobileCachesEntries, value: cache.entries)
+            MobileValueRow(.mobileCachesSize, verbatim: cache.size)
             if let memory = cache.memory {
-                MobileValueRow("Memory", value: memory)
+                MobileValueRow(.mobileCachesMemory, value: memory)
             }
             MobileButtonRow(
                 opened
-                    ? "Hide Entries"
-                    : "Show Entries"
+                    ? .mobileCachesHideEntries
+                    : .mobileCachesShowEntries
             ) {
                 store.send(
                     opened
@@ -93,7 +93,7 @@ struct MobileCachesSettingsPage: View {
             if opened {
                 entries
             }
-            MobileButtonRow("Clear", destructive: true) {
+            MobileButtonRow(.commonClear, destructive: true) {
                 store.send(.askClear(.one(cache.id)))
             }
             .disabled(store.busy || cache.isEmpty)
@@ -113,7 +113,7 @@ struct MobileCachesSettingsPage: View {
                 .frame(maxWidth: .infinity)
                 .mobileRowPadding()
         case .failed(_, let message):
-            failure(message)
+            failure(Text(message))
         case .shown(_, let entries):
             ForEach(Array(entries.enumerated()), id: \.offset) { _, entry in
                 entryRow(CacheEntryPresentation(entry, accountNames: store.accountNames))
@@ -134,9 +134,9 @@ struct MobileCachesSettingsPage: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            figure("Size", entry.size)
-            figure("Stored", entry.stored)
-            figure("Expires", entry.expires)
+            figure(.mobileCachesSize, Text(entry.size))
+            figure(.mobileCachesStored, Text(entry.stored))
+            figure(.mobileCachesExpires, Text(entry.expires))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 12)
@@ -144,22 +144,26 @@ struct MobileCachesSettingsPage: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func figure(_ label: String, _ value: String) -> some View {
+    private func figure(_ label: LocalizedStringResource, _ value: Text) -> some View {
         HStack(spacing: 8) {
             Text(label)
                 .foregroundStyle(.secondary)
             Spacer(minLength: 8)
-            Text(value)
+            value
                 .monospacedDigit()
                 .textSelection(.enabled)
         }
         .font(.footnote)
     }
 
-    private func failure(_ message: String) -> some View {
-        Label(message, systemImage: "exclamationmark.triangle")
-            .foregroundStyle(.red)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mobileRowPadding()
+    private func failure(_ message: Text) -> some View {
+        Label {
+            message
+        } icon: {
+            Image(systemName: "exclamationmark.triangle")
+        }
+        .foregroundStyle(.red)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mobileRowPadding()
     }
 }

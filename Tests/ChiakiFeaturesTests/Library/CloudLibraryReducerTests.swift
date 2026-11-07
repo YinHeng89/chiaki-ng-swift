@@ -142,7 +142,7 @@ import Testing
     #expect(sampled.games.count == 4)
     #expect(sampled.games.last == base.games[0])
     #expect(sampled.games.map(CloudSamplePreorders.isSample) == [true, true, true, false])
-    #expect(sampled.games.map { $0.release.label(now: now) } == [
+    #expect(sampled.games.map { $0.release.label(now: now).map { String(localized: $0) } } == [
         "Releases in 00:01:15",
         "Releases in 3d 04:05:00",
         "Release date not announced",

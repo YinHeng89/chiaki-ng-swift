@@ -37,17 +37,17 @@ public struct CloudGameActions: Equatable {
         }
 
         /// The button's title.
-        public var title: String {
+        public var title: LocalizedStringResource {
             offer == .chooseGame
-                ? "Choose a game"
-                : "Check & play"
+                ? .libraryActionsChooseGame
+                : .libraryActionsCheckAndPlay
         }
     }
 
     /// A button that opens the game's store page.
     public struct StoreLink: Equatable {
         /// The button's title.
-        public let title: String
+        public let title: LocalizedStringResource
         /// The page opened when the account's own store page cannot be resolved.
         public let fallback: URL?
 
@@ -56,7 +56,7 @@ public struct CloudGameActions: Equatable {
         /// - Parameters:
         ///   - title: The button's title.
         ///   - fallback: The page opened when the account's own store page cannot be resolved.
-        public init(title: String, fallback: URL?) {
+        public init(title: LocalizedStringResource, fallback: URL?) {
             self.title = title
             self.fallback = fallback
         }
@@ -68,14 +68,14 @@ public struct CloudGameActions: Equatable {
         /// The product id of the other version.
         public let productId: String
         /// The button's title, such as `Show PS4 version`.
-        public let title: String
+        public let title: LocalizedStringResource
 
         /// Creates a version switch to another listed version.
         ///
         /// - Parameter other: The other version of the game.
         public init(to other: CloudGame) {
             productId = other.productId
-            title = "Show \(other.platform.uppercased()) version"
+            title = .libraryActionsShowVersion(platform: other.platform.uppercased())
         }
     }
 
@@ -146,7 +146,7 @@ public struct CloudGameActions: Equatable {
             self.bundleChoices = nil
             play = nil
             showsLaunchChecks = false
-            store = StoreLink(title: "View in Store", fallback: storeURL)
+            store = StoreLink(title: .libraryActionsViewInStore, fallback: storeURL)
             addToLibrary = nil
             purchaseCode = Self.code(storeURL)
             refreshTitleFocusable = false
@@ -166,16 +166,16 @@ public struct CloudGameActions: Equatable {
         let showsStorePage = inLibrary && CloudCardCheck.needed(for: game)
             && (game.standing(after: check) == .mayStream || check == .notStreamable || check == .refused)
         if showsStorePage {
-            let title = game.standing(after: check) == .store
-                ? "View in Store"
-                : "View store page"
+            let title: LocalizedStringResource = game.standing(after: check) == .store
+                ? .libraryActionsViewInStore
+                : .libraryActionsViewStorePage
             store = StoreLink(title: title, fallback: storeURL)
             addToLibrary = nil
             purchaseCode = game.standing(after: check) == .store
                 ? Self.code(storeURL)
                 : nil
         } else if let storeURL, game.isStoreOnly || !game.canBeAddedToLibrary {
-            store = StoreLink(title: "View in Store", fallback: storeURL)
+            store = StoreLink(title: .libraryActionsViewInStore, fallback: storeURL)
             addToLibrary = nil
             purchaseCode = Self.code(storeURL)
         } else {

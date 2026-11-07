@@ -3,10 +3,10 @@ import Foundation
 /// The player-facing title and detail lines that describe an operation's progress.
 public struct OperationProgressText: Equatable, Sendable {
     /// The headline: the current route step when routing, otherwise the operation's step.
-    public let title: String
+    public let title: LocalizedStringResource
     /// Detail lines such as step position, queue position, waits, attempts and elapsed time, omitting any
     /// that do not apply.
-    public let details: [String]
+    public let details: [LocalizedStringResource]
 
     /// Describes progress as of a report.
     ///
@@ -16,24 +16,25 @@ public struct OperationProgressText: Equatable, Sendable {
     public init(_ progress: OperationProgress, sinceReport: Duration = .zero) {
         let since = max(0, Int(sinceReport.components.seconds))
         title = progress.route.map(Self.label) ?? Self.label(progress.step)
-        details = [
-            progress.position.map { "Step \($0.number) of \($0.total)" },
-            progress.measured.map { "Measured \($0.number) of \($0.total) datacenters" },
+        let lines: [LocalizedStringResource?] = [
+            progress.position.map { .progressStep(number: $0.number, total: $0.total) },
+            progress.measured.map { .progressMeasured(number: $0.number, total: $0.total) },
             progress.route?.candidates.map(Self.label),
             progress.route?.chosen.map(Self.label),
-            progress.queuePosition.map { "Position \($0) in the queue" },
+            progress.queuePosition.map { .progressQueuePosition(position: $0) },
             progress.waitTimeEstimateSeconds.map(Self.waitEstimate),
-            progress.migrationPercent.map { "\($0)% moved" },
+            progress.migrationPercent.map { .progressMigration(percent: $0) },
             Self.bandwidth(progress),
             progress.wait.map { Self.label($0, since: since) },
             Self.attempt(progress),
             progress.previousFailure.flatMap(Self.label),
-            progress.elapsedMilliseconds.map { "\($0 / 1000 + since) s elapsed" }
-        ].compactMap { $0 }
+            progress.elapsedMilliseconds.map { .progressElapsed(seconds: $0 / 1000 + since) }
+        ]
+        details = lines.compactMap { $0 }
     }
 
     /// The title followed by the details.
-    public var lines: [String] {
+    public var lines: [LocalizedStringResource] {
         [title] + details
     }
 }
@@ -43,15 +44,10 @@ extension OperationProgressText {
     ///
     /// - Parameter seconds: The estimated wait in seconds.
     /// - Returns: "Estimated wait: under a minute" below a minute, otherwise the minutes rounded down.
-    static func waitEstimate(_ seconds: Int) -> String {
-        if seconds < 60 {
-            return "Estimated wait: under a minute"
-        }
-        let minutes = seconds / 60
-        let unit = minutes == 1
-            ? "min"
-            : "mins"
-        return "Estimated wait: about \(minutes) \(unit)"
+    static func waitEstimate(_ seconds: Int) -> LocalizedStringResource {
+        seconds < 60
+            ? .progressWaitEstimateUnderMinute
+            : .progressWaitEstimateMinutes(minutes: seconds / 60)
     }
 }
 
@@ -60,7 +56,7 @@ extension OperationProgressText {
     ///
     /// - Parameter step: The launch, connect or pairing step.
     /// - Returns: The label.
-    public static func label(_ step: OperationProgress.Step) -> String {
+    public static func label(_ step: OperationProgress.Step) -> LocalizedStringResource {
         switch step {
         case .launch(let activity):
             label(activity)
@@ -75,50 +71,50 @@ extension OperationProgressText {
     ///
     /// - Parameter activity: The activity.
     /// - Returns: The label.
-    public static func label(_ activity: OperationProgress.LaunchActivity) -> String {
+    public static func label(_ activity: OperationProgress.LaunchActivity) -> LocalizedStringResource {
         switch activity {
         case .clearingWithCatalog:
-            "Checking the title with the catalog"
+            .progressLaunchClearingWithCatalog
         case .checkingDevice:
-            "Checking this device"
+            .progressLaunchCheckingDevice
         case .openingTitleSession:
-            "Opening the title session"
+            .progressLaunchOpeningTitleSession
         case .resolvingTitle:
-            "Finding the title"
+            .progressLaunchResolvingTitle
         case .takingFreeLicence:
-            "Taking the free licence"
+            .progressLaunchTakingFreeLicence
         case .openingAccountSession:
-            "Opening the account session"
+            .progressLaunchOpeningAccountSession
         case .reservingServer:
-            "Reserving a server"
+            .progressLaunchReservingServer
         case .measuringDatacenters:
-            "Measuring datacenters"
+            .progressLaunchMeasuringDatacenters
         case .waitingForDatacenterChoice:
-            "Choosing a datacenter"
+            .progressLaunchWaitingForDatacenterChoice
         case .allocatingServer:
-            "Allocating a server"
+            .progressLaunchAllocatingServer
         case .migratingData:
-            "Moving your data"
+            .progressLaunchMigratingData
         case .connectingToServer:
-            "Connecting to the server"
+            .progressLaunchConnectingToServer
         case .measuringBandwidth:
-            "Measuring your connection"
+            .progressLaunchMeasuringBandwidth
         case .loadingLibrary:
-            "Loading your library"
+            .progressLaunchLoadingLibrary
         case .checkingMembership:
-            "Checking your membership"
+            .progressLaunchCheckingMembership
         case .checkingCloudStreaming:
-            "Checking PlayStation Plus Premium"
+            .progressLaunchCheckingCloudStreaming
         case .checkingOwnership:
-            "Checking ownership"
+            .progressLaunchCheckingOwnership
         case .checkingEntitlement:
-            "Checking your copy of the game"
+            .progressLaunchCheckingEntitlement
         case .resolvingCloudGame:
-            "Finding the cloud game"
+            .progressLaunchResolvingCloudGame
         case .checkingExclusions:
-            "Checking PlayStation's restrictions"
+            .progressLaunchCheckingExclusions
         case .checkingRelease:
-            "Checking the release date"
+            .progressLaunchCheckingRelease
         }
     }
 
@@ -126,7 +122,7 @@ extension OperationProgressText {
     ///
     /// - Parameter progress: The progress report.
     /// - Returns: The description, or `nil`.
-    static func bandwidth(_ progress: OperationProgress) -> String? {
+    static func bandwidth(_ progress: OperationProgress) -> LocalizedStringResource? {
         progress.bandwidth?.progressDescription
     }
 
@@ -134,28 +130,28 @@ extension OperationProgressText {
     ///
     /// - Parameter step: The step.
     /// - Returns: The label.
-    public static func label(_ step: OperationProgress.ConnectStep) -> String {
+    public static func label(_ step: OperationProgress.ConnectStep) -> LocalizedStringResource {
         switch step {
         case .findingConsole:
-            "Finding the console"
+            .progressConnectFindingConsole
         case .openingAccountSession:
-            "Opening the account session"
+            .progressConnectOpeningAccountSession
         case .wakingConsole:
-            "Waking the console"
+            .progressConnectWakingConsole
         case .pairing:
-            "Pairing with the console"
+            .progressConnectPairing
         case .reachingConsole:
-            "Reaching the console"
+            .progressConnectReachingConsole
         case .openingStreamRoute:
-            "Opening the stream route"
+            .progressConnectOpeningStreamRoute
         case .requestingSession:
-            "Requesting the session"
+            .progressConnectRequestingSession
         case .openingControl:
-            "Opening the control connection"
+            .progressConnectOpeningControl
         case .measuringConnection:
-            "Measuring the connection"
+            .progressConnectMeasuringConnection
         case .startingStream:
-            "Starting the stream"
+            .progressConnectStartingStream
         }
     }
 
@@ -163,22 +159,22 @@ extension OperationProgressText {
     ///
     /// - Parameter step: The step.
     /// - Returns: The label.
-    public static func label(_ step: OperationProgress.PairingStep) -> String {
+    public static func label(_ step: OperationProgress.PairingStep) -> LocalizedStringResource {
         switch step {
         case .starting:
-            "Starting"
+            .progressPairingStarting
         case .openingAccountSession:
-            "Opening the account session"
+            .progressPairingOpeningAccountSession
         case .wakingConsole:
-            "Asking the console to join"
+            .progressPairingWakingConsole
         case .reachingConsole:
-            "Reaching the console"
+            .progressPairingReachingConsole
         case .sendingRequest:
-            "Sending the pairing request"
+            .progressPairingSendingRequest
         case .waitingForAnswer:
-            "Waiting for the console's answer"
+            .progressPairingWaitingForAnswer
         case .saving:
-            "Saving the pairing"
+            .progressPairingSaving
         }
     }
 }
@@ -188,38 +184,35 @@ extension OperationProgressText {
     ///
     /// - Parameter route: The route progress.
     /// - Returns: The label.
-    public static func label(_ route: OperationProgress.Route) -> String {
-        let name = label(route.purpose)
+    public static func label(_ route: OperationProgress.Route) -> LocalizedStringResource {
+        let control = route.purpose == .control
         switch route.step {
         case .openingAccountSession:
-            return "Opening the account session"
+            return .progressRouteOpeningAccountSession
         case .waitingForConsole:
-            return "Waiting for the console to join"
+            return .progressRouteWaitingForConsole
         case .gatheringCandidates:
-            return "Gathering addresses for the \(name) route"
+            return control
+                ? .progressRouteGatheringControl
+                : .progressRouteGatheringStream
         case .exchangingOffers:
-            return "Exchanging offers for the \(name) route"
+            return control
+                ? .progressRouteExchangingControl
+                : .progressRouteExchangingStream
         case .testingCandidates:
-            return "Testing the \(name) route"
+            return control
+                ? .progressRouteTestingControl
+                : .progressRouteTestingStream
         case .routeChosen:
-            return "The \(name) route is chosen"
+            return control
+                ? .progressRouteChosenControl
+                : .progressRouteChosenStream
         case .confirmingRoute:
-            return "Confirming the \(name) route"
+            return control
+                ? .progressRouteConfirmingControl
+                : .progressRouteConfirmingStream
         case .switchingControl:
-            return "Switching control to the stream route"
-        }
-    }
-
-    /// Names a route's purpose in lowercase, for use inside a sentence.
-    ///
-    /// - Parameter purpose: The purpose.
-    /// - Returns: `control` or `stream`.
-    public static func label(_ purpose: OperationProgress.RoutePurpose) -> String {
-        switch purpose {
-        case .control:
-            "control"
-        case .stream:
-            "stream"
+            return .progressRouteSwitchingControl
         }
     }
 
@@ -227,16 +220,16 @@ extension OperationProgressText {
     ///
     /// - Parameter kind: The route kind.
     /// - Returns: The label.
-    public static func label(_ kind: OperationProgress.RouteKind) -> String {
+    public static func label(_ kind: OperationProgress.RouteKind) -> LocalizedStringResource {
         switch kind {
         case .local:
-            "Route over the local network"
+            .progressKindLocal
         case .publicAddress:
-            "Route over the public address"
+            .progressKindPublicAddress
         case .portGuessed:
-            "Route over a guessed port"
+            .progressKindPortGuessed
         case .discovered:
-            "Route over an address the console answered from"
+            .progressKindDiscovered
         }
     }
 
@@ -244,9 +237,11 @@ extension OperationProgressText {
     ///
     /// - Parameter candidates: The candidate counts.
     /// - Returns: The summary.
-    public static func label(_ candidates: OperationProgress.Candidates) -> String {
-        "\(candidates.total) addresses: \(candidates.local) local, \(candidates.publicAddress) public, "
-            + "\(candidates.portGuessed) guessed"
+    public static func label(_ candidates: OperationProgress.Candidates) -> LocalizedStringResource {
+        .progressCandidates(
+            total: candidates.total, local: candidates.local, publicAddress: candidates.publicAddress,
+            guessed: candidates.portGuessed
+        )
     }
 }
 
@@ -255,30 +250,30 @@ extension OperationProgressText {
     ///
     /// - Parameter reason: The wait reason.
     /// - Returns: The label.
-    public static func label(_ reason: OperationProgress.WaitReason) -> String {
+    public static func label(_ reason: OperationProgress.WaitReason) -> LocalizedStringResource {
         switch reason {
         case .previousSessionClosing:
-            "Waiting for your previous session to close"
+            .progressWaitPreviousSessionClosing
         case .serverQueue:
-            "Waiting in the server queue"
+            .progressWaitServerQueue
         case .dataMigration:
-            "Waiting for your data to move"
+            .progressWaitDataMigration
         case .datacenterChoice:
-            "Waiting for a datacenter choice"
+            .progressWaitDatacenterChoice
         case .titleNotReady:
-            "The title is not ready yet"
+            .progressWaitTitleNotReady
         case .networkUnreachable:
-            "The network is unreachable"
+            .progressWaitNetworkUnreachable
         case .consoleWaking:
-            "Waiting for the console to wake"
+            .progressWaitConsoleWaking
         case .consoleJoining:
-            "Waiting for the console to join"
+            .progressWaitConsoleJoining
         case .consoleAnswering:
-            "Waiting for the console to answer"
+            .progressWaitConsoleAnswering
         case .connectionRetry:
-            "Waiting before the next attempt"
+            .progressWaitConnectionRetry
         case .recentCloudSession:
-            "Waiting since last cloud stream"
+            .progressWaitRecentCloudSession
         }
     }
 
@@ -288,7 +283,7 @@ extension OperationProgressText {
     ///   - wait: The wait.
     ///   - since: Seconds since the report, subtracted from the countdown.
     /// - Returns: The reason, followed by when the next try happens when one is scheduled.
-    public static func label(_ wait: OperationProgress.Wait, since: Int) -> String {
+    public static func label(_ wait: OperationProgress.Wait, since: Int) -> LocalizedStringResource {
         let reason = label(wait.reason)
         guard let next = wait.nextTryMilliseconds, next > 0 else {
             return reason
@@ -298,19 +293,16 @@ extension OperationProgressText {
             return settling(remaining)
         }
         return remaining == 0
-            ? "\(reason), trying again now"
-            : "\(reason), trying again in \(remaining) s"
+            ? .progressWaitRetryNow(reason: String(localized: reason))
+            : .progressWaitRetryIn(reason: String(localized: reason), seconds: remaining)
     }
 
     /// Counts down the settling time after the account's last cloud stream.
     ///
     /// - Parameter seconds: Whole seconds left.
     /// - Returns: "Waiting 20 seconds since last cloud stream", in the singular for one second.
-    static func settling(_ seconds: Int) -> String {
-        let unit = seconds == 1
-            ? "second"
-            : "seconds"
-        return "Waiting \(seconds) \(unit) since last cloud stream"
+    static func settling(_ seconds: Int) -> LocalizedStringResource {
+        .progressSettling(seconds: seconds)
     }
 
     /// Describes the attempt: launches count tries while waiting, and connections and pairings show the
@@ -318,13 +310,13 @@ extension OperationProgressText {
     ///
     /// - Parameter progress: The progress report.
     /// - Returns: The text, or `nil` when there is nothing to show.
-    public static func attempt(_ progress: OperationProgress) -> String? {
+    public static func attempt(_ progress: OperationProgress) -> LocalizedStringResource? {
         switch progress.step {
         case .launch:
             tries(progress)
         case .connect, .pairing:
             progress.attempt > 1
-                ? "Attempt \(progress.attempt)"
+                ? .progressAttempt(number: progress.attempt)
                 : nil
         }
     }
@@ -333,24 +325,22 @@ extension OperationProgressText {
     ///
     /// - Parameter progress: The progress report.
     /// - Returns: The text, or `nil` when not waiting or nothing was tried yet.
-    public static func tries(_ progress: OperationProgress) -> String? {
+    public static func tries(_ progress: OperationProgress) -> LocalizedStringResource? {
         guard progress.attempt > 0, progress.isWaiting else {
             return nil
         }
-        return progress.attempt == 1
-            ? "Tried once"
-            : "Tried \(progress.attempt) times"
+        return .progressTried(count: progress.attempt)
     }
 
     /// Describes why the previous attempt failed, preferring the console's quit reason.
     ///
     /// - Parameter failure: The previous failure.
     /// - Returns: The text, or `nil` when no reason is known.
-    public static func label(_ failure: OperationProgress.Failure) -> String? {
+    public static func label(_ failure: OperationProgress.Failure) -> LocalizedStringResource? {
         if let quit = failure.consoleQuit {
-            return "The last attempt failed: \(label(quit))"
+            return .progressLastAttemptFailed(reason: String(localized: label(quit)))
         }
-        return failure.cause.map { "The last attempt failed: \(label($0))" }
+        return failure.cause.map { .progressLastAttemptFailed(reason: String(localized: label($0))) }
     }
 }
 
@@ -359,38 +349,38 @@ extension OperationProgressText {
     ///
     /// - Parameter quit: The console's quit reason.
     /// - Returns: The description.
-    public static func label(_ quit: OperationProgress.ConsoleQuit) -> String {
+    public static func label(_ quit: OperationProgress.ConsoleQuit) -> LocalizedStringResource {
         switch quit {
         case .stopped:
-            "the console stopped the session"
+            .progressQuitStopped
         case .sessionRequestUnknown:
-            "the console refused the session request"
+            .progressQuitSessionRequestUnknown
         case .sessionRequestConnectionRefused:
-            "the console refused the session connection"
+            .progressQuitSessionRequestConnectionRefused
         case .consoleInUse:
-            "the console is in use"
+            .progressQuitConsoleInUse
         case .remotePlayCrashed:
-            "Remote Play crashed on the console"
+            .progressQuitRemotePlayCrashed
         case .remotePlayVersionMismatch:
-            "the console expects another Remote Play version"
+            .progressQuitRemotePlayVersionMismatch
         case .controlUnknown:
-            "the console closed the control connection"
+            .progressQuitControlUnknown
         case .controlConnectFailed:
-            "the console could not open the control connection"
+            .progressQuitControlConnectFailed
         case .controlConnectionRefused:
-            "the console refused the control connection"
+            .progressQuitControlConnectionRefused
         case .streamUnknown:
-            "the console closed the stream"
+            .progressQuitStreamUnknown
         case .consoleDisconnected:
-            "the console disconnected"
+            .progressQuitConsoleDisconnected
         case .consoleShutDown:
-            "the console shut down"
+            .progressQuitConsoleShutDown
         case .timeLimitReached:
-            "the streaming time limit was reached"
+            .progressQuitTimeLimitReached
         case .trialEnded:
-            "the game trial ended"
+            .progressQuitTrialEnded
         case .internetPairingFailed:
-            "pairing over the internet failed"
+            .progressQuitInternetPairingFailed
         }
     }
 
@@ -398,55 +388,54 @@ extension OperationProgressText {
     ///
     /// - Parameter cause: The failure cause.
     /// - Returns: The description.
-    public static func label(_ cause: OperationProgress.FailureCause) -> String {
+    public static func label(_ cause: OperationProgress.FailureCause) -> LocalizedStringResource {
         switch cause {
         case .invalidState:
-            "the session was in the wrong state"
+            .progressCauseInvalidState
         case .invalidPreferences:
-            "the stream settings were rejected"
+            .progressCauseInvalidPreferences
         case .providerUnavailable:
-            "a system service was unavailable"
+            .progressCauseProviderUnavailable
         case .controlFailed:
-            "the control connection failed"
+            .progressCauseControlFailed
         case .routeFailed:
-            "no route to the console worked"
+            .progressCauseRouteFailed
         case .pipelineFailed:
-            "the stream could not be set up"
+            .progressCausePipelineFailed
         case .controllerRejected:
-            "the controller was rejected"
+            .progressCauseControllerRejected
         case .loginPINRejected:
-            "the login PIN was rejected"
+            .progressCauseLoginPINRejected
         case .shutdownFailed:
-            "the session did not close cleanly"
+            .progressCauseShutdownFailed
         case .controlNetworkFailure:
-            "the control connection was lost"
+            .progressCauseControlNetworkFailure
         case .controlTimeout:
-            "the control connection timed out"
+            .progressCauseControlTimeout
         case .controlTruncated:
-            "the control answer was cut short"
+            .progressCauseControlTruncated
         case .controlInvalidResponse:
-            "the control answer was not understood"
+            .progressCauseControlInvalidResponse
         case .controlTooLarge:
-            "the control answer was too large"
+            .progressCauseControlTooLarge
         case .controlRefused:
-            "the control connection was refused"
+            .progressCauseControlRefused
         case .controlHandoffFailure:
-            "the control connection could not be moved"
+            .progressCauseControlHandoffFailure
         case .invalidArgument:
-            "the request was not valid"
+            .progressCauseInvalidArgument
         case .sessionRequestConnectionRefused:
-            "the session connection was refused"
+            .progressCauseSessionRequestConnectionRefused
         case .controlConnectionRefused:
-            "the console refused the control connection"
+            .progressCauseControlConnectionRefused
         case .resourceExhausted:
-            "this Mac ran out of resources"
+            .progressCauseResourceExhausted
         case .pairingRejected:
-            "the console no longer accepts this pairing"
+            .progressCausePairingRejected
         case .unpairedConsole:
-            "PSN reached your primary PS4, which is not paired with this app; pair it at home or make the "
-                + "intended PS4 your primary one"
+            .progressCauseUnpairedConsole
         case .connectionLost:
-            "the connection was lost"
+            .progressCauseConnectionLost
         case .sessionRequestTruncated, .sessionRequestNetworkFailure, .sessionRequestTimeout,
              .sessionRequestInvalidResponse, .sessionRequestTooLarge, .sessionRequestRefused,
              .sessionRequestVersionMismatch, .sessionRequestInUse:
@@ -454,31 +443,33 @@ extension OperationProgressText {
         }
     }
 
-    private static func sessionRequestLabel(_ cause: OperationProgress.FailureCause) -> String {
+    private static func sessionRequestLabel(
+        _ cause: OperationProgress.FailureCause
+    ) -> LocalizedStringResource {
         switch cause {
         case .sessionRequestTruncated:
-            "the session answer was cut short"
+            .progressCauseSessionRequestTruncated
         case .sessionRequestNetworkFailure:
-            "the session request was lost"
+            .progressCauseSessionRequestNetworkFailure
         case .sessionRequestTimeout:
-            "the session request timed out"
+            .progressCauseSessionRequestTimeout
         case .sessionRequestInvalidResponse:
-            "the session answer was not understood"
+            .progressCauseSessionRequestInvalidResponse
         case .sessionRequestTooLarge:
-            "the session answer was too large"
+            .progressCauseSessionRequestTooLarge
         case .sessionRequestRefused:
-            "the session request was refused"
+            .progressCauseSessionRequestRefused
         case .sessionRequestVersionMismatch:
-            "the console expects another Remote Play version"
+            .progressCauseSessionRequestVersionMismatch
         case .sessionRequestInUse:
-            "the console is in use"
+            .progressCauseSessionRequestInUse
         case .invalidState, .invalidPreferences, .providerUnavailable, .controlFailed, .routeFailed,
              .pipelineFailed, .controllerRejected, .loginPINRejected, .shutdownFailed, .controlNetworkFailure,
              .controlTimeout, .controlTruncated, .controlInvalidResponse, .controlTooLarge, .controlRefused,
              .controlHandoffFailure, .invalidArgument, .sessionRequestConnectionRefused,
              .controlConnectionRefused, .resourceExhausted, .pairingRejected, .unpairedConsole,
              .connectionLost:
-            "the session request failed"
+            .progressCauseSessionRequestFailed
         }
     }
 }

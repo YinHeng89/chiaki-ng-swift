@@ -94,7 +94,7 @@ struct ChiakiNGApp: App {
                     if let surface = Self.playbackDiagnosticRun.surface {
                         StreamSurfaceView(surface: surface, videoFit: VideoFit())
                     } else {
-                        ProgressView("Checking playback…")
+                        ProgressView(DiagnosticRun.playback.status)
                     }
                 }.frame(width: 1280, height: 720)
             } else if let diagnostic {
@@ -265,15 +265,15 @@ final class ChiakiApplicationDelegate: NSObject {
         @AppStorage(DeveloperPreviewSetting.samplePS4) private var samplePS4 = false
 
         var body: some Commands {
-            CommandMenu("Developer") {
-                Toggle("Show sample PS5", isOn: $samplePS5)
-                Toggle("Show sample PS4", isOn: $samplePS4)
+            CommandMenu(Text(AppMenuTitles.developer)) {
+                Toggle(AppMenuTitles.showSamplePS5, isOn: $samplePS5)
+                Toggle(AppMenuTitles.showSamplePS4, isOn: $samplePS4)
                 Divider()
-                FocusButton("Show both sample consoles") {
+                FocusButton(AppMenuTitles.showBothSamples) {
                     samplePS5 = true
                     samplePS4 = true
                 }
-                FocusButton("Hide sample consoles") {
+                FocusButton(AppMenuTitles.hideSamples) {
                     samplePS5 = false
                     samplePS4 = false
                 }
@@ -366,33 +366,33 @@ private struct MainWindowCommands: Commands {
     @Environment(\.openWindow) private var openWindow
     var body: some Commands {
         CommandGroup(after: .windowArrangement) {
-            Button("Show chiaki-ng") {
+            Button(AppMenuTitles.showMainWindow) {
                 openWindow(id: "main")
             }
             .keyboardShortcut("1", modifiers: [.command, .option])
-            Button("Stream Controls") {
+            Button(AppMenuTitles.streamControls) {
                 navigator.commands.send(.streamMenu, to: nil)
             }
             .keyboardShortcut("m", modifiers: [.command, .shift])
-            Button("Stream Diagnostics Detail") {
+            Button(AppMenuTitles.streamDiagnosticsDetail) {
                 NotificationCenter.default.post(
                     name: .cycleStreamDiagnosticsLevel,
                     object: WindowFocus.keyWindow
                 )
             }
             .keyboardShortcut("d", modifiers: [.command, .shift])
-            Button("Stream Diagnostics Glass") {
+            Button(AppMenuTitles.streamDiagnosticsGlass) {
                 NotificationCenter.default.post(
                     name: .cycleStreamDiagnosticsGlass,
                     object: WindowFocus.keyWindow
                 )
             }
             .keyboardShortcut("g", modifiers: [.command, .shift])
-            Button("Live Developer Log") {
+            Button(AppMenuTitles.liveDeveloperLog) {
                 NotificationCenter.default.post(name: .toggleLiveLog, object: WindowFocus.keyWindow)
             }
             .keyboardShortcut("l", modifiers: [.command, .shift])
-            Button("Virtual Touchpad") {
+            Button(AppMenuTitles.virtualTouchpad) {
                 NotificationCenter.default.post(name: .toggleVirtualTouchpad, object: WindowFocus.keyWindow)
             }
         }

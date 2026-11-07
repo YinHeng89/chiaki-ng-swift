@@ -20,7 +20,7 @@ import Foundation
         /// Titles for the selected account are loaded.
         case loaded
         /// The last request failed with this message.
-        case failed(String)
+        case failed(LocalizedStringResource)
     }
     /// The entitlements panel's accounts, loaded titles and display choices.
     @ObservableState public struct State: Equatable {
@@ -82,7 +82,7 @@ import Foundation
         /// The account read with this identifier finished with these accounts.
         case accountsLoaded(UUID, [EntitlementAccount])
         /// The account read with this identifier failed with this message.
-        case accountsFailed(UUID, String)
+        case accountsFailed(UUID, LocalizedStringResource)
         /// The user chose a different account, clearing any loaded titles.
         case selectAccount(UUID?)
         /// The user asked to load the selected account's titles.
@@ -92,7 +92,7 @@ import Foundation
         /// The title fetch with this identifier reported how the catalogue was fetched.
         case reported(UUID, CatalogFetchReport?)
         /// The title fetch with this identifier failed with this message.
-        case failed(UUID, String)
+        case failed(UUID, LocalizedStringResource)
         /// The user chose which service's titles to list.
         case service(EntitlementService)
         /// The user chose a visibility filter.
@@ -131,7 +131,7 @@ import Foundation
                     } catch is CancellationError {
                         return
                     } catch {
-                        await send(.accountsFailed(id, "Saved accounts could not be read."))
+                        await send(.accountsFailed(id, .settingsEntitlementsAccountsUnreadable))
                     }
                 }.cancellable(id: CancelID.accounts, cancelInFlight: true)
             case let .accountsLoaded(id, accounts):
@@ -176,9 +176,10 @@ import Foundation
                     } catch is CancellationError {
                         return
                     } catch let failure as EntitlementsFailure {
-                        await send(.failed(id, failure.message))
+                        await send(.failed(id, .verbatim(failure.message)))
                     } catch {
-                        await send(.failed(id, LogFormat.error(error)))
+                        let detail = LogFormat.error(error)
+                        await send(.failed(id, .verbatim(detail)))
                     }
                 }.cancellable(id: CancelID.load, cancelInFlight: true)
             case let .loaded(id, titles):
@@ -222,6 +223,18 @@ import Foundation
 public enum EntitlementFilter: String, CaseIterable, Equatable, Sendable {
     /// Shows every title, only the titles that are offered, or only the titles that were dropped.
     case all = "All", visible = "Visible", hidden = "Hidden"
+
+    /// The filter's name, shown on its segment.
+    public var title: LocalizedStringResource {
+        switch self {
+        case .all:
+            .settingsEntitlementsFilterAll
+        case .visible:
+            .settingsEntitlementsFilterVisible
+        case .hidden:
+            .settingsEntitlementsFilterHidden
+        }
+    }
 
     /// Returns whether the title passes this filter based on its visibility.
     public func matches(_ title: ExplainedTitle) -> Bool {

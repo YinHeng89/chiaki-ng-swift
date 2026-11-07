@@ -15,7 +15,7 @@ struct MobileConsolesView: View {
         let consoles = MobileConsoleStatus.all(in: store.state)
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                MobilePageTitle("Consoles")
+                MobilePageTitle(.mobileConsolesTitle)
                 if consoles.count == 1, let only = consoles.first {
                     single(only)
                 } else {
@@ -111,7 +111,7 @@ struct MobileRecentRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Recently Played")
+            Text(.mobileConsolesRecentlyPlayed)
                 .font(.title3.bold())
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 12) {
@@ -167,12 +167,12 @@ struct MobileRecentTile: View {
 /// The title at the top of a touch library page.
 struct MobilePageTitle: View {
     /// The title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// Creates a page title.
     ///
     /// - Parameter title: The title.
-    init(_ title: String) {
+    init(_ title: LocalizedStringResource) {
         self.title = title
     }
 

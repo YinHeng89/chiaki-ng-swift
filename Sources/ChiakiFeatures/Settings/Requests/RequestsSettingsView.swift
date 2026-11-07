@@ -66,18 +66,18 @@ public struct RequestsSettingsView: View {
     }
 
     @ViewBuilder private func requestStats(_ all: CoreHTTPTally) -> some View {
-        stat("Requests", "\(all.requests)")
-        stat("HTTP errors", "\(all.httpErrors)")
-        stat("Transport errors", "\(all.transportErrors)")
+        stat(.settingsRequestsStatRequests, "\(all.requests)")
+        stat(.settingsRequestsStatHttpErrors, "\(all.httpErrors)")
+        stat(.settingsRequestsStatTransportErrors, "\(all.transportErrors)")
     }
 
     @ViewBuilder private func volumeStats(_ all: CoreHTTPTally) -> some View {
-        stat("Received", LogFormat.size(all.bytesReceived))
-        stat("Sent", LogFormat.size(all.bytesSent))
-        stat("In log", "\(store.log.exchanges.count)")
+        stat(.settingsRequestsStatReceived, LogFormat.size(all.bytesReceived))
+        stat(.settingsRequestsStatSent, LogFormat.size(all.bytesSent))
+        stat(.settingsRequestsStatInLog, "\(store.log.exchanges.count)")
     }
 
-    private func stat(_ label: String, _ value: String) -> some View {
+    private func stat(_ label: LocalizedStringResource, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label).font(.caption).foregroundStyle(.secondary)
             Text(value).font(.title3.weight(.semibold)).monospacedDigit()
@@ -87,19 +87,19 @@ public struct RequestsSettingsView: View {
 
     private var controls: some View {
         HStack(spacing: 12) {
-            FocusButton("Clear log", role: .destructive) {
+            FocusButton(.settingsRequestsClearLog, role: .destructive) {
                 store.send(.clearLog)
             }
             .glassControlStyle()
             .disabled(store.log.exchanges.isEmpty)
             .accessibilityIdentifier("requests-clear-log")
-            FocusButton("Reset counts") {
+            FocusButton(.settingsRequestsResetCounts) {
                 store.send(.resetCounts)
             }
             .glassControlStyle()
             .disabled(store.log.totals.all.requests == 0)
             .accessibilityIdentifier("requests-reset-counts")
-            FocusButton("Clear filters") {
+            FocusButton(.settingsRequestsClearFilters) {
                 store.send(.clearFilters)
             }
             .glassControlStyle()
@@ -114,13 +114,17 @@ public struct RequestsSettingsView: View {
     private var filters: some View {
         SettingsCard {
             HStack(spacing: 16) {
-                TextField("Search URLs", text: search)
+                TextField(String(localized: .settingsRequestsSearchUrls), text: search)
                     .textFieldStyle(.roundedBorder)
                     .menuFocusBinding($searchFocused)
-                    .controllerKeyboard(title: "Search URLs", text: search, isFocused: searchFocused)
+                    .controllerKeyboard(
+                        title: .settingsRequestsSearchUrls,
+                        text: search,
+                        isFocused: searchFocused
+                    )
                     .accessibilityIdentifier("requests-search")
                 Toggle(
-                    "Failures only",
+                    .settingsRequestsFailuresOnly,
                     isOn: Binding(
                         get: {
                             store.filter.failuresOnly
@@ -133,7 +137,7 @@ public struct RequestsSettingsView: View {
                 .accessibilityIdentifier("requests-failures-only")
             }
             Divider()
-            chipRow("Credentials") {
+            chipRow(.settingsRequestsCredentials) {
                 ForEach(RequestsReducer.CredentialFilter.allCases, id: \.self) { credential in
                     chip(credential.title, chosen: store.filter.credentials.contains(credential)) {
                         store.send(.toggleCredential(credential))
@@ -141,7 +145,7 @@ public struct RequestsSettingsView: View {
                 }
             }
             Divider()
-            chipRow("Areas") {
+            chipRow(.settingsRequestsAreas) {
                 ForEach(CoreHTTPArea.allCases, id: \.self) { area in
                     chip(area.title, chosen: store.filter.areas.contains(area)) {
                         store.send(.toggleArea(area))
@@ -150,10 +154,14 @@ public struct RequestsSettingsView: View {
             }
             if !store.baseChoices.isEmpty {
                 Divider()
-                chipRow("Bases") {
+                chipRow(.settingsRequestsBases) {
                     ForEach(store.baseChoices) { choice in
                         chip(
-                            "\(choice.host)  \(choice.lifetime)  \(choice.kept) in log",
+                            .settingsRequestsBaseChip(
+                                host: choice.host,
+                                lifetime: String(choice.lifetime),
+                                kept: String(choice.kept)
+                            ),
                             chosen: choice.chosen
                         ) {
                             store.send(.toggleBase(choice.base))
@@ -165,7 +173,7 @@ public struct RequestsSettingsView: View {
         }
     }
 
-    private func chipRow(_ title: String, @ViewBuilder chips: () -> some View) -> some View {
+    private func chipRow(_ title: LocalizedStringResource, @ViewBuilder chips: () -> some View) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text(title).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 .frame(width: 84, alignment: .leading)
@@ -179,7 +187,9 @@ public struct RequestsSettingsView: View {
         }
     }
 
-    private func chip(_ title: String, chosen: Bool, action: @escaping () -> Void) -> some View {
+    private func chip(
+        _ title: LocalizedStringResource, chosen: Bool, action: @escaping () -> Void
+    ) -> some View {
         FocusButton(action: action) {
             Label(title, systemImage: chosen
                 ? "checkmark.circle.fill"
@@ -197,8 +207,8 @@ public struct RequestsSettingsView: View {
         let shown = store.shown
         if shown.isEmpty {
             Text(store.log.exchanges.isEmpty
-                ? "No requests"
-                : "No matching requests")
+                ? .settingsRequestsNoRequests
+                : .settingsRequestsNoMatchingRequests)
                 .foregroundStyle(.secondary)
         } else {
             LazyVStack(alignment: .leading, spacing: 6) {
@@ -243,8 +253,8 @@ public struct RequestsSettingsView: View {
         Text(shown.size).monospacedDigit().foregroundStyle(.secondary)
             .frame(width: 70, alignment: .trailing)
         VStack(alignment: .leading, spacing: 2) {
-            ForEach(shown.credentials, id: \.self) { credential in
-                Text(credential).font(.caption)
+            ForEach(shown.credentials.indices, id: \.self) { index in
+                Text(shown.credentials[index]).font(.caption)
             }
         }
         .frame(width: 120, alignment: .leading)
@@ -293,19 +303,19 @@ private struct RequestDetailView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
-                FocusButton("Copy as cURL") {
+                FocusButton(.settingsRequestsCopyCurl) {
                     store.send(.copyCurl)
                 }
                 .glassControlStyle()
                 .disabled(!loaded)
                 .accessibilityIdentifier("requests-copy-curl")
-                FocusButton("Copy response") {
+                FocusButton(.settingsRequestsCopyResponse) {
                     store.send(.copyResponse)
                 }
                 .glassControlStyle()
                 .disabled(!loaded)
                 .accessibilityIdentifier("requests-copy-response")
-                FocusButton("Close") {
+                FocusButton(.commonClose) {
                     close()
                 }
                 .glassControlStyle()
@@ -318,15 +328,15 @@ private struct RequestDetailView: View {
             case .loading:
                 ProgressView().controlSize(.small)
             case .missing:
-                Label("This request is no longer in the log.", systemImage: "exclamationmark.triangle")
+                Label(.settingsRequestsMissing, systemImage: "exclamationmark.triangle")
                     .foregroundStyle(.red)
             case .shown(_, let detail):
-                section("Request") {
-                    marked("URL", exchange.url, part: .url)
+                section(.settingsRequestsRequest) {
+                    marked(.settingsRequestsUrl, exchange.url, part: .url)
                     headers(detail.requestHeaders, request: true)
                     shownBody(detail.requestBody, part: .requestBody)
                 }
-                section("Response") {
+                section(.settingsRequestsResponse) {
                     if let error = exchange.transportError {
                         Label(error.title, systemImage: "exclamationmark.triangle")
                             .foregroundStyle(.red)
@@ -348,21 +358,24 @@ private struct RequestDetailView: View {
 
     private var facts: some View {
         VStack(alignment: .leading, spacing: 3) {
-            fact("Endpoint", exchange.label)
-            fact("Credential", exchange.credentialLabel)
-            fact("Attempt", "\(exchange.attempt)")
-            fact("Started", exchange.startedAt.formatted(date: .abbreviated, time: .standard))
-            fact("Status", exchange.status.map { code in
+            fact(.settingsRequestsFactEndpoint, exchange.label)
+            fact(.settingsRequestsFactCredential, exchange.credentialLabel)
+            fact(.settingsRequestsFactAttempt, "\(exchange.attempt)")
+            fact(
+                .settingsRequestsFactStarted,
+                exchange.startedAt.formatted(date: .abbreviated, time: .standard)
+            )
+            fact(.settingsRequestsFactStatus, exchange.status.map { code in
                 exchange.reason.isEmpty
                     ? "\(code)"
                     : "\(code) \(exchange.reason)"
-            } ?? exchange.transportError?.title ?? "")
-            fact("Sent", LogFormat.size(exchange.bytesSent))
-            fact("Received", LogFormat.size(exchange.bytesReceived))
+            } ?? exchange.transportError.map { String(localized: $0.title) } ?? "")
+            fact(.settingsRequestsStatSent, LogFormat.size(exchange.bytesSent))
+            fact(.settingsRequestsStatReceived, LogFormat.size(exchange.bytesReceived))
         }
     }
 
-    @ViewBuilder private func fact(_ label: String, _ value: String) -> some View {
+    @ViewBuilder private func fact(_ label: LocalizedStringResource, _ value: String) -> some View {
         if !value.isEmpty {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(label).font(.caption).foregroundStyle(.secondary)
@@ -372,14 +385,16 @@ private struct RequestDetailView: View {
         }
     }
 
-    private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
+    private func section(
+        _ title: LocalizedStringResource, @ViewBuilder content: () -> some View
+    ) -> some View {
         SettingsCard(title) {
             content()
         }
     }
 
     private func marked(
-        _ title: String, _ text: CoreHTTPMarkedText, part: RequestsReducer.SecretPart
+        _ title: LocalizedStringResource, _ text: CoreHTTPMarkedText, part: RequestsReducer.SecretPart
     ) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
@@ -392,7 +407,7 @@ private struct RequestDetailView: View {
 
     private func headers(_ headers: [CoreHTTPHeader], request: Bool) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Headers").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Text(.settingsRequestsHeaders).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             ForEach(Array(headers.enumerated()), id: \.offset) { index, header in
                 let part: RequestsReducer.SecretPart = request
                     ? .requestHeader(index)
@@ -411,18 +426,21 @@ private struct RequestDetailView: View {
 
     private func shownBody(_ body: CoreHTTPBody, part: RequestsReducer.SecretPart) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Body").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Text(.settingsRequestsBody).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             if body.truncated {
                 Label(
-                    "Truncated: \(LogFormat.size(body.kept)) of \(LogFormat.size(body.size)) kept",
+                    .settingsRequestsTruncated(
+                        kept: LogFormat.size(body.kept),
+                        total: LogFormat.size(body.size)
+                    ),
                     systemImage: "scissors"
                 )
                 .foregroundStyle(.orange)
             }
             if body.binary {
-                Text("Binary, \(LogFormat.size(body.size))").foregroundStyle(.secondary)
+                Text(.settingsRequestsBinary(size: LogFormat.size(body.size))).foregroundStyle(.secondary)
             } else if body.text.isEmpty {
-                Text("Empty").foregroundStyle(.secondary)
+                Text(.settingsRequestsEmpty).foregroundStyle(.secondary)
             } else {
                 ScrollView {
                     Text(RequestMasking.shown(body.text, part: part, revealed: store.revealed))
@@ -443,9 +461,10 @@ private struct RequestDetailView: View {
                 HStack(spacing: 8) {
                     ForEach(Array(text.spans.enumerated()), id: \.offset) { index, span in
                         let secret = RequestsReducer.Secret(part, index)
+                        let kind = String(localized: span.kind.name)
                         FocusButton(store.revealed.contains(secret)
-                            ? "Hide \(span.kind.title)"
-                            : "Reveal \(span.kind.title)") {
+                            ? .settingsRequestsHideSecret(kind: kind)
+                            : .settingsRequestsRevealSecret(kind: kind)) {
                                 store.send(.toggleSecret(secret))
                             }
                             .glassControlStyle()

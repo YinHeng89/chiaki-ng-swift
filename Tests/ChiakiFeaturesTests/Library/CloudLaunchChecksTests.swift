@@ -56,10 +56,14 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     await store.skipReceivedActions(strict: false)
 }
 
-@Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchChecksShowTheCloudRowAsUncheckedBeforeAnyCheck() throws {
+@Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func launchChecksShowTheCloudRowAsUncheckedBeforeAnyCheck() throws {
     let row = try checks(for: ps5)
     #expect(row.steps == [.premium, .yourCopy, .cloudGame, .restrictions, .release])
-    #expect(row.steps.map(\.label) == ["Premium", "Your copy", "Cloud game", "Restrictions", "Release"])
+    #expect(
+        row.steps.map { String(localized: $0.label) }
+            == ["Premium", "Your copy", "Cloud game", "Restrictions", "Release"]
+    )
     #expect(marks(row) == Array(repeating: .unchecked, count: 5))
     #expect(row.reason == nil)
 }
@@ -89,7 +93,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(marks(row) == Array(repeating: .passed, count: 5))
 }
 
-@Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchChecksCrossYourCopyAndLeaveTheRestUnchecked() throws {
+@Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func launchChecksCrossYourCopyAndLeaveTheRestUnchecked() throws {
     var row = try checks(for: ps5)
     let refusal = CloudClearanceRefusal(refusal: .notStreamable, notice: "Not on PS5 cloud")
     for check in [CloudLaunchCheck.loadingLibrary, .cloudStreaming, .entitlement] {
@@ -97,13 +102,14 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     }
     row.finish(.success(.refused(refusal)))
     #expect(marks(row) == [.passed, .refused, .unchecked, .unchecked, .unchecked])
-    #expect(row.reason == "This title can’t be streamed: Not on PS5 cloud")
+    #expect(row.reason.map { String(localized: $0) } == "This title can’t be streamed: Not on PS5 cloud")
     #expect(row.handOff == nil)
     row.observe(.cloudGame)
     #expect(marks(row) == [.passed, .refused, .unchecked, .unchecked, .unchecked])
 }
 
-@Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchChecksFoldOwnershipAndEntitlementIntoYourCopy() throws {
+@Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func launchChecksFoldOwnershipAndEntitlementIntoYourCopy() throws {
     var row = try checks(for: ps5)
     row.observe(.loadingLibrary)
     row.observe(.cloudStreaming)
@@ -124,7 +130,7 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
 @Test func launchChecksShowMembershipAndReleaseForPSNow() throws {
     var row = try checks(for: psNow)
     #expect(row.steps == [.membership, .release])
-    #expect(row.steps.map(\.label) == ["Membership", "Release"])
+    #expect(row.steps.map { String(localized: $0.label) } == ["Membership", "Release"])
     row.observe(.loadingLibrary)
     row.observe(.membership)
     #expect(marks(row) == [.checking, .unchecked])
@@ -136,15 +142,17 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(marks(row) == [.passed, .passed])
 }
 
-@Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchChecksRefusedWhileLoadingLeaveEveryStepUnchecked() throws {
+@Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func launchChecksRefusedWhileLoadingLeaveEveryStepUnchecked() throws {
     var row = try checks(for: ps5)
     row.observe(.loadingLibrary)
     row.finish(.success(.refused(CloudClearanceRefusal(refusal: .notListed))))
     #expect(marks(row) == Array(repeating: .unchecked, count: 5))
-    #expect(row.reason == "This title isn’t in the cloud catalog.")
+    #expect(row.reason.map { String(localized: $0) } == "This title isn’t in the cloud catalog.")
 }
 
-@Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchChecksThatCannotBeAnsweredCrossTheCurrentStep() throws {
+@Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func launchChecksThatCannotBeAnsweredCrossTheCurrentStep() throws {
     var row = try checks(for: ps5)
     row.observe(.cloudStreaming)
     row.finish(.failure(CatalogFailure(reason: .unavailable, needsSignIn: true)))
@@ -152,7 +160,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(row.reason == CloudPlaybackFailureMessage.text(for: .signInRequired))
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func checkAndPlayRunsTheChecksAndOffersTheClearedLaunch() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func checkAndPlayRunsTheChecksAndOffersTheClearedLaunch() async throws {
     let events: [CloudLaunchClearanceEvent] = [
         .check(.loadingLibrary), .check(.cloudStreaming), .check(.entitlement), .check(.cloudGame),
         .check(.exclusions), .check(.release), .finished(.success(.cleared(nil)))
@@ -168,7 +177,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(checks.handOff == nil)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func checkAndPlayStopsWhenTheCardCloses() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func checkAndPlayStopsWhenTheCardCloses() async throws {
     let store = libraryStore(selecting: ps5, events: [.check(.loadingLibrary), .check(.cloudStreaming)])
     await store.send(.checkAndPlay(try CloudLaunchRequest(accountID: UUID(), game: ps5)))
     await settle(store)
@@ -180,7 +190,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(store.state.launchChecks == nil)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func checkAndPlayForgetsTheRowWhenTheChecksAreCancelled() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func checkAndPlayForgetsTheRowWhenTheChecksAreCancelled() async throws {
     let store = libraryStore(
         selecting: ps5,
         events: [
@@ -194,7 +205,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(store.state.launchChecks == nil)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func checkAndPlayAgainRerunsEveryCheck() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func checkAndPlayAgainRerunsEveryCheck() async throws {
     let refused = CloudClearanceRefusal(refusal: .needsPremium)
     let store = libraryStore(
         selecting: ps5,
@@ -205,7 +217,10 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     await settle(store)
     let first = try #require(store.state.launchChecks)
     #expect(marks(first) == [.refused, .unchecked, .unchecked, .unchecked, .unchecked])
-    #expect(first.reason == "PlayStation Plus Premium is required to stream this title.")
+    #expect(
+        first.reason.map { String(localized: $0) }
+            == "PlayStation Plus Premium is required to stream this title."
+    )
     await store.send(.select(ps5.id))
     #expect(store.state.launchChecks == first)
     store.dependencies.catalog.clearForLaunch = { _, _ in
@@ -222,7 +237,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     await store.finish()
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func aLaunchHandsOffWithoutTheDetailViewOnScreen() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func aLaunchHandsOffWithoutTheDetailViewOnScreen() async throws {
     let store = libraryStore(selecting: ps5, events: [.finished(.success(.cleared(nil)))])
     let request = try CloudLaunchRequest(accountID: UUID(), game: ps5)
     await store.send(.checkAndPlay(request))
@@ -230,7 +246,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(store.state.launchChecks?.phase == .launched)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func aGameTheWebsiteListDoubtsWarnsBeforeItPlays() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func aGameTheWebsiteListDoubtsWarnsBeforeItPlays() async throws {
     let store = libraryStore(selecting: ps5, events: [.finished(.success(.cleared(nil)))])
     await store.send(.cardChecked(store.state.accountID!, ps5.id, .checking))
     let request = try CloudLaunchRequest(accountID: UUID(), game: ps5)
@@ -243,7 +260,8 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(store.state.launchChecks?.phase == .launched)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func cancellingTheWebsiteWarningForgetsTheClearedChecks() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func cancellingTheWebsiteWarningForgetsTheClearedChecks() async throws {
     let store = libraryStore(selecting: ps5, events: [.finished(.success(.cleared(nil)))])
     await store.send(.cardChecked(store.state.accountID!, ps5.id, .checking))
     let request = try CloudLaunchRequest(accountID: UUID(), game: ps5)

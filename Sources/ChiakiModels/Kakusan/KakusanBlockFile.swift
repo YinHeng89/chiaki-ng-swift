@@ -12,11 +12,11 @@ public enum KakusanBlockFile {
     public static func name(for block: KakusanBlock) -> String {
         switch block.kind {
         case .invitation:
-            "Kakusan invitation"
+            String(localized: .kakusanBlockFileInvitation)
         case .reply:
-            "Kakusan reply"
+            String(localized: .kakusanBlockFileReply)
         case .unrecognised:
-            "Kakusan"
+            String(localized: .kakusanBlockFileUnrecognised)
         }
     }
 

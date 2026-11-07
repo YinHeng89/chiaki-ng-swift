@@ -13,14 +13,14 @@ enum LightbarMode: Hashable, CaseIterable {
     case fixed
 
     /// The label shown for the choice in the light bar segments.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .allControllers:
-            "Same as all controllers"
+            .settingsControlsLightbarAllControllers
         case .followGame:
-            "Follow the game"
+            .settingsControlsLightbarFollowGame
         case .fixed:
-            "Fixed colour"
+            .settingsControlsLightbarFixed
         }
     }
 
@@ -92,7 +92,7 @@ struct LightbarChooser: View {
         VStack(alignment: .leading, spacing: 12) {
             FocusableSegments(options: modes, title: \.title, selection: mode)
                 .accessibilityElement(children: .contain)
-                .accessibilityLabel("Light bar")
+                .accessibilityLabel(.settingsControlsLightBar)
             if case .fixed(let selected) = value {
                 swatches(selected: selected)
             }
@@ -108,16 +108,16 @@ struct LightbarChooser: View {
         }
     }
 
-    private var detail: String {
+    private var detail: LocalizedStringResource {
         switch value {
         case nil:
             inherited == .followGame
-                ? "Uses the setting for all controllers, which follows the colour the game asks for."
-                : "Uses the fixed colour set for all controllers."
+                ? .settingsControlsLightbarInheritedFollow
+                : .settingsControlsLightbarInheritedFixed
         case .followGame:
-            "The light bar shows the colour the game asks for, such as a player colour or health."
+            .settingsControlsLightbarFollowDetail
         case .fixed:
-            "The light bar keeps this colour for the whole stream."
+            .settingsControlsLightbarFixedDetail
         }
     }
 
@@ -198,8 +198,8 @@ struct LightbarCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Light bar").font(.headline)
-            Text("Applies to every controller that doesn’t have its own light bar setting.")
+            Text(.settingsControlsLightBar).font(.headline)
+            Text(.settingsControlsLightbarCardFooter)
                 .font(.callout)
                 .foregroundStyle(.secondary)
             LightbarChooser(value: store.draft.lightbar, inherited: nil) { value in

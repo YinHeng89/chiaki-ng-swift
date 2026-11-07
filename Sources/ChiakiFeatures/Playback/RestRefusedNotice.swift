@@ -8,7 +8,7 @@ public struct RestRefusedNotice: View {
     public init() {
     }
 
-    private static let message = "Your console didn’t go into rest mode. It’s still on."
+    private static let message: LocalizedStringResource = .playbackStreamRestRefused
 
     public var body: some View {
         Label(Self.message, systemImage: "exclamationmark.triangle.fill")
@@ -17,7 +17,7 @@ public struct RestRefusedNotice: View {
             .padding(.vertical, 8)
             .glassEffect(AppGlass.control.tint(.orange.opacity(0.25)), in: .capsule)
             .onAppear {
-                AccessibilityNotification.Announcement(Self.message).post()
+                AccessibilityNotification.Announcement(String(localized: Self.message)).post()
             }
     }
 }

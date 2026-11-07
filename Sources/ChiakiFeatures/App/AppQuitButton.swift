@@ -21,7 +21,7 @@ extension EnvironmentValues {
                 AppIcon.quit.image.frame(width: 32, height: 32)
             }
             .glassControlStyle().focusBorderShape(.circle)
-            .help("Quit chiaki-ng").accessibilityLabel("Quit chiaki-ng")
+            .help(.appQuitButton).accessibilityLabel(.appQuitButton)
         }
     }
 #else

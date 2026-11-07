@@ -44,9 +44,9 @@ struct StreamDiagnosticsReport: Equatable {
     /// A labelled value with a health rating, shown as one line of diagnostics.
     struct Row: Equatable {
         /// Name of the measurement.
-        let label: String
+        let label: LocalizedStringResource
         /// Formatted value.
-        let value: String
+        let value: LocalizedStringResource
         /// Health rating used to colour the value.
         let tone: Tone
 
@@ -56,26 +56,41 @@ struct StreamDiagnosticsReport: Equatable {
         ///   - label: Name of the measurement.
         ///   - value: Formatted value.
         ///   - tone: Health rating, neutral by default.
-        init(_ label: String, _ value: String, _ tone: Tone = .neutral) {
+        init(_ label: LocalizedStringResource, _ value: LocalizedStringResource, _ tone: Tone = .neutral) {
             self.label = label
             self.value = value
             self.tone = tone
         }
     }
 
-    /// Step of the streaming pipeline that a diagnostics stage summarises, with its display title as the raw
-    /// value.
-    enum StageKind: String, CaseIterable {
+    /// Step of the streaming pipeline that a diagnostics stage summarises.
+    enum StageKind: CaseIterable {
         /// Packets arriving from the console.
-        case network = "Network"
+        case network
         /// Packets assembled into frames.
-        case assembly = "Assembly"
+        case assembly
         /// Frames decoded into images.
-        case decode = "Decode"
+        case decode
         /// Frames rendered on the GPU.
-        case render = "Render"
+        case render
         /// Frames presented to the display.
-        case display = "Display"
+        case display
+
+        /// The stage's title, shown on its card and in the compact alert.
+        var title: LocalizedStringResource {
+            switch self {
+            case .network:
+                .playbackDiagnosticsStageNetwork
+            case .assembly:
+                .playbackDiagnosticsStageAssembly
+            case .decode:
+                .playbackDiagnosticsStageDecode
+            case .render:
+                .playbackDiagnosticsStageRender
+            case .display:
+                .playbackDiagnosticsStageDisplay
+            }
+        }
     }
 
     /// Summary of one pipeline step: a headline figure, its graph history and supporting rows.
@@ -85,7 +100,7 @@ struct StreamDiagnosticsReport: Equatable {
         /// Main figure shown for the stage.
         let headline: String
         /// Unit text shown after the headline.
-        let unit: String
+        let unit: LocalizedStringResource
         /// Health rating used to colour the value.
         let tone: Tone
         /// Graph values from the diagnostics history, oldest first.
@@ -102,20 +117,20 @@ struct StreamDiagnosticsReport: Equatable {
     /// Titled group of rows in the full diagnostics listing.
     struct Section: Equatable, Identifiable {
         /// Heading shown above the rows.
-        let title: String
+        let title: LocalizedStringResource
         /// Supporting measurements shown under the headline.
         let rows: [Row]
 
-        /// Identifies the section by its title.
+        /// Identifies the section by its title's catalog key.
         var id: String {
-            title
+            title.key
         }
     }
 
     /// Header badge made of text segments laid out side by side, with a health rating.
     struct Chip: Equatable {
         /// Text pieces shown in order within the chip.
-        let segments: [String]
+        let segments: [LocalizedStringResource]
         /// Health rating used to colour the chip.
         var tone = Tone.neutral
 
@@ -124,7 +139,7 @@ struct StreamDiagnosticsReport: Equatable {
         /// - Parameters:
         ///   - segments: Text pieces shown in order.
         ///   - tone: Health rating, neutral by default.
-        init(_ segments: [String], tone: Tone = .neutral) {
+        init(_ segments: [LocalizedStringResource], tone: Tone = .neutral) {
             self.segments = segments
             self.tone = tone
         }
@@ -170,7 +185,7 @@ extension StreamDiagnosticsReport {
             chips.append(route)
         }
         if stats.takionVersionKnown {
-            chips.append(Chip(["Takion v\(stats.takionVersion)"]))
+            chips.append(Chip([.playbackDiagnosticsTakionVersion(version: String(stats.takionVersion))]))
         }
         chips.append(Chip([codecDescription]))
         if let format = requestedFormat {
@@ -189,16 +204,16 @@ extension StreamDiagnosticsReport {
     /// nothing to show.
     var routeChip: Chip? {
         let route = Route(rawValue: stats.route) ?? .unknown
-        var segments = [String]()
+        var segments = [LocalizedStringResource]()
         switch route {
         case .psCloud:
-            segments = ["PS Cloud"] + datacenterSegments
+            segments = [.verbatim("PS Cloud")] + datacenterSegments
         case .psNow:
-            segments = ["PS Now"] + datacenterSegments
+            segments = [.verbatim("PS Now")] + datacenterSegments
         case .local:
-            segments = consoleSegments + ["LAN"]
+            segments = consoleSegments + [.playbackDiagnosticsRouteLan]
         case .internet:
-            segments = consoleSegments + ["Internet"]
+            segments = consoleSegments + [.playbackDiagnosticsRouteInternet]
         default:
             segments = datacenterSegments
         }
@@ -209,12 +224,12 @@ extension StreamDiagnosticsReport {
     }
 
     /// Console model for a local or internet route, or empty when unknown.
-    var consoleSegments: [String] {
+    var consoleSegments: [LocalizedStringResource] {
         switch RouteConsole(rawValue: stats.routeConsole) ?? .unknown {
         case .ps4:
-            return ["PS4"]
+            return [.verbatim("PS4")]
         case .ps5:
-            return ["PS5"]
+            return [.verbatim("PS5")]
         default:
             return []
         }
@@ -222,25 +237,25 @@ extension StreamDiagnosticsReport {
 
     /// Datacenter name, followed by its measured latency when the datacenter was chosen automatically or at
     /// launch.
-    var datacenterSegments: [String] {
+    var datacenterSegments: [LocalizedStringResource] {
         guard let datacenter else {
             return []
         }
         guard let rttMs = datacenter.rttMs, datacenter.automatic || datacenter.atLaunch else {
-            return [datacenter.name]
+            return [.verbatim(datacenter.name)]
         }
-        return [datacenter.name, "\(rttMs) ms"]
+        return [.verbatim(datacenter.name), .playbackDiagnosticsMilliseconds(value: String(rttMs))]
     }
 
     /// Requested codec with its bit depth once the source resolution is known.
-    var codecDescription: String {
+    var codecDescription: LocalizedStringResource {
         guard stats.sourceWidth > 0 else {
-            return requestedCodec
+            return .verbatim(requestedCodec)
         }
         if stats.tenBit {
-            return "\(requestedCodec) 10-bit"
+            return .playbackDiagnosticsCodecTenBit(codec: requestedCodec)
         }
-        return "\(requestedCodec) 8-bit"
+        return .playbackDiagnosticsCodecEightBit(codec: requestedCodec)
     }
 
     /// Codec the session asked for: HEVC HDR, HEVC or H.264.
@@ -256,21 +271,28 @@ extension StreamDiagnosticsReport {
 
     /// Requested resolution and frame rate, plus the presentation rate when it differs, or `nil` when no
     /// height was requested.
-    var requestedFormat: String? {
-        let height = stats.requestedHeight
-        guard height > 0 else {
+    var requestedFormat: LocalizedStringResource? {
+        let height = String(stats.requestedHeight)
+        guard stats.requestedHeight > 0 else {
             return nil
         }
         let fps = stats.requestedFPS
-        var format = "\(height)p"
-        if fps > 0 {
-            format += "\(fps)"
-        }
         let presentation = stats.presentationFrameRate
-        if presentation > 0, presentation != fps {
-            format += " to \(presentation) Hz"
+        let presented = presentation > 0 && presentation != fps
+        switch (fps > 0, presented) {
+        case (true, true):
+            return .playbackDiagnosticsFormatHeightRatePresented(
+                height: height,
+                fps: String(fps),
+                rate: String(presentation)
+            )
+        case (true, false):
+            return .playbackDiagnosticsFormatHeightRate(height: height, fps: String(fps))
+        case (false, true):
+            return .playbackDiagnosticsFormatHeightPresented(height: height, rate: String(presentation))
+        case (false, false):
+            return .playbackDiagnosticsFormatHeight(height: height)
         }
-        return format
     }
 
     /// Badge describing the resolution, frame rate and bitrate the console granted, rated as a warning when
@@ -283,11 +305,22 @@ extension StreamDiagnosticsReport {
         let fps = stats.grantedFPS
         let granted = Double(stats.grantedBitrate) / 1000
         let requested = Double(stats.requestedBitrate) / 1000
-        var text = "Granted \(height)p\(fps)"
-        if granted > 0 {
-            text += requested > 0 && abs(granted - requested) >= 0.05
-                ? ", \(oneDecimal(granted)) of \(oneDecimal(requested)) Mbps"
-                : ", \(oneDecimal(granted)) Mbps"
+        let text: LocalizedStringResource
+        if granted <= 0 {
+            text = .playbackDiagnosticsGranted(height: String(height), fps: String(fps))
+        } else if requested > 0 && abs(granted - requested) >= 0.05 {
+            text = .playbackDiagnosticsGrantedBitrateShort(
+                height: String(height),
+                fps: String(fps),
+                granted: oneDecimal(granted),
+                requested: oneDecimal(requested)
+            )
+        } else {
+            text = .playbackDiagnosticsGrantedBitrate(
+                height: String(height),
+                fps: String(fps),
+                granted: oneDecimal(granted)
+            )
         }
         let short = height < stats.requestedHeight
             || fps < stats.requestedFPS
@@ -310,12 +343,12 @@ extension StreamDiagnosticsReport {
     }
 
     /// Name of the active upscaler, or `nil` when spatial upscaling is off.
-    var upscaler: String? {
+    var upscaler: LocalizedStringResource? {
         if stats.advancedSpatial {
-            return "FSRCNNX"
+            return .verbatim("FSRCNNX")
         }
         if stats.spatialUpscaling {
-            return "MetalFX"
+            return .verbatim("MetalFX")
         }
         return nil
     }
@@ -367,15 +400,27 @@ extension StreamDiagnosticsReport {
         }
         if let row = stage.rows.first(where: { $0.tone == worst }) {
             return Row(
-                stage.kind.rawValue,
-                "\(stage.kind.rawValue) \(row.label.lowercased()) \(row.value)",
+                stage.kind.title,
+                .playbackDiagnosticsAlertRow(
+                    stage: String(localized: stage.kind.title),
+                    measurement: String(localized: row.label).localizedLowercase,
+                    value: String(localized: row.value)
+                ),
                 worst
             )
         }
         guard stage.kind != .network else {
             return nil
         }
-        return Row(stage.kind.rawValue, "\(stage.kind.rawValue) \(stage.headline) \(stage.unit)", worst)
+        return Row(
+            stage.kind.title,
+            .playbackDiagnosticsAlertHeadline(
+                stage: String(localized: stage.kind.title),
+                headline: stage.headline,
+                unit: String(localized: stage.unit)
+            ),
+            worst
+        )
     }
 
     /// Whether no interval has elapsed and no frames have been seen yet, so rates cannot be judged.
@@ -388,22 +433,29 @@ extension StreamDiagnosticsReport {
     var networkStage: Stage {
         var rows = [Row]()
         if stats.rttPresent {
-            rows.append(Row("RTT", rttValue))
+            rows.append(Row(.playbackDiagnosticsRowRtt, rttValue))
             if stats.rttSamples > 0 {
                 let spikes = stats.rttRecentMaxMicroseconds > 0
                     ? millisecondsValue(stats.rttRecentMaxMicroseconds / 1000)
-                    : Self.unavailable
-                rows.append(Row("RTT spikes", spikes))
-                rows.append(Row("RTT p99", millisecondsValue(stats.rttP99Microseconds / 1000)))
+                    : .verbatim(Self.unavailable)
+                rows.append(Row(.playbackDiagnosticsRowRttSpikes, spikes))
+                rows.append(Row(
+                    .playbackDiagnosticsRowRttP99,
+                    millisecondsValue(stats.rttP99Microseconds / 1000)
+                ))
             }
         } else {
-            rows.append(Row("RTT", Self.unavailable))
+            rows.append(Row(.playbackDiagnosticsRowRtt, .verbatim(Self.unavailable)))
         }
-        rows.append(Row("Loss", percent(packetLossPercent), lossTone(packetLossPercent)))
+        rows.append(Row(
+            .playbackDiagnosticsRowLoss,
+            .verbatim(percent(packetLossPercent)),
+            lossTone(packetLossPercent)
+        ))
         return Stage(
             kind: .network,
             headline: oneDecimal(telemetry.bitrateMbps),
-            unit: "Mbps",
+            unit: .playbackDiagnosticsUnitMbps,
             tone: lossTone(packetLossPercent),
             series: history.series(\.bitrateMbps),
             rows: rows
@@ -427,12 +479,12 @@ extension StreamDiagnosticsReport {
         return Stage(
             kind: .assembly,
             headline: String(lost),
-            unit: "lost in 10 s",
+            unit: .playbackDiagnosticsUnitLostRecently,
             tone: tone,
             series: history.series(\.framesLost),
             rows: [
-                Row("Keyframes asked", String(requests), countTone(requests)),
-                Row("Keyframe waits", String(waits), countTone(waits))
+                Row(.playbackDiagnosticsRowKeyframesAsked, .verbatim(String(requests)), countTone(requests)),
+                Row(.playbackDiagnosticsRowKeyframeWaits, .verbatim(String(waits)), countTone(waits))
             ]
         )
     }
@@ -444,12 +496,12 @@ extension StreamDiagnosticsReport {
         return Stage(
             kind: .decode,
             headline: oneDecimal(telemetry.sourceFPS),
-            unit: "fps",
+            unit: .playbackDiagnosticsUnitFps,
             tone: tone,
             series: history.series(\.decodedFPS),
             rows: [
-                Row("Errors", String(errors), countTone(errors, bad: true)),
-                Row("Time", Self.unavailable)
+                Row(.playbackDiagnosticsRowErrors, .verbatim(String(errors)), countTone(errors, bad: true)),
+                Row(.playbackDiagnosticsRowTime, .verbatim(Self.unavailable))
             ]
         )
     }
@@ -463,12 +515,12 @@ extension StreamDiagnosticsReport {
         return Stage(
             kind: .render,
             headline: millisecondsNumber(stats.gpuMilliseconds),
-            unit: "ms GPU",
+            unit: .playbackDiagnosticsUnitGpuMilliseconds,
             tone: gpuTone,
             series: history.series(\.gpuMilliseconds),
             rows: [
-                Row("Budget", millisecondsValue(telemetry.frameBudgetMilliseconds)),
-                Row("Upscaler", upscalerState, upscalerTone)
+                Row(.playbackDiagnosticsRowBudget, millisecondsValue(telemetry.frameBudgetMilliseconds)),
+                Row(.playbackDiagnosticsRowUpscaler, upscalerState, upscalerTone)
             ]
         )
     }
@@ -480,13 +532,19 @@ extension StreamDiagnosticsReport {
         return Stage(
             kind: .display,
             headline: presentationRate,
-            unit: "Hz",
+            unit: .playbackDiagnosticsUnitHertz,
             tone: .neutral,
             series: history.series(\.missRate),
             rows: [
-                Row("Missed", "\(oneDecimal(misses))/s"),
-                Row("Idle ticks", "\(oneDecimal(history.recentRate(\.idleTicks)))/s"),
-                Row("Replaced", "\(oneDecimal(history.recentRate(\.replacedFrames)))/s")
+                Row(.playbackDiagnosticsRowMissed, .verbatim("\(oneDecimal(misses))/s")),
+                Row(
+                    .playbackDiagnosticsRowIdleTicks,
+                    .verbatim("\(oneDecimal(history.recentRate(\.idleTicks)))/s")
+                ),
+                Row(
+                    .playbackDiagnosticsRowReplaced,
+                    .verbatim("\(oneDecimal(history.recentRate(\.replacedFrames)))/s")
+                )
             ]
         )
     }
@@ -504,12 +562,12 @@ extension StreamDiagnosticsReport {
     }
 
     /// Upscaler name, `Off`, or `Over budget` when the advanced upscaler fell back for exceeding its budget.
-    var upscalerState: String {
+    var upscalerState: LocalizedStringResource {
         guard let upscaler else {
-            return "Off"
+            return .commonOff
         }
         if stats.advancedBudgetFallback {
-            return "Over budget"
+            return .playbackDiagnosticsUpscalerOverBudget
         }
         return upscaler
     }
@@ -518,92 +576,97 @@ extension StreamDiagnosticsReport {
 extension StreamDiagnosticsReport {
     /// One-line audio description with channel layout, sample rate and buffer depth, or a waiting message
     /// before audio arrives.
-    var audioSummary: String {
+    var audioSummary: LocalizedStringResource {
         let channels = stats.audioReceivedChannels
         guard channels > 0 else {
-            return "Waiting for audio"
+            return .playbackDiagnosticsAudioWaiting
         }
         let rate = Double(stats.audioReceivedSampleRate) / 1000
         let kilohertz = rate == rate.rounded()
             ? String(Int(rate))
             : oneDecimal(rate)
-        return "\(channelLayout(channels)) at \(kilohertz) kHz, \(audioBuffer)"
+        return .playbackDiagnosticsAudioSummary(
+            layout: String(localized: channelLayout(channels)),
+            rate: kilohertz,
+            buffer: String(localized: audioBuffer)
+        )
     }
 
     /// Row counting recent audio underruns, or reporting audio unavailable when the output device failed.
     var audioUnderrunsSummary: Row {
         let underruns = history.recent(\.audioUnderruns)
         if stats.audioDeviceFailures > 0 {
-            return Row("Audio", "Unavailable", .bad)
+            return Row(.playbackDiagnosticsRowAudio, .playbackDiagnosticsAudioUnavailable, .bad)
         }
-        let label = underruns == 1
-            ? "underrun"
-            : "underruns"
-        return Row("Audio", "\(underruns) \(label)", countTone(underruns))
+        return Row(
+            .playbackDiagnosticsRowAudio,
+            .playbackDiagnosticsUnderruns(count: Int(underruns)),
+            countTone(underruns)
+        )
     }
 
     /// Names a channel layout.
     ///
     /// - Parameter channels: Number of audio channels.
     /// - Returns: Mono, Stereo, 5.1, 7.1 or a channel count.
-    func channelLayout(_ channels: Int) -> String {
+    func channelLayout(_ channels: Int) -> LocalizedStringResource {
         switch channels {
         case 1:
-            "Mono"
+            .playbackDiagnosticsLayoutMono
         case 2:
-            "Stereo"
+            .playbackDiagnosticsLayoutStereo
         case 6:
-            "5.1"
+            .verbatim("5.1")
         case 8:
-            "7.1"
+            .verbatim("7.1")
         default:
-            "\(channels) channels"
+            .playbackDiagnosticsLayoutChannels(count: channels)
         }
     }
 
     /// Audio playback state: unavailable, waiting, priming or playing.
-    var audioStatus: String {
+    var audioStatus: LocalizedStringResource {
         if stats.audioDeviceFailures > 0 {
-            return "Unavailable"
+            return .playbackDiagnosticsAudioUnavailable
         }
         switch stats.audioState {
         case 2:
-            return "Priming"
+            return .playbackDiagnosticsAudioPriming
         case 3:
-            return "Playing"
+            return .playbackDiagnosticsAudioPlaying
         default:
-            return "Waiting"
+            return .playbackDiagnosticsAudioWaitingShort
         }
     }
 
     /// Channel count received from the console, noting how many are active when fewer than all.
-    var receivedAudioChannels: String {
-        let description = audioChannels(stats.audioReceivedChannels)
+    var receivedAudioChannels: LocalizedStringResource {
+        let channels = stats.audioReceivedChannels
         let active = stats.audioReceivedActiveChannels
-        guard active > 0, active < stats.audioReceivedChannels else {
-            return description
+        guard channels > 0, active > 0, active < channels else {
+            return audioChannels(channels)
         }
-        return "\(description), \(active) active"
+        return .playbackDiagnosticsReceivedChannelsActive(channels: channels, active: active)
     }
 
     /// Channel count fed into audio playback.
-    var playbackAudioChannels: String {
+    var playbackAudioChannels: LocalizedStringResource {
         audioChannels(stats.audioChannels)
     }
 
     /// Sample rate received from the console in hertz, or waiting before audio arrives.
-    var receivedAudioRate: String {
+    var receivedAudioRate: LocalizedStringResource {
         guard stats.audioReceivedChannels > 0 else {
-            return "Waiting"
+            return .playbackDiagnosticsAudioWaitingShort
         }
-        return "\(stats.audioReceivedSampleRate) Hz"
+        return .playbackDiagnosticsHertz(value: String(stats.audioReceivedSampleRate))
     }
 
     /// Buffered audio in milliseconds.
-    var audioBuffer: String {
+    var audioBuffer: LocalizedStringResource {
         let sampleRate = max(1, stats.audioSampleRate)
         let milliseconds = Double(stats.audioBufferedFrames) / Double(sampleRate) * 1000
-        return "\(Int(milliseconds.rounded())) ms"
+        return .playbackDiagnosticsMilliseconds(value: String(Int(milliseconds.rounded())))
     }
 
     /// Audio health: bad after a device failure, warning after any underrun or overflow, good otherwise.
@@ -621,14 +684,11 @@ extension StreamDiagnosticsReport {
     ///
     /// - Parameter count: The channels.
     /// - Returns: The count with its unit, or that audio is still awaited.
-    func audioChannels(_ count: Int) -> String {
+    func audioChannels(_ count: Int) -> LocalizedStringResource {
         guard count > 0 else {
-            return "Waiting"
+            return .playbackDiagnosticsAudioWaitingShort
         }
-        let label = count == 1
-            ? "channel"
-            : "channels"
-        return "\(count) \(label)"
+        return .playbackDiagnosticsChannels(count: count)
     }
 }
 
@@ -651,52 +711,56 @@ extension StreamDiagnosticsReport {
         var rows = [bitrateRow]
         if stats.videoMetricsPresent {
             rows.append(Row(
-                "On wire",
-                "\(oneDecimal(stats.videoThroughputBPS / 1_000_000)) Mbps"
+                .playbackDiagnosticsRowOnWire,
+                .playbackDiagnosticsMegabits(value: oneDecimal(stats.videoThroughputBPS / 1_000_000))
             ))
             rows.append(Row(
-                "Frame transfer",
+                .playbackDiagnosticsRowFrameTransfer,
                 millisecondsValue(stats.videoTransferTimeMicroseconds / 1000)
             ))
         }
         if stats.extensionPresent {
             rows.append(Row(
-                "Jitter",
+                .playbackDiagnosticsRowJitter,
                 millisecondsValue(stats.extensionJitterMicroseconds / 1000)
             ))
-            rows.append(Row("Packets received", counter(stats.corePacketsReceived)))
-            rows.append(Row("Packets lost", counter(stats.extensionLost)))
+            rows.append(Row(.playbackDiagnosticsRowPacketsReceived, counter(stats.corePacketsReceived)))
+            rows.append(Row(.playbackDiagnosticsRowPacketsLost, counter(stats.extensionLost)))
         }
-        rows.append(Row("Rejected", counter(stats.coreRejectedPackets)))
-        rows.append(Row("Crypto rejects", counter(stats.coreCryptoRejections)))
-        rows.append(Row("Reordered", counter(stats.coreReorderSkipped)))
-        rows.append(Row("Reorder drops", counter(stats.coreReorderDropped)))
+        rows.append(Row(.playbackDiagnosticsRowRejected, counter(stats.coreRejectedPackets)))
+        rows.append(Row(.playbackDiagnosticsRowCryptoRejects, counter(stats.coreCryptoRejections)))
+        rows.append(Row(.playbackDiagnosticsRowReordered, counter(stats.coreReorderSkipped)))
+        rows.append(Row(.playbackDiagnosticsRowReorderDrops, counter(stats.coreReorderDropped)))
         let internalDrops = stats.coreDroppedPosts + stats.coreSendDropped
-        rows.append(Row("Internal drops", String(internalDrops), countTone(UInt64(max(0, internalDrops)))))
+        rows.append(Row(
+            .playbackDiagnosticsRowInternalDrops,
+            .verbatim(String(internalDrops)),
+            countTone(UInt64(max(0, internalDrops)))
+        ))
         if stats.coreLoopErrors > 0 {
-            rows.append(Row("Session errors", counter(stats.coreLoopErrors), .bad))
+            rows.append(Row(.playbackDiagnosticsRowSessionErrors, counter(stats.coreLoopErrors), .bad))
         }
         if stats.tosPresent, stats.tosLastPresent {
-            rows.append(Row("Marking", marking))
+            rows.append(Row(.playbackDiagnosticsRowMarking, marking))
         }
-        return Section(title: "Network", rows: rows)
+        return Section(title: .playbackDiagnosticsSectionNetwork, rows: rows)
     }
 
     /// Frames section with cumulative receive, loss, reference patch, FEC repair, keyframe, assembly and decode
     /// counters.
     var framesSection: Section {
-        Section(title: "Frames", rows: [
-            Row("Received", counter(stats.received)),
-            Row("Lost", counter(stats.lost)),
-            Row("Patched references", counter(stats.recovered)),
-            Row("Repaired by FEC", counter(stats.coreFecRepaired)),
-            Row("Keyframe requests", counter(stats.keyframeRequests)),
-            Row("Keyframe waits", counter(stats.coreDependencyRejections)),
-            Row("Unassembled", counter(stats.coreAssemblyRejections)),
-            Row("Duplicates", counter(stats.coreVideoDuplicate)),
-            Row("Stale", counter(stats.coreVideoStale)),
+        Section(title: .playbackDiagnosticsSectionFrames, rows: [
+            Row(.playbackDiagnosticsRowReceived, counter(stats.received)),
+            Row(.playbackDiagnosticsRowLost, counter(stats.lost)),
+            Row(.playbackDiagnosticsRowPatchedReferences, counter(stats.recovered)),
+            Row(.playbackDiagnosticsRowRepairedByFec, counter(stats.coreFecRepaired)),
+            Row(.playbackDiagnosticsRowKeyframeRequests, counter(stats.keyframeRequests)),
+            Row(.playbackDiagnosticsRowKeyframeWaits, counter(stats.coreDependencyRejections)),
+            Row(.playbackDiagnosticsRowUnassembled, counter(stats.coreAssemblyRejections)),
+            Row(.playbackDiagnosticsRowDuplicates, counter(stats.coreVideoDuplicate)),
+            Row(.playbackDiagnosticsRowStale, counter(stats.coreVideoStale)),
             Row(
-                "Decode errors",
+                .playbackDiagnosticsRowDecodeErrors,
                 counter(stats.decoderFailures),
                 countTone(UInt64(stats.decoderFailures), bad: true)
             )
@@ -707,40 +771,49 @@ extension StreamDiagnosticsReport {
     /// and zero-copy state.
     var presentationSection: Section {
         var rows = [
-            Row("Source", resolution(stats.sourceWidth, stats.sourceHeight)),
-            Row("Canvas", resolution(stats.outputWidth, stats.outputHeight)),
-            Row("Display", "\(stats.displayMaximumFPS) Hz"),
-            Row("Rendered", "\(oneDecimal(telemetry.presentedFPS)) fps"),
-            Row("Submitted", counter(stats.submitted)),
-            Row("Missed refresh", counter(stats.deadlineMisses)),
-            Row("No drawable", counter(stats.noDrawable)),
-            Row("Replaced frames", counter(stats.replacedFrames)),
-            Row("Idle ticks", counter(stats.idleTicks)),
-            Row("EDR headroom", headroomValue, edrTone),
-            Row("Zero copy", zeroCopyLabel, zeroCopyTone)
+            Row(.playbackDiagnosticsRowSource, resolution(stats.sourceWidth, stats.sourceHeight)),
+            Row(.playbackDiagnosticsRowCanvas, resolution(stats.outputWidth, stats.outputHeight)),
+            Row(
+                .playbackDiagnosticsRowDisplay,
+                .playbackDiagnosticsHertz(value: String(stats.displayMaximumFPS))
+            ),
+            Row(
+                .playbackDiagnosticsRowRendered,
+                .playbackDiagnosticsFramesPerSecond(value: oneDecimal(telemetry.presentedFPS))
+            ),
+            Row(.playbackDiagnosticsRowSubmitted, counter(stats.submitted)),
+            Row(.playbackDiagnosticsRowMissedRefresh, counter(stats.deadlineMisses)),
+            Row(.playbackDiagnosticsRowNoDrawable, counter(stats.noDrawable)),
+            Row(.playbackDiagnosticsRowReplacedFrames, counter(stats.replacedFrames)),
+            Row(.playbackDiagnosticsRowIdleTicks, counter(stats.idleTicks)),
+            Row(.playbackDiagnosticsRowEdrHeadroom, headroomValue, edrTone),
+            Row(.playbackDiagnosticsRowZeroCopy, zeroCopyLabel, zeroCopyTone)
         ]
         if telemetry.generatedFPS > 0 {
-            rows.insert(Row("Generated", "\(oneDecimal(telemetry.generatedFPS)) fps"), at: 3)
-            rows.append(Row("Generated drops", counter(stats.generatedDrops)))
+            rows.insert(Row(
+                .playbackDiagnosticsRowGenerated,
+                .playbackDiagnosticsFramesPerSecond(value: oneDecimal(telemetry.generatedFPS))
+            ), at: 3)
+            rows.append(Row(.playbackDiagnosticsRowGeneratedDrops, counter(stats.generatedDrops)))
         }
         if stats.gpuError != 0 {
-            rows.append(Row("GPU error", String(stats.gpuError), .bad))
+            rows.append(Row(.playbackDiagnosticsRowGpuError, .verbatim(String(stats.gpuError)), .bad))
         }
-        return Section(title: "Presentation", rows: rows)
+        return Section(title: .playbackDiagnosticsSectionPresentation, rows: rows)
     }
 
     /// Audio section with playback state, channels, rate, buffer and audio counters.
     var audioSection: Section {
-        Section(title: "Audio", rows: [
-            Row("State", audioStatus, audioTone),
-            Row("Received", receivedAudioChannels),
-            Row("Playback input", playbackAudioChannels),
-            Row("Source rate", receivedAudioRate),
-            Row("Buffer", audioBuffer),
-            Row("Underruns", counter(stats.audioUnderruns), audioTone),
-            Row("Overflows", counter(stats.audioOverflows), audioTone),
-            Row("Dropped", counter(stats.audioDroppedFrames), audioTone),
-            Row("Concealed", counter(stats.audioConcealmentFrames))
+        Section(title: .playbackDiagnosticsSectionAudio, rows: [
+            Row(.playbackDiagnosticsRowState, audioStatus, audioTone),
+            Row(.playbackDiagnosticsRowReceived, receivedAudioChannels),
+            Row(.playbackDiagnosticsRowPlaybackInput, playbackAudioChannels),
+            Row(.playbackDiagnosticsRowSourceRate, receivedAudioRate),
+            Row(.playbackDiagnosticsRowBuffer, audioBuffer),
+            Row(.playbackDiagnosticsRowUnderruns, counter(stats.audioUnderruns), audioTone),
+            Row(.playbackDiagnosticsRowOverflows, counter(stats.audioOverflows), audioTone),
+            Row(.playbackDiagnosticsRowDropped, counter(stats.audioDroppedFrames), audioTone),
+            Row(.playbackDiagnosticsRowConcealed, counter(stats.audioConcealmentFrames))
         ])
     }
 
@@ -748,18 +821,27 @@ extension StreamDiagnosticsReport {
     var bitrateRow: Row {
         let target = targetBitrateMbps
         guard target > 0 else {
-            return Row("Bitrate", "\(oneDecimal(telemetry.bitrateMbps)) Mbps")
+            return Row(
+                .playbackDiagnosticsRowBitrate,
+                .playbackDiagnosticsMegabits(value: oneDecimal(telemetry.bitrateMbps))
+            )
         }
-        return Row("Bitrate", "\(oneDecimal(telemetry.bitrateMbps)) of \(oneDecimal(target)) Mbps")
+        return Row(
+            .playbackDiagnosticsRowBitrate,
+            .playbackDiagnosticsMegabitsOf(
+                value: oneDecimal(telemetry.bitrateMbps),
+                total: oneDecimal(target)
+            )
+        )
     }
 
     /// Last observed DSCP class of the stream's packets, followed by its ECN codepoint when one was set.
-    var marking: String {
+    var marking: LocalizedStringResource {
         let dscp = dscpName(stats.tosLastDSCP)
         guard let ecn = ecnMarking(stats.tosLastECN) else {
             return dscp
         }
-        return "\(dscp) \(ecn)"
+        return .playbackDiagnosticsMarkingWithEcn(dscp: String(localized: dscp), ecn: ecn)
     }
 
     /// Frames rejected for reasons other than a missing drawable, counted as zero-copy failures.
@@ -768,11 +850,11 @@ extension StreamDiagnosticsReport {
     }
 
     /// Zero-copy state: active, or the number of rejected frames.
-    var zeroCopyLabel: String {
+    var zeroCopyLabel: LocalizedStringResource {
         if zeroCopyFailures == 0 {
-            return "Active"
+            return .playbackDiagnosticsZeroCopyActive
         }
-        return "\(zeroCopyFailures) rejected"
+        return .playbackDiagnosticsZeroCopyRejected(count: zeroCopyFailures)
     }
 
     /// Good while zero-copy has no failures, bad otherwise.
@@ -787,18 +869,18 @@ extension StreamDiagnosticsReport {
     ///
     /// - Parameter value: The DSCP codepoint.
     /// - Returns: Best effort, a class selector, an assured forwarding class, Expedited, or the raw value.
-    func dscpName(_ value: Int) -> String {
+    func dscpName(_ value: Int) -> LocalizedStringResource {
         switch value {
         case 0:
-            return "Best effort"
+            return .playbackDiagnosticsDscpBestEffort
         case 8, 16, 24, 32, 40, 48, 56:
-            return "CS\(value / 8)"
+            return .verbatim("CS\(value / 8)")
         case 10, 12, 14, 18, 20, 22, 26, 28, 30, 34, 36, 38:
-            return "AF\(value / 8)\((value % 8) / 2)"
+            return .verbatim("AF\(value / 8)\((value % 8) / 2)")
         case 46:
-            return "Expedited"
+            return .playbackDiagnosticsDscpExpedited
         default:
-            return "DSCP \(value)"
+            return .verbatim("DSCP \(value)")
         }
     }
 
@@ -836,48 +918,52 @@ extension StreamDiagnosticsReport {
 extension StreamDiagnosticsReport {
     /// Short dynamic range label: EDR when HDR output is active, PQ when PQ input is not shown as HDR, SDR
     /// otherwise.
-    var hdrShortLabel: String {
+    var hdrShortLabel: LocalizedStringResource {
         if hdrOutputActive, !sendsSDRBrightness {
-            return "EDR"
+            return .playbackDiagnosticsHdrShortEdr
         }
         if stats.perceptualQuantizer {
-            return "PQ"
+            return .playbackDiagnosticsHdrShortPq
         }
-        return "SDR"
+        return .playbackDiagnosticsHdrShortSdr
     }
 
     /// Sentence explaining the HDR pipeline state, including why HDR is inactive or how the content peak is
     /// tone mapped.
-    var hdrLongLabel: String {
+    var hdrLongLabel: LocalizedStringResource {
         if !stats.perceptualQuantizer {
             if stats.requestedHDR {
                 return requestedHDRSentSDR
             }
-            return "SDR transfer detected, HDR not requested"
+            return .playbackDiagnosticsHdrNotRequested
         }
         if !stats.layerHDR {
-            return "PQ input with EDR inactive"
+            return .playbackDiagnosticsHdrLayerInactive
         }
         if stats.displayPotentialEDR > 0, stats.displayPotentialEDR <= 1 {
-            return "PQ input, but this screen cannot show HDR"
+            return .playbackDiagnosticsHdrScreenCannot
         }
         if stats.displayMaximumEDR <= 1 {
-            return "PQ input, but macOS is not giving this screen HDR headroom right now"
+            return .playbackDiagnosticsHdrNoHeadroom
         }
         if sendsSDRBrightness {
             return sdrBrightnessLabel
         }
         guard stats.toneMapSource > 0, stats.contentPeakNits > 0 else {
-            return "PQ input with EDR active"
+            return .playbackDiagnosticsHdrActive
         }
-        let peak = Int(stats.contentPeakNits.rounded())
-        let source = stats.toneMapSource == 1
-            ? "the stream's"
-            : "a default"
-        guard compressesHighlights else {
-            return "PQ input with EDR active, \(source) \(peak) nit peak fits the screen"
+        let peak = String(Int(stats.contentPeakNits.rounded()))
+        let streamPeak = stats.toneMapSource == 1
+        switch (compressesHighlights, streamPeak) {
+        case (false, true):
+            return .playbackDiagnosticsHdrStreamPeakFits(peak: peak)
+        case (false, false):
+            return .playbackDiagnosticsHdrDefaultPeakFits(peak: peak)
+        case (true, true):
+            return .playbackDiagnosticsHdrStreamPeakCompressed(peak: peak)
+        case (true, false):
+            return .playbackDiagnosticsHdrDefaultPeakCompressed(peak: peak)
         }
-        return "PQ input with EDR active, compressing highlights above the screen for \(source) \(peak) nit peak"
     }
 
     /// Whether the content peak exceeds the usable EDR headroom, so highlights are compressed.
@@ -887,12 +973,11 @@ extension StreamDiagnosticsReport {
     }
 
     /// Bit depth and colour gamut of the video.
-    var colourDescription: String {
-        var depth = "8-bit"
+    var colourDescription: LocalizedStringResource {
         if stats.tenBit {
-            depth = "10-bit"
+            return .playbackDiagnosticsColourTenBit(gamut: gamutDescription)
         }
-        return "\(depth)  \(gamutDescription)"
+        return .playbackDiagnosticsColourEightBit(gamut: gamutDescription)
     }
 
     /// Colour gamut of the video: BT.2020 or BT.709.
@@ -934,13 +1019,16 @@ extension StreamDiagnosticsReport {
     }
 
     /// Smoothed round-trip time, with its variation when that is at least one millisecond.
-    var rttValue: String {
+    var rttValue: LocalizedStringResource {
         let smoothed = stats.rttSmoothedMicroseconds / 1000
         let variation = stats.rttVariationMicroseconds / 1000
         guard variation >= 1 else {
             return millisecondsValue(smoothed)
         }
-        return "\(millisecondsNumber(smoothed)) ± \(millisecondsNumber(variation)) ms"
+        return .playbackDiagnosticsMillisecondsVariation(
+            value: millisecondsNumber(smoothed),
+            variation: millisecondsNumber(variation)
+        )
     }
 
     /// Decoded frame rate rated against the requested rate, neutral while measuring.
@@ -1020,14 +1108,14 @@ extension StreamDiagnosticsReport {
     ///
     /// - Parameter value: The counter.
     /// - Returns: The formatted counter.
-    func counter(_ value: Int) -> String {
+    func counter(_ value: Int) -> LocalizedStringResource {
         if value >= 10_000_000 {
-            return "\(oneDecimal(Double(value) / 1_000_000))M"
+            return .verbatim("\(oneDecimal(Double(value) / 1_000_000))M")
         }
         if value >= 10000 {
-            return "\(oneDecimal(Double(value) / 1000))k"
+            return .verbatim("\(oneDecimal(Double(value) / 1000))k")
         }
-        return String(value)
+        return .verbatim(String(value))
     }
 
     /// Formats a resolution.
@@ -1036,8 +1124,8 @@ extension StreamDiagnosticsReport {
     ///   - width: The width in pixels.
     ///   - height: The height in pixels.
     /// - Returns: The width and height separated by a multiplication sign.
-    func resolution(_ width: Int, _ height: Int) -> String {
-        "\(width) × \(height)"
+    func resolution(_ width: Int, _ height: Int) -> LocalizedStringResource {
+        .verbatim("\(width) × \(height)")
     }
 
     /// Formats a percentage with one decimal place.
@@ -1069,7 +1157,7 @@ extension StreamDiagnosticsReport {
     ///
     /// - Parameter value: Milliseconds.
     /// - Returns: The number followed by ms.
-    func millisecondsValue(_ value: Double) -> String {
-        "\(millisecondsNumber(value)) ms"
+    func millisecondsValue(_ value: Double) -> LocalizedStringResource {
+        .playbackDiagnosticsMilliseconds(value: millisecondsNumber(value))
     }
 }

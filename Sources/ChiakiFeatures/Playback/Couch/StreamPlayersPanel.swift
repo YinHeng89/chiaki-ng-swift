@@ -19,9 +19,9 @@ struct StreamPlayersPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Players").font(.title2.weight(.semibold))
+                Text(.playbackCouchPlayersTitle).font(.title2.weight(.semibold))
                 Spacer(minLength: 12)
-                Text("\(store.seats.takenCount + 1) of 4 seats taken")
+                Text(.playbackCouchSeatsTaken(taken: store.seats.takenCount + 1))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -87,28 +87,28 @@ struct StreamPlayersPanel: View {
         }
     }
 
-    private var playerOneInput: String {
+    private var playerOneInput: Text {
         let keyboard = store.keyboardSeat == nil
         guard let controller = store.inventory.playerOne else {
             return keyboard
-                ? ControllerDevice.keyboard.name
-                : "No controller"
+                ? Text(ControllerDevice.keyboard.name)
+                : Text(.playbackCouchNoController)
         }
         return keyboard
-            ? "\(controller.name) and the keyboard"
-            : controller.name
+            ? Text(.playbackCouchControllerAndKeyboard(controller: controller.name))
+            : Text(controller.name)
     }
 
     private var hostCard: some View {
         card(highlighted: store.picking == 0) {
-            header(player: 1, bar: store.state.lightBar(for: 0), tag: "Host")
+            header(player: 1, bar: store.state.lightBar(for: 0), tag: .playbackCouchHostTag)
             if store.picking == 0 {
                 choosingBody
             } else {
-                Text("Ready")
+                Text(.playbackCouchReady)
                     .font(.callout)
                     .foregroundStyle(CouchTone.ready.color)
-                Text(playerOneInput)
+                playerOneInput
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -116,11 +116,12 @@ struct StreamPlayersPanel: View {
                 Spacer(minLength: 4)
                 VStack(alignment: .leading, spacing: 6) {
                     if !store.state.devices(of: 0).isEmpty {
-                        action("Controls", symbol: "slider.horizontal.3", target: .playerControls(0)) {
+                        action(.playbackCouchControls, symbol: "slider.horizontal.3",
+                               target: .playerControls(0)) {
                             store.send(.openControls(pad: 0))
                         }
                     }
-                    action("Change controller", symbol: "arrow.left.arrow.right",
+                    action(.playbackCouchChangeController, symbol: "arrow.left.arrow.right",
                            target: .playerReassign(0)) {
                         store.send(.pickController(pad: 0))
                     }
@@ -138,12 +139,12 @@ struct StreamPlayersPanel: View {
                 if store.picking == pad {
                     choosingBody
                 } else {
-                    Text("Open")
+                    Text(.playbackCouchOpen)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                     if store.seats.lowestOpenPad == pad {
                         Spacer(minLength: 4)
-                        action("Add player", symbol: "plus", target: .playerAdd(pad)) {
+                        action(.playbackCouchAddPlayer, symbol: "plus", target: .playerAdd(pad)) {
                             store.send(.pickController(pad: pad))
                         }
                     }
@@ -177,7 +178,7 @@ struct StreamPlayersPanel: View {
 extension StreamPlayersPanel {
     @ViewBuilder
     private var choosingBody: some View {
-        Text("Choosing a controller")
+        Text(.playbackCouchChoosingController)
             .font(.callout)
             .foregroundStyle(CouchTone.waiting.color)
     }
@@ -185,10 +186,10 @@ extension StreamPlayersPanel {
     private func picker(for pad: UInt8) -> some View {
         let options = store.state.controllerOptions(for: pad)
         return VStack(alignment: .leading, spacing: 10) {
-            Text("Controller for Player \(Int(pad) + 1)")
+            Text(.playbackCouchControllerForPlayer(number: Int(pad) + 1))
                 .font(.headline)
             if options.isEmpty {
-                Text("No other controllers connected")
+                Text(.playbackCouchNoOtherControllers)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -196,7 +197,7 @@ extension StreamPlayersPanel {
                 pickerRow(option, pad: pad)
                     .padding(.horizontal, 8)
             }
-            action("Cancel", symbol: nil, target: .playerCancelPick) {
+            action(.commonCancel, symbol: nil, target: .playerCancelPick) {
                 store.send(.cancelPicking)
             }
             .frame(maxWidth: 200)
@@ -216,7 +217,7 @@ extension StreamPlayersPanel {
                     ? "keyboard"
                     : "gamecontroller")
                     .frame(width: 24)
-                Text(title(of: option, for: pad))
+                title(of: option, for: pad)
                     .font(.callout.weight(.semibold))
                 Spacer(minLength: 8)
                 if let tag = tag(of: option) {
@@ -247,23 +248,23 @@ extension StreamPlayersPanel {
             .modifier(OptionalStreamMenuButtonFocus(focus: focus, target: target, focused: focused))
     }
 
-    private func title(of option: CouchControllerOption, for pad: UInt8) -> String {
+    private func title(of option: CouchControllerOption, for pad: UInt8) -> Text {
         if option.device.isKeyboard, pad == 0, option.holder == .playerOne {
-            return "Keyboard only"
+            return Text(.playbackCouchKeyboardOnly)
         }
-        return option.device.name
+        return Text(option.device.name)
     }
 
-    private func tag(of option: CouchControllerOption) -> String? {
+    private func tag(of option: CouchControllerOption) -> LocalizedStringResource? {
         switch option.holder {
         case nil:
             nil
         case .playerOne:
             option.device.isKeyboard && store.inventory.playerOne != nil
                 ? nil
-                : "Player 1"
+                : .playbackCouchPlayer(number: 1)
         case .seat(let other):
-            "Player \(Int(other) + 1)"
+            .playbackCouchPlayer(number: Int(other) + 1)
         }
     }
 
@@ -271,17 +272,21 @@ extension StreamPlayersPanel {
         VStack(alignment: .leading, spacing: 6) {
             rememberAction(seat)
             if case .ready = seat, seat.remote == nil {
-                action("Controls", symbol: "slider.horizontal.3", target: .playerControls(pad)) {
+                action(.playbackCouchControls, symbol: "slider.horizontal.3", target: .playerControls(pad)) {
                     store.send(.openControls(pad: pad))
                 }
-                action("Change controller", symbol: "arrow.left.arrow.right", target: .playerReassign(pad)) {
+                action(
+                    .playbackCouchChangeController,
+                    symbol: "arrow.left.arrow.right",
+                    target: .playerReassign(pad)
+                ) {
                     store.send(.pickController(pad: pad))
                 }
             }
             action(
                 seat.waitingForConsole || seat.player == nil
-                    ? "Cancel join"
-                    : "Remove",
+                    ? .playbackCouchCancelJoin
+                    : .commonRemove,
                 symbol: nil,
                 target: .playerRemove(pad),
                 destructive: true
@@ -300,8 +305,8 @@ extension StreamPlayersPanel {
     ///   - destructive: Whether the button removes something.
     ///   - perform: What the button does.
     func action(
-        _ title: String, symbol: String?, target: StreamMenuControl, destructive: Bool = false,
-        perform: @escaping () -> Void
+        _ title: LocalizedStringResource, symbol: String?, target: StreamMenuControl,
+        destructive: Bool = false, perform: @escaping () -> Void
     ) -> some View {
         FocusButton(role: destructive
             ? .destructive
@@ -324,15 +329,16 @@ extension StreamPlayersPanel {
             .controlSize(.small)
     }
 
-    private func header(player: Int, bar: Color?, tag: String?) -> some View {
+    private func header(player: Int, bar: Color?, tag: LocalizedStringResource?) -> some View {
         HStack(spacing: 8) {
             Capsule()
                 .fill(bar ?? Color.secondary.opacity(0.35))
                 .frame(width: 5, height: 20)
-            Text("Player \(player)").font(.headline)
+            Text(.playbackCouchPlayer(number: player)).font(.headline)
             if let tag {
                 Spacer(minLength: 0)
-                Text(tag.uppercased())
+                Text(tag)
+                    .textCase(.uppercase)
                     .font(.caption2.weight(.bold))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)

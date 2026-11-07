@@ -172,7 +172,7 @@ import Testing
             .invalidInput, .rejected, .unreachable, .unavailable, .notSaved, .sessionPlaying, .cancelled,
             .overInternet(.wakingConsole, code: nil), .overInternet(.connecting, code: 403)
         ]
-        let texts = failures.map(PairingFailureMessage.text(for:))
+        let texts = failures.map { String(localized: PairingFailureMessage.text(for: $0)) }
         #expect(Set(texts).count == failures.count)
         #expect(texts[0] == "Enter a valid console address and eight-digit PIN.")
         #expect(

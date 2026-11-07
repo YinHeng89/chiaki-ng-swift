@@ -217,7 +217,7 @@ final class CloudStreamLauncher {
             seconds: statistics.streamSeconds,
             decoded: Int(player.native.decodedFrames),
             gpuErrors: statistics.gpuError,
-            failureMessage: message,
+            failureMessage: message?.english,
             diagnostics: player.native.failureDiagnostics
         )
         @Dependency(\.logger) var logger

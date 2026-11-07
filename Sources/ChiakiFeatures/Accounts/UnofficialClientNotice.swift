@@ -7,16 +7,13 @@ import SwiftUI
 /// the About settings page, with room under its text for an acknowledgement.
 public struct UnofficialClientNotice<Footer: View>: View {
     /// The notice's headline.
-    public static var title: String {
-        "This application is an independent, unofficial client."
+    public static var title: LocalizedStringResource {
+        .accountsUnofficialTitle
     }
 
     /// The notice's explanation.
-    public static var text: String {
-        "chiaki-ng is an independent, unofficial client. Signing in gives it access to your PlayStation account "
-            + "for remote play, your library and notifications. Your sign-in is kept only on this device and is "
-            + "sent only to PlayStation’s own servers, never to chiaki-ng’s developers or anyone else. The source "
-            + "code is available for you to audit under the terms of the AGPLv3."
+    public static var text: LocalizedStringResource {
+        .accountsUnofficialText
     }
 
     private let footer: Footer
@@ -97,7 +94,7 @@ public struct UnofficialClientAcknowledgement: View {
         FocusButton(action: toggle) {
             HStack(spacing: 9) {
                 box
-                Text("I understand, continue to sign in")
+                Text(.accountsUnofficialAcknowledge)
                     .font(.callout.weight(.medium))
                 Spacer(minLength: 0)
             }
@@ -108,9 +105,9 @@ public struct UnofficialClientAcknowledgement: View {
         .focusHighlightShape(.roundedRectangle(8))
         .menuFocused(focusedInput, equals: .acknowledgeUnofficial)
         .accessibilityValue(acknowledged
-            ? "Checked"
-            : "Unchecked")
-            .accessibilityHint("Allows signing in to PlayStation from this unofficial client")
+            ? LocalizedStringResource.accountsUnofficialChecked
+            : .accountsUnofficialUnchecked)
+            .accessibilityHint(.accountsUnofficialAcknowledgeHint)
     }
 
     private var box: some View {

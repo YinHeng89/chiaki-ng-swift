@@ -230,7 +230,7 @@ extension StreamMenuOverlay {
     /// Records why the stream is stopping, leaves the menu without saving the draft and requests
     /// the stream exit.
     func stopAfterSaving() {
-        let source = "the stream menu's \(stopTitle)"
+        let source = "the stream menu's \(stopTitle.english)"
         let owner: StreamStopTrace.Stream
         switch store.context {
         case .console, .guest:

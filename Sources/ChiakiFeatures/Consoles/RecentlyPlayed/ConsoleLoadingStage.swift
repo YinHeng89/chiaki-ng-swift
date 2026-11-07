@@ -31,12 +31,12 @@ public enum ConsoleLoadingStage: Equatable {
     }
 
     /// The status line.
-    public var status: String {
+    public var status: LocalizedStringResource {
         switch self {
         case .startingTitle(let name):
-            "Starting \(name)"
+            .consolesLoadingStartingTitle(title: name)
         case .waitingForVideo:
-            "Waiting for video"
+            .consolesLoadingWaitingForVideo
         }
     }
 

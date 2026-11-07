@@ -1,3 +1,5 @@
+import Foundation
+
 /// The answer of the store page check on whether one edition of a game streams from the cloud on PS5.
 public enum CloudCardCheck: Equatable, Sendable {
     /// The check is still running.
@@ -9,7 +11,36 @@ public enum CloudCardCheck: Equatable, Sendable {
     /// The stream server refused the game when it was launched.
     case refused
     /// The check could not get an answer, with the reason shown to the player.
-    case unavailable(String)
+    case unavailable(Unavailable)
+
+    /// Why the store page check could not get an answer.
+    public enum Unavailable: Equatable, Sendable {
+        /// The account has no usable PSN sign-in.
+        case noSignIn
+
+        /// The store page did not answer.
+        case noAnswer
+
+        /// The edition was not in the store's answer.
+        case editionMissing
+
+        /// The store publishes no streaming notice for the edition.
+        case noNotice
+
+        /// The sentence shown to the player.
+        public var message: LocalizedStringResource {
+            switch self {
+            case .noSignIn:
+                .cloudCardCheckNoSignIn
+            case .noAnswer:
+                .cloudCardCheckNoAnswer
+            case .editionMissing:
+                .cloudCardCheckEditionMissing
+            case .noNotice:
+                .cloudCardCheckNoNotice
+            }
+        }
+    }
 
     /// Whether the check lets the game be played, which is only the case once the store page confirms
     /// streaming.
@@ -46,9 +77,9 @@ public enum CloudCardCheck: Equatable, Sendable {
         case .notStreamable:
             self = .notStreamable
         case .editionMissing:
-            self = .unavailable("this edition was not in the store's answer")
+            self = .unavailable(.editionMissing)
         case .noNotice:
-            self = .unavailable("the store publishes no streaming notice for this edition")
+            self = .unavailable(.noNotice)
         }
     }
 }

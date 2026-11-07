@@ -443,10 +443,10 @@ extension AccountSignInBrowser {
     }
 
     private func presentKeyboard(for details: [String: Any], in window: PlatformWindow, browser: WKWebView) {
-        let label = String((details["label"] as? String ?? "Text").prefix(60))
-        let title = label.isEmpty
-            ? "Text"
-            : label
+        let label = String((details["label"] as? String ?? "").prefix(60))
+        let title: LocalizedStringResource = label.isEmpty
+            ? ControllerKeyboardSheet.Request.untitledTitle
+            : .verbatim(label)
         ControllerKeyboardSheet.present(
             in: window,
             navigator: navigator,

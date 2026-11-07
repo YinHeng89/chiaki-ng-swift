@@ -101,22 +101,24 @@ import Testing
 
 @Test func kakusanOutcomesCarryShortLabels() {
     for error in KakusanError.allCases {
-        #expect(!error.label.isEmpty)
-        #expect(!error.label.hasSuffix("."))
-        #expect(!error.label.contains("·") && !error.label.contains("•"))
+        let label = String(localized: error.label)
+        #expect(!label.isEmpty)
+        #expect(!label.hasSuffix("."))
+        #expect(!label.contains("·") && !label.contains("•"))
     }
     #expect(KakusanAttemptOutcome(KakusanStateChange(state: .closed, error: .noPath)) ==
         .failed(.noPath))
     #expect(KakusanAttemptOutcome(KakusanStateChange(state: .closed, reason: .timeout, byPeer: true))
         == .closed(.timeout, byPeer: true))
     #expect(KakusanAttemptOutcome(KakusanStateChange(state: .closed)) == .closed(.user, byPeer: false))
-    #expect(KakusanAttemptOutcome.closed(.user, byPeer: true).label == "Left the game")
-    #expect(KakusanAttemptOutcome.closed(.user, byPeer: false).label == "Removed")
-    #expect(KakusanGuestOutcome.closed(.user, byPeer: true).label == "The host removed you")
-    #expect(KakusanGuestOutcome.failed(.noCapacity).label == "No free seat")
-    #expect(KakusanError.codec
-        .hostingLabel == "Use H.264 or H.265 without HDR, at 1080p and 60 fps or lower")
-    #expect(KakusanError.version.hostingLabel == "This console connection can’t be shared")
+    #expect(String(localized: KakusanAttemptOutcome.closed(.user, byPeer: true).label) == "Left the game")
+    #expect(String(localized: KakusanAttemptOutcome.closed(.user, byPeer: false).label) == "Removed")
+    #expect(String(localized: KakusanGuestOutcome.closed(.user, byPeer: true).label)
+        == "The host removed you")
+    #expect(String(localized: KakusanGuestOutcome.failed(.noCapacity).label) == "No free seat")
+    #expect(String(localized: KakusanError.codec.hostingLabel)
+        == "Use H.264 or H.265 without HDR, at 1080p and 60 fps or lower")
+    #expect(String(localized: KakusanError.version.hostingLabel) == "This console connection can’t be shared")
     #expect(KakusanError.noPath.hostingLabel == KakusanError.noPath.label)
     #expect(KakusanSeatSnapshot(capacity: 4, local: 2, remote: 1, reserved: 1).free == 0)
     #expect(KakusanSeatSnapshot(capacity: 4, local: 1, remote: 0, reserved: 0).free == 3)

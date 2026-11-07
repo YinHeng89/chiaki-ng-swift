@@ -24,13 +24,13 @@ struct MobileRail: View {
     var body: some View {
         stack {
             if store.mobileCanGoBack {
-                stop("Back", symbol: "chevron.left", selected: false) {
+                stop(.commonBack, symbol: "chevron.left", selected: false) {
                     store.send(.mobileBackTapped)
                 }
                 divider
             }
             ForEach(store.availableSections, id: \.self) { section in
-                stop(section.rawValue, symbol: Self.symbol(for: section),
+                stop(Self.title(for: section), symbol: Self.symbol(for: section),
                      selected: sectionSelected(section)) {
                     store.send(.mobileSectionTapped(section))
                 }
@@ -38,11 +38,11 @@ struct MobileRail: View {
             }
             divider
             if KakusanBuild.included {
-                stop("Join a game", symbol: "person.2", selected: false) {
+                stop(.mobileRailJoinGame, symbol: "person.2", selected: false) {
                     store.send(.requested(.joinGame))
                 }
             }
-            stop("Notifications", symbol: "bell", selected: store.alerts.panel == .open) {
+            stop(.mobileRailNotifications, symbol: "bell", selected: store.alerts.panel == .open) {
                 store.send(.alertsTapped)
             }
             .overlay(alignment: .topTrailing) {
@@ -134,7 +134,7 @@ struct MobileRail: View {
         } label: {
             AccountAvatar(
                 data: store.selectedProfile?.avatarData,
-                name: store.selectedProfile?.name ?? "Account"
+                name: store.selectedProfile?.name ?? String(localized: .mobileRailAccount)
             )
             .frame(width: 30, height: 30)
             .clipShape(.circle)
@@ -150,7 +150,7 @@ struct MobileRail: View {
             .contentShape(.circle)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Account and Settings")
+        .accessibilityLabel(Text(.mobileAccountTitle))
     }
 
     private func sectionSelected(_ section: LibrarySection) -> Bool {
@@ -166,7 +166,7 @@ struct MobileRail: View {
     }
 
     private func stop(
-        _ title: String,
+        _ title: LocalizedStringResource,
         symbol: String,
         selected: Bool,
         action: @escaping () -> Void
@@ -188,7 +188,22 @@ struct MobileRail: View {
                 .contentShape(.circle)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(title)
+        .accessibilityLabel(Text(title))
+    }
+
+    /// The name a section's stop is read by.
+    ///
+    /// - Parameter section: The section.
+    /// - Returns: The section's name.
+    static func title(for section: LibrarySection) -> LocalizedStringResource {
+        switch section {
+        case .consoles:
+            .mobileConsolesTitle
+        case .cloud:
+            .mobileRailCloud
+        case .trophies:
+            .mobileTrophiesTitle
+        }
     }
 
     /// The symbol a section's stop shows.

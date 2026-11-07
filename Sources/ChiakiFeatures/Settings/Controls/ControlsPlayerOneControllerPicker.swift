@@ -12,18 +12,18 @@ struct ControlsPlayerOneControllerPicker: View {
 
     #if os(macOS)
         /// The choice that makes player 1 play with the keyboard alone.
-        static let withoutControllerTitle = "Keyboard only"
+        static let withoutControllerTitle: LocalizedStringResource = .settingsControlsKeyboardOnly
     #else
         /// The choice that makes player 1 play with the on-screen controller alone.
-        static let withoutControllerTitle = "Touch Controls"
+        static let withoutControllerTitle: LocalizedStringResource = .settingsControlsTouchControls
     #endif
 
     /// Draws the picker.
     var body: some View {
         HStack(spacing: 10) {
-            Text("Plays with").foregroundStyle(.secondary)
-            Picker("Player 1 plays with", selection: $store.draft.selectedControllerKey) {
-                Text("First available controller").tag(String?.none)
+            Text(.settingsControlsPlaysWith).foregroundStyle(.secondary)
+            Picker(.settingsControlsPlayerOnePicker, selection: $store.draft.selectedControllerKey) {
+                Text(.settingsControlsFirstAvailableController).tag(String?.none)
                 Text(Self.withoutControllerTitle).tag(Optional(ControlsConfiguration.keyboardOnlyKey))
                 ForEach(store.listedDevices.filter { !$0.isKeyboard }, id: \.preferenceKey) { device in
                     Text(device.name).tag(Optional(device.preferenceKey))

@@ -17,12 +17,11 @@ public struct PrivacySettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Privacy").font(.headline)
-            Toggle("Streamer mode", isOn: $store.draft.streamerMode)
+            Text(.settingsNetworkPrivacyHeading).font(.headline)
+            Toggle(.settingsNetworkStreamerMode, isOn: $store.draft.streamerMode)
                 .accessibilityIdentifier("network-streamer-mode")
                 .disabled(!store.isEditable)
-            Text("Hides console addresses and hardware IDs on screen while you stream or record this device. "
-                + "The log follows the Developer tab’s identifier setting.")
+            Text(.settingsNetworkStreamerModeDetail)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

@@ -49,8 +49,8 @@ struct ControlsKeyboardMouseSection: View {
     private var deviceChoice: some View {
         FocusableSegments(options: [0, 1], title: {
             $0 == 0
-                ? "Keyboard"
-                : "Mouse"
+                ? .settingsControlsDeviceKeyboard
+                : .settingsControlsDeviceMouse
         }, selection: $tab)
     }
 
@@ -75,7 +75,7 @@ struct ControlsKeyboardMouseSection: View {
 
     private var mouse: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Toggle("Enable mouse buttons", isOn: $store.draft.mouseEnabled)
+            Toggle(.settingsControlsEnableMouse, isOn: $store.draft.mouseEnabled)
             ForEach(PlayStationControl.allCases, id: \.self) { target in
                 BindingRow(target: target, bindings: preset.bindings, listening: false,
                            capture: {}, change: { source, code, _ in
@@ -94,22 +94,21 @@ struct ControlsKeyboardMouseSection: View {
         .background(.quaternary.opacity(0.3), in: GlassPanel.Radius.medium.shape)
     }
 
-    private var modeNote: String {
+    private var modeNote: LocalizedStringResource {
         switch store.draft.keyboardMode {
         case .typeOnConsole:
-            "Keys type on a PS5 stream as a USB keyboard would. PS4 and cloud streams can't take typing, "
-                + "so there the keys below act as controller buttons."
+            .settingsControlsModeTypeNote
         case .controller:
-            "Keys act as the controller buttons below on every stream."
+            .settingsControlsModeControllerNote
         }
     }
 
-    private static func modeTitle(_ mode: KeyboardMode) -> String {
+    private static func modeTitle(_ mode: KeyboardMode) -> LocalizedStringResource {
         switch mode {
         case .typeOnConsole:
-            "Type on the console"
+            .settingsControlsModeTypeOnConsole
         case .controller:
-            "Use as a controller"
+            .settingsControlsModeController
         }
     }
 }
@@ -123,7 +122,7 @@ private struct KeyboardBindingsView: View {
     /// The controls settings feature the keyboard reads and edits.
     let store: StoreOf<ControlsSettingsFeature>
 
-    @State private var note: String?
+    @State private var note: LocalizedStringResource?
     @MenuFocusState private var focus: KeyBindingFocus?
 
     /// Draws the keyboard.
@@ -150,7 +149,8 @@ private struct KeyboardBindingsView: View {
         }) {
             store.send(.capture(binding.target))
         } else {
-            note = "\(label) isn’t bound. Choose an action above, then choose this key."
+            let key = String(localized: KeyCodeLabels.title(forKey: code, label: label))
+            note = .settingsControlsKeyNotBound(key: key)
         }
     }
 }
@@ -174,7 +174,7 @@ public struct KeyboardLayoutView: View {
     /// or the first free key.
     public let selected: PlayStationControl?
     /// A hint shown under the keyboard, such as a key that has no action yet.
-    public var note: String?
+    public var note: LocalizedStringResource?
     /// The editor's shared controller focus, which the keycaps join.
     public let focus: MenuFocusState<KeyBindingFocus?>.Binding
     /// Called with the virtual key code and display label of the chosen keycap.
@@ -193,7 +193,7 @@ public struct KeyboardLayoutView: View {
     public init(
         bindings: [InputBinding],
         selected: PlayStationControl?,
-        note: String? = nil,
+        note: LocalizedStringResource? = nil,
         focus: MenuFocusState<KeyBindingFocus?>.Binding,
         choose: @escaping (Int, String) -> Void
     ) {
@@ -243,9 +243,9 @@ public struct KeyboardLayoutView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack {
-                Text("Keyboard layout").font(.headline)
+                Text(.settingsControlsKeyboardLayout).font(.headline)
                 Spacer()
-                Text("ANSI reference").font(.caption).foregroundStyle(.secondary)
+                Text(.settingsControlsAnsiReference).font(.caption).foregroundStyle(.secondary)
             }
             GeometryReader { geometry in
                 VStack(spacing: 5) {
@@ -295,10 +295,13 @@ public struct KeyboardLayoutView: View {
             return .handled
         }
         .disabled(modifier)
-        .accessibilityLabel("\(key.label), \(binding?.target.label ?? "unassigned")")
+        .accessibilityLabel(.settingsControlsKeySpoken(
+            key: key.label,
+            control: String(localized: binding?.target.label ?? .settingsControlsKeyUnassignedSpoken)
+        ))
         .help(modifier
-            ? "Modifier keys are reserved for macOS shortcuts"
-            : binding?.target.label ?? "Unassigned")
+            ? .settingsControlsModifierReserved
+            : binding?.target.label ?? .settingsControlsUnassigned)
     }
 
     private func keycapLabel(_ key: Key, assigned: Bool, highlighted: Bool) -> some View {

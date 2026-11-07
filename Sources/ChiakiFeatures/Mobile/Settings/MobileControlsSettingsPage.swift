@@ -95,17 +95,16 @@ private struct MobileControlsForm: View {
 
     private var players: some View {
         MobileSettingsGroup(
-            "Players",
-            footer: "Touch controls and the on-screen touchpad belong to player 1, and the console sends "
-                + "haptics only to player 1’s controller."
+            .mobileControlsPlayers,
+            footer: .mobileControlsPlayersFooter
         ) {
             ForEach(0..<ControlsConfiguration.playerCount, id: \.self) { player in
                 MobileControlsTargetRow(
-                    title: "Player \(player + 1)",
-                    detail: playerLines(player).joined(separator: "\n"),
+                    title: Text(.mobileControlsPlayer(player: player + 1)),
+                    lines: playerLines(player),
                     selected: store.editing == .player(player),
                     tag: player == 0 && playsWithTouch
-                        ? "Touch"
+                        ? .mobileControlsTouchTag
                         : nil
                 ) {
                     MobileControlsPlayerBadge(player: player)
@@ -118,7 +117,7 @@ private struct MobileControlsForm: View {
 
     @ViewBuilder private var controllers: some View {
         if !devices.isEmpty {
-            MobileSettingsGroup("Controllers") {
+            MobileSettingsGroup(.mobileControlsControllers) {
                 ForEach(devices, id: \.preferenceKey) { device in
                     deviceRow(device)
                 }
@@ -135,20 +134,17 @@ private struct MobileControlsForm: View {
         }
         switch store.editing {
         case .keyboard:
-            bindingsGroup(title: "Keyboard and Mouse")
-            MobileSettingsGroup("Keyboard and Mouse") {
+            bindingsGroup(title: String(localized: .mobileControlsKeyboardAndMouse))
+            MobileSettingsGroup(.mobileControlsKeyboardAndMouse) {
                 ControlsKeyboardMouseSection(store: store, preset: store.editingPreset, tab: $keyboardTab)
                     .padding(16)
             }
             .disabled(!store.isEditable)
         case .player(let player) where player == 0:
             playerOne
-            bindingsGroup(title: "Bindings")
+            bindingsGroup(title: String(localized: .mobileControlsBindings))
         case .player(let player):
-            bindingsGroup(
-                title: "Player \(player + 1)",
-                lead: "Player \(player + 1) joins by pressing the PS button on a controller during a stream."
-            )
+            bindingsGroup(title: String(localized: .mobileControlsPlayer(player: player + 1)))
         case .controller(let key):
             bindingsGroup(title: targetTitle)
             if let device = store.state.device(key) {
@@ -172,33 +168,33 @@ private struct MobileControlsForm: View {
     }
 
     private var playerOne: some View {
-        MobileSettingsGroup("Player 1", footer: playerOneNote) {
+        MobileSettingsGroup(.mobileControlsPlayerOne, footer: playerOneNote) {
             MobilePickerRow(
-                "Plays With",
+                .mobileControlsPlaysWith,
                 selection: $store.draft.selectedControllerKey,
                 choices: [nil, ControlsConfiguration.keyboardOnlyKey]
                     + store.listedDevices.filter { !$0.isKeyboard }.map { Optional($0.preferenceKey) },
-                label: playsWithTitle
+                verbatimLabel: playsWithTitle
             )
             #if !os(macOS)
                 MobilePickerRow(
-                    "Touch Controls",
+                    .mobileControlsTouchControls,
                     selection: $store.draft.virtualGamepad,
                     choices: [.automatic, .shown, .hidden]
                 ) { presence in
                     switch presence {
                     case .automatic:
-                        "Automatic"
+                        .commonAutomatic
                     case .shown:
-                        "Always"
+                        .mobileControlsTouchControlsAlways
                     case .hidden:
-                        "Off"
+                        .commonOff
                     }
                 }
-                MobileToggleRow("On-Screen Touchpad", isOn: edited(\.onScreenTouchpad))
+                MobileToggleRow(.mobileControlsOnScreenTouchpad, isOn: edited(\.onScreenTouchpad))
                 MobileToggleRow(
-                    "Motion Controls",
-                    detail: "Turning and tilting this device moves the game’s motion controls.",
+                    .mobileControlsMotionControls,
+                    detail: .mobileControlsMotionControlsDetail,
                     isOn: edited(\.deviceMotion)
                 )
             #endif
@@ -206,28 +202,26 @@ private struct MobileControlsForm: View {
         .disabled(!store.isEditable)
     }
 
-    private func bindingsGroup(title: String, lead: String? = nil) -> some View {
-        MobileSettingsGroup(
-            title,
-            footer: [lead, note].compactMap(\.self).joined(separator: " ")
-        ) {
-            MobileValueRow("Button Mapping", value: store.editingPreset.name) {
+    private func bindingsGroup(title: String) -> some View {
+        MobileSettingsGroup(verbatim: title, footer: note) {
+            MobileValueRow(.mobileControlsButtonMapping, value: store.editingPreset.title) {
                 store.send(.openMapping(store.editing))
             }
             MobilePickerRow(
-                "Preset",
+                .mobileControlsPreset,
                 selection: presetSelection,
-                choices: store.draft.presets.map(\.id)
-            ) { id in
-                store.draft.presets.first { $0.id == id }?.name ?? ""
-            }
+                choices: store.draft.presets.map(\.id),
+                label: { id in
+                    store.draft.presets.first { $0.id == id }?.title ?? .verbatim("")
+                }
+            )
             if case .player(let player) = store.editing, store.draft.playerPreset(player) != nil {
-                MobileButtonRow("Use Each Controller’s Bindings") {
+                MobileButtonRow(.mobileControlsUseEachControllersBindings) {
                     store.send(.removePlayerPreset(player))
                 }
             }
             if case .controller(let key) = store.editing, !store.state.isConnected(key) {
-                MobileButtonRow("Forget This Controller", destructive: true) {
+                MobileButtonRow(.mobileControlsForgetController, destructive: true) {
                     store.send(.forgetController(key))
                 }
             }
@@ -241,8 +235,7 @@ private struct MobileControlsForm: View {
         streamMenuGroup
             .disabled(!store.isEditable)
         MobileLightbarGroup(
-            title: "Light Bar",
-            note: "Applies to every controller that doesn’t have its own light bar setting.",
+            note: .allControllers,
             value: store.draft.lightbar,
             inherited: nil
         ) { value in
@@ -253,12 +246,11 @@ private struct MobileControlsForm: View {
         .disabled(!store.isEditable)
         #if os(macOS)
             MobileSettingsGroup(
-                "Background",
-                footer: "Controllers keep playing the stream while another app is in front. The keyboard and "
-                    + "mouse only reach the stream while its window is active."
+                .mobileControlsBackground,
+                footer: .mobileControlsBackgroundFooter
             ) {
                 MobileToggleRow(
-                    "Keep Controllers Working When chiaki-ng Is in the Background",
+                    .mobileControlsBackgroundInput,
                     isOn: edited(\.backgroundInput)
                 )
             }
@@ -270,7 +262,11 @@ private struct MobileControlsForm: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 16)
         }
-        SettingsPersistenceBanner(store.setting, subject: "controls", reportsInvalid: false) {
+        SettingsPersistenceBanner(
+            store.setting,
+            subject: .mobileControlsPersistenceSubject,
+            reportsInvalid: false
+        ) {
             store.send(.retry)
         }
         .padding(.horizontal, 16)
@@ -278,21 +274,21 @@ private struct MobileControlsForm: View {
 
     private var touchpadGroup: some View {
         MobileSettingsGroup(
-            "Touchpad Shortcut",
+            .mobileControlsTouchpadShortcut,
             footer: store.draft.onScreenTouchpad
-                ? "Press these controller buttons together during a stream to open the on-screen touchpad."
-                : "The on-screen touchpad is off for player 1, so it never appears over the stream."
+                ? .mobileControlsTouchpadShortcutOn
+                : .mobileControlsTouchpadShortcutOff
         ) {
-            MobileToggleRow("Controller Combo", isOn: touchpadCombo)
+            MobileToggleRow(.mobileControlsControllerCombo, isOn: touchpadCombo)
             if store.draft.touchpadShortcut.buttons.count >= 2 {
                 MobilePickerRow(
-                    "First Button",
+                    .mobileControlsFirstButton,
                     selection: touchpadButton(0),
                     choices: Self.buttonChoices,
                     label: BindingRow.buttonName
                 )
                 MobilePickerRow(
-                    "Second Button",
+                    .mobileControlsSecondButton,
                     selection: touchpadButton(1),
                     choices: Self.buttonChoices,
                     label: BindingRow.buttonName
@@ -304,19 +300,19 @@ private struct MobileControlsForm: View {
 
     private var streamMenuGroup: some View {
         MobileSettingsGroup(
-            "Stream Menu",
-            footer: "Press these controller buttons together during a stream to open the stream menu."
+            .mobileControlsStreamMenu,
+            footer: .mobileControlsStreamMenuFooter
         ) {
             ForEach(0..<StreamMenuShortcut.buttonLimit.upperBound, id: \.self) { slot in
                 MobilePickerRow(
-                    "Button \(slot + 1)",
+                    .mobileControlsButtonSlot(slot: slot + 1),
                     selection: streamMenuButton(slot),
                     choices: (slot >= StreamMenuShortcut.buttonLimit.lowerBound
                         ? [StreamMenuShortcutCard.unused]
                         : []) + Self.buttonChoices
                 ) { code in
                     code == StreamMenuShortcutCard.unused
-                        ? "Not used"
+                        ? .mobileControlsNotUsed
                         : BindingRow.buttonName(code)
                 }
             }
@@ -325,10 +321,10 @@ private struct MobileControlsForm: View {
 
     private func playsWithTitle(_ key: String?) -> String {
         guard let key else {
-            return "First available controller"
+            return String(localized: .mobileControlsFirstAvailable)
         }
         if key == ControlsConfiguration.keyboardOnlyKey {
-            return ControlsPlayerOneControllerPicker.withoutControllerTitle
+            return String(localized: ControlsPlayerOneControllerPicker.withoutControllerTitle)
         }
         return store.listedDevices.first { $0.preferenceKey == key }?.name ?? key
     }
@@ -340,7 +336,7 @@ private struct MobileControlsForm: View {
         let connected = device.isKeyboard || store.state.isConnected(device.preferenceKey)
         return MobileControlsTargetRow(
             title: title(for: device),
-            detail: lines(for: device, connected: connected).joined(separator: "\n"),
+            lines: lines(for: device, connected: connected),
             selected: store.editing == target
         ) {
             deviceThumbnail(device)
@@ -378,7 +374,7 @@ private struct MobileControlsForm: View {
                 .accessibilityHidden(true)
             Text(Self.sentence(for: change))
                 .frame(maxWidth: .infinity, alignment: .leading)
-            FocusButton("Undo") {
+            FocusButton(.mobileControlsUndo) {
                 store.send(.undoChange(change.id))
             }
             .buttonStyle(.borderless)
@@ -442,11 +438,11 @@ private struct MobileControlsForm: View {
             }
             .buttonStyle(.glass)
             .buttonBorderShape(.circle)
-            .accessibilityLabel("Back")
+            .accessibilityLabel(Text(.commonBack))
             VStack(alignment: .leading, spacing: 1) {
-                Text("Button Mapping")
+                Text(.mobileControlsButtonMapping)
                     .font(.title3.bold())
-                Text(mappingSubtitle)
+                Text(verbatim: mappingSubtitle)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -466,54 +462,64 @@ private struct MobileControlsForm: View {
                 options: [MobileControlsMappingTab.buttons, .others],
                 title: { tab in
                     tab == .buttons
-                        ? "Buttons"
-                        : "More"
+                        ? .mobileControlsButtons
+                        : .mobileControlsMore
                 },
                 selection: $mappingTab
             )
             .fixedSize()
-            .accessibilityLabel("Controls")
+            .accessibilityLabel(Text(.mobileControlsControls))
         }
         if let change = store.change {
-            FocusButton("Undo") {
+            FocusButton(.mobileControlsUndo) {
                 store.send(.undoChange(change.id))
             }
             .buttonStyle(.glass)
-            .accessibilityHint(Self.sentence(for: change))
+            .accessibilityHint(Text(Self.sentence(for: change)))
         }
         presetMenu
     }
 
     private var presetMenu: some View {
         Menu {
-            Picker("Preset", selection: presetSelection) {
+            Picker(selection: presetSelection) {
                 ForEach(store.draft.presets) { preset in
-                    Text(preset.name).tag(preset.id)
+                    Text(preset.title).tag(preset.id)
                 }
+            } label: {
+                Text(.mobileControlsPreset)
             }
             Divider()
-            Button("Duplicate Preset", systemImage: "plus.square.on.square") {
+            Button {
                 store.send(.duplicatePreset(store.editingPreset.id, for: store.editing))
+            } label: {
+                Label(.mobileControlsDuplicatePreset, systemImage: "plus.square.on.square")
             }
             .disabled(store.draft.presets.count >= ControlsConfiguration.presetLimit)
             if let touchKeyboard {
-                Button("Rename Preset", systemImage: "pencil") {
+                Button {
                     touchKeyboard(TouchKeyboardRequest(
-                        title: "Preset Name",
-                        prompt: "Preset name",
+                        title: .mobileControlsPresetName,
+                        prompt: .mobileControlsPresetNamePrompt,
                         text: presetName
                     ))
+                } label: {
+                    Label(.mobileControlsRenamePreset, systemImage: "pencil")
                 }
             }
-            Button("Reset Bindings", systemImage: "arrow.counterclockwise") {
+            Button {
                 store.send(.resetPresetBindings(store.editingPreset.id))
+            } label: {
+                Label(.mobileControlsResetBindings, systemImage: "arrow.counterclockwise")
             }
-            Button("Delete Preset", systemImage: "trash", role: .destructive) {
+            Button(role: .destructive) {
                 store.send(.deletePreset(store.editingPreset.id))
+            } label: {
+                Label(.mobileControlsDeletePreset, systemImage: "trash")
             }
             .disabled(store.draft.presets.count == 1)
         } label: {
-            Label(store.editingPreset.name, systemImage: "chevron.up.chevron.down")
+            Label(store.editingPreset.title, systemImage: "chevron.up.chevron.down")
                 .labelStyle(MobileControlsTrailingIconLabel())
                 .lineLimit(1)
                 .frame(maxWidth: 160)
@@ -523,7 +529,7 @@ private struct MobileControlsForm: View {
         .interactiveGrowth()
         .modifier(MenuButtonFocus(activate: presentPresetMenu))
         .controllerKeyboard(
-            title: "Preset Name",
+            title: .mobileControlsPresetName,
             text: presetName,
             isFocused: false,
             presentationRequest: presetRenameRequest
@@ -533,17 +539,23 @@ private struct MobileControlsForm: View {
     private func presentPresetMenu() {
         let presets = store.draft.presets
         var entries: [(title: String, run: () -> Void)] = presets.map { preset in
-            (preset.name, { presetSelection.wrappedValue = preset.id })
+            (String(localized: preset.title), { presetSelection.wrappedValue = preset.id })
         }
         if presets.count < ControlsConfiguration.presetLimit {
-            entries.append(("Duplicate Preset", {
+            entries.append((String(localized: .mobileControlsDuplicatePreset), {
                 store.send(.duplicatePreset(store.editingPreset.id, for: store.editing))
             }))
         }
-        entries.append(("Rename Preset", { presetRenameRequest += 1 }))
-        entries.append(("Reset Bindings", { store.send(.resetPresetBindings(store.editingPreset.id)) }))
+        entries.append((String(localized: .mobileControlsRenamePreset), { presetRenameRequest += 1 }))
+        entries.append((
+            String(localized: .mobileControlsResetBindings),
+            { store.send(.resetPresetBindings(store.editingPreset.id)) }
+        ))
         if presets.count > 1 {
-            entries.append(("Delete Preset", { store.send(.deletePreset(store.editingPreset.id)) }))
+            entries.append((
+                String(localized: .mobileControlsDeletePreset),
+                { store.send(.deletePreset(store.editingPreset.id)) }
+            ))
         }
         presetMenuAnchor.presentMenu(
             titles: entries.map(\.title),
@@ -563,11 +575,11 @@ private struct MobileControlsForm: View {
                 .foregroundStyle(Palette.accent)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-            FocusButton("Clear") {
+            FocusButton(.commonClear) {
                 store.send(.clearBinding(capture.target, source: capture.source, owner: store.editing))
             }
             .buttonStyle(.glass)
-            FocusButton("Cancel") {
+            FocusButton(.commonCancel) {
                 store.send(.cancelCapture)
             }
             .buttonStyle(.glassProminent)
@@ -601,29 +613,30 @@ private struct MobileControlsForm: View {
                 }
                 .buttonStyle(.glass)
                 .buttonBorderShape(.roundedRectangle(radius: 16))
-                .accessibilityLabel(glyph.name)
+                .accessibilityLabel(Text(glyph.name))
             }
         }
     }
 
-    private func listeningPrompt(for capture: ControlsCapture) -> String {
+    private func listeningPrompt(for capture: ControlsCapture) -> LocalizedStringResource {
+        let control = String(localized: capture.target.label)
         guard capture.source == .gamepadButton, !store.canListen else {
-            return "Press a button for \(capture.target.label)"
+            return .mobileControlsPressButton(control: control)
         }
-        return "Choose a button for \(capture.target.label)"
+        return .mobileControlsChooseButton(control: control)
     }
 
     private var mappingSubtitle: String {
         switch store.editing {
         case .keyboard:
-            return "Keyboard"
+            return String(localized: .mobileControlsKeyboard)
         case .controller:
             return targetTitle
         case .player(let player):
             guard let device = store.playerDevice else {
-                return "Player \(player + 1)"
+                return String(localized: .mobileControlsPlayer(player: player + 1))
             }
-            return "Player \(player + 1) · \(device.name)"
+            return String(localized: .mobileControlsPlayerDevice(player: player + 1, device: device.name))
         }
     }
 
@@ -660,7 +673,7 @@ private struct MobileControlsPlayerBadge: View {
     let player: Int
 
     var body: some View {
-        Text("P\(player + 1)")
+        Text(.mobileControlsPlayerBadge(player: player + 1))
             .font(.subheadline.weight(.bold))
             .foregroundStyle(.black.opacity(0.85))
             .frame(width: 30, height: 30)
@@ -848,104 +861,112 @@ extension MobileControlsForm {
     private var targetTitle: String {
         switch store.editing {
         case .keyboard:
-            "Keyboard and Mouse"
+            String(localized: .mobileControlsKeyboardAndMouse)
         case .controller:
-            store.editingDevice?.name ?? "Controller"
+            store.editingDevice?.name ?? String(localized: .mobileControlsController)
         case .player(let player):
-            "Player \(player + 1)"
+            String(localized: .mobileControlsPlayer(player: player + 1))
         }
     }
 
-    private var note: String {
+    private var note: LocalizedStringResource {
         switch store.editing {
         case .keyboard:
-            return "The keyboard plays as player 1. Choose an action, then press the key you want for it."
+            return .mobileControlsNoteKeyboard
         case .controller(let key):
             guard store.state.isConnected(key) else {
-                return "This controller isn’t connected. You can still change its bindings: choose an "
-                    + "action, then tap the button you want."
+                return .mobileControlsNoteDisconnected
             }
             guard store.draft.ownsPreset(key) else {
-                return "Choose an action, then press the button you want for it. Your first change saves a "
-                    + "preset just for this controller."
+                return .mobileControlsNoteFirstChange
             }
-            return "Choose an action, then press the button you want for it. A player’s own bindings take "
-                + "priority over these."
+            return .mobileControlsNoteOwnPreset
         case .player(let player):
-            guard store.draft.playerPreset(player) != nil else {
-                return "Player \(player + 1) uses each controller’s own bindings. Your first change gives "
-                    + "them bindings of their own, used whichever controller they hold."
+            let shared = store.draft.playerPreset(player) == nil
+            guard player > 0 else {
+                return shared
+                    ? .mobileControlsNotePlayerShared(player: player + 1)
+                    : .mobileControlsNotePlayerOwn(player: player + 1)
             }
-            return "These bindings follow player \(player + 1) whichever controller they hold."
+            return shared
+                ? .mobileControlsNotePlayerJoinShared(joining: player + 1, player: player + 1)
+                : .mobileControlsNotePlayerJoinOwn(joining: player + 1, player: player + 1)
         }
     }
 
-    private func title(for device: ControllerDevice) -> String {
+    private func title(for device: ControllerDevice) -> Text {
         guard !device.isKeyboard else {
-            return "Keyboard and mouse"
+            return Text(.mobileControlsKeyboardAndMouseDevice)
         }
         let nickname = store.draft.controllers[device.preferenceKey]?.nickname ?? ""
-        return nickname.isEmpty
-            ? device.name
-            : nickname
+        return Text(
+            verbatim: nickname.isEmpty
+                ? device.name
+                : nickname
+        )
     }
 
-    private func lines(for device: ControllerDevice, connected: Bool) -> [String] {
+    private func lines(for device: ControllerDevice, connected: Bool) -> [Text] {
         guard !device.isKeyboard else {
-            return ["Plays as player 1"]
+            return [Text(.mobileControlsPlaysAsPlayerOne)]
         }
-        var lines: [String]
+        var lines: [Text]
         if connected {
-            lines = ["Connected", device.transport]
+            lines = [Text(.mobileControlsConnected), Text(verbatim: device.transport)]
         } else if let seen = store.draft.remembered[device.preferenceKey]?.lastSeen {
-            lines = ["Not connected", "Last seen \(seen.formatted(.relative(presentation: .named)))"]
+            lines = [
+                Text(.mobileControlsNotConnected),
+                Text(.mobileControlsLastSeen(time: seen.formatted(.relative(presentation: .named))))
+            ]
         } else {
-            lines = ["Not connected"]
+            lines = [Text(.mobileControlsNotConnected)]
         }
         if !device.individual {
-            lines.append("Shared by every \(device.name)")
+            lines.append(Text(.mobileControlsSharedByEvery(model: device.name)))
         }
         return lines
     }
 
-    private func playerLines(_ player: Int) -> [String] {
-        let bindings = store.draft.playerPreset(player) == nil
-            ? "Each controller’s bindings"
-            : "Own bindings"
+    private func playerLines(_ player: Int) -> [Text] {
+        let bindings = Text(
+            store.draft.playerPreset(player) == nil
+                ? .mobileControlsEachControllersBindings
+                : .mobileControlsOwnBindings
+        )
         guard player == 0 else {
-            return ["Joins with the PS button", bindings]
+            return [Text(.mobileControlsJoinsWithPS), bindings]
         }
         return [playerOneController, bindings]
     }
 
-    private var playerOneNote: String {
+    private var playerOneNote: LocalizedStringResource {
         guard playsWithTouch else {
-            return "Touch Controls: " + virtualGamepadNote
+            return virtualGamepadNote
         }
-        return "Player 1 plays with the touch controls even when a controller is connected. Controllers that "
-            + "connect join as players 2 to 4."
+        return .mobileControlsPlayerOneTouchNote
     }
 
-    private var playerOneController: String {
+    private var playerOneController: Text {
         guard let key = store.draft.selectedControllerKey else {
-            return "First available controller"
+            return Text(.mobileControlsFirstAvailable)
         }
         if key == ControlsConfiguration.keyboardOnlyKey {
-            return ControlsPlayerOneControllerPicker.withoutControllerTitle
+            return Text(ControlsPlayerOneControllerPicker.withoutControllerTitle)
         }
-        return store.state.device(key)?.name ?? "First available controller"
+        guard let name = store.state.device(key)?.name else {
+            return Text(.mobileControlsFirstAvailable)
+        }
+        return Text(verbatim: name)
     }
 
-    private var virtualGamepadNote: String {
+    private var virtualGamepadNote: LocalizedStringResource {
         switch store.draft.virtualGamepad {
         case .automatic:
-            "Shown while no controller is connected. The controller button at the bottom of a stream still "
-                + "shows or hides it until the stream ends."
+            .mobileControlsTouchAutomaticNote
         case .shown:
-            "Shown on every stream, even with a controller connected."
+            .mobileControlsTouchShownNote
         case .hidden:
-            "Never shown. The controller button at the bottom of a stream can still bring it back until the "
-                + "stream ends."
+            .mobileControlsTouchHiddenNote
         }
     }
 
@@ -960,34 +981,56 @@ extension MobileControlsForm {
         }
     }
 
-    private static func sentence(for change: ControlsChange) -> String {
+    private static func sentence(for change: ControlsChange) -> LocalizedStringResource {
         let name = { (input: InputBinding) in
-            input.source == .gamepadButton
-                ? ControllerGlyphs.button(input.code, family: change.family, layout: change.layout).name
-                : input.label
+            String(localized: KeyCodeLabels.title(for: input, family: change.family, layout: change.layout))
         }
-        let base: String
+        let preset = change.createdPreset
         switch change.summary {
         case .assigned(let binding):
-            base = "\(binding.target.label) is now on \(name(binding))."
+            let control = String(localized: binding.target.label)
+            return preset.map {
+                .mobileControlsChangeAssignedSaved(control: control, input: name(binding), preset: $0)
+            } ?? .mobileControlsChangeAssigned(control: control, input: name(binding))
         case let .moved(binding, displaced, exchanged?):
-            base = "\(name(binding)) moved from \(displaced.label). "
-                + "\(displaced.label) now uses \(name(exchanged))."
+            let control = String(localized: displaced.label)
+            return preset.map {
+                .mobileControlsChangeExchangedSaved(
+                    input: name(binding),
+                    displaced: control,
+                    control: control,
+                    exchanged: name(exchanged),
+                    preset: $0
+                )
+            } ?? .mobileControlsChangeExchanged(
+                input: name(binding),
+                displaced: control,
+                control: control,
+                exchanged: name(exchanged)
+            )
         case let .moved(binding, displaced, nil):
-            base = "\(name(binding)) moved from \(displaced.label), which is now unbound."
+            let control = String(localized: displaced.label)
+            return preset.map {
+                .mobileControlsChangeMovedSaved(input: name(binding), displaced: control, preset: $0)
+            } ?? .mobileControlsChangeMoved(input: name(binding), displaced: control)
         case .cleared(let control):
-            base = "\(control.label) is unbound."
+            let label = String(localized: control.label)
+            return preset.map {
+                .mobileControlsChangeClearedSaved(control: label, preset: $0)
+            } ?? .mobileControlsChangeCleared(control: label)
+        case .forgot(let controller) where controller.isEmpty:
+            return preset.map {
+                .mobileControlsChangeForgotUnnamedSaved(preset: $0)
+            } ?? .mobileControlsChangeForgotUnnamed
         case .forgot(let controller):
-            base = controller.isEmpty
-                ? "Forgot the controller."
-                : "Forgot \(controller)."
+            return preset.map {
+                .mobileControlsChangeForgotSaved(controller: controller, preset: $0)
+            } ?? .mobileControlsChangeForgot(controller: controller)
         case .playerPresetRemoved(let player):
-            base = "Player \(player + 1) uses each controller’s own bindings again."
+            return preset.map {
+                .mobileControlsChangePlayerSharedSaved(player: player + 1, preset: $0)
+            } ?? .mobileControlsChangePlayerShared(player: player + 1)
         }
-        guard let preset = change.createdPreset else {
-            return base
-        }
-        return base + " Saved as “\(preset)”."
     }
 }
 
@@ -1025,10 +1068,9 @@ private struct MobileControllerSettings: View {
         triggers
             .disabled(!connected)
         MobileLightbarGroup(
-            title: "Light Bar",
             note: device.lights
                 ? nil
-                : "This controller has no light bar to set.",
+                : .noLightBar,
             value: preferences.lightbar,
             inherited: lightbar,
             enabled: device.lights
@@ -1039,12 +1081,16 @@ private struct MobileControllerSettings: View {
         }
         .disabled(!connected)
         MobileSettingsGroup(
-            "Details",
+            .mobileControlsDetails,
             footer: device.individual
                 ? nil
-                : "This controller has no unique identity. Preferences are shared with its model."
+                : .mobileControlsSharedIdentity
         ) {
-            MobileTextEntryRow(title: "Nickname", prompt: "Nickname", text: binding(\.nickname))
+            MobileTextEntryRow(
+                title: .mobileControlsNickname,
+                prompt: .mobileControlsNickname,
+                text: binding(\.nickname)
+            )
         }
     }
 
@@ -1061,22 +1107,21 @@ private struct MobileControllerSettings: View {
     }
 
     private var calibration: some View {
-        MobileSettingsGroup("Calibration", footer: card.stickGyroCaption) {
-            slider("Stick Dead Zone", key: \.deadZone, range: 0...0.5, step: 0.01)
-            MobileToggleRow("Invert Right Stick Vertically", isOn: binding(\.invertRightY))
-            MobileToggleRow("Swap Left and Right Sticks", isOn: binding(\.swapSticks))
+        MobileSettingsGroup(.mobileControlsCalibration, footer: card.stickGyroCaption) {
+            slider(.mobileControlsDeadZone, key: \.deadZone, range: 0...0.5, step: 0.01)
+            MobileToggleRow(.mobileControlsInvertRightY, isOn: binding(\.invertRightY))
+            MobileToggleRow(.mobileControlsSwapSticks, isOn: binding(\.swapSticks))
             if device.family == .nintendo {
                 MobileToggleRow(
-                    "Use Nintendo Button Labels",
+                    .mobileControlsNintendoLabels,
                     detail: preferences.buttonLayout == .label
-                        ? "A acts as Cross and B as Circle, so A confirms like on Switch. X and Y swap the "
-                            + "same way."
-                        : "Buttons work by position: the bottom button, B, acts as Cross and confirms.",
+                        ? .mobileControlsNintendoLabelsOn
+                        : .mobileControlsNintendoLabelsOff,
                     isOn: nintendoLabels
                 )
             }
             MobilePickerRow(
-                "Right Stick Gyro",
+                .mobileControlsRightStickGyro,
                 selection: binding(\.stickGyro),
                 choices: StickGyroMode.allCases
             ) { mode in
@@ -1087,23 +1132,22 @@ private struct MobileControllerSettings: View {
 
     private var feedback: some View {
         MobileSettingsGroup(
-            "Feedback",
-            footer: card.hapticsCaption + " Both strengths follow the vibration intensity set on the PS5. "
-                + "The console sends haptics only to player 1's controller."
+            .mobileControlsFeedback,
+            footer: .mobileControlsFeedbackFooter(caption: String(localized: card.hapticsCaption))
         ) {
             MobilePickerRow(
-                "Haptics",
+                .mobileControlsHaptics,
                 selection: binding(\.hapticFeedback),
                 choices: HapticFeedback.allCases
             ) { feedback in
                 feedback.title
             }
             .disabled(!device.nativeHaptics && !device.rumble)
-            slider("Haptic Strength", key: \.hapticStrength, range: 0...2.4, step: 0.1)
+            slider(.mobileControlsHapticStrength, key: \.hapticStrength, range: 0...2.4, step: 0.1)
                 .disabled(!device.nativeHaptics && !device.rumble)
-            slider("Rumble Strength", key: \.rumbleStrength, range: 0...1, step: 0.05)
+            slider(.mobileControlsRumbleStrength, key: \.rumbleStrength, range: 0...1, step: 0.05)
                 .disabled(!device.rumble)
-            MobileButtonRow("Test Rumble") {
+            MobileButtonRow(.mobileControlsTestRumble) {
                 test(preferences.rumbleStrength)
             }
             .disabled(!device.rumble)
@@ -1112,13 +1156,13 @@ private struct MobileControllerSettings: View {
 
     private var triggers: some View {
         MobileSettingsGroup(
-            "Adaptive Triggers",
-            footer: "Trigger strength never goes above the intensity set on the PS5."
+            .mobileControlsAdaptiveTriggers,
+            footer: .mobileControlsAdaptiveTriggersFooter
         ) {
-            MobileToggleRow("Adaptive Triggers", isOn: binding(\.adaptiveTriggersEnabled))
+            MobileToggleRow(.mobileControlsAdaptiveTriggers, isOn: binding(\.adaptiveTriggersEnabled))
                 .disabled(!device.adaptiveTriggers)
             MobilePickerRow(
-                "Trigger Strength",
+                .mobileControlsTriggerStrength,
                 selection: binding(\.triggerStrength),
                 choices: TriggerStrength.allCases
             ) { strength in
@@ -1144,14 +1188,14 @@ private struct MobileControllerSettings: View {
     }
 
     private func slider(
-        _ title: String,
+        _ title: LocalizedStringResource,
         key: WritableKeyPath<ControllerPreferences, Double>,
         range: ClosedRange<Double>,
         step: Double
     ) -> some View {
         MobileSliderRow(
             title: title,
-            valueText: preferences[keyPath: key].formatted(.percent.precision(.fractionLength(0))),
+            verbatimValue: preferences[keyPath: key].formatted(.percent.precision(.fractionLength(0))),
             value: binding(key),
             range: range,
             step: step
@@ -1175,11 +1219,17 @@ private struct MobileControllerSettings: View {
 /// A Light Bar group: how a light bar is coloured, the colour swatches while a fixed colour is chosen, and a
 /// footer explaining the result.
 private struct MobileLightbarGroup: View {
-    /// The group's title.
-    let title: String
+    /// A sentence put before the explanation.
+    enum Note {
+        /// The group is the setting every controller without its own light bar setting uses.
+        case allControllers
+
+        /// The controller has no light bar to set.
+        case noLightBar
+    }
 
     /// A sentence put before the explanation, or `nil` for none.
-    let note: String?
+    let note: Note?
 
     /// The current setting, or `nil` when deferring to the setting for all controllers.
     let value: ControllerLightbar?
@@ -1197,8 +1247,8 @@ private struct MobileLightbarGroup: View {
     @State private var lastFixed: UInt32?
 
     var body: some View {
-        MobileSettingsGroup(title, footer: footer) {
-            MobilePickerRow("Colour", selection: mode, choices: modes) { mode in
+        MobileSettingsGroup(.mobileControlsLightBar, footer: footer) {
+            MobilePickerRow(.mobileControlsColour, selection: mode, choices: modes) { mode in
                 mode.title
             }
             if case .fixed(let selected) = value {
@@ -1247,21 +1297,33 @@ private struct MobileLightbarGroup: View {
         return nil
     }
 
-    private var footer: String {
-        let detail = switch value {
-        case nil:
+    private var footer: LocalizedStringResource {
+        switch (note, value) {
+        case (nil, nil):
             inherited == .followGame
-                ? "Uses the setting for all controllers, which follows the colour the game asks for."
-                : "Uses the fixed colour set for all controllers."
-        case .followGame:
-            "The light bar shows the colour the game asks for, such as a player colour or health."
-        case .fixed:
-            "The light bar keeps this colour for the whole stream."
+                ? .mobileLightBarInheritedFollow
+                : .mobileLightBarInheritedFixed
+        case (nil, .followGame):
+            .mobileLightBarFollowGame
+        case (nil, .fixed):
+            .mobileLightBarFixed
+        case (.allControllers, nil):
+            inherited == .followGame
+                ? .mobileLightBarSharedInheritedFollow
+                : .mobileLightBarSharedInheritedFixed
+        case (.allControllers, .followGame):
+            .mobileLightBarSharedFollowGame
+        case (.allControllers, .fixed):
+            .mobileLightBarSharedFixed
+        case (.noLightBar, nil):
+            inherited == .followGame
+                ? .mobileLightBarMissingInheritedFollow
+                : .mobileLightBarMissingInheritedFixed
+        case (.noLightBar, .followGame):
+            .mobileLightBarMissingFollowGame
+        case (.noLightBar, .fixed):
+            .mobileLightBarMissingFixed
         }
-        guard let note else {
-            return detail
-        }
-        return note + " " + detail
     }
 
     private func swatches(selected: UInt32) -> some View {
@@ -1273,7 +1335,7 @@ private struct MobileLightbarGroup: View {
                     swatchLabel(swatch, selected: swatch.rgb == selected)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(swatch.name)
+                .accessibilityLabel(Text(swatch.name))
                 .accessibilityAddTraits(
                     swatch.rgb == selected
                         ? .isSelected
@@ -1324,16 +1386,16 @@ private struct MobileLightbarGroup: View {
 /// A row choosing whose bindings are shown: a picture, a name, status lines and a check mark when chosen.
 private struct MobileControlsTargetRow<Icon: View>: View {
     /// The name.
-    let title: String
+    let title: Text
 
     /// The status lines under the name.
-    let detail: String
+    let lines: [Text]
 
     /// Whether the row's bindings are shown.
     let selected: Bool
 
     /// A short label at the trailing edge, or `nil` for none.
-    var tag: String?
+    var tag: LocalizedStringResource?
 
     /// The picture at the leading edge.
     @ViewBuilder let icon: Icon
@@ -1346,7 +1408,17 @@ private struct MobileControlsTargetRow<Icon: View>: View {
             HStack(spacing: 12) {
                 icon
                     .frame(width: 44, height: 30)
-                MobileRowTitle(title: title, detail: detail)
+                VStack(alignment: .leading, spacing: 2) {
+                    title
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                            line
+                        }
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
                 Spacer(minLength: 8)
                 if let tag {
                     Text(tag)

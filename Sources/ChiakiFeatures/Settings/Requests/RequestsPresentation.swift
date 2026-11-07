@@ -5,22 +5,22 @@ import Foundation
 /// Presentation of request areas.
 extension CoreHTTPArea {
     /// The area's name in the filter and request rows.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .users:
-            "Sign-in"
+            .settingsRequestsAreaUsers
         case .consoles:
-            "Consoles"
+            .settingsRequestsAreaConsoles
         case .catalog:
-            "Catalog"
+            .settingsRequestsAreaCatalog
         case .trophies:
-            "Trophies"
+            .settingsRequestsAreaTrophies
         case .messages:
-            "Messages"
+            .settingsRequestsAreaMessages
         case .play:
-            "Play"
+            .settingsRequestsAreaPlay
         case .other:
-            "Other"
+            .settingsRequestsAreaOther
         }
     }
 }
@@ -28,20 +28,20 @@ extension CoreHTTPArea {
 /// Presentation of request credentials.
 extension CoreHTTPCredential {
     /// The credential's name in the filter and request rows.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .accountToken:
-            "Account token"
+            .settingsRequestsCredentialAccountToken
         case .signInCookie:
-            "Sign-in cookie"
+            .settingsRequestsCredentialSignInCookie
         case .gkSession:
-            "GK session"
+            .settingsRequestsCredentialGkSession
         case .clientCredentials:
-            "Client credentials"
+            .settingsRequestsCredentialClientCredentials
         case .storeSession:
-            "Store session"
+            .settingsRequestsCredentialStoreSession
         case .signInGrant:
-            "Sign-in grant"
+            .settingsRequestsCredentialSignInGrant
         }
     }
 }
@@ -49,10 +49,10 @@ extension CoreHTTPCredential {
 /// Presentation of credential filters.
 extension RequestsReducer.CredentialFilter {
     /// The filter's name in the filter controls.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .anonymous:
-            "Anonymous"
+            .settingsRequestsAnonymous
         case .carried(let credential):
             credential.title
         }
@@ -78,12 +78,30 @@ extension CoreHTTPSecretKind {
             "body"
         }
     }
+
+    /// The name of this kind of secret, shown on the buttons that hide or reveal it.
+    public var name: LocalizedStringResource {
+        switch self {
+        case .credential:
+            .settingsRequestsSecretCredential
+        case .cookie:
+            .settingsRequestsSecretCookie
+        case .session:
+            .settingsRequestsSecretSession
+        case .parameter:
+            .settingsRequestsSecretParameter
+        case .field:
+            .settingsRequestsSecretField
+        case .body:
+            .settingsRequestsSecretBody
+        }
+    }
 }
 
 /// Presentation of transport errors.
 extension CoreHTTPTransportError {
-    /// A short description shown in place of a status code.
-    public var title: String {
+    /// A short English description written in place of a status code in a copied response.
+    public var reportTitle: String {
         switch self {
         case .cancelled:
             "Cancelled"
@@ -103,6 +121,30 @@ extension CoreHTTPTransportError {
             "Unsupported"
         case .backendFailure:
             "Failed"
+        }
+    }
+
+    /// A short description shown on screen in place of a status code.
+    public var title: LocalizedStringResource {
+        switch self {
+        case .cancelled:
+            .settingsRequestsTransportCancelled
+        case .timedOut:
+            .settingsRequestsTransportTimedOut
+        case .invalidURL:
+            .settingsRequestsTransportInvalidUrl
+        case .tlsTrustFailed:
+            .settingsRequestsTransportTlsTrustFailed
+        case .proxyFailed:
+            .settingsRequestsTransportProxyFailed
+        case .disconnected:
+            .settingsRequestsTransportDisconnected
+        case .responseTooLarge:
+            .settingsRequestsTransportResponseTooLarge
+        case .unsupported:
+            .settingsRequestsTransportUnsupported
+        case .backendFailure:
+            .settingsRequestsTransportFailed
         }
     }
 }
@@ -183,17 +225,17 @@ public struct RequestRowPresentation: Equatable {
     /// The masked path after the base, or a slash when there is none.
     public let path: String
     /// The status code, or a transport error description when there is no response.
-    public let status: String
+    public let status: LocalizedStringResource
     /// Whether the exchange failed.
     public let failed: Bool
     /// The exchange's duration in milliseconds or seconds.
-    public let duration: String
+    public let duration: LocalizedStringResource
     /// The size of the received bytes.
     public let size: String
     /// The names of the credentials carried, or Anonymous when there were none.
-    public let credentials: [String]
+    public let credentials: [LocalizedStringResource]
     /// The area's name.
-    public let area: String
+    public let area: LocalizedStringResource
 
     /// Formats the exchange for display, showing its start time in the given time zone.
     public init(_ exchange: CoreHTTPExchange, timeZone: TimeZone = .current) {
@@ -208,27 +250,27 @@ public struct RequestRowPresentation: Equatable {
             ? "/"
             : rest
         if let code = exchange.status {
-            status = String(code)
+            status = .verbatim(String(code))
         } else {
-            status = exchange.transportError?.title ?? "Failed"
+            status = exchange.transportError?.title ?? .settingsRequestsTransportFailed
         }
         failed = exchange.failed
         duration = Self.duration(exchange.duration)
         size = LogFormat.size(exchange.bytesReceived)
         credentials = exchange.credentials.isEmpty
-            ? ["Anonymous"]
+            ? [.settingsRequestsAnonymous]
             : CoreHTTPCredential.allCases.filter(exchange.credentials.contains).map(\.title)
         area = exchange.area.title
     }
 
     /// Formats a duration in whole milliseconds below a second and in seconds with two decimals otherwise.
-    public static func duration(_ duration: Duration) -> String {
+    public static func duration(_ duration: Duration) -> LocalizedStringResource {
         let milliseconds = Double(duration.components.seconds) * 1000
             + Double(duration.components.attoseconds) / 1e15
         if milliseconds < 1000 {
-            return "\(Int(milliseconds.rounded())) ms"
+            return .settingsRequestsDurationMilliseconds(milliseconds: Int(milliseconds.rounded()))
         }
-        return String(format: "%.2f s", milliseconds / 1000)
+        return .settingsRequestsDurationSeconds(seconds: milliseconds / 1000)
     }
 }
 
@@ -260,7 +302,7 @@ public enum RequestCopy {
         _ exchange: CoreHTTPExchange, _ detail: CoreHTTPExchangeDetail, revealed: Set<RequestsReducer.Secret>
     ) -> String {
         guard let status = exchange.status else {
-            return exchange.transportError?.title ?? "Failed"
+            return exchange.transportError?.reportTitle ?? "Failed"
         }
         var lines = [exchange.reason.isEmpty
             ? "HTTP \(status)"

@@ -69,7 +69,7 @@ import Foundation
                 ? .list
                 : .run(request)
         } catch {
-            return .invalid(error.message)
+            return .invalid(error.message.english)
         }
     }
 
@@ -89,7 +89,7 @@ import Foundation
         do {
             send(try LaunchRequestParser.parse(url: url))
         } catch {
-            let message = error.message
+            let message = error.message.english
             @Dependency(\.logger) var logger
             logger.enqueue(.diagnostic(.app, .warning, message))
         }

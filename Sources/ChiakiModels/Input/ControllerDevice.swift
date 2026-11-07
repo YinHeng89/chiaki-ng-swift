@@ -1,3 +1,5 @@
+import Foundation
+
 /// A connected controller, or the keyboard and mouse, and what it can do.
 public struct ControllerDevice: Equatable, Sendable, Identifiable {
     /// The id reserved for the keyboard and mouse.
@@ -5,7 +7,8 @@ public struct ControllerDevice: Equatable, Sendable, Identifiable {
 
     /// The keyboard and mouse as a device.
     public static let keyboard = ControllerDevice(
-        id: keyboardID, preferenceKey: "keyboard", name: "Keyboard and mouse", transport: "Built in",
+        id: keyboardID, preferenceKey: "keyboard", name: String(localized: .controlsDeviceKeyboardName),
+        transport: String(localized: .controlsDeviceKeyboardTransport),
         individual: true, rumble: false, lights: false, motion: false, touchpad: false, family: .generic
     )
 

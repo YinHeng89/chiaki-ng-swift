@@ -18,7 +18,7 @@ private let registration = RegistrationFlow.Registration(profileID: account, con
     #expect(LaunchCommandLine.command(from: ["ChiakiNG", "--stream", "Den"])
         == .run(.stream(LaunchStream(console: .name("Den")))))
     #expect(LaunchCommandLine.command(from: ["ChiakiNG", "--stream"])
-        == .invalid(LaunchRequestError.missingConsole.message))
+        == .invalid(LaunchRequestError.missingConsole.message.english))
 }
 
 @MainActor @Test func launchListingPrintsEachConsoleOnce() {

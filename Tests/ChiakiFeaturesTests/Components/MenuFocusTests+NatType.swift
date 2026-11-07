@@ -32,6 +32,6 @@ extension MenuFocusTests {
             store.check == .found(.type3)
         }
         #expect(store.check == .found(.type3))
-        #expect(NatTypeSettingsView.detail(store.check).contains("strict router"))
+        #expect(String(localized: NatTypeSettingsView.detail(store.check)).contains("strict router"))
     }
 }

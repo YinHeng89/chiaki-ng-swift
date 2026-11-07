@@ -77,7 +77,7 @@ extension MenuFocusTests {
     @Test func trialBadgesOnRailTitlesAreNotFocusStops() async throws {
         let titles = RecentlyPlayedRailHost.titles
         let marks = Dictionary(uniqueKeysWithValues: titles.prefix(4).map {
-            ($0.titleID, CloudTrialMark(icon: .trial, label: "Trial"))
+            ($0.titleID, CloudTrialMark(icon: .trial, label: .libraryTrialTrial))
         })
         let (store, harness) = recentLibrary(marks: marks)
         defer {

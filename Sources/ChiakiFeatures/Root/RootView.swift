@@ -232,7 +232,7 @@ public struct RootView: View {
     }
 
     private var playbackFailure: String? {
-        store.stream.failureMessage
+        store.stream.failureMessage.map { String(localized: $0) }
     }
 
     private var confirmation: RootConfirmation? {
@@ -331,12 +331,10 @@ public enum RootConfirmation: Equatable {
         switch self {
         case .deleteAccount:
             AppConfirmation(
-                title: "Delete this account?",
-                message: "This removes the account, its saved credentials, cached pictures "
-                    + "and connection profiles from this device. "
-                    + "Your consoles and PlayStation account are kept.",
+                title: .appDeleteAccountTitle,
+                message: .appDeleteAccountMessage,
                 systemImage: AppIcon.deleteAccount.rawValue,
-                confirmTitle: "Delete account",
+                confirmTitle: .appDeleteAccountConfirm,
                 tone: .destructive
             )
         case .consoleEditor(let flow):
@@ -378,30 +376,29 @@ public enum RootConfirmation: Equatable {
         switch flow {
         case .confirmingDeletion:
             AppConfirmation(
-                title: "Delete this console?",
-                message: "This removes the console and its saved pairings for every account on this device. "
-                    + "Your accounts are kept. You’ll need to pair again to play.",
+                title: .appDeleteConsoleTitle,
+                message: .appDeleteConsoleMessage,
                 systemImage: AppIcon.deleteAccount.rawValue,
-                confirmTitle: "Delete console",
+                confirmTitle: .appDeleteConsoleConfirm,
                 tone: .destructive
             )
         case .failed(.saveFailed, _):
             AppConfirmation(
-                title: "Couldn’t update the console",
-                message: "Your changes weren’t saved. Please try again.",
-                cancelTitle: "OK"
+                title: .appConsoleEditorSaveFailedTitle,
+                message: .appConsoleEditorSaveFailedMessage,
+                cancelTitle: .commonOk
             )
         case .failed(.deleteFailed, _):
             AppConfirmation(
-                title: "Couldn’t delete the console",
-                message: "The console wasn’t deleted. Please try again.",
-                cancelTitle: "OK"
+                title: .appConsoleEditorDeleteFailedTitle,
+                message: .appConsoleEditorDeleteFailedMessage,
+                cancelTitle: .commonOk
             )
         case .failed(.loadFailed, _):
             AppConfirmation(
-                title: "Couldn’t open the console settings",
-                message: "The saved settings for this console couldn’t be read. Please try again.",
-                cancelTitle: "OK"
+                title: .appConsoleEditorLoadFailedTitle,
+                message: .appConsoleEditorLoadFailedMessage,
+                cancelTitle: .commonOk
             )
         case .closed, .loading, .editing, .saving, .deleting:
             nil
@@ -456,7 +453,7 @@ private struct RootCornerLogo: View {
         if Self.besideRail(library: library, railEdge: railEdge) {
             if height >= Self.besideRailHeight {
                 ChiakiLogo(size: 30, spins: spins)
-                    .help("chiaki-ng \(version)")
+                    .help(Text(verbatim: "chiaki-ng \(version)"))
                     .frame(width: LibraryRailView<EmptyView, EmptyView>.collapsedWidth(for: layout))
                     .padding(.leading, 16)
                     .padding(.top, 77)
@@ -585,7 +582,7 @@ private struct ConsoleStartingView: View {
                 )
             }
         } else {
-            ProgressView("Connecting")
+            ProgressView(.appStreamConnecting)
         }
     }
 
@@ -647,11 +644,11 @@ public struct AppAlertPresentation<Action: Equatable>: ViewModifier {
             return nil
         }
         return AppConfirmation(
-            title: String(state: alert.title),
-            message: alert.message.map { String(state: $0) },
+            title: .verbatim(String(state: alert.title)),
+            message: alert.message.map { .verbatim(String(state: $0)) },
             systemImage: systemImage,
-            confirmTitle: confirmButton.map { String(state: $0.label) },
-            cancelTitle: cancelButton.map { String(state: $0.label) } ?? "Cancel",
+            confirmTitle: confirmButton.map { .verbatim(String(state: $0.label)) },
+            cancelTitle: cancelButton.map { .verbatim(String(state: $0.label)) } ?? .commonCancel,
             tone: confirmButton?.role == .destructive
                 ? .destructive
                 : .standard

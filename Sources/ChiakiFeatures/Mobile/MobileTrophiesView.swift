@@ -22,7 +22,7 @@ struct MobileTrophiesView: View {
     private var overview: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                MobilePageTitle("Trophies")
+                MobilePageTitle(.mobileTrophiesTitle)
                 ViewThatFits(in: .horizontal) {
                     HStack(alignment: .top, spacing: 20) {
                         summary
@@ -51,9 +51,9 @@ struct MobileTrophiesView: View {
         if let summary = store.overview?.summary {
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Level \(summary.level)")
+                    Text(.mobileTrophiesLevel(level: summary.level))
                         .font(.title.bold())
-                    Text("\(summary.earned.total.formatted()) trophies")
+                    Text(.mobileTrophiesCount(count: summary.earned.total))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -68,20 +68,22 @@ struct MobileTrophiesView: View {
     private var titles: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Games")
+                Text(.mobileTrophiesGames)
                     .font(.title3.bold())
                 Spacer()
                 Menu {
-                    Picker("Show", selection: Binding(
+                    Picker(selection: Binding(
                         get: { store.titleFilter },
                         set: { store.send(.titleFilterChosen($0)) }
                     )) {
                         ForEach(TrophyTitleFilter.allCases, id: \.self) { filter in
                             Text(filter.name).tag(filter)
                         }
+                    } label: {
+                        Text(.mobileCloudShow)
                     }
                 } label: {
-                    MobileMenuLabel(caption: "Show", value: store.titleFilter.name)
+                    MobileMenuLabel(caption: .mobileCloudShow, value: store.titleFilter.name)
                 }
                 Menu {
                     ForEach(TrophyTitleSort.allCases, id: \.self) { sort in
@@ -96,7 +98,7 @@ struct MobileTrophiesView: View {
                         }
                     }
                 } label: {
-                    MobileMenuLabel(caption: "Sort", value: store.titleSort.name)
+                    MobileMenuLabel(caption: .mobileTrophiesSort, value: store.titleSort.name)
                 }
             }
             let shown = store.shownTitles
@@ -105,7 +107,9 @@ struct MobileTrophiesView: View {
                     if store.isLoading {
                         ProgressView()
                     } else {
-                        ContentUnavailableView("No games", systemImage: "trophy")
+                        ContentUnavailableView {
+                            Label(.mobileTrophiesNoGames, systemImage: "trophy")
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: 160)
@@ -143,7 +147,7 @@ struct MobileTrophyTitleRow: View {
                 Text(title.name)
                     .font(.headline)
                     .lineLimit(1)
-                Text(subtitle)
+                Text(verbatim: subtitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -161,7 +165,7 @@ struct MobileTrophyTitleRow: View {
     }
 
     private var subtitle: String {
-        let platforms = title.platforms.map(\.name).joined(separator: " · ")
+        let platforms = title.platforms.map { String(localized: $0.name) }.joined(separator: " · ")
         guard let updated = title.updated else {
             return platforms
         }
@@ -193,7 +197,7 @@ struct MobileProgressRing: View {
         }
         .frame(width: 38, height: 38)
         .accessibilityElement()
-        .accessibilityLabel("\(value) percent")
+        .accessibilityLabel(Text(.mobileTrophiesPercent(value: value)))
     }
 }
 
@@ -225,20 +229,22 @@ struct MobileTrophyTitleView: View {
                     MobileProgressRing(value: opened.title.progress)
                 }
                 HStack {
-                    Text("Trophies")
+                    Text(.mobileTrophiesTitle)
                         .font(.title3.bold())
                     Spacer()
                     Menu {
-                        Picker("Show", selection: Binding(
+                        Picker(selection: Binding(
                             get: { store.trophyFilter },
                             set: { store.send(.trophyFilterChosen($0)) }
                         )) {
                             ForEach(TrophyFilter.allCases, id: \.self) { filter in
                                 Text(filter.name).tag(filter)
                             }
+                        } label: {
+                            Text(.mobileCloudShow)
                         }
                     } label: {
-                        MobileMenuLabel(caption: "Show", value: store.trophyFilter.name)
+                        MobileMenuLabel(caption: .mobileCloudShow, value: store.trophyFilter.name)
                     }
                     Menu {
                         ForEach(TrophySort.allCases, id: \.self) { sort in
@@ -253,7 +259,7 @@ struct MobileTrophyTitleView: View {
                             }
                         }
                     } label: {
-                        MobileMenuLabel(caption: "Sort", value: store.trophySort.name)
+                        MobileMenuLabel(caption: .mobileTrophiesSort, value: store.trophySort.name)
                     }
                 }
                 trophies
@@ -270,8 +276,10 @@ struct MobileTrophyTitleView: View {
             ProgressView()
                 .frame(maxWidth: .infinity, minHeight: 160)
         case .failed:
-            ContentUnavailableView("Couldn’t load trophies", systemImage: "trophy")
-                .frame(maxWidth: .infinity, minHeight: 160)
+            ContentUnavailableView {
+                Label(.mobileTrophiesLoadFailed, systemImage: "trophy")
+            }
+            .frame(maxWidth: .infinity, minHeight: 160)
         case .loaded:
             LazyVStack(spacing: 0) {
                 ForEach(opened.shown) { trophy in

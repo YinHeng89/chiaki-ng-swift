@@ -284,39 +284,39 @@ struct LibraryRailView<AccountSheet: View, AlertsPanel: View>: View {
         }
     }
 
-    private func shortTitle(of stop: ConsoleLibraryFocus) -> String {
+    private func shortTitle(of stop: ConsoleLibraryFocus) -> LocalizedStringResource {
         switch stop {
         case .joinGame:
-            "Join"
+            .libraryRailJoin
         case .notifications:
-            "Alerts"
+            .libraryRailAlerts
         case .log:
-            "Log"
+            .libraryRailLog
         case .profile:
-            "Account"
+            .libraryRailAccount
         default:
             title(of: stop)
         }
     }
 
-    private func title(of stop: ConsoleLibraryFocus) -> String {
+    private func title(of stop: ConsoleLibraryFocus) -> LocalizedStringResource {
         switch stop {
         case .librarySection(let section):
-            section.rawValue
+            section.title
         case .joinGame:
-            "Join a game"
+            .libraryBarJoinGame
         case .notifications:
             unseenAlerts > 0
-                ? "Notifications, \(unseenAlerts) new"
-                : "Notifications"
+                ? .libraryBarNotificationsNew(count: unseenAlerts)
+                : .libraryBarNotifications
         case .settings:
-            "Settings"
+            .commonSettings
         case .log:
-            "Developer log"
+            .libraryRailDeveloperLog
         case .quit:
-            "Quit"
+            .libraryRailQuit
         case .profile:
-            account?.name ?? "Accounts"
+            account.map { .verbatim($0.name) } ?? .libraryRailAccounts
         default:
             ""
         }

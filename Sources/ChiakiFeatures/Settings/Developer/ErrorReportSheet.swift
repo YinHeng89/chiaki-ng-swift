@@ -25,7 +25,7 @@ public struct ErrorReportSheet: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Error report").font(.headline)
+            Text(.settingsDeveloperReportTitle).font(.headline)
             #if os(macOS)
                 ErrorReportTextView(text: store.text)
                     .frame(minWidth: 640, minHeight: 360)
@@ -34,23 +34,22 @@ public struct ErrorReportSheet: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             #endif
             if store.saving == .failed {
-                Label("Couldn’t save the report. Choose another location or copy it instead.",
-                      systemImage: "exclamationmark.triangle")
+                Label(.settingsDeveloperReportSaveFailed, systemImage: "exclamationmark.triangle")
                     .font(.caption)
                     .foregroundStyle(.red)
             }
             HStack {
-                FocusButton("Copy") {
+                FocusButton(.settingsDeveloperReportCopy) {
                     PlatformPasteboard.copy(store.text)
                 }
                 Spacer()
                 if case .writing = store.saving {
                     ProgressView().controlSize(.small)
                 }
-                FocusButton("Save…") {
+                FocusButton(.settingsDeveloperReportSave) {
                     store.send(.save)
                 }
-                FocusButton("Done") {
+                FocusButton(.commonDone) {
                     store.send(.done)
                 }
                 .keyboardShortcut(.defaultAction)

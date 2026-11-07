@@ -133,7 +133,8 @@ import Testing
     await store.receive(.delegate(.requested(.startConsole(den, .local))))
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func playingAnInvitationInTheCloudLaunchesItsGameCarryingTheInvitation() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func playingAnInvitationInTheCloudLaunchesItsGameCarryingTheInvitation() async throws {
     let account = UUID()
     @Shared(.accounts) var accounts
     @Shared(.selectedAccount) var selected

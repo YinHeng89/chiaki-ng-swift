@@ -82,7 +82,7 @@ struct ConsoleShelfView: View {
 
     private var heading: some View {
         HStack(alignment: .center, spacing: 20) {
-            Text("Consoles")
+            Text(.libraryShelfTitle)
                 .font(.system(size: 40, weight: .semibold))
             if store.selectedProfile != nil, !shelf.consoles.isEmpty {
                 AddConsoleButton(style: .pill) {
@@ -102,7 +102,7 @@ struct ConsoleShelfView: View {
         if shelf.waiting, shelf.consoles.isEmpty {
             ProgressView()
                 .controlSize(.small)
-                .accessibilityLabel("Loading consoles")
+                .accessibilityLabel(.libraryShelfLoadingConsoles)
         } else if let account = store.selectedProfile {
             Group {
                 if shelf.consoles.isEmpty {
@@ -147,7 +147,7 @@ struct ConsoleShelfView: View {
             .transition(AppMotion.transition(reduced: reduceMotion))
             .animation(AppMotion.animation(reduced: reduceMotion), value: store.selectedAccount)
         } else {
-            FocusButton("Add an account") {
+            FocusButton(.libraryShelfAddAccount) {
                 store.send(.requested(.addAccount))
             }
             .glassControlStyle()
@@ -264,7 +264,7 @@ struct CompactConsoleShelfView: View {
         if shelf.waiting, shelf.consoles.isEmpty {
             ProgressView()
                 .controlSize(.small)
-                .accessibilityLabel("Loading consoles")
+                .accessibilityLabel(.libraryShelfLoadingConsoles)
         } else if let account = store.selectedProfile {
             Group {
                 if shelf.consoles.isEmpty {
@@ -279,7 +279,7 @@ struct CompactConsoleShelfView: View {
             .transition(AppMotion.transition(reduced: reduceMotion))
             .animation(AppMotion.animation(reduced: reduceMotion), value: store.selectedAccount)
         } else {
-            FocusButton("Add an account") {
+            FocusButton(.libraryShelfAddAccount) {
                 store.send(.requested(.addAccount))
             }
             .glassControlStyle()
@@ -356,9 +356,9 @@ struct CompactConsoleShelfView: View {
 
     private func recent(_ row: RecentlyPlayedSection.Row, titles: [RecentTitle], tile: CGFloat) -> some View {
         CompactRecentRow(
-            caption: "Recently played on \(row.console.name ?? row.console.address)",
+            caption: .libraryRecentHeading(console: row.console.name ?? row.console.address),
             warning: store.recentlyPlayed.authExpired
-                ? "Your PlayStation sign-in has expired."
+                ? .libraryRecentSignInExpired
                 : nil,
             consoleID: row.consoleID,
             titles: titles,
@@ -443,7 +443,7 @@ struct CompactConsoleShelfView: View {
 
     private var invitation: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Pair your first console.")
+            Text(.libraryShelfPairFirstConsole)
                 .font(.system(size: 28, weight: .semibold))
                 .tracking(-0.6)
                 .lineLimit(2)
@@ -484,9 +484,9 @@ private struct CompactRecentRow: View {
     static let nameHeight: CGFloat = 18
 
     /// The caption shown above the rail when there is no warning.
-    let caption: String
+    let caption: LocalizedStringResource
     /// A warning shown in red in place of the caption.
-    let warning: String?
+    let warning: LocalizedStringResource?
     /// The console whose titles the rail shows.
     let consoleID: UUID
     /// The recently played titles, in rail order.
@@ -573,7 +573,7 @@ private struct CompactRecentRow: View {
         .environment(\.menuMove) { direction in
             move(target, direction)
         }
-        .accessibilityLabel("Play \(title.name)")
+        .accessibilityLabel(.libraryRecentPlay(title: title.name))
     }
 }
 
@@ -626,7 +626,7 @@ private struct EmptyConsoleShelf<AddConsole: View>: View {
 
     private var invitation: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Pair your first console.")
+            Text(.libraryShelfPairFirstConsole)
                 .font(.system(size: 32, weight: .semibold))
                 .tracking(-0.7)
                 .fixedSize(horizontal: false, vertical: true)
@@ -665,7 +665,7 @@ private struct AddConsoleButton: View {
         switch style {
         case .prominent:
             FocusButton(action: action) {
-                Label("Add console", systemImage: AppIcon.add.rawValue)
+                Label(.libraryShelfAddConsole, systemImage: AppIcon.add.rawValue)
                     .font(.system(size: 15, weight: .semibold))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
@@ -677,7 +677,7 @@ private struct AddConsoleButton: View {
             .controlSize(.large)
         case .pill:
             FocusButton(action: action) {
-                Label("Add console", systemImage: AppIcon.add.rawValue)
+                Label(.libraryShelfAddConsole, systemImage: AppIcon.add.rawValue)
                     .font(.system(size: 14, weight: .medium))
                     .padding(.horizontal, 4)
             }
@@ -704,8 +704,8 @@ private struct AccountStatusBanner: View {
     var body: some View {
         if let account = store.selectedProfile, store.needsSignIn {
             HStack(spacing: 16) {
-                Text("Sign in again to update this account.").foregroundStyle(.secondary)
-                FocusButton("Sign in") {
+                Text(.libraryStatusSignInAgain).foregroundStyle(.secondary)
+                FocusButton(.libraryStatusSignIn) {
                     store.send(.requested(.reconnectAccount(account.id)))
                 }
                 .glassControlStyle()
@@ -714,8 +714,8 @@ private struct AccountStatusBanner: View {
             .font(.callout)
         } else if store.activity.refresh == .failed {
             HStack(spacing: 16) {
-                Text("Some account details couldn’t refresh.").foregroundStyle(.secondary)
-                FocusButton("Retry") {
+                Text(.libraryStatusRefreshFailed).foregroundStyle(.secondary)
+                FocusButton(.libraryStatusRetry) {
                     store.send(.requested(.refreshAccounts))
                     apply(.firstConsole)
                 }
@@ -727,15 +727,15 @@ private struct AccountStatusBanner: View {
         if store.isRefreshing {
             HStack(spacing: 8) {
                 ProgressView().controlSize(.mini)
-                Text("Updating account…").foregroundStyle(.secondary)
+                Text(.libraryStatusUpdating).foregroundStyle(.secondary)
             }
             .font(.caption)
         }
         switch store.activity.removal {
         case .removing:
-            Text("Removing account…").font(.caption).foregroundStyle(.secondary)
+            Text(.libraryStatusRemoving).font(.caption).foregroundStyle(.secondary)
         case .failed:
-            Text("Couldn’t remove the account. Try again.").font(.caption).foregroundStyle(.secondary)
+            Text(.libraryStatusRemoveFailed).font(.caption).foregroundStyle(.secondary)
         case .idle:
             EmptyView()
         }

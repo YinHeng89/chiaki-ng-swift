@@ -7,7 +7,7 @@ import SwiftUI
 /// connected.
 public struct ControllerPrompt: View {
     private let control: ControllerPromptControl
-    private let text: String
+    private let text: LocalizedStringResource
     @Environment(\.controllerPromptGlyphs) private var glyphs
 
     /// Creates a hint for a face button.
@@ -15,7 +15,7 @@ public struct ControllerPrompt: View {
     /// - Parameters:
     ///   - button: The button the hint names.
     ///   - text: What the button does.
-    public init(button: ControllerButton, text: String) {
+    public init(button: ControllerButton, text: LocalizedStringResource) {
         control = .button(button)
         self.text = text
     }
@@ -25,7 +25,7 @@ public struct ControllerPrompt: View {
     /// - Parameters:
     ///   - control: The control the hint names.
     ///   - text: What the control does.
-    public init(control: ControllerPromptControl, text: String) {
+    public init(control: ControllerPromptControl, text: LocalizedStringResource) {
         self.control = control
         self.text = text
     }
@@ -39,7 +39,10 @@ public struct ControllerPrompt: View {
                 Text(text)
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("\(glyph.name): \(text)")
+            .accessibilityLabel(.promptAccessibility(
+                button: String(localized: glyph.name),
+                action: String(localized: text)
+            ))
         }
     }
 }
@@ -95,10 +98,10 @@ public struct SliderAdjustmentPrompt: View {
     public var body: some View {
         HStack(spacing: 12) {
             ControllerPrompt(button: .south, text: adjusting
-                ? "Finish adjusting"
-                : "Adjust slider")
+                ? .sliderFinishAdjusting
+                : .sliderAdjust)
             if adjusting {
-                ControllerPrompt(button: .east, text: "Cancel adjustment")
+                ControllerPrompt(button: .east, text: .sliderCancelAdjustment)
             }
         }
         .font(.caption)

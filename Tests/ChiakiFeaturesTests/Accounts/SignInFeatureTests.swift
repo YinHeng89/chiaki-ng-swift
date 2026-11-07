@@ -356,7 +356,7 @@ import Testing
             .cancelled, .browserUnavailable, .codesExpired, .rejected, .rateLimited, .serviceUnavailable,
             .unreachable, .differentAccount, .storage
         ]
-        let texts = failures.map(AccountsFailureMessage.text(for:))
+        let texts = failures.map { String(localized: AccountsFailureMessage.text(for: $0)) }
         #expect(Set(texts).count == failures.count)
     }
 }

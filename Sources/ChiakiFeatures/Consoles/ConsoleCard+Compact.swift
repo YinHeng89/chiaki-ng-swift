@@ -118,8 +118,8 @@ extension ConsoleCard {
     var compactCaption: some View {
         Text(
             console.kind == .ps5
-                ? "PLAYSTATION 5"
-                : "PLAYSTATION 4"
+                ? .consolesCardCaptionPs5
+                : .consolesCardCaptionPs4
         )
         .font(.system(size: 13, weight: .semibold))
         .tracking(1.4)
@@ -136,9 +136,9 @@ extension ConsoleCard {
     }
 
     /// The status line of a compact card: Preview, the not-found note, or the console's presence.
-    var compactStatusTitle: String? {
+    var compactStatusTitle: LocalizedStringResource? {
         if preview {
-            return "Preview"
+            return .consolesCardPreview
         }
         if missingLocally {
             return Self.missingLocallyNote
@@ -163,7 +163,7 @@ extension ConsoleCard {
                     .truncationMode(.tail)
             }
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("Status \(title)")
+            .accessibilityLabel(.consolesCardStatusAccessibility(status: String(localized: title)))
         }
     }
 
@@ -186,7 +186,9 @@ extension ConsoleCard {
                     .environment(\.menuMove) { direction in
                         move(from: .action(item, .connection(option)), direction)
                     }
-                    .accessibilityLabel("Play over \(option.title)")
+                    .accessibilityLabel(
+                        .consolesCardPlayOverAccessibility(connection: String(localized: option.title))
+                    )
                     .accessibilityHint(playableConnections.contains(option)
                         ? ""
                         : Self.missingLocallyNote)
@@ -253,8 +255,8 @@ extension ConsoleCard {
     ) -> some View {
         let destructive = action == .delete
         let title = destructive
-            ? "Delete console"
-            : "Edit console"
+            ? LocalizedStringResource.consolesCardDeleteConsole
+            : .consolesCardEditConsole
         return FocusButton(
             role: destructive
                 ? .destructive
@@ -303,8 +305,8 @@ extension ConsoleCard {
         } label: {
             Label(
                 presence == .restMode && !preview
-                    ? "Wake"
-                    : "Play",
+                    ? .consolesCardWake
+                    : .consolesCardPlay,
                 systemImage: "play.fill"
             )
             .font(.system(size: 16, weight: .semibold))
@@ -322,7 +324,7 @@ extension ConsoleCard {
         .disabled(preview)
         .menuFocused($focus, equals: .console(item))
         .environment(\.menuMove, move)
-        .accessibilityLabel("\(playTitle) \(name) over \(shownConnection.title)")
+        .accessibilityLabel(playAccessibilityLabel)
         .accessibilityHint(
             missingLocally
                 ? Self.missingLocallyNote

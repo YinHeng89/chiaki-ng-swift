@@ -427,6 +427,6 @@ private func block(_ width: Int, _ height: Int) -> CGImage {
     #expect(state.loadingStage == nil)
     state.stream.session = .failed(StreamSessionID(uuid: session), .renderer)
     #expect(state.loadingStage == nil)
-    #expect(ConsoleLoadingStage.startingTitle("One").status == "Starting One")
+    #expect(String(localized: ConsoleLoadingStage.startingTitle("One").status) == "Starting One")
     #expect(ConsoleLoadingStage.waitingForVideo.step == 2)
 }

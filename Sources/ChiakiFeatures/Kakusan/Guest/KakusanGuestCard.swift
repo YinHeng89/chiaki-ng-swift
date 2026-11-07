@@ -9,8 +9,7 @@ import SwiftUI
 /// selection never lands on a control the card does not show.
 struct KakusanGuestCard: View {
     /// What a guest is told before joining shares their console session.
-    static let disclosureText = "The host’s shared access lasts for their whole console session. "
-        + "Leaving stops the stream but doesn’t erase the shared key from this device."
+    static let disclosureText: LocalizedStringResource = .kakusanGuestDisclosure
 
     /// The guest.
     @Bindable var store: StoreOf<KakusanGuestFeature>
@@ -22,25 +21,25 @@ struct KakusanGuestCard: View {
         case .entering(let error):
             entering(error)
         case .previewing:
-            progress("Join a game", symbol: "person.2", status: "Checking the invitation")
+            progress(.kakusanGuestJoinGame, symbol: "person.2", status: .kakusanGuestCheckingInvitation)
         case .previewed(let summary), .disclosureAccepted(let summary):
             preview(summary)
         case .preparingReply:
-            progress("Join a game", symbol: "person.2", status: "Preparing your reply")
+            progress(.kakusanGuestJoinGame, symbol: "person.2", status: .kakusanGuestPreparingReply)
         case let .waitingForHost(_, reply, summary):
             waiting(reply, summary: summary)
         case .connecting:
             progress(
-                "Connecting",
+                .kakusanStatusConnecting,
                 symbol: "antenna.radiowaves.left.and.right",
-                status: "Looking for a direct path"
+                status: .kakusanInviteLookingForPath
             )
         case .verifying(_, let verification):
             verifying(verification)
         case .admitting, .readying:
             seat
         case .leaving:
-            progress("Leaving", symbol: "rectangle.portrait.and.arrow.right", status: nil)
+            progress(.kakusanStatusLeaving, symbol: "rectangle.portrait.and.arrow.right", status: nil)
         case .ended(let outcome):
             ended(outcome)
         }
@@ -48,12 +47,12 @@ struct KakusanGuestCard: View {
 
     @ViewBuilder
     private func entering(_ error: KakusanError?) -> some View {
-        KakusanHeader(symbol: "person.2", title: "Join a game")
+        KakusanHeader(symbol: "person.2", title: .kakusanGuestJoinGame)
         VStack(alignment: .leading, spacing: 8) {
-            Text("Invitation")
+            Text(.kakusanInviteInvitation)
                 .font(.headline)
             KakusanTextBlockField(
-                title: "Invitation",
+                title: .kakusanInviteInvitation,
                 text: $store.invitation,
                 lines: 4 ... 6,
                 selected: store.controls.selection == .text,
@@ -68,43 +67,45 @@ struct KakusanGuestCard: View {
                 : error.label)
         }
         HStack(spacing: 10) {
-            button("Paste invitation", .paste)
-            button("Continue", .connect, prominent: true)
+            button(.kakusanGuestPasteInvitation, .paste)
+            button(.commonContinue, .connect, prominent: true)
                 .disabled(store.invitation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
     }
 
     @ViewBuilder
     private func preview(_ summary: KakusanInvitationSummary) -> some View {
-        KakusanHeader(symbol: "person.2", title: "You’re invited to play")
-        Text(store.hostName ?? "New device")
+        KakusanHeader(symbol: "person.2", title: .kakusanGuestInvited)
+        Text(store.hostName ?? String(localized: .kakusanInviteNewDevice))
             .font(.title3.weight(.semibold))
         Text(KakusanHostClaim.text(knownAs: store.hostName))
             .font(.callout)
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
         HStack(spacing: 18) {
-            Text("Room for \(summary.preview.capacity) players")
+            Text(.kakusanGuestRoom(capacity: summary.preview.capacity))
                 .font(.callout)
                 .foregroundStyle(.secondary)
-            KakusanCountdownText(prefix: "Expires in", deadline: summary.preview.expiresAt)
+            KakusanCountdownText(deadline: summary.preview.expiresAt) {
+                .kakusanInviteExpiresIn(time: $0)
+            }
         }
         disclosure
         HStack(spacing: 10) {
-            button("Back", .back)
-            button("Create reply", .create, prominent: true)
+            button(.commonBack, .back)
+            button(.kakusanGuestCreateReply, .create, prominent: true)
                 .disabled(!store.disclosureAccepted)
         }
     }
 
     private var disclosure: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Shared access")
+            Text(.kakusanGuestSharedAccess)
                 .font(.headline)
             Text(Self.disclosureText)
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
-            Toggle("I accept", isOn: Binding(
+            Toggle(.kakusanGuestAccept, isOn: Binding(
                 get: {
                     store.disclosureAccepted
                 },
@@ -121,10 +122,10 @@ struct KakusanGuestCard: View {
 
     @ViewBuilder
     private func waiting(_ reply: KakusanBlock, summary: KakusanInvitationSummary) -> some View {
-        KakusanHeader(symbol: "paperplane", title: "Send your reply")
-        KakusanBlockPreview(label: "Reply", block: reply)
+        KakusanHeader(symbol: "paperplane", title: .kakusanGuestSendReply)
+        KakusanBlockPreview(label: .kakusanInviteReply, block: reply)
         KakusanCopyButton(
-            title: "Copy reply",
+            title: .kakusanGuestCopyReply,
             text: reply.text,
             copied: store.copied,
             file: store.shareFile,
@@ -135,23 +136,27 @@ struct KakusanGuestCard: View {
         HStack(spacing: 10) {
             ProgressView()
                 .controlSize(.small)
-            Text("Waiting for \(store.hostName ?? "the host")")
+            Text(store.hostName.map { LocalizedStringResource.kakusanGuestWaitingForNamedHost(name: $0) }
+                ?? .kakusanGuestWaitingForHost)
                 .foregroundStyle(.secondary)
             Spacer(minLength: 12)
-            KakusanCountdownText(prefix: "Expires in", deadline: summary.preview.expiresAt)
+            KakusanCountdownText(deadline: summary.preview.expiresAt) {
+                .kakusanInviteExpiresIn(time: $0)
+            }
         }
-        button("Leave", .leave)
+        button(.kakusanGuestLeave, .leave)
     }
 
     @ViewBuilder
     private func verifying(_ verification: KakusanVerification) -> some View {
-        KakusanHeader(symbol: "checkmark.shield", title: "Check codes")
+        KakusanHeader(symbol: "checkmark.shield", title: .kakusanInviteCheckCodes)
         if let peer = store.hostPeer {
-            KakusanFingerprintView(title: "Host fingerprint", fingerprint: peer.fingerprint)
+            KakusanFingerprintView(title: .kakusanGuestHostFingerprint, fingerprint: peer.fingerprint)
         }
-        KakusanCodeDisplay(title: "Your code", code: verification.ownCode)
+        KakusanCodeDisplay(title: .kakusanInviteYourCode, code: verification.ownCode)
         KakusanCodeField(
-            title: store.hostName.map { "\($0)’s code" } ?? "Host’s code",
+            title: store.hostName.map { LocalizedStringResource.kakusanInviteNamedCode(name: $0) }
+                ?? .kakusanGuestHostCode,
             code: $store.code,
             selected: store.controls.selection == .code,
             keyboardRequest: store.keyboardRequest,
@@ -161,23 +166,23 @@ struct KakusanGuestCard: View {
             HStack(spacing: 10) {
                 ProgressView()
                     .controlSize(.small)
-                Text("Waiting for the host")
+                Text(.kakusanGuestWaitingForHost)
                     .foregroundStyle(.secondary)
             }
         }
         HStack(spacing: 10) {
-            button("Leave", .leave)
-            button("Verify", .verify, prominent: true)
+            button(.kakusanGuestLeave, .leave)
+            button(.kakusanInviteVerify, .verify, prominent: true)
                 .disabled(KakusanCode(store.code) == nil || verification.entry != .awaiting)
         }
     }
 
     @ViewBuilder private var seat: some View {
-        KakusanHeader(symbol: "chair.lounge", title: "Waiting for a seat")
+        KakusanHeader(symbol: "chair.lounge", title: .kakusanGuestWaitingForSeat)
         ProgressView()
             .frame(maxWidth: .infinity, minHeight: 60)
         rememberButton
-        button("Leave", .leave)
+        button(.kakusanGuestLeave, .leave)
     }
 
     @ViewBuilder
@@ -187,17 +192,21 @@ struct KakusanGuestCard: View {
             KakusanErrorText(text: outcome.label)
         }
         rememberButton
-        button("Paste a new invitation", .create, prominent: true)
+        button(.kakusanGuestPasteNewInvitation, .create, prominent: true)
     }
 
     @ViewBuilder private var rememberButton: some View {
         if store.controls.shows(.remember) {
-            button("Remember host", .remember)
+            button(.kakusanGuestRememberHost, .remember)
         }
     }
 
     @ViewBuilder
-    private func progress(_ title: String, symbol: String, status: String?) -> some View {
+    private func progress(
+        _ title: LocalizedStringResource,
+        symbol: String,
+        status: LocalizedStringResource?
+    ) -> some View {
         KakusanHeader(symbol: symbol, title: title)
         HStack(spacing: 10) {
             ProgressView()
@@ -209,11 +218,15 @@ struct KakusanGuestCard: View {
         }
         .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
         if store.controls.shows(.leave) {
-            button("Leave", .leave)
+            button(.kakusanGuestLeave, .leave)
         }
     }
 
-    private func button(_ title: String, _ control: KakusanControl, prominent: Bool = false) -> some View {
+    private func button(
+        _ title: LocalizedStringResource,
+        _ control: KakusanControl,
+        prominent: Bool = false
+    ) -> some View {
         KakusanActionButton(
             title: title,
             prominent: prominent,

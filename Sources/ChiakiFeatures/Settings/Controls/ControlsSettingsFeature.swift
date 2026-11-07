@@ -596,7 +596,7 @@ private struct ControlsPresets: Reducer {
                 return .none
             }
             copy.id = uuid()
-            copy.name += " copy"
+            copy.name = String(localized: .settingsControlsPresetCopyName(name: copy.name))
             state.draft.presets.append(copy)
             use(copy.id, for: target, in: &state.draft)
         case let .deletePreset(id):

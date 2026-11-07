@@ -17,14 +17,14 @@ public struct PictureSettings: Codable, Equatable, Sendable {
         case hevcHDR = "h265_hdr"
 
         /// The label shown for the codec.
-        public var title: String {
+        public var title: LocalizedStringResource {
             switch self {
             case .h264:
-                return "H.264"
+                return .settingsPictureCodecH264
             case .hevc:
-                return "HEVC"
+                return .settingsPictureCodecHevc
             case .hevcHDR:
-                return "HEVC HDR"
+                return .settingsPictureCodecHevcHdr
             }
         }
 

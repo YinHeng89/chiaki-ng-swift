@@ -18,34 +18,29 @@ public struct ConsolePowerSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Console power").font(.headline)
+            Text(.settingsNetworkConsolePowerHeading).font(.headline)
             VStack(alignment: .leading, spacing: 10) {
-                Text("When leaving a console stream")
+                Text(.settingsNetworkLeaveConsoleStream)
                 FocusableSegments(
                     options: ConsoleLeaveAction.allCases,
                     title: Self.title,
                     selection: $store.draft.leaveAction
                 )
-                .accessibilityLabel("When leaving a console stream")
+                .accessibilityLabel(.settingsNetworkLeaveConsoleStream)
                 Text(Self.detail(store.draft.leaveAction))
                     .font(.caption).foregroundStyle(.secondary)
-                Toggle(
-                    "Put the console in rest mode when this device sleeps",
-                    isOn: $store.draft.restOnMacSleep
-                )
-                .padding(.top, 6)
-                Toggle("Reconnect after this device wakes", isOn: $store.draft.resumeAfterWake)
-                Text("A console stream interrupted by sleep starts again on the same connection.")
-                    .font(.caption).foregroundStyle(.secondary)
-                Toggle("Reconnect when the connection drops", isOn: $store.draft.reconnectAfterDrop)
+                Toggle(.settingsNetworkRestOnSleep, isOn: $store.draft.restOnMacSleep)
                     .padding(.top, 6)
-                Text(
-                    "A console stream that loses its connection connects again, up to three times, instead of ending."
-                )
-                .font(.caption).foregroundStyle(.secondary)
+                Toggle(.settingsNetworkResumeAfterWake, isOn: $store.draft.resumeAfterWake)
+                Text(.settingsNetworkResumeAfterWakeDetail)
+                    .font(.caption).foregroundStyle(.secondary)
+                Toggle(.settingsNetworkReconnectAfterDrop, isOn: $store.draft.reconnectAfterDrop)
+                    .padding(.top, 6)
+                Text(.settingsNetworkReconnectAfterDropDetail)
+                    .font(.caption).foregroundStyle(.secondary)
             }
             .disabled(!store.isEditable)
-            SettingsPersistenceBanner(store.setting, subject: "console power settings") {
+            SettingsPersistenceBanner(store.setting, subject: .settingsNetworkConsolePowerSubject) {
                 store.send(.retry)
             }
         }
@@ -58,14 +53,14 @@ public struct ConsolePowerSettingsView: View {
     ///
     /// - Parameter action: The action.
     /// - Returns: Its short name.
-    public static func title(_ action: ConsoleLeaveAction) -> String {
+    public static func title(_ action: ConsoleLeaveAction) -> LocalizedStringResource {
         switch action {
         case .ask:
-            "Ask"
+            .settingsNetworkLeaveAsk
         case .restMode:
-            "Rest mode"
+            .settingsNetworkLeaveRestMode
         case .leaveOn:
-            "Leave it on"
+            .settingsNetworkLeaveOn
         }
     }
 
@@ -73,14 +68,14 @@ public struct ConsolePowerSettingsView: View {
     ///
     /// - Parameter action: The action.
     /// - Returns: One sentence describing it.
-    public static func detail(_ action: ConsoleLeaveAction) -> String {
+    public static func detail(_ action: ConsoleLeaveAction) -> LocalizedStringResource {
         switch action {
         case .ask:
-            "Leaving a stream offers Disconnect or Rest mode."
+            .settingsNetworkLeaveAskDetail
         case .restMode:
-            "Leaving a stream puts the console in rest mode."
+            .settingsNetworkLeaveRestModeDetail
         case .leaveOn:
-            "Leaving a stream keeps the console on."
+            .settingsNetworkLeaveOnDetail
         }
     }
 }

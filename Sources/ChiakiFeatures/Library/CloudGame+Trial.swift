@@ -1,11 +1,12 @@
 import ChiakiModels
+import Foundation
 
 /// How a held trial is marked on a card: its icon and its words, such as the hourglass and Trial.
 public struct CloudTrialMark: Equatable, Sendable {
     /// The trial's icon.
     public let icon: AppIcon
     /// The trial's words.
-    public let label: String
+    public let label: LocalizedStringResource
 
     /// The marks of the held trials among some games, by the title id in each product id, which is how the
     /// console shelf names its titles.
@@ -31,13 +32,13 @@ extension CloudGame {
     /// not hold as a trial.
     ///
     /// The store gives no way to tell an untimed demo from a timed game trial, so only its name decides Demo.
-    var trialLabel: String? {
+    var trialLabel: LocalizedStringResource? {
         guard isTrial else {
             return nil
         }
         return isNamedDemo
-            ? "Demo"
-            : "Trial"
+            ? .libraryTrialDemo
+            : .libraryTrialTrial
     }
 
     /// The icon a card shows for a trial: ``AppIcon/demo`` for a trial the store names a demo and ``AppIcon/trial``
@@ -54,12 +55,12 @@ extension CloudGame {
     /// The words a store card shows for a trial version the store offers: "Trial available" for a Play First
     /// Trial, which the account may already have used, "Demo available" for an ordinary trial, and `nil` when
     /// the store offers none the account lacks.
-    var trialOfferLabel: String? {
+    var trialOfferLabel: LocalizedStringResource? {
         switch trialOffer {
         case .playFirstTrial:
-            "Trial available"
+            .libraryTrialTrialAvailable
         case .demo:
-            "Demo available"
+            .libraryTrialDemoAvailable
         case nil:
             nil
         }

@@ -51,7 +51,7 @@ public struct SettingsPanelCommands: Commands {
 
     public var body: some Commands {
         CommandGroup(replacing: .appSettings) {
-            Button("Settings…") {
+            Button(.settingsPanelMenuCommand) {
                 navigator.endEditing()
                 presented?.open()
             }
@@ -223,7 +223,7 @@ struct SettingsPanelPresentation: ViewModifier {
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
                     .gesture(outsidePress)
-                    .accessibilityLabel("Dismiss settings")
+                    .accessibilityLabel(.settingsPanelDismiss)
                     .accessibilityAddTraits(.isButton)
                     .accessibilityAction { setPresented(false, by: "accessibility") }
                     .transition(.opacity)
@@ -313,7 +313,7 @@ struct SettingsPanelPresentation: ViewModifier {
     private var keyboardDoneBar: some View {
         HStack {
             Spacer(minLength: 0)
-            Button("Done") {
+            Button(.commonDone) {
                 navigator?.endEditing()
             }
             .buttonStyle(.plain)
@@ -321,7 +321,7 @@ struct SettingsPanelPresentation: ViewModifier {
             .foregroundStyle(Palette.accent)
             .frame(minWidth: 64, minHeight: 44)
             .contentShape(.rect)
-            .accessibilityHint("Hides the keyboard")
+            .accessibilityHint(.settingsPanelKeyboardDoneHint)
         }
         .padding(.horizontal, 12)
     }
@@ -549,8 +549,8 @@ public struct SettingsButton: View {
         }
         .glassControlStyle()
         .focusBorderShape(.circle)
-        .help("Settings")
-        .accessibilityLabel("Settings")
+        .help(Text(.commonSettings))
+        .accessibilityLabel(.commonSettings)
     }
 
     private var iconSide: CGFloat {
@@ -576,7 +576,7 @@ private struct SettingsPanelHeader: View {
     /// The title, with the close button at the trailing edge.
     var body: some View {
         HStack {
-            Text("Settings").font(.headline)
+            Text(.commonSettings).font(.headline)
             Spacer()
             FocusButton {
                 close()
@@ -591,7 +591,7 @@ private struct SettingsPanelHeader: View {
                 }
             }
             .keyboardShortcut(.cancelAction)
-            .help("Close settings").accessibilityLabel("Close settings")
+            .help(Text(.settingsPanelCloseSettings)).accessibilityLabel(.settingsPanelCloseSettings)
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.top, topPadding)

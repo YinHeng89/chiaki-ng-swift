@@ -110,10 +110,10 @@ private let secret = PSNTrophy(id: 3, grade: .bronze, name: "Cave", hidden: true
 
 @Test func everyChoiceHasItsOwnLabel() {
     for labels in [
-        TrophyTitleFilter.allCases.map(\.name),
-        TrophyTitleSort.allCases.map(\.name),
-        TrophyFilter.allCases.map(\.name),
-        TrophySort.allCases.map(\.name)
+        TrophyTitleFilter.allCases.map { String(localized: $0.name) },
+        TrophyTitleSort.allCases.map { String(localized: $0.name) },
+        TrophyFilter.allCases.map { String(localized: $0.name) },
+        TrophySort.allCases.map { String(localized: $0.name) }
     ] {
         #expect(labels.allSatisfy { !$0.isEmpty })
         #expect(Set(labels).count == labels.count)

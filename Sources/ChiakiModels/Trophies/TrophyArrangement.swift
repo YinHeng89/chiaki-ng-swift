@@ -12,16 +12,16 @@ public enum TrophyTitleFilter: CaseIterable, Hashable, Sendable {
     case notStarted
 
     /// The choice's label.
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .all:
-            "All"
+            .trophiesTitleFilterAll
         case .inProgress:
-            "In progress"
+            .trophiesTitleFilterInProgress
         case .completed:
-            "Completed"
+            .trophiesTitleFilterCompleted
         case .notStarted:
-            "Not started"
+            .trophiesTitleFilterNotStarted
         }
     }
 
@@ -53,14 +53,14 @@ public enum TrophyTitleSort: CaseIterable, Hashable, Sendable {
     case name
 
     /// The choice's label.
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .recent:
-            "Recent"
+            .trophiesTitleSortRecent
         case .progress:
-            "Progress"
+            .trophiesTitleSortProgress
         case .name:
-            "Name"
+            .trophiesTitleSortName
         }
     }
 }
@@ -75,14 +75,14 @@ public enum TrophyFilter: CaseIterable, Hashable, Sendable {
     case unearned
 
     /// The choice's label.
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .all:
-            "All"
+            .trophiesFilterAll
         case .earned:
-            "Earned"
+            .trophiesFilterEarned
         case .unearned:
-            "Not earned"
+            .trophiesFilterNotEarned
         }
     }
 
@@ -116,18 +116,18 @@ public enum TrophySort: CaseIterable, Hashable, Sendable {
     case name
 
     /// The choice's label.
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .game:
-            "Default"
+            .trophiesSortDefaultOrder
         case .grade:
-            "Grade"
+            .trophiesSortGrade
         case .rarity:
-            "Rarity"
+            .trophiesSortRarity
         case .recentlyEarned:
-            "Recently earned"
+            .trophiesSortRecentlyEarned
         case .name:
-            "Name"
+            .trophiesSortName
         }
     }
 }

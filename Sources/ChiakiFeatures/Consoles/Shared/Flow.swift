@@ -5,7 +5,7 @@ import SwiftUI
 /// The prominent button of a sign-in or console screen, with a symbol after its label.
 public struct FlowPrimaryButton<Focus: Hashable>: View {
     /// The text shown on the button.
-    let label: String
+    let label: LocalizedStringResource
     /// The SF Symbol name shown after the label.
     let symbol: String
     /// The focus stop this button occupies in the screen's focus.
@@ -24,7 +24,7 @@ public struct FlowPrimaryButton<Focus: Hashable>: View {
     ///   - focusedAction: The screen's focus.
     ///   - perform: What the button does.
     public init(
-        label: String,
+        label: LocalizedStringResource,
         symbol: String,
         focus: Focus,
         focusedAction: MenuFocusState<Focus?>.Binding,
@@ -57,7 +57,7 @@ public struct FlowPrimaryButton<Focus: Hashable>: View {
 /// The quiet text button under a sign-in or console screen, such as Back or Cancel.
 public struct FlowSecondaryButton<Focus: Hashable>: View {
     /// The text shown on the button.
-    let label: String
+    let label: LocalizedStringResource
     /// The focus stop this button occupies in the screen's focus.
     let focus: Focus
     /// The screen's controller focus that the button joins at `focus`.
@@ -73,7 +73,7 @@ public struct FlowSecondaryButton<Focus: Hashable>: View {
     ///   - focusedAction: The screen's focus.
     ///   - perform: What the button does.
     public init(
-        label: String,
+        label: LocalizedStringResource,
         focus: Focus,
         focusedAction: MenuFocusState<Focus?>.Binding,
         perform: @escaping () -> Void
@@ -110,17 +110,17 @@ public struct FlowSecondaryButton<Focus: Hashable>: View {
 /// The headline and detail line at the top of a sign-in or console screen.
 public struct FlowTitle: View {
     /// The headline.
-    let text: String
+    let text: LocalizedStringResource
 
     /// The line under the headline.
-    let detail: String
+    let detail: LocalizedStringResource
 
     /// Creates the title.
     ///
     /// - Parameters:
     ///   - text: The headline.
     ///   - detail: The line under the headline.
-    public init(text: String, detail: String) {
+    public init(text: LocalizedStringResource, detail: LocalizedStringResource) {
         self.text = text
         self.detail = detail
     }
@@ -147,11 +147,11 @@ public struct FlowTitle: View {
 /// explains it with while it is hovered or focused.
 public struct FlowTileChoice<Focus: Hashable> {
     /// The text under the symbol.
-    let label: String
+    let label: LocalizedStringResource
     /// The SF Symbol name drawn on the tile.
     let symbol: String
     /// The line shown under the row while the tile is hovered or focused.
-    let hint: String
+    let hint: LocalizedStringResource
     /// The focus stop this tile occupies in the screen's focus.
     let focus: Focus
     /// Whether the tile is filled with the accent as the screen's main choice.
@@ -175,9 +175,9 @@ public struct FlowTileChoice<Focus: Hashable> {
     ///   - cancels: Whether Escape presses the tile.
     ///   - perform: What the tile does.
     public init(
-        label: String,
+        label: LocalizedStringResource,
         symbol: String,
-        hint: String,
+        hint: LocalizedStringResource,
         focus: Focus,
         prominent: Bool = false,
         enabled: Bool = true,
@@ -240,7 +240,7 @@ public struct FlowTileRow<Focus: Hashable>: View {
                     }
                 }
             if showsHint {
-                Text(explained?.hint ?? " ")
+                (explained.map { Text($0.hint) } ?? Text(verbatim: " "))
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

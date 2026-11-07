@@ -1,3 +1,4 @@
+import Foundation
 import MenuFocus
 
 /// The card shown while an automatic connection runs or after it failed.
@@ -11,74 +12,75 @@ public enum AutoConnectPresentation {
         case .idle, .awaitingLibrary(_, .launchSetting), .checkingLaunchSetting:
             return nil
         case .awaitingLibrary(_, .console):
-            return progress("Connecting to your console", message: "Loading your saved consoles.")
+            return progress(.consolesAutoConnectLoadingTitle, message: .consolesAutoConnectLoadingMessage)
         case .discovering(_, let plan):
-            return progress(title(for: plan), message: "Looking for \(plan.name) on your network.")
+            return progress(title(for: plan), message: .consolesAutoConnectDiscovering(console: plan.name))
         case .waking(_, let plan):
-            return progress(
-                title(for: plan),
-                message: "\(plan.name) is in rest mode. Sending a wake request."
-            )
+            return progress(title(for: plan), message: .consolesAutoConnectWaking(console: plan.name))
         case .awaitingWake(_, let plan):
-            return progress(
-                title(for: plan),
-                message: "Waiting up to 25 seconds for \(plan.name) to wake up."
-            )
+            return progress(title(for: plan), message: .consolesAutoConnectAwaitingWake(console: plan.name))
         case let .failed(name, failure):
             return AppConfirmation(
                 title: failureTitle(failure, name: name),
                 message: failureMessage(failure),
                 systemImage: "exclamationmark.triangle",
-                cancelTitle: "OK"
+                cancelTitle: .commonOk
             )
         }
     }
 
-    private static func title(for plan: AutoConnect.Plan) -> String {
+    private static func title(for plan: AutoConnect.Plan) -> LocalizedStringResource {
         switch plan.mode {
         case .stream:
-            "Connecting to \(plan.name)"
+            .consolesAutoConnectConnectingTo(console: plan.name)
         case .wake:
-            "Waking \(plan.name)"
+            .consolesAutoConnectWakingTitle(console: plan.name)
         }
     }
 
-    private static func progress(_ title: String, message: String) -> AppConfirmation {
+    private static func progress(
+        _ title: LocalizedStringResource,
+        message: LocalizedStringResource
+    ) -> AppConfirmation {
         AppConfirmation(
             title: title,
             message: message,
             systemImage: "play.tv",
-            cancelTitle: "Cancel",
+            cancelTitle: .commonCancel,
             progress: true
         )
     }
 
-    private static func failureTitle(_ failure: AutoConnect.Failure, name: String?) -> String {
-        let console = name ?? "the console"
+    private static func failureTitle(
+        _ failure: AutoConnect.Failure,
+        name: String?
+    ) -> LocalizedStringResource {
         switch failure {
         case .notRegistered, .storage, .busy, .remoteUnavailable:
-            return "Couldn’t connect to \(console)"
+            name.map { .consolesAutoConnectConnectFailedNamed(console: $0) }
+                ?? .consolesAutoConnectConnectFailed
         case .wakeFailed, .wakeTimedOut, .notFound:
-            return "Couldn’t wake \(console)"
+            name.map { .consolesAutoConnectWakeFailedNamed(console: $0) }
+                ?? .consolesAutoConnectWakeFailedTitle
         }
     }
 
-    private static func failureMessage(_ failure: AutoConnect.Failure) -> String {
+    private static func failureMessage(_ failure: AutoConnect.Failure) -> LocalizedStringResource {
         switch failure {
         case .notRegistered:
-            "This console isn’t registered on this device. Register it again to play."
+            .consolesAutoConnectNotRegistered
         case .remoteUnavailable:
-            "This console hasn’t been set up for remote play."
+            .consolesAutoConnectRemoteUnavailable
         case .busy:
-            "Another stream or task is in progress. Finish it and try again."
+            .consolesAutoConnectBusy
         case .storage:
-            "Your saved consoles couldn’t be read. Please try again."
+            .consolesAutoConnectStorage
         case .wakeFailed:
-            "The wake request couldn’t be sent. Check the network and try again."
+            .consolesAutoConnectWakeFailed
         case .wakeTimedOut:
-            "The console didn’t wake up within 25 seconds. Check it’s connected to the network."
+            .consolesAutoConnectWakeTimedOut
         case .notFound:
-            "The console wasn’t found on your network."
+            .consolesAutoConnectNotFound
         }
     }
 }

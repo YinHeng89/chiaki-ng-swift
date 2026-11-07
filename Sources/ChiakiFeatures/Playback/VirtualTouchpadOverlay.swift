@@ -381,8 +381,8 @@ struct VirtualTouchpadView: View {
         }
         .accessibilityElement()
         .accessibilityLabel(side == .left
-            ? "Touchpad left half"
-            : "Touchpad right half")
+            ? .playbackGamepadTouchpadLeftHalf
+            : .playbackGamepadTouchpadRightHalf)
     }
 
     private func fill(active: Bool, clicked: Bool) -> Color {

@@ -1,0 +1,4424 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "cloud.bandwidth.measuredAtLaunch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps, measured at launch"
+          }
+        }
+      }
+    },
+    "cloud.bandwidth.measuredMinutesBefore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps, measured %(minutes)lld min before launch"
+          }
+        }
+      }
+    },
+    "cloud.bandwidth.measuredMomentsBefore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps, measured moments before launch"
+          }
+        }
+      }
+    },
+    "cloud.bandwidth.rate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps"
+          }
+        }
+      }
+    },
+    "cloud.bandwidth.savedMinutesAgo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps saved %(minutes)lld min ago"
+          }
+        }
+      }
+    },
+    "cloud.bandwidth.savedMomentsAgo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps saved moments ago"
+          }
+        }
+      }
+    },
+    "cloud.capture.screenshotName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screenshot"
+          }
+        }
+      }
+    },
+    "cloud.capture.videoClipName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video clip"
+          }
+        }
+      }
+    },
+    "cloud.cardCheck.editionMissing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't check the store: this edition was not in the store's answer"
+          }
+        }
+      }
+    },
+    "cloud.cardCheck.noAnswer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't check the store: no answer"
+          }
+        }
+      }
+    },
+    "cloud.cardCheck.noNotice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't check the store: the store publishes no streaming notice for this edition"
+          }
+        }
+      }
+    },
+    "cloud.cardCheck.noSignIn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't check the store: no PSN sign-in"
+          }
+        }
+      }
+    },
+    "cloud.closing.maintenanceHours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The streaming server goes down for maintenance in %(hours)lld hours and the game will close. Save your progress."
+          }
+        }
+      }
+    },
+    "cloud.closing.maintenanceMinutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The streaming server goes down for maintenance in %(minutes)lld minute and the game will close. Save your progress."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The streaming server goes down for maintenance in %(minutes)lld minutes and the game will close. Save your progress."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloud.closing.timeLimitHours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The game closes in %(hours)lld hours because of the streaming time limit. Save your progress."
+          }
+        }
+      }
+    },
+    "cloud.closing.timeLimitMinutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The game closes in %(minutes)lld minute because of the streaming time limit. Save your progress."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The game closes in %(minutes)lld minutes because of the streaming time limit. Save your progress."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloud.closing.unexplainedHours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The streaming service closes the game in %(hours)lld hours. Save your progress."
+          }
+        }
+      }
+    },
+    "cloud.closing.unexplainedMinutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The streaming service closes the game in %(minutes)lld minute. Save your progress."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The streaming service closes the game in %(minutes)lld minutes. Save your progress."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloud.datacenter.connecting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting to %(name)@"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.connectingPing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting to %(name)@ (%(ping)lld ms)"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.modeAtLaunch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chosen at launch"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.modeAutomatic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.modeChosen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chosen"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.noReply" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No reply"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.ping" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(ping)lld ms"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.pingLastMeasured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "last measured %(ping)lld ms"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.pingNote" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ping is the adjusted value the stream core reports"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.statsAtLaunch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@, chosen at launch"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.statsAutomatic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@, automatic"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.statsChosen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@, chosen"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.statsPingAtLaunch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@ at %(ping)lld ms, chosen at launch"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.statsPingAutomatic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@ at %(ping)lld ms, automatic"
+          }
+        }
+      }
+    },
+    "cloud.datacenter.statsPingChosen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@ at last measured %(ping)lld ms, chosen"
+          }
+        }
+      }
+    },
+    "cloud.library.filterAll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All streamable"
+          }
+        }
+      }
+    },
+    "cloud.library.filterBrowse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available to buy"
+          }
+        }
+      }
+    },
+    "cloud.library.filterOwned" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My library"
+          }
+        }
+      }
+    },
+    "cloud.library.filterPlus" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PlayStation Plus"
+          }
+        }
+      }
+    },
+    "cloud.library.filterPreorders" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pre-orders"
+          }
+        }
+      }
+    },
+    "cloud.library.filterRecent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recently played"
+          }
+        }
+      }
+    },
+    "cloud.library.platformAll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "cloud.library.platformAllSpoken" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All platforms"
+          }
+        }
+      }
+    },
+    "cloud.library.platformPs3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS3"
+          }
+        }
+      }
+    },
+    "cloud.library.platformPs4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4"
+          }
+        }
+      }
+    },
+    "cloud.library.platformPs5" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5"
+          }
+        }
+      }
+    },
+    "cloud.notice.capturesUploading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your captures are still uploading"
+          }
+        }
+      }
+    },
+    "cloud.notice.invitation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Game invitation"
+          }
+        }
+      }
+    },
+    "cloud.notice.invitationJoinFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't join the invitation"
+          }
+        }
+      }
+    },
+    "cloud.notice.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New message"
+          }
+        }
+      }
+    },
+    "cloud.notice.recordingLimitReached" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The clip reached its longest length"
+          }
+        }
+      }
+    },
+    "cloud.notice.recordingPaused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recording paused during this scene"
+          }
+        }
+      }
+    },
+    "cloud.notice.recordingRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This game doesn't allow recording here"
+          }
+        }
+      }
+    },
+    "cloud.notice.recordingResumed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recording resumed"
+          }
+        }
+      }
+    },
+    "cloud.notice.recordingSaved" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video clip saved"
+          }
+        }
+      }
+    },
+    "cloud.notice.screenshotRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This game doesn't allow screenshots here"
+          }
+        }
+      }
+    },
+    "cloud.notice.screenshotSaved" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screenshot saved"
+          }
+        }
+      }
+    },
+    "cloud.notice.trialTimeLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your game trial is running out"
+          }
+        }
+      }
+    },
+    "cloud.notice.trophyBronze" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bronze trophy earned"
+          }
+        }
+      }
+    },
+    "cloud.notice.trophyGold" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gold trophy earned"
+          }
+        }
+      }
+    },
+    "cloud.notice.trophyPlatinum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Platinum trophy earned"
+          }
+        }
+      }
+    },
+    "cloud.notice.trophySilver" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silver trophy earned"
+          }
+        }
+      }
+    },
+    "cloud.plus.essential" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Plus Essential"
+          }
+        }
+      }
+    },
+    "cloud.plus.extra" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Plus Extra"
+          }
+        }
+      }
+    },
+    "cloud.plus.none" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No PS Plus"
+          }
+        }
+      }
+    },
+    "cloud.plus.premium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Plus Premium"
+          }
+        }
+      }
+    },
+    "cloud.refresh.cancelled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The ownership check was cancelled."
+          }
+        }
+      }
+    },
+    "cloud.refresh.failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The ownership check failed. Try again in a moment."
+          }
+        }
+      }
+    },
+    "cloud.refresh.noSignIn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No PlayStation sign-in is saved for this account, or it has expired. Sign in again in Accounts."
+          }
+        }
+      }
+    },
+    "cloud.refresh.signInRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PlayStation refused the ownership check. Sign in again in Accounts."
+          }
+        }
+      }
+    },
+    "cloud.refresh.titleMissing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The ownership check did not return the updated title. Refresh the whole library instead."
+          }
+        }
+      }
+    },
+    "cloud.release.countdown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Releases in %(countdown)@"
+          }
+        }
+      }
+    },
+    "cloud.release.countdownDays" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(days)lldd %(clock)@"
+          }
+        }
+      }
+    },
+    "cloud.release.scheduled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Releases %(date)@"
+          }
+        }
+      }
+    },
+    "cloud.release.unannounced" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Release date not announced"
+          }
+        }
+      }
+    },
+    "cloud.savedBandwidth.daysAgo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measured your connection at %(mbps)lld Mbps %(days)lld days ago. Measures again at launch when that is out of date."
+          }
+        }
+      }
+    },
+    "cloud.savedBandwidth.hoursAgo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measured your connection at %(mbps)lld Mbps %(hours)lld h ago. Measures again at launch when that is out of date."
+          }
+        }
+      }
+    },
+    "cloud.savedBandwidth.minutesAgo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measured your connection at %(mbps)lld Mbps %(minutes)lld min ago. Measures again at launch when that is out of date."
+          }
+        }
+      }
+    },
+    "cloud.savedBandwidth.momentsAgo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measured your connection at %(mbps)lld Mbps moments ago. Measures again at launch when that is out of date."
+          }
+        }
+      }
+    },
+    "cloud.service.psCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Cloud"
+          }
+        }
+      }
+    },
+    "cloud.service.psNow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Now"
+          }
+        }
+      }
+    },
+    "cloud.standing.inLibrary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In your library"
+          }
+        }
+      }
+    },
+    "cloud.standing.included" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Included with Premium"
+          }
+        }
+      }
+    },
+    "cloud.standing.mayStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "May stream"
+          }
+        }
+      }
+    },
+    "cloud.standing.store" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View in Store"
+          }
+        }
+      }
+    },
+    "consoles.psn.mainConsoleName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Main PS4 Console"
+          }
+        }
+      }
+    },
+    "controls.control.circle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circle"
+          }
+        }
+      }
+    },
+    "controls.control.cross" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cross"
+          }
+        }
+      }
+    },
+    "controls.control.dpadDown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D-pad down"
+          }
+        }
+      }
+    },
+    "controls.control.dpadLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D-pad left"
+          }
+        }
+      }
+    },
+    "controls.control.dpadRight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D-pad right"
+          }
+        }
+      }
+    },
+    "controls.control.dpadUp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D-pad up"
+          }
+        }
+      }
+    },
+    "controls.control.gyroHold" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gyro (hold)"
+          }
+        }
+      }
+    },
+    "controls.control.l1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L1"
+          }
+        }
+      }
+    },
+    "controls.control.l2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L2"
+          }
+        }
+      }
+    },
+    "controls.control.l3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L3"
+          }
+        }
+      }
+    },
+    "controls.control.leftStickDown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left stick down"
+          }
+        }
+      }
+    },
+    "controls.control.leftStickLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left stick left"
+          }
+        }
+      }
+    },
+    "controls.control.leftStickRight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left stick right"
+          }
+        }
+      }
+    },
+    "controls.control.leftStickUp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left stick up"
+          }
+        }
+      }
+    },
+    "controls.control.options" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Options"
+          }
+        }
+      }
+    },
+    "controls.control.ps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS"
+          }
+        }
+      }
+    },
+    "controls.control.r1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R1"
+          }
+        }
+      }
+    },
+    "controls.control.r2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R2"
+          }
+        }
+      }
+    },
+    "controls.control.r3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R3"
+          }
+        }
+      }
+    },
+    "controls.control.rightStickDown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right stick down"
+          }
+        }
+      }
+    },
+    "controls.control.rightStickLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right stick left"
+          }
+        }
+      }
+    },
+    "controls.control.rightStickRight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right stick right"
+          }
+        }
+      }
+    },
+    "controls.control.rightStickUp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right stick up"
+          }
+        }
+      }
+    },
+    "controls.control.share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        }
+      }
+    },
+    "controls.control.square" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Square"
+          }
+        }
+      }
+    },
+    "controls.control.touchpad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchpad"
+          }
+        }
+      }
+    },
+    "controls.control.touchpadLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchpad left"
+          }
+        }
+      }
+    },
+    "controls.control.touchpadRight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchpad right"
+          }
+        }
+      }
+    },
+    "controls.control.triangle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Triangle"
+          }
+        }
+      }
+    },
+    "controls.device.keyboardName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyboard and mouse"
+          }
+        }
+      }
+    },
+    "controls.device.keyboardTransport" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Built in"
+          }
+        }
+      }
+    },
+    "controls.device.notConnected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not connected"
+          }
+        }
+      }
+    },
+    "controls.lightbar.blue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blue"
+          }
+        }
+      }
+    },
+    "controls.lightbar.cyan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cyan"
+          }
+        }
+      }
+    },
+    "controls.lightbar.green" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Green"
+          }
+        }
+      }
+    },
+    "controls.lightbar.off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        }
+      }
+    },
+    "controls.lightbar.orange" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange"
+          }
+        }
+      }
+    },
+    "controls.lightbar.pink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pink"
+          }
+        }
+      }
+    },
+    "controls.lightbar.purple" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purple"
+          }
+        }
+      }
+    },
+    "controls.lightbar.red" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Red"
+          }
+        }
+      }
+    },
+    "controls.lightbar.white" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "White"
+          }
+        }
+      }
+    },
+    "controls.notice.controllersUnreadable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read controllers. Check the connection and try again."
+          }
+        }
+      }
+    },
+    "controls.notice.invalidConfiguration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use each input once per preset and give every preset a name. Changes are saved once they are valid."
+          }
+        }
+      }
+    },
+    "controls.notice.presetLimit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete a preset to change this controller’s buttons on their own; the limit is %(limit)lld."
+          }
+        }
+      }
+    },
+    "controls.notice.rumbleRejected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The controller did not accept the rumble test."
+          }
+        }
+      }
+    },
+    "controls.notice.shortcutNotAllowed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Command, Control or Option with a key the app does not already use."
+          }
+        }
+      }
+    },
+    "controls.notice.streamMenuButtonsInvalid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose two to four different buttons that don’t contain, or sit inside, the touchpad shortcut."
+          }
+        }
+      }
+    },
+    "controls.notice.touchpadButtonsInvalid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose two or three different buttons that don’t contain, or sit inside, the stream menu shortcut."
+          }
+        }
+      }
+    },
+    "controls.preset.controllerName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controller"
+          }
+        }
+      }
+    },
+    "controls.preset.standardName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "kakusan.advice.incompleteInvitation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That isn’t a complete invitation"
+          }
+        }
+      }
+    },
+    "kakusan.advice.incompleteReply" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That isn’t a complete reply"
+          }
+        }
+      }
+    },
+    "kakusan.advice.invitationNotReply" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That’s an invitation, not a reply. Paste the reply the other player sent back"
+          }
+        }
+      }
+    },
+    "kakusan.advice.replyNotInvitation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That’s a reply, not an invitation. Paste the invitation the host sent you"
+          }
+        }
+      }
+    },
+    "kakusan.attempt.cancelled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelled"
+          }
+        }
+      }
+    },
+    "kakusan.attempt.endedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection ended"
+          }
+        }
+      }
+    },
+    "kakusan.attempt.expiredTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitation expired"
+          }
+        }
+      }
+    },
+    "kakusan.attempt.noPathTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A direct path wasn’t available"
+          }
+        }
+      }
+    },
+    "kakusan.attempt.unverifiedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn’t verify this pairing"
+          }
+        }
+      }
+    },
+    "kakusan.blockFile.invitation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kakusan invitation"
+          }
+        }
+      }
+    },
+    "kakusan.blockFile.reply" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kakusan reply"
+          }
+        }
+      }
+    },
+    "kakusan.blockFile.unrecognised" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kakusan"
+          }
+        }
+      }
+    },
+    "kakusan.error.codec" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported video format"
+          }
+        }
+      }
+    },
+    "kakusan.error.congestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The connection was too slow"
+          }
+        }
+      }
+    },
+    "kakusan.error.cryptoUnavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encryption is unavailable"
+          }
+        }
+      }
+    },
+    "kakusan.error.expired" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The invitation expired"
+          }
+        }
+      }
+    },
+    "kakusan.error.hostCodec" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use H.264 or H.265 without HDR, at 1080p and 60 fps or lower"
+          }
+        }
+      }
+    },
+    "kakusan.error.hostVersion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This console connection can’t be shared"
+          }
+        }
+      }
+    },
+    "kakusan.error.identityChanged" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The device’s identity changed"
+          }
+        }
+      }
+    },
+    "kakusan.error.internal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong"
+          }
+        }
+      }
+    },
+    "kakusan.error.invalidBlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The pasted text isn’t valid"
+          }
+        }
+      }
+    },
+    "kakusan.error.noPath" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No direct path between your networks"
+          }
+        }
+      }
+    },
+    "kakusan.error.pairingFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The codes didn’t match"
+          }
+        }
+      }
+    },
+    "kakusan.error.sourceEnded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The host’s stream ended"
+          }
+        }
+      }
+    },
+    "kakusan.error.sourceFormat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported stream format"
+          }
+        }
+      }
+    },
+    "kakusan.error.sourceJoinFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The console couldn’t add the player"
+          }
+        }
+      }
+    },
+    "kakusan.error.transcript" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The connection couldn’t be checked"
+          }
+        }
+      }
+    },
+    "kakusan.error.version" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The other app uses a different version"
+          }
+        }
+      }
+    },
+    "kakusan.guest.closedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This invitation is closed"
+          }
+        }
+      }
+    },
+    "kakusan.guest.gameEndedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The game ended"
+          }
+        }
+      }
+    },
+    "kakusan.guest.hostRemoved" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The host removed you"
+          }
+        }
+      }
+    },
+    "kakusan.hostClaim.known" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This looks like a device you’ve played with. That’s confirmed once you’re connected"
+          }
+        }
+      }
+    },
+    "kakusan.hostClaim.unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’ll see this device’s fingerprint once you’re connected"
+          }
+        }
+      }
+    },
+    "kakusan.reason.connectionError" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection error"
+          }
+        }
+      }
+    },
+    "kakusan.reason.connectionLost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection lost"
+          }
+        }
+      }
+    },
+    "kakusan.reason.leftGame" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left the game"
+          }
+        }
+      }
+    },
+    "kakusan.reason.noFreeSeat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No free seat"
+          }
+        }
+      }
+    },
+    "kakusan.reason.removed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removed"
+          }
+        }
+      }
+    },
+    "kakusan.reason.streamEnded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The stream ended"
+          }
+        }
+      }
+    },
+    "kakusan.reason.timedOut" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timed out"
+          }
+        }
+      }
+    },
+    "launch.error.conflictingCommands" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose either --list or --stream, not both."
+          }
+        }
+      }
+    },
+    "launch.error.conflictingDisplayModes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose only one of --fullscreen, --zoom or --stretch."
+          }
+        }
+      }
+    },
+    "launch.error.missingConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name the console to stream, for example --stream \"Living Room\"."
+          }
+        }
+      }
+    },
+    "launch.error.streamOptionWithoutStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(option)@ only applies together with --stream."
+          }
+        }
+      }
+    },
+    "launch.error.unknownExitValue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown exit value \"%(value)@\". Use 1 or 0."
+          }
+        }
+      }
+    },
+    "launch.error.unknownMode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown display mode \"%(mode)@\". Use window, fullscreen, zoom or stretch."
+          }
+        }
+      }
+    },
+    "launch.error.unknownRoute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown route \"%(route)@\". Use local or remote."
+          }
+        }
+      }
+    },
+    "launch.error.unsupportedURL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "chiaki-ng can’t open %(url)@. Use chiaki-ng://stream/<console>."
+          }
+        }
+      }
+    },
+    "notifications.conversation.untitled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation"
+          }
+        }
+      }
+    },
+    "progress.attempt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attempt %(number)lld"
+          }
+        }
+      }
+    },
+    "progress.candidates" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(total)lld addresses: %(local)lld local, %(publicAddress)lld public, %(guessed)lld guessed"
+          }
+        }
+      }
+    },
+    "progress.cause.connectionLost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the connection was lost"
+          }
+        }
+      }
+    },
+    "progress.cause.controlConnectionRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console refused the control connection"
+          }
+        }
+      }
+    },
+    "progress.cause.controlFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control connection failed"
+          }
+        }
+      }
+    },
+    "progress.cause.controlHandoffFailure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control connection could not be moved"
+          }
+        }
+      }
+    },
+    "progress.cause.controlInvalidResponse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control answer was not understood"
+          }
+        }
+      }
+    },
+    "progress.cause.controlNetworkFailure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control connection was lost"
+          }
+        }
+      }
+    },
+    "progress.cause.controlRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control connection was refused"
+          }
+        }
+      }
+    },
+    "progress.cause.controlTimeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control connection timed out"
+          }
+        }
+      }
+    },
+    "progress.cause.controlTooLarge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control answer was too large"
+          }
+        }
+      }
+    },
+    "progress.cause.controlTruncated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the control answer was cut short"
+          }
+        }
+      }
+    },
+    "progress.cause.controllerRejected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the controller was rejected"
+          }
+        }
+      }
+    },
+    "progress.cause.invalidArgument" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the request was not valid"
+          }
+        }
+      }
+    },
+    "progress.cause.invalidPreferences" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the stream settings were rejected"
+          }
+        }
+      }
+    },
+    "progress.cause.invalidState" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session was in the wrong state"
+          }
+        }
+      }
+    },
+    "progress.cause.loginPINRejected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the login PIN was rejected"
+          }
+        }
+      }
+    },
+    "progress.cause.pairingRejected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console no longer accepts this pairing"
+          }
+        }
+      }
+    },
+    "progress.cause.pipelineFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the stream could not be set up"
+          }
+        }
+      }
+    },
+    "progress.cause.providerUnavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a system service was unavailable"
+          }
+        }
+      }
+    },
+    "progress.cause.resourceExhausted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "this Mac ran out of resources"
+          }
+        }
+      }
+    },
+    "progress.cause.routeFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "no route to the console worked"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestConnectionRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session connection was refused"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session request failed"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestInUse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console is in use"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestInvalidResponse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session answer was not understood"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestNetworkFailure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session request was lost"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session request was refused"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestTimeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session request timed out"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestTooLarge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session answer was too large"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestTruncated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session answer was cut short"
+          }
+        }
+      }
+    },
+    "progress.cause.sessionRequestVersionMismatch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console expects another Remote Play version"
+          }
+        }
+      }
+    },
+    "progress.cause.shutdownFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the session did not close cleanly"
+          }
+        }
+      }
+    },
+    "progress.cause.unpairedConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PSN reached your primary PS4, which is not paired with this app; pair it at home or make the intended PS4 your primary one"
+          }
+        }
+      }
+    },
+    "progress.connect.findingConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finding the console"
+          }
+        }
+      }
+    },
+    "progress.connect.measuringConnection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measuring the connection"
+          }
+        }
+      }
+    },
+    "progress.connect.openingAccountSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the account session"
+          }
+        }
+      }
+    },
+    "progress.connect.openingControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the control connection"
+          }
+        }
+      }
+    },
+    "progress.connect.openingStreamRoute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the stream route"
+          }
+        }
+      }
+    },
+    "progress.connect.pairing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing with the console"
+          }
+        }
+      }
+    },
+    "progress.connect.reachingConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reaching the console"
+          }
+        }
+      }
+    },
+    "progress.connect.requestingSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting the session"
+          }
+        }
+      }
+    },
+    "progress.connect.startingStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starting the stream"
+          }
+        }
+      }
+    },
+    "progress.connect.wakingConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waking the console"
+          }
+        }
+      }
+    },
+    "progress.elapsed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(seconds)lld s elapsed"
+          }
+        }
+      }
+    },
+    "progress.kind.discovered" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Route over an address the console answered from"
+          }
+        }
+      }
+    },
+    "progress.kind.local" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Route over the local network"
+          }
+        }
+      }
+    },
+    "progress.kind.portGuessed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Route over a guessed port"
+          }
+        }
+      }
+    },
+    "progress.kind.publicAddress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Route over the public address"
+          }
+        }
+      }
+    },
+    "progress.lastAttemptFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The last attempt failed: %(reason)@"
+          }
+        }
+      }
+    },
+    "progress.launch.allocatingServer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allocating a server"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingCloudStreaming" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking PlayStation Plus Premium"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingDevice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking this device"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingEntitlement" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking your copy of the game"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingExclusions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking PlayStation's restrictions"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingMembership" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking your membership"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingOwnership" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking ownership"
+          }
+        }
+      }
+    },
+    "progress.launch.checkingRelease" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking the release date"
+          }
+        }
+      }
+    },
+    "progress.launch.clearingWithCatalog" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking the title with the catalog"
+          }
+        }
+      }
+    },
+    "progress.launch.connectingToServer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting to the server"
+          }
+        }
+      }
+    },
+    "progress.launch.loadingLibrary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading your library"
+          }
+        }
+      }
+    },
+    "progress.launch.measuringBandwidth" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measuring your connection"
+          }
+        }
+      }
+    },
+    "progress.launch.measuringDatacenters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measuring datacenters"
+          }
+        }
+      }
+    },
+    "progress.launch.migratingData" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moving your data"
+          }
+        }
+      }
+    },
+    "progress.launch.openingAccountSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the account session"
+          }
+        }
+      }
+    },
+    "progress.launch.openingTitleSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the title session"
+          }
+        }
+      }
+    },
+    "progress.launch.reservingServer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reserving a server"
+          }
+        }
+      }
+    },
+    "progress.launch.resolvingCloudGame" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finding the cloud game"
+          }
+        }
+      }
+    },
+    "progress.launch.resolvingTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finding the title"
+          }
+        }
+      }
+    },
+    "progress.launch.takingFreeLicence" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taking the free licence"
+          }
+        }
+      }
+    },
+    "progress.launch.waitingForDatacenterChoice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choosing a datacenter"
+          }
+        }
+      }
+    },
+    "progress.measured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Measured %(number)lld of %(total)lld datacenters"
+          }
+        }
+      }
+    },
+    "progress.migration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(percent)lld%% moved"
+          }
+        }
+      }
+    },
+    "progress.pairing.openingAccountSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the account session"
+          }
+        }
+      }
+    },
+    "progress.pairing.reachingConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reaching the console"
+          }
+        }
+      }
+    },
+    "progress.pairing.saving" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saving the pairing"
+          }
+        }
+      }
+    },
+    "progress.pairing.sendingRequest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending the pairing request"
+          }
+        }
+      }
+    },
+    "progress.pairing.starting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starting"
+          }
+        }
+      }
+    },
+    "progress.pairing.waitingForAnswer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for the console's answer"
+          }
+        }
+      }
+    },
+    "progress.pairing.wakingConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asking the console to join"
+          }
+        }
+      }
+    },
+    "progress.queuePosition" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position %(position)lld in the queue"
+          }
+        }
+      }
+    },
+    "progress.quit.consoleDisconnected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console disconnected"
+          }
+        }
+      }
+    },
+    "progress.quit.consoleInUse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console is in use"
+          }
+        }
+      }
+    },
+    "progress.quit.consoleShutDown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console shut down"
+          }
+        }
+      }
+    },
+    "progress.quit.controlConnectFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console could not open the control connection"
+          }
+        }
+      }
+    },
+    "progress.quit.controlConnectionRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console refused the control connection"
+          }
+        }
+      }
+    },
+    "progress.quit.controlUnknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console closed the control connection"
+          }
+        }
+      }
+    },
+    "progress.quit.internetPairingFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pairing over the internet failed"
+          }
+        }
+      }
+    },
+    "progress.quit.remotePlayCrashed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remote Play crashed on the console"
+          }
+        }
+      }
+    },
+    "progress.quit.remotePlayVersionMismatch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console expects another Remote Play version"
+          }
+        }
+      }
+    },
+    "progress.quit.sessionRequestConnectionRefused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console refused the session connection"
+          }
+        }
+      }
+    },
+    "progress.quit.sessionRequestUnknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console refused the session request"
+          }
+        }
+      }
+    },
+    "progress.quit.stopped" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console stopped the session"
+          }
+        }
+      }
+    },
+    "progress.quit.streamUnknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the console closed the stream"
+          }
+        }
+      }
+    },
+    "progress.quit.timeLimitReached" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the streaming time limit was reached"
+          }
+        }
+      }
+    },
+    "progress.quit.trialEnded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the game trial ended"
+          }
+        }
+      }
+    },
+    "progress.route.chosenControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The control route is chosen"
+          }
+        }
+      }
+    },
+    "progress.route.chosenStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The stream route is chosen"
+          }
+        }
+      }
+    },
+    "progress.route.confirmingControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirming the control route"
+          }
+        }
+      }
+    },
+    "progress.route.confirmingStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirming the stream route"
+          }
+        }
+      }
+    },
+    "progress.route.exchangingControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exchanging offers for the control route"
+          }
+        }
+      }
+    },
+    "progress.route.exchangingStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exchanging offers for the stream route"
+          }
+        }
+      }
+    },
+    "progress.route.gatheringControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gathering addresses for the control route"
+          }
+        }
+      }
+    },
+    "progress.route.gatheringStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gathering addresses for the stream route"
+          }
+        }
+      }
+    },
+    "progress.route.openingAccountSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the account session"
+          }
+        }
+      }
+    },
+    "progress.route.switchingControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switching control to the stream route"
+          }
+        }
+      }
+    },
+    "progress.route.testingControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Testing the control route"
+          }
+        }
+      }
+    },
+    "progress.route.testingStream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Testing the stream route"
+          }
+        }
+      }
+    },
+    "progress.route.waitingForConsole" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for the console to join"
+          }
+        }
+      }
+    },
+    "progress.settling" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Waiting %(seconds)lld second since last cloud stream"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Waiting %(seconds)lld seconds since last cloud stream"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "progress.step" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %(number)lld of %(total)lld"
+          }
+        }
+      }
+    },
+    "progress.tried" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Tried once"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Tried %(count)lld times"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "progress.wait.connectionRetry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting before the next attempt"
+          }
+        }
+      }
+    },
+    "progress.wait.consoleAnswering" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for the console to answer"
+          }
+        }
+      }
+    },
+    "progress.wait.consoleJoining" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for the console to join"
+          }
+        }
+      }
+    },
+    "progress.wait.consoleWaking" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for the console to wake"
+          }
+        }
+      }
+    },
+    "progress.wait.dataMigration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for your data to move"
+          }
+        }
+      }
+    },
+    "progress.wait.datacenterChoice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for a datacenter choice"
+          }
+        }
+      }
+    },
+    "progress.wait.networkUnreachable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The network is unreachable"
+          }
+        }
+      }
+    },
+    "progress.wait.previousSessionClosing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for your previous session to close"
+          }
+        }
+      }
+    },
+    "progress.wait.recentCloudSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting since last cloud stream"
+          }
+        }
+      }
+    },
+    "progress.wait.retryIn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(reason)@, trying again in %(seconds)lld s"
+          }
+        }
+      }
+    },
+    "progress.wait.retryNow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(reason)@, trying again now"
+          }
+        }
+      }
+    },
+    "progress.wait.serverQueue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting in the server queue"
+          }
+        }
+      }
+    },
+    "progress.wait.titleNotReady" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The title is not ready yet"
+          }
+        }
+      }
+    },
+    "progress.waitEstimateMinutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Estimated wait: about %(minutes)lld min"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Estimated wait: about %(minutes)lld mins"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "progress.waitEstimateUnderMinute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated wait: under a minute"
+          }
+        }
+      }
+    },
+    "settings.developer.libraryCooldownMinutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%(minutes)lld minute"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%(minutes)lld minutes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings.developer.libraryCooldownOff" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        }
+      }
+    },
+    "settings.developer.takionLocalPs4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4, local and remote"
+          }
+        }
+      }
+    },
+    "settings.developer.takionLocalPs5" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5, local and remote"
+          }
+        }
+      }
+    },
+    "settings.developer.takionPsCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Cloud, PS5 cloud"
+          }
+        }
+      }
+    },
+    "settings.developer.takionPsNow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Now, PS3 and PS4 cloud"
+          }
+        }
+      }
+    },
+    "settings.developer.takionVersion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "v%(version)@"
+          }
+        }
+      }
+    },
+    "settings.developer.takionVersionAutomatic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic"
+          }
+        }
+      }
+    },
+    "settings.developer.takionVersionAutomaticBuild" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic (v%(build)@)"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.analysisHdrHeatmap" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HDR heatmap"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.analysisHighlightClipping" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Highlight clipping"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.analysisOff" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.glassClear" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.glassDimmed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimmed"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.glassHealthTint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health tint"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.glassRegular" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regular"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.glassSolid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solid"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.layoutFloating" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Floating"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.layoutSheet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One sheet"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.levelCompact" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compact"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.levelFull" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.levelOff" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        }
+      }
+    },
+    "settings.diagnostics.levelStandard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.acknowledgementTimeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acknowledgement timeout (ms)"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.dropSecondsToEnd" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seconds of heavy shedding before ending"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.keyframeInterval" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortest gap between keyframes (ms)"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.queueAgeMaximum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Longest queue wait (ms)"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.queueAgeMinimum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortest queue wait (ms)"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.queueAgeRoundTrips" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queue wait in round trips"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.queueKilobytes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queue size (KB)"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.queuePackets" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queue size (packets)"
+          }
+        }
+      }
+    },
+    "settings.kakusanMedia.startupGrace" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start-up grace (ms)"
+          }
+        }
+      }
+    },
+    "settings.picture.codecH264" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H.264"
+          }
+        }
+      }
+    },
+    "settings.picture.codecHevc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HEVC"
+          }
+        }
+      }
+    },
+    "settings.picture.codecHevcHdr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HEVC HDR"
+          }
+        }
+      }
+    },
+    "settings.picture.upscale1080" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1080p"
+          }
+        }
+      }
+    },
+    "settings.picture.upscale1440" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1440p"
+          }
+        }
+      }
+    },
+    "settings.picture.upscale2160" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4K (2160p)"
+          }
+        }
+      }
+    },
+    "settings.picture.upscaleDisabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabled"
+          }
+        }
+      }
+    },
+    "settings.picture.videoFitFit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fit"
+          }
+        }
+      }
+    },
+    "settings.picture.videoFitStretch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stretch"
+          }
+        }
+      }
+    },
+    "settings.picture.videoFitZoom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom"
+          }
+        }
+      }
+    },
+    "settings.sound.mediaControlsOnly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controls only"
+          }
+        }
+      }
+    },
+    "settings.sound.mediaPictureAndSound" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picture and sound"
+          }
+        }
+      }
+    },
+    "settings.sound.mediaPictureOnly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picture only"
+          }
+        }
+      }
+    },
+    "settings.sound.mediaSoundOnly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sound only"
+          }
+        }
+      }
+    },
+    "settings.sound.targetPs4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4"
+          }
+        }
+      }
+    },
+    "settings.sound.targetPs5" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5"
+          }
+        }
+      }
+    },
+    "settings.sound.targetPsCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Cloud"
+          }
+        }
+      }
+    },
+    "settings.sound.targetPsNow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Now"
+          }
+        }
+      }
+    },
+    "stream.microphone.encoderFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The microphone encoder could not start."
+          }
+        }
+      }
+    },
+    "stream.microphone.inputChanged" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The microphone input changed or was disconnected."
+          }
+        }
+      }
+    },
+    "stream.microphone.noAnswer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The console didn’t answer the microphone request."
+          }
+        }
+      }
+    },
+    "stream.microphone.noInput" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No microphone input is available."
+          }
+        }
+      }
+    },
+    "stream.microphone.startFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The microphone could not start (%(reason)@)."
+          }
+        }
+      }
+    },
+    "stream.microphone.stopped" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The microphone stopped (%(reason)@)."
+          }
+        }
+      }
+    },
+    "trophies.filter.all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "trophies.filter.earned" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Earned"
+          }
+        }
+      }
+    },
+    "trophies.filter.notEarned" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not earned"
+          }
+        }
+      }
+    },
+    "trophies.grade.bronze" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bronze"
+          }
+        }
+      }
+    },
+    "trophies.grade.gold" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gold"
+          }
+        }
+      }
+    },
+    "trophies.grade.platinum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Platinum"
+          }
+        }
+      }
+    },
+    "trophies.grade.silver" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silver"
+          }
+        }
+      }
+    },
+    "trophies.platform.ps3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS3"
+          }
+        }
+      }
+    },
+    "trophies.platform.ps4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4"
+          }
+        }
+      }
+    },
+    "trophies.platform.ps5" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5"
+          }
+        }
+      }
+    },
+    "trophies.platform.psVita" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Vita"
+          }
+        }
+      }
+    },
+    "trophies.platform.windows" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PC"
+          }
+        }
+      }
+    },
+    "trophies.rarity.common" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Common"
+          }
+        }
+      }
+    },
+    "trophies.rarity.rare" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rare"
+          }
+        }
+      }
+    },
+    "trophies.rarity.ultraRare" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultra rare"
+          }
+        }
+      }
+    },
+    "trophies.rarity.veryRare" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Very rare"
+          }
+        }
+      }
+    },
+    "trophies.sort.defaultOrder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default"
+          }
+        }
+      }
+    },
+    "trophies.sort.grade" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade"
+          }
+        }
+      }
+    },
+    "trophies.sort.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "trophies.sort.rarity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rarity"
+          }
+        }
+      }
+    },
+    "trophies.sort.recentlyEarned" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recently earned"
+          }
+        }
+      }
+    },
+    "trophies.titleFilter.all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "trophies.titleFilter.completed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed"
+          }
+        }
+      }
+    },
+    "trophies.titleFilter.inProgress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In progress"
+          }
+        }
+      }
+    },
+    "trophies.titleFilter.notStarted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not started"
+          }
+        }
+      }
+    },
+    "trophies.titleSort.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "trophies.titleSort.progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Progress"
+          }
+        }
+      }
+    },
+    "trophies.titleSort.recent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

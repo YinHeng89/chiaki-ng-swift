@@ -1,3 +1,5 @@
+import Foundation
+
 /// What the Controls pane tells the user about the last thing they did.
 public enum ControlsNotice: Equatable, Sendable {
     /// Nothing to say.
@@ -25,24 +27,24 @@ public enum ControlsNotice: Equatable, Sendable {
     case rumbleRejected
 
     /// The sentence shown for the notice, or `nil` when there is nothing to say.
-    public var message: String? {
+    public var message: LocalizedStringResource? {
         switch self {
         case .quiet:
             nil
         case let .presetLimit(limit):
-            "Delete a preset to change this controller’s buttons on their own; the limit is \(limit)."
+            .controlsNoticePresetLimit(limit: limit)
         case .invalidConfiguration:
-            "Use each input once per preset and give every preset a name. Changes are saved once they are valid."
+            .controlsNoticeInvalidConfiguration
         case .shortcutNotAllowed:
-            "Use Command, Control or Option with a key the app does not already use."
+            .controlsNoticeShortcutNotAllowed
         case .touchpadButtonsInvalid:
-            "Choose two or three different buttons that don’t contain, or sit inside, the stream menu shortcut."
+            .controlsNoticeTouchpadButtonsInvalid
         case .streamMenuButtonsInvalid:
-            "Choose two to four different buttons that don’t contain, or sit inside, the touchpad shortcut."
+            .controlsNoticeStreamMenuButtonsInvalid
         case .controllersUnreadable:
-            "Couldn’t read controllers. Check the connection and try again."
+            .controlsNoticeControllersUnreadable
         case .rumbleRejected:
-            "The controller did not accept the rumble test."
+            .controlsNoticeRumbleRejected
         }
     }
 }

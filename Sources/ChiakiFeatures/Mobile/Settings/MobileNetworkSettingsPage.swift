@@ -11,9 +11,6 @@ struct MobileNetworkSettingsPage: View {
     /// The settings feature that owns every tab's state.
     let settings: StoreOf<SettingsFeature>
 
-    private static let signInNote = "Cloud streaming, playing over the internet and their settings need "
-        + "an account signed in to PlayStation Network."
-
     /// Creates the page.
     ///
     /// - Parameter settings: The settings feature that owns every tab's state.
@@ -33,7 +30,7 @@ struct MobileNetworkSettingsPage: View {
                 #endif
                 internetConnection
             } else {
-                Text(Self.signInNote)
+                Text(.mobileNetworkSignInNote)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -48,36 +45,32 @@ struct MobileNetworkSettingsPage: View {
         @Bindable var network = settings.scope(state: \.network, action: \.network)
         return VStack(alignment: .leading, spacing: 8) {
             MobileSettingsGroup(
-                "Console Discovery",
-                footer: "Local networks are discovered automatically. Add other subnets to search them directly. "
-                    + "One subnet per line, /24–/32. Up to 1,024 addresses. Local subnets use broadcast."
+                .mobileNetworkDiscovery,
+                footer: .mobileNetworkDiscoveryFooter
             ) {
-                MobileToggleRow("Unicast Sweep", isOn: $network.discovery.draft.unicastEnabled)
+                MobileToggleRow(.mobileNetworkUnicastSweep, isOn: $network.discovery.draft.unicastEnabled)
                     .accessibilityIdentifier("network-unicast-sweep")
                 MobileTextEntryRow(
-                    title: "Subnets",
-                    prompt: "192.168.2.0/24",
+                    title: .mobileNetworkSubnets,
+                    prompt: .mobileNetworkSubnetsPrompt,
                     text: $network.subnets,
                     kind: .address,
                     multiline: true,
                     invalid: network.subnetsRejected
                 )
-                .accessibilityLabel("Discovery subnets")
+                .accessibilityLabel(Text(.mobileNetworkSubnetsAccessibility))
             }
             .disabled(Self.discoveryLoadFailed(network.discovery.setting))
             if network.subnetsRejected {
-                Label(
-                    "Enter IPv4 subnets from /24 to /32, up to 1,024 addresses, for example 192.168.2.0/24.",
-                    systemImage: "exclamationmark.triangle"
-                )
-                .font(.footnote)
-                .foregroundStyle(.red)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 16)
+                Label(.mobileNetworkSubnetsRejected, systemImage: "exclamationmark.triangle")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 16)
             }
             SettingsPersistenceBanner(
                 network.discovery.setting,
-                subject: "network settings",
+                subject: .mobileNetworkPersistenceSubject,
                 reportsInvalid: false
             ) {
                 network.send(.discovery(.retry))
@@ -90,12 +83,12 @@ struct MobileNetworkSettingsPage: View {
 
     private var natType: some View {
         let nat = settings.scope(state: \.natType, action: \.natType)
-        return MobileSettingsGroup("NAT Type", footer: NatTypeSettingsView.detail(nat.check)) {
-            MobileValueRow("NAT Type", value: Self.natValue(nat.check))
+        return MobileSettingsGroup(.mobileNetworkNatType, footer: NatTypeSettingsView.detail(nat.check)) {
+            MobileValueRow(.mobileNetworkNatType, value: Self.natValue(nat.check))
             MobileButtonRow(
                 nat.isChecking
-                    ? "Checking"
-                    : "Check NAT Type"
+                    ? .mobileNetworkNatChecking
+                    : .mobileNetworkNatCheck
             ) {
                 nat.send(.checkTapped)
             }
@@ -110,11 +103,10 @@ struct MobileNetworkSettingsPage: View {
     private var privacy: some View {
         @Bindable var logging = settings.scope(state: \.logging, action: \.logging)
         return MobileSettingsGroup(
-            "Privacy",
-            footer: "Hides console addresses and hardware IDs on screen while you stream or record this device. "
-                + "The log follows the Developer tab’s identifier setting."
+            .mobileNetworkPrivacy,
+            footer: .mobileNetworkPrivacyFooter
         ) {
-            MobileToggleRow("Streamer Mode", isOn: $logging.draft.streamerMode)
+            MobileToggleRow(.mobileNetworkStreamerMode, isOn: $logging.draft.streamerMode)
                 .accessibilityIdentifier("network-streamer-mode")
                 .disabled(!logging.isEditable)
         }
@@ -126,9 +118,9 @@ struct MobileNetworkSettingsPage: View {
     private var cloudLaunch: some View {
         let cloud = settings.scope(state: \.cloudLaunch, action: \.cloudLaunch)
         return VStack(alignment: .leading, spacing: 8) {
-            MobileSettingsGroup("Cloud Datacenter", footer: CloudLaunchSettingsReducer.detail) {
+            MobileSettingsGroup(.mobileNetworkCloudDatacenter, footer: CloudLaunchSettingsReducer.detail) {
                 MobileToggleRow(
-                    "Select Datacenter at Launch",
+                    .mobileNetworkSelectDatacenter,
                     isOn: Binding(
                         get: {
                             cloud.displayedValue
@@ -156,26 +148,26 @@ struct MobileNetworkSettingsPage: View {
         @Bindable var internet = settings.scope(state: \.internetConnection, action: \.internetConnection)
         return VStack(alignment: .leading, spacing: 8) {
             MobileSettingsGroup(
-                "Internet Connections",
-                footer: "Connections through the PlayStation Network guess ports only when the router needs it. "
-                    + "Turn this on if Internet connections fail behind a strict router. "
-                    + "More guesses can get through stricter routers but take longer to connect."
+                .mobileNetworkInternetConnections,
+                footer: .mobileNetworkInternetFooter
             ) {
-                MobileToggleRow("Always Guess Ports", isOn: $internet.draft.forcePortGuessing)
+                MobileToggleRow(.mobileNetworkAlwaysGuessPorts, isOn: $internet.draft.forcePortGuessing)
                     .accessibilityIdentifier("internet-force-port-guessing")
                 MobileSliderRow(
-                    title: "Port Guesses",
-                    valueText: "\(internet.draft.portGuessCount)",
+                    title: .mobileNetworkPortGuesses,
+                    verbatimValue: "\(internet.draft.portGuessCount)",
                     value: Self.portGuesses($internet.draft.portGuessCount),
                     range: Double(InternetConnectionSettings.portGuessRange.lowerBound)...Double(
                         InternetConnectionSettings.portGuessRange.upperBound
                     ),
                     step: Double(InternetConnectionSettings.portGuessStep)
                 )
-                .accessibilityValue("\(internet.draft.portGuessCount) ports")
+                .accessibilityValue(
+                    Text(.mobileNetworkPortGuessesValue(count: internet.draft.portGuessCount))
+                )
             }
             .disabled(!internet.isEditable)
-            SettingsPersistenceBanner(internet.setting, subject: "Internet connection settings") {
+            SettingsPersistenceBanner(internet.setting, subject: .mobileNetworkInternetPersistenceSubject) {
                 internet.send(.retry)
             }
         }
@@ -188,11 +180,11 @@ struct MobileNetworkSettingsPage: View {
         @Bindable var power = settings.scope(state: \.consolePower, action: \.consolePower)
         return VStack(alignment: .leading, spacing: 20) {
             MobileSettingsGroup(
-                "Console Power",
+                .mobileNetworkConsolePower,
                 footer: ConsolePowerSettingsView.detail(power.draft.leaveAction)
             ) {
                 MobilePickerRow(
-                    "When Leaving a Console Stream",
+                    .mobileNetworkLeaveAction,
                     selection: $power.draft.leaveAction,
                     choices: ConsoleLeaveAction.allCases
                 ) { action in
@@ -201,23 +193,22 @@ struct MobileNetworkSettingsPage: View {
             }
             .disabled(!power.isEditable)
             MobileSettingsGroup(
-                footer: "A console stream interrupted by sleep starts again on the same connection."
+                footer: .mobileNetworkSleepFooter
             ) {
                 MobileToggleRow(
-                    "Put the Console in Rest Mode When This Device Sleeps",
+                    .mobileNetworkRestOnSleep,
                     isOn: $power.draft.restOnMacSleep
                 )
-                MobileToggleRow("Reconnect After This Device Wakes", isOn: $power.draft.resumeAfterWake)
+                MobileToggleRow(.mobileNetworkReconnectAfterWake, isOn: $power.draft.resumeAfterWake)
             }
             .disabled(!power.isEditable)
             MobileSettingsGroup(
-                footer: "A console stream that loses its connection connects again, up to three times, "
-                    + "instead of ending."
+                footer: .mobileNetworkDropFooter
             ) {
-                MobileToggleRow("Reconnect When the Connection Drops", isOn: $power.draft.reconnectAfterDrop)
+                MobileToggleRow(.mobileNetworkReconnectAfterDrop, isOn: $power.draft.reconnectAfterDrop)
             }
             .disabled(!power.isEditable)
-            SettingsPersistenceBanner(power.setting, subject: "console power settings") {
+            SettingsPersistenceBanner(power.setting, subject: .mobileNetworkPowerPersistenceSubject) {
                 power.send(.retry)
             }
         }
@@ -233,16 +224,16 @@ struct MobileNetworkSettingsPage: View {
         return false
     }
 
-    private static func natValue(_ check: NatTypeFeature.Check) -> String {
+    private static func natValue(_ check: NatTypeFeature.Check) -> LocalizedStringResource {
         switch check {
         case .idle:
-            "Not Checked"
+            .mobileNetworkNatNotChecked
         case .checking:
-            "Checking"
+            .mobileNetworkNatChecking
         case .found(let type):
-            "Type \(type.rawValue)"
+            .mobileNetworkNatTypeValue(type: String(type.rawValue))
         case .failed:
-            "Unknown"
+            .commonUnknown
         }
     }
 

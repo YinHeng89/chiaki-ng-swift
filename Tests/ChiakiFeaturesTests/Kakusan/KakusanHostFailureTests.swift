@@ -114,7 +114,8 @@
             $0.followPresented()
         }
         #expect(host.state.presentedGuest?.attempt.outcome == .failed(.noPath))
-        #expect(KakusanAttemptOutcome.failed(.noPath).title == "A direct path wasn’t available")
+        #expect(String(localized: KakusanAttemptOutcome.failed(.noPath).title)
+            == "A direct path wasn’t available")
         await host.send(.dismiss(first)) {
             $0.guests = []
             $0.destination = nil

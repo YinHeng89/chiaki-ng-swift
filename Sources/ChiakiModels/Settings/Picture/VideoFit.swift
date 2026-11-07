@@ -104,14 +104,14 @@ public enum VideoFitMode: String, Codable, CaseIterable, Sendable {
     case stretch
 
     /// The label shown for the mode.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .fit:
-            return "Fit"
+            return .settingsPictureVideoFitFit
         case .zoom:
-            return "Zoom"
+            return .settingsPictureVideoFitZoom
         case .stretch:
-            return "Stretch"
+            return .settingsPictureVideoFitStretch
         }
     }
 }

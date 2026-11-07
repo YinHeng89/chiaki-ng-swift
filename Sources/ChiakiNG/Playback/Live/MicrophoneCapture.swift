@@ -568,7 +568,7 @@ final class MicrophoneEncoderPipeline: @unchecked Sendable {
             }
         }
         log(.warning, "Microphone connection request \(request) was not answered in time")
-        return .interrupted("The console didn’t answer the microphone request.")
+        return .noAnswer
     }
 
     private nonisolated static func receiver(
@@ -598,7 +598,7 @@ final class MicrophoneEncoderPipeline: @unchecked Sendable {
         } ?? false
         let lost = format.sampleRate <= 0 || format.channelCount == 0 || selectedMissing
         guard !lost, format == capture.format else {
-            current.interrupted(.interrupted("The microphone input changed or was disconnected."))
+            current.interrupted(.inputChanged)
             return
         }
         guard capture.state == .running, !capture.engine.isRunning else {
@@ -607,7 +607,7 @@ final class MicrophoneEncoderPipeline: @unchecked Sendable {
         do {
             try capture.engine.start()
         } catch {
-            current.interrupted(.interrupted("The microphone stopped (\(LogFormat.error(error)))."))
+            current.interrupted(.stopped(LogFormat.error(error)))
         }
     }
 
@@ -644,11 +644,11 @@ extension MicrophoneCapture {
         let processing = prepare(engine.inputNode, inputDevice: inputDevice)
         let format = engine.inputNode.outputFormat(forBus: 0)
         guard format.sampleRate > 0, format.channelCount > 0 else {
-            return .failed(.captureUnavailable("No microphone input is available."))
+            return .failed(.noInput)
         }
         guard let pipeline = MicrophoneEncoderPipeline(input: format, processing: processing, sink: sink)
         else {
-            return .failed(.captureUnavailable("The microphone encoder could not start."))
+            return .failed(.encoderFailed)
         }
         let sink = AVAudioSinkNode(receiverBlock: receiver(pipeline, format: format))
         engine.attach(sink)
@@ -659,7 +659,7 @@ extension MicrophoneCapture {
         } catch {
             engine.disconnectNodeInput(sink)
             engine.detach(sink)
-            return .failed(.captureUnavailable("The microphone could not start (\(LogFormat.error(error)))."))
+            return .failed(.startFailed(LogFormat.error(error)))
         }
         report(.info, "Microphone capture opened at \(Int(format.sampleRate)) Hz with \(format.channelCount) "
             + "channel(s) through a sink node, sending 48 kHz Opus to the console")

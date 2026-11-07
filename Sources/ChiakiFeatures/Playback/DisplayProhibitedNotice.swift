@@ -6,8 +6,10 @@ import MenuFocus
 
 /// Tracks which stream windows currently have controller focus on the Go to Home screen button.
 enum StreamHomeFocus {
-    /// The focus identifier and label of the Go to Home screen button.
+    /// The focus identifier of the Go to Home screen button.
     static let action = "Go to Home screen"
+    /// The label of the Go to Home screen button.
+    static let title: LocalizedStringResource = .playbackProhibitedGoHome
 
     @MainActor private static let owners = NSHashTable<PlatformWindow>.weakObjects()
     @MainActor private static let holders = NSHashTable<PlatformWindow>.weakObjects()
@@ -72,8 +74,8 @@ struct DisplayProhibitedNotice: View {
         VStack(spacing: 14) {
             VStack(spacing: 10) {
                 Image(systemName: "eye.slash.fill").font(.title)
-                Text("This screen can’t be shown over Remote Play").font(.headline)
-                Text("Press the PS button, or go to the Home screen to continue.")
+                Text(.playbackProhibitedTitle).font(.headline)
+                Text(.playbackProhibitedDetail)
                     .font(.subheadline).foregroundStyle(.secondary)
             }
             .multilineTextAlignment(.center)
@@ -84,14 +86,14 @@ struct DisplayProhibitedNotice: View {
                 HStack(spacing: 10) {
                     ProgressView()
                         .controlSize(.small)
-                    Text("Going to the Home screen…")
+                    Text(.playbackProhibitedGoingHome)
                 }
                 .font(.callout)
                 .padding(.vertical, 8)
                 .accessibilityElement(children: .combine)
             } else {
                 FocusButton(action: goHome) {
-                    Label(StreamHomeFocus.action, systemImage: "house")
+                    Label(StreamHomeFocus.title, systemImage: "house")
                         .padding(.horizontal, 6)
                 }
                 .glassControlStyle()

@@ -5,7 +5,7 @@ import SwiftUI
 public struct SettingsCard<Content: View>: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
-    private let title: String?
+    private let title: Text?
     private let content: Content
 
     /// Creates a card.
@@ -13,8 +13,18 @@ public struct SettingsCard<Content: View>: View {
     /// - Parameters:
     ///   - title: The heading above the card, if any.
     ///   - content: The rows inside the card.
-    public init(_ title: String? = nil, @ViewBuilder content: () -> Content) {
-        self.title = title
+    public init(_ title: LocalizedStringResource? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title.map { Text($0) }
+        self.content = content()
+    }
+
+    /// Creates a card whose heading is data shown as it is, such as an account's name.
+    ///
+    /// - Parameters:
+    ///   - title: The heading above the card.
+    ///   - content: The rows inside the card.
+    public init(verbatim title: String, @ViewBuilder content: () -> Content) {
+        self.title = Text(verbatim: title)
         self.content = content()
     }
 
@@ -22,7 +32,7 @@ public struct SettingsCard<Content: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             if let title {
-                Text(title)
+                title
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
                     .padding(.leading, 3)

@@ -24,7 +24,9 @@ extension ConsoleCard {
                     .environment(\.menuMove) { direction in
                         move(from: .action(item, .connection(option)), direction)
                     }
-                    .accessibilityLabel("Play over \(option.title)")
+                    .accessibilityLabel(
+                        .consolesCardPlayOverAccessibility(connection: String(localized: option.title))
+                    )
                     .accessibilityHint(playableConnections.contains(option)
                         ? ""
                         : Self.missingLocallyNote)
@@ -94,14 +96,19 @@ extension ConsoleCard {
             .environment(\.menuMove) { direction in
                 move(from: .console(item), direction)
             }
-            .accessibilityLabel("\(playTitle) \(name) over \(shownConnection.title)")
+            .accessibilityLabel(playAccessibilityLabel)
             .accessibilityHint(missingLocally
                 ? Self.missingLocallyNote
                 : "")
             if editable {
-                iconButton("Edit console", icon: AppIcon.edit.rawValue, action: .edit, perform: edit)
                 iconButton(
-                    "Delete console",
+                    .consolesCardEditConsole,
+                    icon: AppIcon.edit.rawValue,
+                    action: .edit,
+                    perform: edit
+                )
+                iconButton(
+                    .consolesCardDeleteConsole,
                     icon: AppIcon.deleteAccount.rawValue,
                     role: .destructive,
                     action: .delete,
@@ -120,7 +127,7 @@ extension ConsoleCard {
     }
 
     /// The note shown when a home network stream finds no console nearby.
-    static let missingLocallyNote = "Not found on your home network"
+    static let missingLocallyNote: LocalizedStringResource = .consolesCardMissingLocally
 
     /// The opacity of a connection tag that cannot be used.
     static let unavailableOpacity = 0.4
@@ -162,10 +169,18 @@ extension ConsoleCard {
     }
 
     /// The Play button's label, which offers to wake a console in rest mode.
-    var playTitle: String {
+    var playTitle: LocalizedStringResource {
         presence == .restMode && !preview
-            ? "Wake and play"
-            : "Play"
+            ? .consolesCardWakeAndPlay
+            : .consolesCardPlay
+    }
+
+    /// The Play button's accessibility label, naming the console and the route it streams over.
+    var playAccessibilityLabel: LocalizedStringResource {
+        let route = String(localized: shownConnection.title)
+        return presence == .restMode && !preview
+            ? .consolesCardWakeAndPlayAccessibility(console: name, connection: route)
+            : .consolesCardPlayAccessibility(console: name, connection: route)
     }
 
     /// Whether the console is saved and can be edited or deleted.
@@ -183,7 +198,7 @@ extension ConsoleCard {
     ///   - perform: What the button does.
     /// - Returns: The button.
     func iconButton(
-        _ label: String,
+        _ label: LocalizedStringResource,
         icon: String,
         role: ButtonRole? = nil,
         action: ConsoleCardAction,
@@ -298,16 +313,16 @@ extension ConsoleCard {
     /// The context menu: play over either route, edit and delete; empty on a preview card.
     @ViewBuilder var contextMenuItems: some View {
         if !preview {
-            Button("Play on home network", systemImage: AppIcon.start.rawValue, action: startLocal)
+            Button(.consolesCardMenuPlayLocal, systemImage: AppIcon.start.rawValue, action: startLocal)
                 .disabled(localUnavailable)
             if remoteAvailable {
-                Button("Play over the internet", systemImage: "globe", action: startRemote)
+                Button(.consolesCardMenuPlayRemote, systemImage: "globe", action: startRemote)
             }
             Divider()
-            Button("Edit console", systemImage: AppIcon.edit.rawValue, action: edit)
+            Button(.consolesCardEditConsole, systemImage: AppIcon.edit.rawValue, action: edit)
                 .disabled(console.id == nil)
             Button(
-                "Delete console",
+                .consolesCardDeleteConsole,
                 systemImage: AppIcon.deleteAccount.rawValue,
                 role: .destructive,
                 action: delete

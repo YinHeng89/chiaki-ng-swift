@@ -187,7 +187,7 @@ struct CloudPageBar: View {
                 CloudPageNumberField(
                     typed: typed, current: page + 1, focus: $focus, send: send
                 )
-                Text("of \(pageCount)")
+                Text(.libraryPageBarOfTotal(total: pageCount))
                     .foregroundStyle(.secondary)
             }
             .modifier(CloudPageHandle(dragging: false))
@@ -198,7 +198,7 @@ struct CloudPageBar: View {
                 HStack(spacing: 6) {
                     Text("\(shownPage + 1)")
                         .fontWeight(.bold)
-                    Text("of \(pageCount)")
+                    Text(.libraryPageBarOfTotal(total: pageCount))
                         .foregroundStyle(.secondary)
                 }
                 .modifier(CloudPageHandle(dragging: control.phase == .dragging(shownPage)))
@@ -207,7 +207,7 @@ struct CloudPageBar: View {
             .focusHighlightShape(.capsule)
             .menuFocused($focus, equals: .pageBar)
             .environment(\.menuMove, move)
-            .accessibilityLabel("Page \(shownPage + 1) of \(pageCount)")
+            .accessibilityLabel(.libraryPageBarPageOfTotal(page: shownPage + 1, total: pageCount))
             .accessibilityIdentifier("cloud-page-bar")
         }
     }
@@ -250,7 +250,7 @@ struct CloudPageDotStrip: View {
                 .buttonStyle(.plain)
                 .menuFocusable(false)
                 .focusEffectDisabled()
-                .accessibilityLabel("Page \(dot.page + 1) of \(pageCount)")
+                .accessibilityLabel(.libraryPageBarPageOfTotal(page: dot.page + 1, total: pageCount))
                 .accessibilityAddTraits(dot.size == .now
                     ? .isSelected
                     : [])
@@ -311,7 +311,12 @@ struct CloudPageNumberField: View {
             .frame(width: 44)
             .foregroundStyle(Palette.accent)
             .menuFocusBinding($focus, equals: .pageNumber)
-            .controllerKeyboard(title: "Page", text: text, isFocused: focus == .pageNumber, numberPad: true)
+            .controllerKeyboard(
+                title: .libraryPageBarPage,
+                text: text,
+                isFocused: focus == .pageNumber,
+                numberPad: true
+            )
             .onAppear {
                 focus = .pageNumber
             }
@@ -326,7 +331,7 @@ struct CloudPageNumberField: View {
             .onMenuKeyPress(keys: [.upArrow, .downArrow], phases: .down) { _ in
                 .handled
             }
-            .accessibilityLabel("Page")
+            .accessibilityLabel(.libraryPageBarPage)
             .accessibilityIdentifier("cloud-page-number")
     }
 

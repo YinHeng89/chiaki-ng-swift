@@ -52,7 +52,7 @@ private func trialCatalog() -> CloudLibrarySnapshot {
         isTrial: true,
         isPlayFirstTrial: true
     )
-    #expect(trial.standingLabel(after: nil) == "Trial")
+    #expect(String(localized: trial.standingLabel(after: nil)) == "Trial")
     #expect(trial.entitlementIcon == .trial)
     let demo = CloudGame(
         productId: "demo",
@@ -61,7 +61,7 @@ private func trialCatalog() -> CloudLibrarySnapshot {
         standing: .inLibrary,
         isTrial: true
     )
-    #expect(demo.standingLabel(after: nil) == "Demo")
+    #expect(String(localized: demo.standingLabel(after: nil)) == "Demo")
     #expect(demo.entitlementIcon == .demo)
     #expect(trial.standingLabel(after: .refused) == CloudStanding.store.label)
     let owned = CloudGame(productId: "owned", name: "Owned", isOwned: true, standing: .inLibrary)
@@ -89,8 +89,8 @@ private func trialCatalog() -> CloudLibrarySnapshot {
         CloudGame(productId: "malformed", name: "Odd", isTrial: true)
     ])
     #expect(listing.trialMarks == [
-        "PPSA07632_00": CloudTrialMark(icon: .trial, label: "Trial"),
-        "PPSA05555_00": CloudTrialMark(icon: .demo, label: "Demo")
+        "PPSA07632_00": CloudTrialMark(icon: .trial, label: .libraryTrialTrial),
+        "PPSA05555_00": CloudTrialMark(icon: .demo, label: .libraryTrialDemo)
     ])
 }
 
@@ -101,11 +101,11 @@ private func trialCatalog() -> CloudLibrarySnapshot {
         isOwned: true,
         isTrial: true
     )
-    #expect(named.trialLabel == "Demo")
+    #expect(named.trialLabel.map { String(localized: $0) } == "Demo")
     #expect(named.trialIcon == .demo)
     for name in ["MAIDEN", "STRANGER OF PARADISE FINAL FANTASY ORIGIN TRIAL VERSION", "Demonstration Racer"] {
         let trial = CloudGame(productId: "trial", name: name, isOwned: true, isTrial: true)
-        #expect(trial.trialLabel == "Trial")
+        #expect(trial.trialLabel.map { String(localized: $0) } == "Trial")
         #expect(trial.trialIcon == .trial)
     }
     let playFirst = CloudGame(
@@ -115,6 +115,6 @@ private func trialCatalog() -> CloudLibrarySnapshot {
         isTrial: true,
         isPlayFirstTrial: true
     )
-    #expect(playFirst.trialLabel == "Trial")
+    #expect(playFirst.trialLabel.map { String(localized: $0) } == "Trial")
     #expect(playFirst.trialIcon == .trial)
 }

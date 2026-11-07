@@ -56,7 +56,7 @@ struct MobileTokensSettingsPage: View {
 
     private var controls: some View {
         MobileSettingsGroup {
-            MobileButtonRow("Refresh") {
+            MobileButtonRow(.commonRefresh) {
                 store.send(.load)
             }
             .disabled(store.busy)
@@ -76,7 +76,7 @@ struct MobileTokensSettingsPage: View {
                     .mobileRowPadding()
             }
             if store.phase == .ready, store.accounts.isEmpty {
-                Text("No signed-in accounts")
+                Text(.mobileTokensNoAccounts)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
@@ -85,7 +85,7 @@ struct MobileTokensSettingsPage: View {
     }
 
     private func group(_ account: TokenAccount) -> some View {
-        MobileSettingsGroup(account.name) {
+        MobileSettingsGroup(verbatim: account.name) {
             ForEach(account.credentials, id: \.kind) { credential in
                 row(HeldCredentialPresentation(credential), of: account)
             }
@@ -106,8 +106,8 @@ struct MobileTokensSettingsPage: View {
                 }
                 FocusButton(
                     showing
-                        ? "Hide"
-                        : "Reveal"
+                        ? .commonHide
+                        : .mobileTokensReveal
                 ) {
                     if showing {
                         store.send(.hide)
@@ -158,7 +158,7 @@ struct MobileTokensSettingsPage: View {
                 .padding(10)
                 .background(.quaternary.opacity(0.5), in: .rect(cornerRadius: 12))
                 .accessibilityIdentifier("tokens-secret-\(name)")
-            FocusButton("Copy") {
+            FocusButton(.mobileTokensCopy) {
                 PlatformPasteboard.copyConcealed(text)
             }
             .buttonStyle(.bordered)

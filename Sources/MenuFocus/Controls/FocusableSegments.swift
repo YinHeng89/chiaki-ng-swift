@@ -9,7 +9,7 @@ import SwiftUI
 /// selection, focus follows the selected segment. On touch the capsule grows to the screen layout's `controlSize`.
 public struct FocusableSegments<Value: Hashable>: View {
     private let options: [Value]
-    private let title: (Value) -> String
+    private let title: (Value) -> LocalizedStringResource
     @Binding private var selection: Value
     private let externalFocus: MenuFocusState<Value?>.Binding?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -28,7 +28,7 @@ public struct FocusableSegments<Value: Hashable>: View {
     ///   - focus: A focus state to bind the segments to, so the owner can move focus into the control.
     public init(
         options: [Value],
-        title: @escaping (Value) -> String,
+        title: @escaping (Value) -> LocalizedStringResource,
         selection: Binding<Value>,
         focus: MenuFocusState<Value?>.Binding? = nil
     ) {

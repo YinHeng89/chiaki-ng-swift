@@ -248,7 +248,7 @@ struct KakusanRememberCard: View {
     /// The naming feature.
     @Bindable var store: StoreOf<KakusanRememberFeature>
     /// The card's heading.
-    let title: String
+    let title: LocalizedStringResource
     /// Whether the window behind the card is dimmed.
     var dims = true
     @State private var hostWindow: PlatformWindow?
@@ -264,22 +264,25 @@ struct KakusanRememberCard: View {
             back: { store.send(.view(.backPressed)) },
             content: {
                 KakusanHeader(symbol: "person.crop.circle.badge.checkmark", title: title)
-                KakusanFingerprintView(title: "Device fingerprint", fingerprint: store.subject.fingerprint)
+                KakusanFingerprintView(
+                    title: .kakusanInviteDeviceFingerprint,
+                    fingerprint: store.subject.fingerprint
+                )
                 nameField
                 switch store.phase {
                 case .conflict(let holder):
-                    KakusanErrorText(text: "Another device is saved as \(holder.nickname)")
+                    KakusanErrorText(text: .kakusanRememberNameConflict(name: holder.nickname))
                 case .failed:
-                    KakusanErrorText(text: "Couldn’t save this device")
+                    KakusanErrorText(text: .kakusanRememberSaveFailed)
                 case .editing, .saving:
                     EmptyView()
                 }
                 HStack(spacing: 10) {
-                    button("Cancel", .cancel)
+                    button(.commonCancel, .cancel)
                     if store.controls.shows(.replace) {
-                        button("Replace", .replace, destructive: true)
+                        button(.kakusanRememberReplace, .replace, destructive: true)
                     }
-                    button("Save", .save, prominent: true)
+                    button(.commonSave, .save, prominent: true)
                         .disabled(!store.canSave)
                 }
             }
@@ -300,9 +303,9 @@ struct KakusanRememberCard: View {
 
     private var nameField: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Name")
+            Text(.kakusanRememberName)
                 .font(.headline)
-            TextField("Name", text: name)
+            TextField(.kakusanRememberName, text: name)
                 .textFieldStyle(.plain)
                 .menuFocusBinding($nameFocused)
                 .onSubmit {
@@ -317,7 +320,7 @@ struct KakusanRememberCard: View {
                             : Color.clear, lineWidth: 2)
                 }
                 .controllerKeyboard(
-                    title: "Name",
+                    title: .kakusanRememberName,
                     text: name,
                     isFocused: nameFocused || store.controls.selection == .name,
                     presentationRequest: store.keyboardRequest,
@@ -327,7 +330,7 @@ struct KakusanRememberCard: View {
     }
 
     private func button(
-        _ title: String,
+        _ title: LocalizedStringResource,
         _ control: KakusanControl,
         prominent: Bool = false,
         destructive: Bool = false

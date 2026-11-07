@@ -20,7 +20,7 @@ import Testing
     await store.receive(.checked(UUID(0), .success(.type2))) {
         $0.check = .found(.type2)
     }
-    #expect(NatTypeSettingsView.detail(store.state.check).contains("usually connect"))
+    #expect(String(localized: NatTypeSettingsView.detail(store.state.check)).contains("usually connect"))
 }
 
 @MainActor @Test func aFailedNatTypeCheckSaysWhyAndALateAnswerIsDropped() async {

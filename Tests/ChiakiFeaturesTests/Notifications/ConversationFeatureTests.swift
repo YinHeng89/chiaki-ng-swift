@@ -133,7 +133,11 @@ private final class Calls: Sendable {
     await store.receive(\.sent)
     #expect(store.state.sending == .failed(.rejected))
     #expect(store.state.draft == "hello")
-    #expect(ConversationView.sendFailure(.rejected) == "PlayStation Network didn't accept this message.")
+    #expect(
+        String(localized: ConversationView.sendFailure(
+            .rejected
+        )) == "PlayStation Network didn't accept this message."
+    )
     await store.send(.draftChanged("hello again"))
     #expect(store.state.sending == .idle)
 }

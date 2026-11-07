@@ -66,6 +66,7 @@ private func scriptedLibrary(
 
 @Test func everyRunningStepHasALineAndEndedStepsHaveNone() {
     let lines = CloudLibraryFetchState.Step.allCases.compactMap(CloudLibraryFetchProgress.line(of:))
+        .map { String(localized: $0) }
     #expect(lines == [
         "Checking your sign-in",
         "Reading the cloud catalog",
@@ -84,7 +85,10 @@ private func scriptedLibrary(
 }
 
 @Test func everyActivityHasItsDetail() {
-    #expect(CloudLibraryFetchState.Activity.allCases.map(CloudLibraryFetchProgress.detail(of:)) == [
+    let details = CloudLibraryFetchState.Activity.allCases.map {
+        String(localized: CloudLibraryFetchProgress.detail(of: $0))
+    }
+    #expect(details == [
         "Using what was saved earlier",
         "PlayStation Store",
         "PS Now shelves",
@@ -107,19 +111,23 @@ private func scriptedLibrary(
         .trustedTime,
         .syncingClock(host: "time.cloudflare.com")
     )))
-    #expect([cloudflare.step, cloudflare.detail] == ["Checking the time", "time.cloudflare.com"])
+    #expect([cloudflare.step, cloudflare.detail].map { $0.map { String(localized: $0) } } == [
+        "Checking the time", "time.cloudflare.com"
+    ])
     let google = try #require(CloudLibraryFetchProgress(running(
         .trustedTime,
         .syncingClock(host: "time2.google.com")
     )))
-    #expect(google.detail == "time2.google.com")
+    #expect(google.detail.map { String(localized: $0) } == "time2.google.com")
     let unnamed = try #require(CloudLibraryFetchProgress(running(.trustedTime, .syncingClock(host: nil))))
-    #expect(unnamed.detail == "Trusted time")
+    #expect(unnamed.detail.map { String(localized: $0) } == "Trusted time")
 }
 
 @Test func pagesShowTheirTotalOnlyWhenTheCoreKnowsIt() {
-    #expect(CloudLibraryFetchProgress.pages(read: 3, expected: 7) == "Page 3 of 7")
-    #expect(CloudLibraryFetchProgress.pages(read: 3, expected: nil) == "Page 3")
+    #expect(
+        CloudLibraryFetchProgress.pages(read: 3, expected: 7).map { String(localized: $0) } == "Page 3 of 7"
+    )
+    #expect(CloudLibraryFetchProgress.pages(read: 3, expected: nil).map { String(localized: $0) } == "Page 3")
     #expect(CloudLibraryFetchProgress.pages(read: 0, expected: 7) == nil)
     #expect(CloudLibraryFetchProgress.pages(read: 0, expected: nil) == nil)
 }
@@ -148,7 +156,8 @@ private func scriptedLibrary(
         await store.receive(.fetchState(account, UUID(0), state))
         #expect(store.state.phase == .loading(UUID(0), fetch: state))
         let progress = try #require(store.state.phase.fetchProgress)
-        #expect([progress.step, progress.detail, progress.pages] == expected[index])
+        let words = [progress.step, progress.detail, progress.pages].map { $0.map { String(localized: $0) } }
+        #expect(words == expected[index])
     }
     await store.send(.stop)
     await store.finish()
@@ -210,14 +219,14 @@ private func scriptedLibrary(
     )
     await store.send(.refresh)
     await store.receive(.fetchState(account, UUID(0), earlier))
-    #expect(store.state.phase.fetchProgress?.step == "Reading your games")
+    #expect(store.state.phase.fetchProgress.map { String(localized: $0.step) } == "Reading your games")
     await store.receive(.fetchState(account, UUID(0), earlierEnded))
     #expect(store.state.phase == .loading(UUID(0), fetch: earlierEnded))
     await store.receive(.fetchState(account, UUID(0), fresh))
-    #expect(store.state.phase.fetchProgress?.step == "Checking your sign-in")
+    #expect(store.state.phase.fetchProgress.map { String(localized: $0.step) } == "Checking your sign-in")
     await store.receive(.fetchState(account, UUID(0), freshList))
     let progress = try #require(store.state.phase.fetchProgress)
-    #expect([progress.step, progress.detail, progress.pages] == [
+    #expect([progress.step, progress.detail, progress.pages].map { $0.map { String(localized: $0) } } == [
         "Reading the cloud catalog", "PlayStation Store", "Page 1 of 4"
     ])
     #expect(store.state.phase == .loading(UUID(0), fetch: freshList))
@@ -245,11 +254,11 @@ private func scriptedLibrary(
     await store.send(.refresh)
     await store.receive(.fetchState(account, UUID(0), joined))
     let first = try #require(store.state.phase.fetchProgress)
-    #expect(first.step == "Reading your games")
-    #expect(first.detail == "Your PS5 games")
-    #expect(first.pages == "Page 4 of 9")
+    #expect(String(localized: first.step) == "Reading your games")
+    #expect(first.detail.map { String(localized: $0) } == "Your PS5 games")
+    #expect(first.pages.map { String(localized: $0) } == "Page 4 of 9")
     await store.receive(.fetchState(account, UUID(0), next))
-    #expect(store.state.phase.fetchProgress?.step == "Reading the Game Catalog")
+    #expect(store.state.phase.fetchProgress.map { String(localized: $0.step) } == "Reading the Game Catalog")
     await store.send(.stop)
     await store.finish()
 }

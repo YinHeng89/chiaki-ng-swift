@@ -26,9 +26,9 @@ struct LibraryMenuHint: View {
     ///   - menuFocused: Whether a menu stop has controller focus.
     ///   - section: The tab whose heading shows the prompt.
     /// - Returns: "Back to" and the tab's name while the menu has focus, otherwise "Menu".
-    static func title(menuFocused: Bool, section: LibrarySection) -> String {
+    static func title(menuFocused: Bool, section: LibrarySection) -> LocalizedStringResource {
         menuFocused
-            ? "Back to \(section.rawValue)"
-            : "Menu"
+            ? .libraryMenuHintBackTo(section: String(localized: section.title))
+            : .libraryMenuHintMenu
     }
 }

@@ -203,19 +203,25 @@ public enum AlertsPanel: Equatable, Sendable {
         /// The toast and system alert this entry raises.
         public var notice: CloudSystemNotice {
             let name = sender.isEmpty
-                ? "A friend"
+                ? String(localized: .notificationsNoticeFriend)
                 : sender
             switch kind {
             case .invitation(let invitation):
                 return CloudSystemNotice(
                     kind: .invitation,
-                    title: "\(name) invited you to play",
+                    title: String(localized: .notificationsNoticeInvitedToPlay(name: name)),
                     detail: invitation.sessionName
                 )
             case .party:
-                return CloudSystemNotice(kind: .invitation, title: "\(name) invited you to a party")
+                return CloudSystemNotice(
+                    kind: .invitation,
+                    title: String(localized: .notificationsNoticeInvitedToParty(name: name))
+                )
             case .message:
-                return CloudSystemNotice(kind: .message, title: "\(name) sent you a message")
+                return CloudSystemNotice(
+                    kind: .message,
+                    title: String(localized: .notificationsNoticeSentMessage(name: name))
+                )
             }
         }
     }
@@ -549,7 +555,7 @@ public enum AlertsPanel: Equatable, Sendable {
                     groupID: message.groupID,
                     threadID: message.threadID,
                     title: message.sender.isEmpty
-                        ? "Conversation"
+                        ? String(localized: .notificationsConversationDefaultTitle)
                         : message.sender
                 ))
                 return .none
@@ -754,9 +760,12 @@ public enum AlertsPanel: Equatable, Sendable {
             return .none
         }
         let name = sender.isEmpty
-            ? "A friend"
+            ? String(localized: .notificationsNoticeFriend)
             : sender
-        let notice = CloudSystemNotice(kind: .message, title: "\(name) sent you \(held + 1) messages")
+        let notice = CloudSystemNotice(
+            kind: .message,
+            title: String(localized: .notificationsNoticeSentMessages(name: name, count: held + 1))
+        )
         return raise("message:catch-up:\(uuid().uuidString)", notice)
     }
 

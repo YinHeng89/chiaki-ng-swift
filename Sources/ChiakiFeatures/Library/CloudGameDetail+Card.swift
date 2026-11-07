@@ -164,7 +164,7 @@ extension CloudGameDetail {
             FocusButton {
                 closeDetail()
             } label: {
-                Label("Close", systemImage: "xmark")
+                Label(.commonClose, systemImage: "xmark")
                     .labelStyle(.iconOnly)
                     .frame(width: 24, height: 24)
             }
@@ -329,12 +329,12 @@ extension CloudGameDetail {
     func libraryAddHint(_ page: URL?) -> some View {
         HStack(alignment: .center, spacing: 14) {
             if let page {
-                QRCodeImage(page.absoluteString, side: 96, label: "PlayStation Store page code")
+                QRCodeImage(page.absoluteString, side: 96, label: .libraryStoreCodeLabel)
             }
             VStack(alignment: .leading, spacing: 6) {
-                Text("Add to library in the PS Store page and then refresh to play")
+                Text(.libraryLibraryAddHint)
                 if page != nil {
-                    Text("Or scan the code to add it in the PlayStation App on your phone")
+                    Text(.libraryLibraryAddScanHint)
                 }
             }
             .font(.callout).foregroundStyle(.white.opacity(0.72))
@@ -378,13 +378,13 @@ extension CloudGameDetail {
     ///
     /// - Parameter owned: Whether the game is already in the library.
     /// - Returns: The caption.
-    func purchaseCaption(owned: Bool) -> String {
+    func purchaseCaption(owned: Bool) -> LocalizedStringResource {
         if layout.touch {
-            return "Tap the code to open the store page, or scan it with your phone"
+            return .libraryPurchaseCaptionTouch
         }
         return owned
-            ? "Scan the code to open the store page in the PlayStation App on your phone"
-            : "Scan the code to buy it in the PlayStation App on your phone"
+            ? .libraryPurchaseCaptionOwned
+            : .libraryPurchaseCaptionBuy
     }
     /// The store page code as a focusable button that opens the page when pressed.
     ///
@@ -394,14 +394,14 @@ extension CloudGameDetail {
         FocusButton {
             openURL(page)
         } label: {
-            QRCodeImage(page.absoluteString, side: storeCodeSide, label: "PlayStation Store page code")
+            QRCodeImage(page.absoluteString, side: storeCodeSide, label: .libraryStoreCodeLabel)
                 .contentShape(.rect(cornerRadius: 12))
         }
         .buttonStyle(.plain)
         .focusHighlightShape(.roundedRectangle(12))
         .menuFocused($focus, equals: .purchaseCode)
-        .accessibilityLabel("Open the store page")
-        .accessibilityHint("Scan the code with a phone, or press to open it here")
+        .accessibilityLabel(.libraryStoreCodeAccessibility)
+        .accessibilityHint(.libraryStoreCodeHint)
         .accessibilityIdentifier("cloud-store-code")
     }
 
@@ -420,8 +420,8 @@ extension CloudGameDetail {
             VStack(alignment: .leading, spacing: 10) {
                 storeCodeCard(link, code, game)
                 Text(layout.touch
-                    ? "Tap or scan to open the store page"
-                    : "Scan to open the store page on your phone")
+                    ? .libraryStoreCodeCaptionTouch
+                    : .libraryStoreCodeCaptionPhone)
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.72))
                     .frame(maxWidth: 180, alignment: .leading)
@@ -464,7 +464,7 @@ extension CloudGameDetail {
     func libraryAddCard(_ page: URL, _ game: CloudGame) -> StoreCodeTile {
         StoreCodeTile(
             page: page,
-            title: "Add to library",
+            title: .libraryActionsAddToLibrary,
             symbol: "plus",
             opening: store.storeOpening.contains(game.id),
             codeSide: storeCodeSide,
@@ -494,9 +494,9 @@ extension CloudGameDetail {
         } label: {
             Group {
                 if store.storeOpening.contains(game.id) {
-                    StoreButtonLabel(title: "Add to library", opening: true)
+                    StoreButtonLabel(title: .libraryActionsAddToLibrary, opening: true)
                 } else {
-                    Label("Add to library", systemImage: "plus")
+                    Label(.libraryActionsAddToLibrary, systemImage: "plus")
                 }
             }
             .font(.system(size: 17, weight: .semibold))
@@ -534,8 +534,8 @@ extension CloudGameDetail {
                     Image(systemName: "arrow.clockwise")
                 }
                 Text(refreshing
-                    ? "Checking"
-                    : "Refresh")
+                    ? .libraryRefreshTitleChecking
+                    : .commonRefresh)
             }
             .font(.system(size: 17, weight: .semibold))
             .frame(maxWidth: .infinity)
@@ -547,10 +547,10 @@ extension CloudGameDetail {
         .opacity(store.state.mayRefreshTitle(game.id)
             ? 1
             : 0.45)
-            .help("Refresh this title")
+            .help(.libraryRefreshTitleHelp)
             .accessibilityLabel(refreshing
-                ? "Checking this title"
-                : "Refresh this title")
+                ? .libraryRefreshTitleCheckingAccessibility
+                : .libraryRefreshTitleHelp)
     }
     /// The outcome of the last title refresh: a copyable error, or a notice that the game was added or is
     /// still missing.
@@ -600,7 +600,7 @@ extension CloudGameDetail {
     /// - Parameter game: The game the detail shows.
     /// - Returns: The standing's label.
     func entitlement(_ game: CloudGame) -> String {
-        game.standingLabel(after: store.cardChecks[game.id])
+        String(localized: game.standingLabel(after: store.cardChecks[game.id]))
     }
 }
 
@@ -614,7 +614,7 @@ struct StoreCodeTile: View {
     /// The store page the code encodes.
     let page: URL
     /// The tile's title, shown under the code.
-    let title: String
+    let title: LocalizedStringResource
     /// The symbol beside the title.
     let symbol: String
     /// Whether the store page is opening, which the title gives way to.
@@ -637,7 +637,7 @@ struct StoreCodeTile: View {
             openStore()
         } label: {
             VStack(spacing: 4) {
-                QRCodeImage(page.absoluteString, side: codeSide, label: "PlayStation Store page code")
+                QRCodeImage(page.absoluteString, side: codeSide, label: .libraryStoreCodeLabel)
                 HStack(spacing: 5) {
                     StoreButtonLabel(title: title, opening: opening)
                     if !opening {
@@ -659,8 +659,8 @@ struct StoreCodeTile: View {
         .focusHighlightShape(.roundedRectangle(GlassPanel.Radius.medium.points))
         .menuFocused($focus, equals: stop)
         .onMenuMoveCommand { move($0) }
-        .accessibilityLabel("Open the store page")
-        .accessibilityHint("Scan the code with a phone, or press to open it here")
+        .accessibilityLabel(.libraryStoreCodeAccessibility)
+        .accessibilityHint(.libraryStoreCodeHint)
         .accessibilityIdentifier("cloud-store-code")
     }
 }
@@ -669,7 +669,7 @@ struct StoreCodeTile: View {
 /// handed to the browser, so the press is visibly taken.
 struct StoreButtonLabel: View {
     /// The button's usual title.
-    let title: String
+    let title: LocalizedStringResource
     /// Whether the store page is opening.
     let opening: Bool
 
@@ -678,9 +678,9 @@ struct StoreButtonLabel: View {
             HStack(spacing: 8) {
                 ProgressView()
                     .controlSize(.small)
-                Text("Opening…")
+                Text(.libraryStoreOpening)
             }
-            .accessibilityLabel("Opening the store page")
+            .accessibilityLabel(.libraryStoreOpeningAccessibility)
         } else {
             Text(title)
         }
@@ -693,18 +693,18 @@ private enum CloudCardCheckMessage {
     ///
     /// - Parameter check: The check.
     /// - Returns: The explanation.
-    static func text(for check: CloudCardCheck) -> String? {
+    static func text(for check: CloudCardCheck) -> LocalizedStringResource? {
         switch check {
         case .checking:
-            "Checking the store"
+            .libraryCardCheckChecking
         case .streams:
             nil
         case .notStreamable:
-            "The store page doesn't list this edition for cloud streaming on PS5"
+            .libraryCardCheckNotStreamable
         case .refused:
-            "The stream server refused this game"
+            .libraryCardCheckRefused
         case .unavailable(let detail):
-            "Couldn't check the store: \(detail)"
+            detail.message
         }
     }
 }
@@ -777,16 +777,16 @@ private struct CloudLaunchStepRow: View {
         }
     }
 
-    private static func spoken(_ mark: CloudLaunchChecks.Mark) -> String {
+    private static func spoken(_ mark: CloudLaunchChecks.Mark) -> LocalizedStringResource {
         switch mark {
         case .unchecked:
-            "Not checked"
+            .libraryLaunchStepNotChecked
         case .checking:
-            "Checking"
+            .libraryRefreshTitleChecking
         case .passed:
-            "Passed"
+            .libraryLaunchStepPassed
         case .refused:
-            "Refused"
+            .libraryLaunchStepRefused
         }
     }
 }

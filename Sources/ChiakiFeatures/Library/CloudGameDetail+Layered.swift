@@ -84,7 +84,7 @@ extension CloudGameDetail {
     /// - Returns: The loading view.
     func cardLoader(_ game: CloudGame) -> some View {
         ChiakiLogo(size: 96, isConnecting: true)
-            .accessibilityLabel("Loading")
+            .accessibilityLabel(.libraryDetailLoading)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: .topTrailing) {
                 detailCloseButton
@@ -437,8 +437,8 @@ extension CloudGameDetail {
             VStack(alignment: .trailing, spacing: 12) {
                 libraryAddCard(page, game)
                 asideCaption(layout.touch
-                    ? "Tap or scan to add it in the store, then refresh"
-                    : "Add it in the store page, or scan to add it on your phone, then refresh")
+                    ? .libraryLibraryAddCaptionTouch
+                    : .libraryLibraryAddCaptionPhone)
             }
             .gameDetailReveal(.actions)
         } else if actions.bundleChoices == nil, actions.store != nil || actions.purchaseCode != nil {
@@ -452,8 +452,8 @@ extension CloudGameDetail {
                 }
                 if actions.purchaseCode != nil {
                     asideCaption(layout.touch
-                        ? "Tap or scan to open the store page"
-                        : "Scan to open the store page on your phone")
+                        ? .libraryStoreCodeCaptionTouch
+                        : .libraryStoreCodeCaptionPhone)
                 }
             }
             .gameDetailReveal(.actions)
@@ -464,7 +464,7 @@ extension CloudGameDetail {
     ///
     /// - Parameter text: The caption.
     /// - Returns: The caption.
-    func asideCaption(_ text: String) -> some View {
+    func asideCaption(_ text: LocalizedStringResource) -> some View {
         Text(text)
             .font(.caption)
             .foregroundStyle(.white.opacity(0.72))
@@ -683,7 +683,7 @@ extension CloudGameDetail {
         }
         .font(.system(size: 12))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(bar.stars) stars, \(bar.percent) percent")
+        .accessibilityLabel(.libraryRatingBarAccessibility(stars: bar.stars, percent: bar.percent))
     }
 
     /// The age rating's icon beside its name and content descriptors.
@@ -741,7 +741,7 @@ extension CloudGameDetail {
     ///   - index: The item's position in the rail.
     ///   - item: The screenshot or trailer.
     /// - Returns: The accessibility label.
-    func mediaLabel(_ index: Int, _ item: GameDetailPresentation.Media) -> String {
+    func mediaLabel(_ index: Int, _ item: GameDetailPresentation.Media) -> LocalizedStringResource {
         GameMediaRail.label(index, item)
     }
 
@@ -759,7 +759,7 @@ extension CloudGameDetail {
                     .onTapGesture {
                         store.send(.destination(.presented(.gameDetail(.closeMedia))))
                     }
-                    .accessibilityLabel("Dismiss")
+                    .accessibilityLabel(.libraryMediaDismiss)
                 switch presentation.media[index] {
                 case .screenshot(let url):
                     GameArtImage(url: url, size: .enlarged, contentMode: .fit)

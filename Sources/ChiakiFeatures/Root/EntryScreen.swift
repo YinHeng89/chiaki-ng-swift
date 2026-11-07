@@ -119,7 +119,7 @@ struct EntryScreen: View {
         case .launching:
             Color.clear
         case .loading:
-            ProgressView("Opening accounts…").padding(.vertical, 24)
+            ProgressView(.appEntryOpeningAccounts).padding(.vertical, 24)
         case .saving:
             AccountSavingView(focusedAction: $focusedAction) {
                 send(.cancelAccountWork)
@@ -140,7 +140,7 @@ struct EntryScreen: View {
                     CopyableErrorMessage(message: AccountsFailureMessage.text(for: failure), font: .callout)
                     if store.route == .welcome, failure == .loadFailed {
                         FlowSecondaryButton(
-                            label: "Reload accounts",
+                            label: .appEntryReloadAccounts,
                             focus: "Reload accounts",
                             focusedAction: $focusedAction
                         ) {

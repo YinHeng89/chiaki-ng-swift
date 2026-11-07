@@ -1,3 +1,5 @@
+import Foundation
+
 /// The cloud service's warning that it will close the game soon.
 public struct CloudClosingNotice: Equatable, Sendable {
     /// Why the service closes the game.
@@ -32,24 +34,20 @@ public struct CloudClosingNotice: Equatable, Sendable {
     }
 
     /// The warning shown over the game.
-    public var message: String {
+    public var message: LocalizedStringResource {
+        let hours = minutes >= 120
+            ? minutes / 60
+            : nil
         switch reason {
         case .timeLimit:
-            "The game closes in \(remaining) because of the streaming time limit. Save your progress."
+            return hours.map { .cloudClosingTimeLimitHours(hours: $0) }
+                ?? .cloudClosingTimeLimitMinutes(minutes: minutes)
         case .maintenance:
-            "The streaming server goes down for maintenance in \(remaining) and the game will close. "
-                + "Save your progress."
+            return hours.map { .cloudClosingMaintenanceHours(hours: $0) }
+                ?? .cloudClosingMaintenanceMinutes(minutes: minutes)
         case .unexplained:
-            "The streaming service closes the game in \(remaining). Save your progress."
+            return hours.map { .cloudClosingUnexplainedHours(hours: $0) }
+                ?? .cloudClosingUnexplainedMinutes(minutes: minutes)
         }
-    }
-
-    private var remaining: String {
-        if minutes >= 120 {
-            return "\(minutes / 60) hours"
-        }
-        return minutes == 1
-            ? "1 minute"
-            : "\(minutes) minutes"
     }
 }

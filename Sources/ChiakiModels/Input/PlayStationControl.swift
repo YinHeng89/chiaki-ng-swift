@@ -1,3 +1,5 @@
+import Foundation
+
 /// A control on a PlayStation controller that an input can be bound to.
 ///
 /// The declaration order of the first sixteen cases is the console's button bit order; ``bit`` depends on it.
@@ -91,37 +93,66 @@ public enum PlayStationControl: String, Codable, CaseIterable, Sendable {
     case gyroHold
 
     /// The label shown for the control.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
-        case .touchpadLeft:
-            "Touchpad left"
-        case .touchpadRight:
-            "Touchpad right"
-        case .gyroHold:
-            "Gyro (hold)"
-        case .left, .right, .dpadUp, .down:
-            "D-pad " + rawValue
+        case .cross:
+            .controlsControlCross
+        case .circle:
+            .controlsControlCircle
+        case .square:
+            .controlsControlSquare
+        case .triangle:
+            .controlsControlTriangle
+        case .left:
+            .controlsControlDpadLeft
+        case .right:
+            .controlsControlDpadRight
+        case .dpadUp:
+            .controlsControlDpadUp
+        case .down:
+            .controlsControlDpadDown
+        case .leftShoulder:
+            .controlsControlL1
+        case .rightShoulder:
+            .controlsControlR1
+        case .leftStickButton:
+            .controlsControlL3
+        case .rightStickButton:
+            .controlsControlR3
+        case .options:
+            .controlsControlOptions
+        case .share:
+            .controlsControlShare
+        case .touchpad:
+            .controlsControlTouchpad
+        case .system:
+            .controlsControlPs
+        case .leftTrigger:
+            .controlsControlL2
+        case .rightTrigger:
+            .controlsControlR2
         case .leftStickLeft:
-            "Left stick left"
+            .controlsControlLeftStickLeft
         case .leftStickRight:
-            "Left stick right"
+            .controlsControlLeftStickRight
         case .leftStickUp:
-            "Left stick up"
+            .controlsControlLeftStickUp
         case .leftStickDown:
-            "Left stick down"
+            .controlsControlLeftStickDown
         case .rightStickLeft:
-            "Right stick left"
+            .controlsControlRightStickLeft
         case .rightStickRight:
-            "Right stick right"
+            .controlsControlRightStickRight
         case .rightStickUp:
-            "Right stick up"
+            .controlsControlRightStickUp
         case .rightStickDown:
-            "Right stick down"
-        case .leftShoulder, .leftTrigger, .leftStickButton, .rightShoulder, .rightTrigger, .rightStickButton,
-             .system:
-            rawValue.uppercased()
-        default:
-            rawValue.capitalized
+            .controlsControlRightStickDown
+        case .touchpadLeft:
+            .controlsControlTouchpadLeft
+        case .touchpadRight:
+            .controlsControlTouchpadRight
+        case .gyroHold:
+            .controlsControlGyroHold
         }
     }
 

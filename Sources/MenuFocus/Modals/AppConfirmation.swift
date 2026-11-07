@@ -16,19 +16,19 @@ public struct AppConfirmation: Equatable, Sendable {
     }
 
     /// The question asked.
-    public var title: String
+    public var title: LocalizedStringResource
 
     /// Extra explanation under the title.
-    public var message: String?
+    public var message: LocalizedStringResource?
 
     /// An SF Symbol shown above the title.
     public var systemImage: String?
 
     /// The confirm button's title, or `nil` for a card that can only be dismissed.
-    public var confirmTitle: String?
+    public var confirmTitle: LocalizedStringResource?
 
     /// The cancel button's title.
-    public var cancelTitle: String
+    public var cancelTitle: LocalizedStringResource
 
     /// How the confirm button is styled.
     public var tone: Tone
@@ -43,15 +43,15 @@ public struct AppConfirmation: Equatable, Sendable {
     ///   - message: Extra explanation under the title.
     ///   - systemImage: An SF Symbol shown above the title.
     ///   - confirmTitle: The confirm button's title, or `nil` for no confirm button.
-    ///   - cancelTitle: The cancel button's title.
+    ///   - cancelTitle: The cancel button's title, or `nil` for Cancel.
     ///   - tone: How the confirm button is styled.
     ///   - progress: Whether a spinner shows.
     public init(
-        title: String,
-        message: String? = nil,
+        title: LocalizedStringResource,
+        message: LocalizedStringResource? = nil,
         systemImage: String? = nil,
-        confirmTitle: String? = nil,
-        cancelTitle: String = "Cancel",
+        confirmTitle: LocalizedStringResource? = nil,
+        cancelTitle: LocalizedStringResource? = nil,
         tone: Tone = .standard,
         progress: Bool = false
     ) {
@@ -59,7 +59,7 @@ public struct AppConfirmation: Equatable, Sendable {
         self.message = message
         self.systemImage = systemImage
         self.confirmTitle = confirmTitle
-        self.cancelTitle = cancelTitle
+        self.cancelTitle = cancelTitle ?? .confirmationCancel
         self.tone = tone
         self.progress = progress
     }
@@ -123,7 +123,7 @@ public struct AppConfirmationCard: View {
                 .onTapGesture {
                     finish(cancel)
                 }
-                .accessibilityLabel("Dismiss")
+                .accessibilityLabel(.confirmationDismiss)
             card
         }
         .ignoresSafeArea()
@@ -176,7 +176,7 @@ public struct AppConfirmationCard: View {
             if request.progress {
                 ProgressView()
                     .controlSize(.small)
-                    .accessibilityLabel("In progress")
+                    .accessibilityLabel(.confirmationInProgress)
             }
             buttons
                 .padding(.top, 4)

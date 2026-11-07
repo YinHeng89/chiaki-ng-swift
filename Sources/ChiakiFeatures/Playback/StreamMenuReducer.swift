@@ -86,12 +86,12 @@ import Foundation
         }
 
         /// Why 3D audio is unavailable for this stream, or `nil` when the stream carries it.
-        public var audio3DDisabledReason: String? {
+        public var audio3DDisabledReason: LocalizedStringResource? {
             guard let target = context.soundTarget else {
-                return "Not supported as a guest"
+                return .playbackMenuSpatialAudioGuestUnsupported
             }
             guard draft.audio3DAvailable else {
-                return "Not supported on \(target.title)"
+                return .playbackMenuSpatialAudioTargetUnsupported(target: String(localized: target.title))
             }
             return nil
         }

@@ -19,7 +19,7 @@ public struct CloudBundleChoice: Equatable, Identifiable, Sendable {
     }
 
     /// The player-facing explanation of ``refusal``, or `nil` when the game can be played.
-    public var reason: String? {
+    public var reason: LocalizedStringResource? {
         refusal.map { CloudClearanceRefusalMessage.text(for: CloudClearanceRefusal(refusal: $0)) }
     }
 
@@ -34,7 +34,7 @@ public struct CloudBundleChoice: Equatable, Identifiable, Sendable {
     public init(_ child: CloudBundledGame, at index: Int, of bundle: CloudGame, listed: CloudGame?) {
         game = CloudGame(
             productId: child.productId,
-            name: listed?.name ?? "Game \(index + 1)",
+            name: listed?.name ?? String(localized: .libraryBundleGameNumber(number: String(index + 1))),
             imageUrl: listed?.imageUrl ?? bundle.imageUrl,
             landscapeImageUrl: listed?.landscapeImageUrl ?? bundle.landscapeImageUrl,
             platform: bundle.platform,

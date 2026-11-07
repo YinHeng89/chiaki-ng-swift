@@ -56,26 +56,26 @@ public struct KakusanMediaTuning: Equatable, Sendable, Codable {
         }
 
         /// The label shown for the field.
-        public var label: String {
+        public var label: LocalizedStringResource {
             switch self {
             case .queueAgeMinimumMs:
-                "Shortest queue wait (ms)"
+                .settingsKakusanMediaQueueAgeMinimum
             case .queueAgeMaximumMs:
-                "Longest queue wait (ms)"
+                .settingsKakusanMediaQueueAgeMaximum
             case .queueAgeRoundTrips:
-                "Queue wait in round trips"
+                .settingsKakusanMediaQueueAgeRoundTrips
             case .startupGraceMs:
-                "Start-up grace (ms)"
+                .settingsKakusanMediaStartupGrace
             case .dropSecondsToEnd:
-                "Seconds of heavy shedding before ending"
+                .settingsKakusanMediaDropSecondsToEnd
             case .acknowledgementTimeoutMs:
-                "Acknowledgement timeout (ms)"
+                .settingsKakusanMediaAcknowledgementTimeout
             case .queueKilobytes:
-                "Queue size (KB)"
+                .settingsKakusanMediaQueueKilobytes
             case .queuePackets:
-                "Queue size (packets)"
+                .settingsKakusanMediaQueuePackets
             case .keyframeIntervalMs:
-                "Shortest gap between keyframes (ms)"
+                .settingsKakusanMediaKeyframeInterval
             }
         }
     }

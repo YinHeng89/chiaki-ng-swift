@@ -279,14 +279,14 @@ extension DeveloperSettings {
     ///   - version: The chosen version, or ``DeveloperSettings/automaticTakionVersion``.
     ///   - build: The version this build negotiates when the choice is automatic.
     /// - Returns: `"Automatic"`, `"Automatic (v12)"` or `"v12"`.
-    public static func versionTitle(for version: UInt32, build: UInt32) -> String {
+    public static func versionTitle(for version: UInt32, build: UInt32) -> LocalizedStringResource {
         switch version {
         case DeveloperSettings.automaticTakionVersion:
             return build == DeveloperSettings.automaticTakionVersion
-                ? "Automatic"
-                : "Automatic (v\(build))"
+                ? .settingsDeveloperTakionVersionAutomatic
+                : .settingsDeveloperTakionVersionAutomaticBuild(build: String(build))
         default:
-            return "v\(version)"
+            return .settingsDeveloperTakionVersion(version: String(version))
         }
     }
 }
@@ -296,15 +296,10 @@ extension DeveloperSettings {
     ///
     /// - Parameter minutes: The cooldown in minutes.
     /// - Returns: `"Off"`, `"1 minute"` or `"15 minutes"`.
-    public static func libraryRefreshCooldownTitle(minutes: UInt32) -> String {
-        switch minutes {
-        case 0:
-            "Off"
-        case 1:
-            "1 minute"
-        default:
-            "\(minutes) minutes"
-        }
+    public static func libraryRefreshCooldownTitle(minutes: UInt32) -> LocalizedStringResource {
+        minutes == 0
+            ? .settingsDeveloperLibraryCooldownOff
+            : .settingsDeveloperLibraryCooldownMinutes(minutes: Int(minutes))
     }
 }
 

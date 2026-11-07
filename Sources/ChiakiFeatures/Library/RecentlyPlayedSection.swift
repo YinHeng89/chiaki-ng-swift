@@ -75,7 +75,7 @@ struct RecentlyPlayedSection: View {
         let rows = Self.rows(recentlyPlayed, consoles: consoles, continuing: continuing)
         VStack(alignment: .leading, spacing: 28) {
             if recentlyPlayed.authExpired {
-                Text("Your PlayStation sign-in has expired.")
+                Text(.libraryRecentSignInExpired)
                     .font(.callout)
                     .foregroundStyle(.red)
             }
@@ -93,11 +93,11 @@ struct RecentlyPlayedSection: View {
         .animation(.easeOut(duration: 0.15), value: rows.map(\.id))
     }
 
-    private func heading(_ row: Row) -> String {
-        "Recently played on " + StreamerMode.consoleName(
+    private func heading(_ row: Row) -> LocalizedStringResource {
+        .libraryRecentHeading(console: StreamerMode.consoleName(
             row.console.name, address: row.console.address, kind: row.console.kind.rawValue,
             enabled: streamerMode
-        )
+        ))
     }
 }
 
@@ -112,7 +112,7 @@ private struct RecentTitleRail: View {
         }
     }
 
-    let heading: String
+    let heading: LocalizedStringResource
     let row: RecentlyPlayedSection.Row
     let disabled: Bool
     let play: (UUID, RecentTitle) -> Void
@@ -204,8 +204,8 @@ private struct RecentTitleRail: View {
         } label: {
             Label(
                 forward
-                    ? "Scroll Forward"
-                    : "Scroll Back",
+                    ? .libraryRailScrollForward
+                    : .libraryRailScrollBack,
                 systemImage: forward
                     ? "chevron.right"
                     : "chevron.left"
@@ -258,6 +258,13 @@ private struct RecentTitleCard: View {
 
     private var icon: AppIcon {
         mark?.icon ?? .release
+    }
+
+    private var spokenLabel: LocalizedStringResource {
+        guard let mark else {
+            return .libraryRecentPlay(title: title.name)
+        }
+        return .libraryRecentPlayMarked(title: title.name, mark: String(localized: mark.label).lowercased())
     }
 
     private var revealed: Bool {
@@ -327,8 +334,7 @@ private struct RecentTitleCard: View {
             hovered = $0
         }
         .animation(.easeOut(duration: 0.15), value: revealed)
-        .accessibilityLabel(mark
-            .map { "Play \(title.name), \($0.label.lowercased())" } ?? "Play \(title.name)")
+        .accessibilityLabel(spokenLabel)
     }
 }
 

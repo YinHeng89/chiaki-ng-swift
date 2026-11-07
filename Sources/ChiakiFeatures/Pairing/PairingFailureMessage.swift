@@ -1,4 +1,5 @@
 import ChiakiModels
+import Foundation
 
 /// The words the app shows and logs for a failed pairing.
 public enum PairingFailureMessage {
@@ -6,33 +7,36 @@ public enum PairingFailureMessage {
     ///
     /// - Parameter failure: Why the attempt failed.
     /// - Returns: One sentence with what to do next.
-    public static func text(for failure: PairingFailure) -> String {
+    public static func text(for failure: PairingFailure) -> LocalizedStringResource {
         switch failure {
         case .invalidInput:
-            "Enter a valid console address and eight-digit PIN."
+            .consolesRegistrationInvalidInput
         case .rejected:
-            "Registration failed. Check the console address and generate a new PIN."
+            .consolesRegistrationRejected
         case .unreachable:
-            "The console didn't answer. Check the address and that the console is on, then try again."
+            .consolesRegistrationUnreachable
         case .unavailable:
-            "The registration service is unavailable."
+            .consolesRegistrationUnavailable
         case .notSaved:
-            "Couldn't save the registration. Try again."
+            .consolesRegistrationNotSaved
         case .sessionPlaying:
-            "A session is playing"
+            .consolesRegistrationSessionPlaying
         case .cancelled:
-            "Registration was cancelled."
+            .consolesRegistrationCancelled
         case .overInternet(let stage, code: nil):
-            "PlayStation registration failed during \(name(of: stage)). Retry or use a local PIN."
+            .consolesRegistrationOverInternetFailed(stage: String(localized: title(of: stage)))
         case .overInternet(let stage, code: let code?):
-            "PlayStation registration failed during \(name(of: stage)) (code \(code)). Retry or use a local PIN."
+            .consolesRegistrationOverInternetFailedCode(
+                stage: String(localized: title(of: stage)),
+                code: String(code)
+            )
         }
     }
 
-    /// The name of an internet pairing stage, as it reads inside a sentence.
+    /// The name of an internet pairing stage, as it reads inside a log sentence.
     ///
     /// - Parameter stage: The stage.
-    /// - Returns: A lowercase phrase such as `"console wake"`.
+    /// - Returns: A lowercase English phrase such as `"console wake"`.
     public static func name(of stage: InternetPairingStage) -> String {
         switch stage {
         case .starting:
@@ -45,6 +49,21 @@ public enum PairingFailureMessage {
             "console connection"
         case .pairing:
             "console registration"
+        }
+    }
+
+    private static func title(of stage: InternetPairingStage) -> LocalizedStringResource {
+        switch stage {
+        case .starting:
+            .consolesRegistrationStageStarting
+        case .openingSession:
+            .consolesRegistrationStageOpeningSession
+        case .wakingConsole:
+            .consolesRegistrationStageWakingConsole
+        case .connecting:
+            .consolesRegistrationStageConnecting
+        case .pairing:
+            .consolesRegistrationStagePairing
         }
     }
 }

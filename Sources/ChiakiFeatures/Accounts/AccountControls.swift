@@ -17,9 +17,9 @@ struct AccountControls: View {
     /// The active profile shown in the pill, or `nil` when there is none.
     let selected: RegistrationFlow.Profile?
     /// The short cloud status line under the profile name.
-    let cloudText: String
+    let cloudText: LocalizedStringResource
     /// The longer cloud status explanation shown as the pill's tooltip.
-    let cloudHelp: String
+    let cloudHelp: LocalizedStringResource
     /// The colour of the cloud status line.
     let cloudColor: Color
     /// Whether account details are refreshing, which disables the refresh icon.
@@ -96,7 +96,7 @@ struct AccountControls: View {
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 6) {
-                icon("Switch account", .switchAccount, id: "switch") {
+                icon(.accountsControlsSwitchAccount, .switchAccount, id: "switch") {
                     choosingAccount = true
                 }
                 .disabled(profiles.count < 2)
@@ -147,17 +147,17 @@ struct AccountControls: View {
                         }
                         .presentationCompactAdaptation(.popover)
                 }
-                icon("Add account", .addAccount, id: "add") {
+                icon(.accountsControlsAddAccount, .addAccount, id: "add") {
                     send(.addAccount)
                 }
-                icon("Refresh details", .refreshDetails, id: "refresh", action: refresh)
+                icon(.accountsControlsRefreshDetails, .refreshDetails, id: "refresh", action: refresh)
                     .disabled(isRefreshing)
-                icon("Sign in again", .signIn, id: "signin") {
+                icon(.accountsControlsSignInAgain, .signIn, id: "signin") {
                     if let selected {
                         send(.reconnectAccount(selected.id))
                     }
                 }.disabled(selected == nil)
-                icon("Delete account", .deleteAccount, id: "delete", destructive: true) {
+                icon(.accountsControlsDeleteAccount, .deleteAccount, id: "delete", destructive: true) {
                     if let selected {
                         delete(selected.id)
                     }
@@ -197,7 +197,7 @@ struct AccountControls: View {
                                 .help(cloudTooltip)
                         }
                     } else {
-                        Text("Accounts").font(.headline)
+                        Text(.accountsControlsTitle).font(.headline)
                     }
                 }.padding(.leading, pillInsets.leading).padding(.trailing, pillInsets.trailing)
                     .padding(.vertical, pillInsets.top)
@@ -209,7 +209,7 @@ struct AccountControls: View {
             .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).midX } action: { midX in
                 profileCenterX = midX
             }
-            .help("Account controls")
+            .help(Text(.accountsControlsHelp))
             .accessibilityLabel(accountSummary)
         }
         .environment(\.menuMove, moveFocus)
@@ -294,21 +294,21 @@ struct AccountControls: View {
 
 extension AccountControls {
     /// The cloud status help text for the profile pill, empty when the profile cannot use cloud play.
-    var cloudTooltip: String {
+    var cloudTooltip: Text {
         guard selected.permits(.cloud) else {
-            return ""
+            return Text(verbatim: "")
         }
-        return cloudHelp
+        return Text(cloudHelp)
     }
 
     /// The profile pill's accessibility label: the account name, the cloud status when the profile
     /// permits cloud play, and the hint that it shows the account controls.
-    var accountSummary: String {
-        let name = selected?.name ?? "Accounts"
+    var accountSummary: LocalizedStringResource {
+        let name = selected?.name ?? String(localized: .accountsControlsTitle)
         guard selected.permits(.cloud) else {
-            return "\(name), show account controls"
+            return .accountsControlsSummary(name: name)
         }
-        return "\(name), \(cloudText), show account controls"
+        return .accountsControlsSummaryWithCloud(name: name, cloud: String(localized: cloudText))
     }
 }
 
@@ -513,43 +513,43 @@ extension AccountControls {
         return CGPoint(x: CGFloat(index) * actionStride + 8, y: tooltipDrop)
     }
     /// The tooltip text for the hovered or focused action.
-    var actionDescription: String {
+    var actionDescription: LocalizedStringResource {
         switch hoveredAction ?? shownFocus {
         case "switch":
             profiles.count > 1
-                ? "Switch account"
-                : "Add another account to switch"
+                ? .accountsControlsSwitchAccount
+                : .accountsControlsSwitchNeedsAnother
         case "add":
-            "Add account"
+            .accountsControlsAddAccount
         case "refresh":
-            "Refresh details"
+            .accountsControlsRefreshDetails
         case "signin":
-            "Sign in again"
+            .accountsControlsSignInAgain
         case "delete":
-            "Delete account from this device"
+            .accountsControlsDeleteFromDevice
         default:
-            "Account controls"
+            .accountsControlsHelp
         }
     }
 
     /// The one-word title shown under an action's icon on touch.
     ///
     /// - Parameter id: The action's focus id.
-    /// - Returns: The title.
-    static func shortTitle(of id: String) -> String {
+    /// - Returns: The title, or `nil` for an id that has none.
+    static func shortTitle(of id: String) -> LocalizedStringResource? {
         switch id {
         case "switch":
-            "Switch"
+            .accountsControlsShortSwitch
         case "add":
-            "Add"
+            .accountsControlsShortAdd
         case "refresh":
-            "Refresh"
+            .commonRefresh
         case "signin":
-            "Sign in"
+            .accountsControlsShortSignIn
         case "delete":
-            "Delete"
+            .commonDelete
         default:
-            ""
+            nil
         }
     }
 
@@ -563,7 +563,7 @@ extension AccountControls {
     ///   - destructive: Whether the action is destructive, which colours it red.
     ///   - action: What the icon does.
     func icon(
-        _ title: String, _ symbol: AppIcon, id: String, destructive: Bool = false,
+        _ title: LocalizedStringResource, _ symbol: AppIcon, id: String, destructive: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
         FocusButton(
@@ -575,8 +575,8 @@ extension AccountControls {
                 symbol.image.font(.system(size: 15, weight: .medium))
                     .frame(width: 32, height: 32)
                     .hoverGlass(hoveredAction == id || inputMode.shows(focused == id), in: .circle)
-                if actionsTitled {
-                    Text(Self.shortTitle(of: id))
+                if actionsTitled, let shortTitle = Self.shortTitle(of: id) {
+                    Text(shortTitle)
                         .font(.system(size: 10, weight: .medium))
                         .lineLimit(1)
                         .fixedSize()

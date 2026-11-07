@@ -507,7 +507,7 @@ private func artPipeline(_ answer: @escaping @Sendable (URL) throws -> Data) -> 
     let rating = try #require(shown.rating)
     #expect(rating.average == "4.74")
     #expect(rating.filledStars == 5)
-    #expect(rating.count == "216,539 ratings")
+    #expect(String(localized: rating.count) == "216,539 ratings")
     #expect(rating.bars.map(\.stars) == [5, 4, 3, 2, 1])
     #expect(rating.bars.map(\.percent) == [86, 8, 3, 1, 2])
     #expect(shown.age == .init(
@@ -518,10 +518,9 @@ private func artPipeline(_ answer: @escaping @Sendable (URL) throws -> Data) -> 
         .screenshot("https://image.api.playstation.com/one.jpg"),
         .screenshot("https://image.api.playstation.com/two.jpg"), .trailer(trailer)
     ])
-    #expect(shown.facts == [
-        .init(label: "Publisher", value: "Sony Interactive Entertainment"),
-        .init(label: "Released", value: "31 October 2024"),
-        .init(label: "Genres", value: "Role Playing Games, Action")
+    #expect(shown.facts.map { String(localized: $0.label) } == ["Publisher", "Released", "Genres"])
+    #expect(shown.facts.map(\.value) == [
+        "Sony Interactive Entertainment", "31 October 2024", "Role Playing Games, Action"
     ])
     #expect(shown.showsRatingBand)
 }
@@ -539,7 +538,7 @@ private func artPipeline(_ answer: @escaping @Sendable (URL) throws -> Data) -> 
     ))
     #expect(unrated.rating == nil)
     #expect(unrated.age == nil)
-    #expect(unrated.facts.map(\.label) == ["Genres"])
+    #expect(unrated.facts.map { String(localized: $0.label) } == ["Genres"])
     let single = GameDetailPresentation(
         GameDetails(starRating: .init(
             average: 3.5,
@@ -550,7 +549,7 @@ private func artPipeline(_ answer: @escaping @Sendable (URL) throws -> Data) -> 
         locale: Locale(identifier: "en_GB")
     )
     #expect(single.rating?.average == "3.50")
-    #expect(single.rating?.count == "1 rating")
+    #expect(single.rating.map { String(localized: $0.count) } == "1 rating")
     #expect(single.rating?.filledStars == 4)
     #expect(single.age == nil && single.showsRatingBand)
 }

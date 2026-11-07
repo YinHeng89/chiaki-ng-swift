@@ -10,53 +10,58 @@ public enum StreamTroubleshootTopic: String, CaseIterable, Sendable {
     /// Tips for a resolution that keeps changing.
     case resolution = "Resolution"
 
-    /// The heading above the topic's tips.
-    var heading: String {
+    /// The topic's name in the choice of topics.
+    var title: LocalizedStringResource {
         switch self {
         case .wifi:
-            "If your Wi-Fi signal is weak"
+            .playbackTipsTopicWifi
         case .connectionSpeed:
-            "If your connection is unstable"
+            .playbackTipsTopicConnectionSpeed
         case .resolution:
-            "If your resolution is unstable"
+            .playbackTipsTopicResolution
+        }
+    }
+
+    /// The heading above the topic's tips.
+    var heading: LocalizedStringResource {
+        switch self {
+        case .wifi:
+            .playbackTipsWifiHeading
+        case .connectionSpeed:
+            .playbackTipsConnectionSpeedHeading
+        case .resolution:
+            .playbackTipsResolutionHeading
         }
     }
 
     /// The topic's tips, one paragraph each.
-    var tips: [String] {
+    var tips: [LocalizedStringResource] {
         switch self {
         case .wifi:
             [
-                "Move \(Self.device) and your wireless router closer together for the strongest signal. Doors, "
-                    + "walls and cabinets between them weaken the connection.",
-                "If your Wi-Fi uses 2.4 GHz, try a 5 GHz connection, or the other way round. This can reduce "
-                    + "interference.",
-                "Restart your modem and router to set up the internet connection again. They can take a couple "
-                    + "of minutes to restart fully.",
-                "Other nearby Wi-Fi networks and mobile hotspots can affect your connection. Check whether your "
-                    + "router has features that reduce interference."
+                Self.moveCloser,
+                .playbackTipsWifiBand,
+                .playbackTipsWifiRestartRouter,
+                .playbackTipsWifiInterference
             ]
         case .connectionSpeed:
             [
-                "Other devices on the same network, such as phones or laptops, can slow your connection. Try "
-                    + "turning some of them off.",
-                "Sending data over the internet, such as uploading photos or video clips, can slow your upload "
-                    + "speed."
+                .playbackTipsConnectionSpeedOtherDevices,
+                .playbackTipsConnectionSpeedUploads
             ]
         case .resolution:
             [
-                "Resolution depends on the quality of your network connection. See Wi-Fi and Connection speed "
-                    + "for more tips.",
-                "To make the stream steadier, choose a lower resolution such as 720p in the Stream panel."
+                .playbackTipsResolutionNetwork,
+                .playbackTipsResolutionLower
             ]
         }
     }
 
-    private static var device: String {
+    private static var moveCloser: LocalizedStringResource {
         #if os(macOS)
-            "this Mac"
+            .playbackTipsWifiMoveCloserMac
         #else
-            "this device"
+            .playbackTipsWifiMoveCloser
         #endif
     }
 }
@@ -78,10 +83,10 @@ struct StreamMenuTroubleshootControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Connection tips").font(.headline)
+            Text(.playbackTipsTitle).font(.headline)
             StreamMenuChoiceRow(
                 options: StreamTroubleshootTopic.allCases,
-                title: \.rawValue,
+                title: \.title,
                 selection: $topic,
                 focus: focus,
                 focusedControl: focusedControl,
@@ -89,8 +94,8 @@ struct StreamMenuTroubleshootControls: View {
             )
             VStack(alignment: .leading, spacing: 10) {
                 Text(topic.heading).font(.subheadline.weight(.semibold))
-                ForEach(topic.tips, id: \.self) { tip in
-                    Text(tip)
+                ForEach(topic.tips.indices, id: \.self) { index in
+                    Text(topic.tips[index])
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)

@@ -47,10 +47,12 @@ private struct MobileTextEntryEditor: View {
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                     Spacer()
-                    Button("Done", action: close)
-                        .buttonStyle(.glassProminent)
-                        .tint(Palette.accent)
-                        .foregroundStyle(.black)
+                    Button(action: close) {
+                        Text(.commonDone)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .tint(Palette.accent)
+                    .foregroundStyle(.black)
                 }
                 field
                 Capsule()
@@ -77,23 +79,29 @@ private struct MobileTextEntryEditor: View {
 
     @ViewBuilder private var field: some View {
         if entry.secure {
-            SecureField(entry.title, text: entry.text, prompt: Text(entry.prompt))
-                .modifier(MobileTextEntryInput(entry: entry, focused: $focused))
-                .submitLabel(.done)
-                .onSubmit(close)
+            SecureField(text: entry.text, prompt: Text(entry.prompt)) {
+                Text(entry.title)
+            }
+            .modifier(MobileTextEntryInput(entry: entry, focused: $focused))
+            .submitLabel(.done)
+            .onSubmit(close)
         } else if entry.multiline {
-            TextField(entry.title, text: entry.text, prompt: Text(entry.prompt), axis: .vertical)
-                .lineLimit(1...4)
-                .modifier(MobileTextEntryInput(entry: entry, focused: $focused))
+            TextField(text: entry.text, prompt: Text(entry.prompt), axis: .vertical) {
+                Text(entry.title)
+            }
+            .lineLimit(1...4)
+            .modifier(MobileTextEntryInput(entry: entry, focused: $focused))
         } else {
-            TextField(entry.title, text: entry.text, prompt: Text(entry.prompt))
-                .modifier(MobileTextEntryInput(entry: entry, focused: $focused))
-                .submitLabel(
-                    entry.kind == .search
-                        ? .search
-                        : .done
-                )
-                .onSubmit(close)
+            TextField(text: entry.text, prompt: Text(entry.prompt)) {
+                Text(entry.title)
+            }
+            .modifier(MobileTextEntryInput(entry: entry, focused: $focused))
+            .submitLabel(
+                entry.kind == .search
+                    ? .search
+                    : .done
+            )
+            .onSubmit(close)
         }
     }
 }
@@ -144,10 +152,10 @@ private struct MobileTextEntryInput: ViewModifier {
 /// With a controller the row is one focus stop, and Confirm opens the on-screen keyboard instead.
 struct MobileTextEntryRow: View {
     /// The title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// The placeholder shown while the value is empty.
-    let prompt: String
+    let prompt: LocalizedStringResource
 
     /// The value.
     @Binding var text: String
@@ -204,7 +212,7 @@ struct MobileTextEntryRow: View {
                 Text(title)
                     .foregroundStyle(.primary)
                 Spacer(minLength: 8)
-                Text(shown)
+                shown
                     .foregroundStyle(valueStyle)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -213,17 +221,17 @@ struct MobileTextEntryRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(title)
+        .accessibilityLabel(Text(title))
         .accessibilityValue(text)
     }
 
-    private var shown: String {
+    private var shown: Text {
         let value = multiline
             ? text.split(whereSeparator: \.isNewline).joined(separator: ", ")
             : text
         return value.isEmpty
-            ? prompt
-            : value
+            ? Text(prompt)
+            : Text(verbatim: value)
     }
 
     private var valueStyle: Color {
@@ -239,7 +247,7 @@ struct MobileTextEntryRow: View {
 /// A search field showing its query, opening it in the editor above the keyboard when tapped.
 struct MobileSearchEntry: View {
     /// The placeholder shown while the query is empty.
-    let prompt: String
+    let prompt: LocalizedStringResource
 
     /// The query.
     @Binding var text: String
@@ -253,18 +261,16 @@ struct MobileSearchEntry: View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
-            Text(
-                text.isEmpty
-                    ? prompt
-                    : text
-            )
-            .foregroundStyle(
-                text.isEmpty
-                    ? .secondary
-                    : .primary
-            )
-            .lineLimit(1)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            (text.isEmpty
+                ? Text(prompt)
+                : Text(verbatim: text))
+                .foregroundStyle(
+                    text.isEmpty
+                        ? .secondary
+                        : .primary
+                )
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
             if !text.isEmpty {
                 Button {
                     text = ""
@@ -273,7 +279,7 @@ struct MobileSearchEntry: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Clear search")
+                .accessibilityLabel(Text(.mobileTextEntryClearSearch))
             }
         }
         .contentShape(.rect)
@@ -281,7 +287,7 @@ struct MobileSearchEntry: View {
             editor?(TouchKeyboardRequest(title: prompt, prompt: prompt, text: $text, kind: kind))
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(prompt)
+        .accessibilityLabel(Text(prompt))
         .accessibilityValue(text)
         .accessibilityAddTraits(.isSearchField)
     }

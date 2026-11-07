@@ -25,7 +25,7 @@ import ComposableArchitecture
     func reason(_ context: StreamTuningContext, available: Bool) -> String? {
         var state = StreamMenuReducer.State(context: context)
         state.draft.audio3DAvailable = available
-        return state.audio3DDisabledReason
+        return state.audio3DDisabledReason.map { String(localized: $0) }
     }
     #expect(reason(.cloud("pscloud"), available: true) == nil)
     #expect(reason(.console(.local, ps5: true), available: true) == nil)

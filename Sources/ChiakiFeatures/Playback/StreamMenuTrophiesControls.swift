@@ -35,9 +35,9 @@ struct StreamMenuTrophiesControls: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack {
-                Text("Trophies").font(.title2.weight(.semibold))
+                Text(.playbackMenuTrophiesTitle).font(.title2.weight(.semibold))
                 Spacer(minLength: 8)
-                ControllerPrompt(button: .west, text: "Filters")
+                ControllerPrompt(button: .west, text: .playbackMenuTrophiesFilters)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -47,8 +47,8 @@ struct StreamMenuTrophiesControls: View {
             } label: {
                 Label(
                     store.isLoading
-                        ? "Refreshing"
-                        : "Refresh",
+                        ? .playbackMenuTrophiesRefreshing
+                        : .commonRefresh,
                     systemImage: "arrow.clockwise"
                 )
                 .frame(maxWidth: .infinity)
@@ -61,7 +61,7 @@ struct StreamMenuTrophiesControls: View {
             .glassControlStyle()
             .controlSize(.large)
             StreamMenuDropdown(
-                title: "Show",
+                title: .playbackMenuTrophiesShow,
                 options: TrophyFilter.allCases,
                 optionTitle: \.name,
                 selection: Binding {
@@ -74,7 +74,7 @@ struct StreamMenuTrophiesControls: View {
                 focused: focusedControl == .trophiesFilter
             )
             StreamMenuDropdown(
-                title: "Sort by",
+                title: .playbackMenuTrophiesSortBy,
                 options: TrophySort.allCases,
                 optionTitle: \.name,
                 selection: Binding {
@@ -102,7 +102,7 @@ struct StreamMenuTrophiesControls: View {
 
     @ViewBuilder
     private var reverseToggle: some View {
-        let toggle = Toggle("Reverse order", isOn: Binding {
+        let toggle = Toggle(.playbackMenuTrophiesReverseOrder, isOn: Binding {
             store.direction == .reversed
         } set: { reversed in
             if reversed != (store.direction == .reversed) {
@@ -141,7 +141,7 @@ struct StreamMenuTrophiesControls: View {
                     Text(title.name)
                         .font(.headline)
                         .lineLimit(1)
-                    Text("\(title.progress)% complete")
+                    Text(.playbackMenuTrophiesPercentComplete(progress: title.progress))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
@@ -157,7 +157,7 @@ struct StreamMenuTrophiesControls: View {
         case .idle, .loading(_, kept: nil):
             HStack(spacing: 10) {
                 ProgressView().controlSize(.small)
-                Text("Loading trophies")
+                Text(.playbackMenuTrophiesLoading)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -166,12 +166,12 @@ struct StreamMenuTrophiesControls: View {
                 .font(.callout)
                 .foregroundStyle(.secondary)
         case .loaded(nil):
-            Text("This game has no trophies yet, or none have been earned on this account.")
+            Text(.playbackMenuTrophiesNoneEarned)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         case .loaded, .loading, .failed:
             if store.shown.isEmpty {
-                Text("No trophies match these choices.")
+                Text(.playbackMenuTrophiesNoMatch)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } else {
@@ -181,9 +181,13 @@ struct StreamMenuTrophiesControls: View {
                     row(trophy)
                 }
                 if shown.count > paging.rows {
-                    Text("Trophies \(page.lowerBound + 1)–\(page.upperBound) of \(shown.count)")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+                    Text(.playbackMenuTrophiesPage(
+                        first: page.lowerBound + 1,
+                        last: page.upperBound,
+                        total: shown.count
+                    ))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                 }
             }
         }
@@ -229,11 +233,16 @@ struct StreamMenuTrophiesControls: View {
             focused: focusedControl == .trophy(trophy.id)
         ))
         .accessibilityElement(children: .combine)
-        .accessibilityHint(trophy.hidden && !trophy.earned
-            ? secret
-                ? "Reveals the hidden trophy"
-                : "Hides the trophy again"
-            : "")
+        .accessibilityHint(revealHint(trophy, secret: secret))
+    }
+
+    private func revealHint(_ trophy: PSNTrophy, secret: Bool) -> Text {
+        guard trophy.hidden, !trophy.earned else {
+            return Text(verbatim: "")
+        }
+        return Text(secret
+            ? .playbackMenuTrophiesRevealHint
+            : .playbackMenuTrophiesHideHint)
     }
 }
 

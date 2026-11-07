@@ -18,9 +18,6 @@ struct SettingsPage: View {
     /// The focus of the Network page's controls, which the settings view moves by controller.
     let networkFocus: MenuFocusState<NetworkSettingsFocus?>.Binding
 
-    private static let signInNote = "Cloud streaming, playing over the internet and their settings need "
-        + "an account signed in to PlayStation Network."
-
     /// The tab's page.
     var body: some View {
         SettingsLayout(route) {
@@ -96,7 +93,7 @@ struct SettingsPage: View {
                     store: store.scope(state: \.internetConnection, action: \.internetConnection)
                 )
             } else {
-                Text(Self.signInNote)
+                Text(.settingsPanelSignInNote)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -157,12 +154,12 @@ public struct SettingsLayout<Content: View>: View {
 /// The large title at the top of a settings page.
 public struct SettingsPageTitle: View {
     @Environment(\.screenLayout) private var layout
-    private let text: String
+    private let text: LocalizedStringResource
 
     /// Creates a title.
     ///
     /// - Parameter text: The page's name.
-    public init(_ text: String) {
+    public init(_ text: LocalizedStringResource) {
         self.text = text
     }
 

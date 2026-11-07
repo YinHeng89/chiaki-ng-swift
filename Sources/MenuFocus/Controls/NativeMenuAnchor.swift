@@ -72,7 +72,7 @@ public final class NativeMenuAnchorReference {
                     select(index)
                 })
             }
-            sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            sheet.addAction(UIAlertAction(title: String(localized: .menuCancel), style: .cancel))
             sheet.popoverPresentationController?.sourceView = view
             sheet.popoverPresentationController?.sourceRect = view.bounds
             presenter.present(sheet, animated: !UIAccessibility.isReduceMotionEnabled)

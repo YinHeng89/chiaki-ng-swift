@@ -51,6 +51,7 @@ help:
 	  'make lint-c          Check C and Objective-C formatting' \
 	  'make lint-docs       Require DocC on non-private Swift declarations, build every DocC catalog' \
 	  '                     with warnings as errors and lint the core headers' \
+	  'make lint-strings    Check the string catalog of each module' \
 	  'make analyze-c       Run Clang static analysis on bridge and discovery C' \
 	  'make core-notes      Rewrite the Swift API notes from the pinned core headers' \
 	  'make check-core-notes Fail when the Swift API notes do not match the pinned core headers' \
@@ -183,12 +184,15 @@ video-effects-probe:
 test-video-state:
 	./Scripts/test-native.sh video
 
-.PHONY: lint lint-fix lint-docs
-lint: lint-c check-core-notes check-core-includes lint-docs
+.PHONY: lint lint-fix lint-docs lint-strings
+lint: lint-c check-core-notes check-core-includes lint-docs lint-strings
 	swiftlint lint --strict --config .swiftlint.yml
 
 lint-docs: core
 	SWIFT="$(SWIFT)" PYTHON="$(PYTHON)" $(PYTHON) Tools/Quality/docs-lint.py
+
+lint-strings:
+	$(PYTHON) Tools/Quality/strings.py
 
 lint-fix: format-c
 	./Scripts/format.sh swift

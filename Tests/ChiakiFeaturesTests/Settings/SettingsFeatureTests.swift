@@ -28,7 +28,7 @@ import Testing
     }
 
     @Test func theRoutesNameTheirTabsInOrder() {
-        #expect(SettingsRoute.allCases.map(\.title) == [
+        #expect(SettingsRoute.allCases.map { String(localized: $0.title) } == [
             "Picture", "Sound", "Controls", "Interface", "Accessibility", "Network", "Remote players",
             "Developer",
             "Entitlements",

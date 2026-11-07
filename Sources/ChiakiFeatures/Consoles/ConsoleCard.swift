@@ -67,12 +67,12 @@ public enum ConsoleConnection: Hashable, Sendable {
     case remote
 
     /// The tag label of the route.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .local:
-            "Home network"
+            .consolesConnectionHomeNetwork
         case .remote:
-            "Internet"
+            .consolesConnectionInternet
         }
     }
 
@@ -344,8 +344,8 @@ struct ConsoleCard: View {
     private var header: some View {
         HStack(spacing: 12) {
             Text(console.kind == .ps5
-                ? "PLAYSTATION 5"
-                : "PLAYSTATION 4")
+                ? .consolesCardCaptionPs5
+                : .consolesCardCaptionPs4)
                 .font(.system(size: 13, weight: .semibold))
                 .tracking(2.2)
                 .foregroundStyle(.secondary)
@@ -359,13 +359,13 @@ struct ConsoleCard: View {
     /// The console's status dot and label, or Preview on a developer preview card.
     @ViewBuilder var statusBadge: some View {
         if preview {
-            badge("Preview", color: .secondary)
+            badge(.consolesCardPreview, color: .secondary)
         } else if let title = presence.title {
             badge(title, color: presence.color)
         }
     }
 
-    private func badge(_ title: String, color: Color) -> some View {
+    private func badge(_ title: LocalizedStringResource, color: Color) -> some View {
         HStack(spacing: 6) {
             Circle()
                 .fill(color)
@@ -378,7 +378,7 @@ struct ConsoleCard: View {
         .padding(.vertical, 5)
         .background(Color.white.opacity(0.06), in: .capsule)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Status \(title)")
+        .accessibilityLabel(.consolesCardStatusAccessibility(status: String(localized: title)))
     }
 }
 
@@ -476,8 +476,10 @@ extension ConsoleCard {
                 .environment(\.menuMove) { direction in
                     moveCompactShort(from: .connection(connection), direction)
                 }
-                .accessibilityLabel("Play over \(connection.title)")
-                .accessibilityHint("Switches between your home network and the internet")
+                .accessibilityLabel(
+                    .consolesCardPlayOverAccessibility(connection: String(localized: connection.title))
+                )
+                .accessibilityHint(.consolesCardSwitchConnectionHint)
             } else {
                 compactConnectionChip(selected: false)
             }
@@ -582,7 +584,7 @@ extension ConsoleCard {
                     .frame(width: 92, height: 92)
                     .clipShape(.rect(cornerRadius: 12))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Continue")
+                    Text(.consolesCardContinue)
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
                     Text(title.name)
@@ -607,7 +609,7 @@ extension ConsoleCard {
         .environment(\.menuMove) { direction in
             move(from: .action(item, .resume), direction)
         }
-        .accessibilityLabel("Continue \(title.name) on \(name)")
+        .accessibilityLabel(.consolesCardContinueAccessibility(title: title.name, console: name))
     }
 
     /// The smaller continue button of a card too narrow for the wide one.
@@ -621,7 +623,7 @@ extension ConsoleCard {
                     .frame(width: 56, height: 56)
                     .clipShape(.rect(cornerRadius: 9))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Continue")
+                    Text(.consolesCardContinue)
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.secondary)
                     Text(title.name)
@@ -646,7 +648,7 @@ extension ConsoleCard {
         .environment(\.menuMove) { direction in
             move(from: .action(item, .resume), direction)
         }
-        .accessibilityLabel("Continue \(title.name) on \(name)")
+        .accessibilityLabel(.consolesCardContinueAccessibility(title: title.name, console: name))
         .accessibilityIdentifier("console-continue-compact")
     }
 
@@ -663,7 +665,7 @@ extension ConsoleCard {
         ) {
             FocusButton(action: resume) {
                 HStack(spacing: 8) {
-                    Text("Continue")
+                    Text(.consolesCardContinue)
                         .fontWeight(.semibold)
                     if let lastPlayed = title.lastPlayed {
                         Text(lastPlayed.formatted(.relative(presentation: .named).locale(.current)))
@@ -684,7 +686,7 @@ extension ConsoleCard {
             .environment(\.menuMove) { direction in
                 move(from: .action(item, .resume), direction)
             }
-            .accessibilityLabel("Continue \(title.name) on \(name)")
+            .accessibilityLabel(.consolesCardContinueAccessibility(title: title.name, console: name))
             .accessibilityIdentifier("console-continue-layered")
         }
     }

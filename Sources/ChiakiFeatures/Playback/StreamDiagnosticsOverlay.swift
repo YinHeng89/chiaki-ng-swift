@@ -151,7 +151,7 @@ struct StreamVideoAnalysisLegend: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(mode.rawValue)
+                Text(mode.title)
                     .font(.headline)
                 Spacer()
                 Text(report.hdrLongLabel)
@@ -167,27 +167,30 @@ struct StreamVideoAnalysisLegend: View {
                 .frame(height: 12)
                 .clipShape(.capsule)
                 HStack {
-                    legendValue("0")
+                    legendValue(Text(verbatim: "0"))
                     Spacer()
-                    legendValue("100")
+                    legendValue(Text(verbatim: "100"))
                     Spacer()
-                    legendValue("203")
+                    legendValue(Text(verbatim: "203"))
                     Spacer()
-                    legendValue("400")
+                    legendValue(Text(verbatim: "400"))
                     Spacer()
-                    legendValue("1000+ nits")
+                    legendValue(Text(.playbackDiagnosticsLegendNitsMaximum))
                 }
                 if report.lightReadings {
                     HStack(alignment: .top, spacing: 18) {
                         if report.markerVisible {
                             legendStat(report.markerTitle, value: report.nits(report.light.markerNits))
                         }
-                        legendStat("Peak", value: report.nits(report.light.peakNits))
+                        legendStat(.playbackDiagnosticsLegendPeak, value: report.nits(report.light.peakNits))
                         if report.lightMeasured {
-                            legendStat("MaxCLL", value: report.nits(report.light.maxCLL))
                             legendStat(
-                                "Above SDR white",
-                                value: report.aboveWhite,
+                                .playbackDiagnosticsLegendMaxCll,
+                                value: report.nits(report.light.maxCLL)
+                            )
+                            legendStat(
+                                .playbackDiagnosticsLegendAboveSdrWhite,
+                                value: .verbatim(report.aboveWhite),
                                 tone: report.aboveWhiteTone
                             )
                         }
@@ -207,8 +210,8 @@ struct StreamVideoAnalysisLegend: View {
                 }
             } else {
                 HStack(spacing: 18) {
-                    legendSwatch(.cyan, label: "Above 203 nits")
-                    legendSwatch(.purple, label: "Near 1000 nits")
+                    legendSwatch(.cyan, label: .playbackDiagnosticsLegendAboveReferenceWhite)
+                    legendSwatch(.purple, label: .playbackDiagnosticsLegendNearPeak)
                 }
             }
             Text(report.colourDescription)
@@ -221,8 +224,8 @@ struct StreamVideoAnalysisLegend: View {
     }
 
     private func legendStat(
-        _ label: String,
-        value: String,
+        _ label: LocalizedStringResource,
+        value: LocalizedStringResource,
         tone: StreamDiagnosticsReport.Tone = .neutral
     ) -> some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -235,13 +238,13 @@ struct StreamVideoAnalysisLegend: View {
         }
     }
 
-    private func legendValue(_ value: String) -> some View {
-        Text(value)
+    private func legendValue(_ value: Text) -> some View {
+        value
             .font(.caption2.monospacedDigit())
             .foregroundStyle(.secondary)
     }
 
-    private func legendSwatch(_ color: Color, label: String) -> some View {
+    private func legendSwatch(_ color: Color, label: LocalizedStringResource) -> some View {
         Label {
             Text(label)
         } icon: {
@@ -405,16 +408,16 @@ extension StreamDiagnosticsReport.Tone {
 /// Legend titles and colours for diagnostics history events.
 extension StreamDiagnosticsHistory.Event {
     /// Short legend title for the event.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .networkLoss:
-            "Frames lost"
+            .playbackDiagnosticsEventFramesLost
         case .audioUnderrun:
-            "Audio underrun"
+            .playbackDiagnosticsEventAudioUnderrun
         case .renderOverBudget:
-            "Render over budget"
+            .playbackDiagnosticsEventRenderOverBudget
         case .decodeError:
-            "Decode error"
+            .playbackDiagnosticsEventDecodeError
         }
     }
 

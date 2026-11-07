@@ -25,7 +25,7 @@ struct MobileAccessibilitySettingsPage: View {
             Group {
                 displayGroup
                 deviceGroup
-                SettingsPersistenceBanner(store.setting, subject: "PlayStation accessibility settings") {
+                SettingsPersistenceBanner(store.setting, subject: .mobileAccessibilityPersistenceSubject) {
                     store.send(.retry)
                 }
             }
@@ -38,31 +38,32 @@ struct MobileAccessibilitySettingsPage: View {
 
     private var screenReaderGroup: some View {
         MobileSettingsGroup(
-            "PlayStation Accessibility",
-            footer: "Reads PlayStation cloud system menus, including the Create menu "
-                + "and in-game purchase screens. A game may have separate narration settings."
+            .mobileAccessibilityPlayStation,
+            footer: .mobileAccessibilityPlayStationFooter
         ) {
-            MobileToggleRow("Screen Reader", isOn: choice(\.screenReaderOverride, default: \.screenReader))
+            MobileToggleRow(
+                .mobileAccessibilityScreenReader,
+                isOn: choice(\.screenReaderOverride, default: \.screenReader)
+            )
         }
     }
 
     private var speechGroup: some View {
         MobileSettingsGroup(
-            "Speech",
-            footer: "Speech speed and voice volume control the PlayStation screen reader. "
-                + "They do not change game audio or a game’s own narration settings."
+            .mobileAccessibilitySpeech,
+            footer: .mobileAccessibilitySpeechFooter
         ) {
             MobileSliderRow(
-                title: "Speech Speed",
+                title: .mobileAccessibilitySpeechSpeed,
                 valueText: Self.speedName(store.draft.screenReaderSpeed),
                 value: level(\.screenReaderSpeed),
                 range: Self.sliderRange(PlayStationAccessibilitySettings.speedRange),
                 step: 1
             )
-            .accessibilityValue(Self.speedName(store.draft.screenReaderSpeed))
+            .accessibilityValue(Text(Self.speedName(store.draft.screenReaderSpeed)))
             MobileSliderRow(
-                title: "Voice Volume",
-                valueText: "\(store.draft.screenReaderVolume)",
+                title: .mobileAccessibilityVoiceVolume,
+                verbatimValue: "\(store.draft.screenReaderVolume)",
                 value: level(\.screenReaderVolume),
                 range: Self.sliderRange(PlayStationAccessibilitySettings.volumeRange),
                 step: 1
@@ -73,20 +74,22 @@ struct MobileAccessibilitySettingsPage: View {
 
     private var displayGroup: some View {
         MobileSettingsGroup(
-            "Display",
-            footer: "These settings apply to PlayStation cloud system menus. "
-                + "Each game decides which settings it also uses."
+            .mobileAccessibilityDisplay,
+            footer: .mobileAccessibilityDisplayFooter
         ) {
             MobilePickerRow(
-                "Text Size",
+                .mobileAccessibilityTextSize,
                 selection: textSize,
                 choices: Array(PlayStationAccessibilitySettings.textSizeRange)
             ) { size in
                 Self.textSizeName(size)
             }
-            MobileToggleRow("Bold Text", isOn: choice(\.boldTextOverride, default: \.boldText))
             MobileToggleRow(
-                "Higher Contrast",
+                .mobileAccessibilityBoldText,
+                isOn: choice(\.boldTextOverride, default: \.boldText)
+            )
+            MobileToggleRow(
+                .mobileAccessibilityHigherContrast,
                 isOn: choice(\.higherContrastOverride, default: \.higherContrast)
             )
         }
@@ -94,11 +97,9 @@ struct MobileAccessibilitySettingsPage: View {
 
     private var deviceGroup: some View {
         MobileSettingsGroup(
-            footer: "Available device accessibility preferences are used until changed here. "
-                + "Screen reader speech speed and voice volume use PlayStation defaults.\n\n"
-                + "Requests these settings for the PlayStation cloud console at the next stream launch."
+            footer: .mobileAccessibilityDeviceFooter
         ) {
-            MobileButtonRow("Use Device Accessibility Settings") {
+            MobileButtonRow(.mobileAccessibilityUseDevice) {
                 store.send(.edit(PlayStationAccessibilitySettings()))
             }
         }
@@ -152,27 +153,27 @@ struct MobileAccessibilitySettingsPage: View {
         Double(range.lowerBound)...Double(range.upperBound)
     }
 
-    private static func speedName(_ speed: Int) -> String {
+    private static func speedName(_ speed: Int) -> LocalizedStringResource {
         switch speed {
         case 0...2:
-            "Slow \(3 - speed)"
+            .mobileAccessibilitySpeedSlow(level: 3 - speed)
         case 3:
-            "Standard"
+            .mobileAccessibilitySpeedStandard
         default:
-            "Fast \(speed - 3)"
+            .mobileAccessibilitySpeedFast(level: speed - 3)
         }
     }
 
-    private static func textSizeName(_ size: Int) -> String {
+    private static func textSizeName(_ size: Int) -> LocalizedStringResource {
         switch size {
         case -1:
-            "Small"
+            .mobileAccessibilityTextSizeSmall
         case 1:
-            "Large"
+            .mobileAccessibilityTextSizeLarge
         case 2:
-            "Very large"
+            .mobileAccessibilityTextSizeVeryLarge
         default:
-            "Standard"
+            .mobileAccessibilityTextSizeStandard
         }
     }
 }

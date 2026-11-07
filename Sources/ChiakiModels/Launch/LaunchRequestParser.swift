@@ -250,24 +250,24 @@ public enum LaunchRequestError: Error, Equatable, Sendable {
     case unknownExitValue(String)
 
     /// The explanation printed for the user.
-    public var message: String {
+    public var message: LocalizedStringResource {
         switch self {
         case .missingConsole:
-            "Name the console to stream, for example --stream \"Living Room\"."
+            .launchErrorMissingConsole
         case .conflictingCommands:
-            "Choose either --list or --stream, not both."
+            .launchErrorConflictingCommands
         case .conflictingDisplayModes:
-            "Choose only one of --fullscreen, --zoom or --stretch."
+            .launchErrorConflictingDisplayModes
         case .streamOptionWithoutStream(let option):
-            "\(option) only applies together with --stream."
+            .launchErrorStreamOptionWithoutStream(option: option)
         case .unsupportedURL(let url):
-            "chiaki-ng can’t open \(url). Use chiaki-ng://stream/<console>."
+            .launchErrorUnsupportedURL(url: url)
         case .unknownMode(let mode):
-            "Unknown display mode \"\(mode)\". Use window, fullscreen, zoom or stretch."
+            .launchErrorUnknownMode(mode: mode)
         case .unknownRoute(let route):
-            "Unknown route \"\(route)\". Use local or remote."
+            .launchErrorUnknownRoute(route: route)
         case .unknownExitValue(let value):
-            "Unknown exit value \"\(value)\". Use 1 or 0."
+            .launchErrorUnknownExitValue(value: value)
         }
     }
 }

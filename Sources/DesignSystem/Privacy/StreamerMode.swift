@@ -8,7 +8,7 @@ extension EnvironmentValues {
 /// The text rules of streamer mode, which replaces identifying values with a neutral placeholder.
 public enum StreamerMode {
     /// The placeholder shown instead of a hidden value.
-    public static let hidden = "Hidden"
+    public static let hidden: LocalizedStringResource = .streamerHidden
 
     /// The text to show for an identifier.
     ///
@@ -18,7 +18,7 @@ public enum StreamerMode {
     /// - Returns: ``hidden`` when streamer mode is on, otherwise `value`.
     public static func identifier(_ value: String, enabled: Bool) -> String {
         enabled
-            ? hidden
+            ? String(localized: hidden)
             : value
     }
 
@@ -83,11 +83,9 @@ public struct StreamerHiddenField: ViewModifier {
                     .accessibilityHidden(true)
             }
             .accessibilityValue(
-                Text(
-                    hidden
-                        ? StreamerMode.hidden
-                        : text
-                )
+                hidden
+                    ? Text(StreamerMode.hidden)
+                    : Text(verbatim: text)
             )
     }
 }

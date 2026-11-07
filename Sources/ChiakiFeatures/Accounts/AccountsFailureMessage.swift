@@ -1,4 +1,5 @@
 import ChiakiModels
+import Foundation
 
 /// The words the app shows for a failed account operation or sign-in.
 public enum AccountsFailureMessage {
@@ -6,20 +7,20 @@ public enum AccountsFailureMessage {
     ///
     /// - Parameter failure: Why the operation failed.
     /// - Returns: One sentence with what to do next.
-    public static func text(for failure: AccountsFailure) -> String {
+    public static func text(for failure: AccountsFailure) -> LocalizedStringResource {
         switch failure {
         case .loadFailed:
-            "Couldn’t open saved accounts. Try again."
+            .accountsFailureLoadFailed
         case .signIn(let failure):
             text(for: failure)
         case .invalidAccountID:
-            "That isn’t a Base64 PSN account ID."
+            .accountsFailureInvalidAccountId
         case .saveFailed:
-            "Couldn’t save this account. Check storage and Keychain access, then try again."
+            .accountsFailureSaveFailed
         case .deleteFailed:
-            "Couldn’t delete this account. Try again."
+            .accountsFailureDeleteFailed
         case .refreshFailed:
-            "Couldn’t refresh your accounts. Try again."
+            .accountsFailureRefreshFailed
         }
     }
 
@@ -27,26 +28,26 @@ public enum AccountsFailureMessage {
     ///
     /// - Parameter failure: Why the sign-in failed.
     /// - Returns: One sentence with what to do next.
-    public static func text(for failure: SignInFailure) -> String {
+    public static func text(for failure: SignInFailure) -> LocalizedStringResource {
         switch failure {
         case .cancelled:
-            "Sign-in cancelled."
+            .accountsSignInFailureCancelled
         case .browserUnavailable, .navigationFailed, .unreadableResponse:
-            "The sign-in couldn’t finish. Try again."
+            .accountsSignInFailureIncomplete
         case .codesExpired:
-            "The sign-in codes expired before one was approved. Show a new code to try again."
+            .accountsSignInFailureCodesExpired
         case .rejected:
-            "The sign-in was refused. Try again."
+            .accountsSignInFailureRejected
         case .rateLimited:
-            "PlayStation is limiting requests. Try again later."
+            .accountsSignInFailureRateLimited
         case .serviceUnavailable:
-            "The PlayStation service is temporarily unavailable."
+            .accountsSignInFailureServiceUnavailable
         case .unreachable:
-            "Couldn’t reach or verify your PlayStation account. Try again."
+            .accountsSignInFailureUnreachable
         case .differentAccount:
-            "That is a different PlayStation account. Sign in with the account you are reconnecting."
+            .accountsSignInFailureDifferentAccount
         case .storage:
-            "Couldn’t save this account. Check storage and Keychain access, then try again."
+            .accountsFailureSaveFailed
         }
     }
 }

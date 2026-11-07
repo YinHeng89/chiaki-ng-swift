@@ -122,9 +122,7 @@ public struct CloudLibraryService: Sendable {
         if let bytes = try? await accountService.accountID(of: account) {
             outcome = await CatalogBridge().refreshTitle(account: bytes, game: game)
         } else {
-            outcome = .failed(CloudTitleRefreshFailure(
-                "No PlayStation sign-in is saved for this account, or it has expired. Sign in again in Accounts."
-            ))
+            outcome = .failed(.noSignIn)
         }
         let milliseconds = LogFormat.milliseconds(start.duration(to: clock.now))
         @Dependency(\.logger) var logger

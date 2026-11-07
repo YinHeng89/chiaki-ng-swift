@@ -9,7 +9,7 @@ public struct CloudDatacenterLaunchOffer: Equatable, Sendable {
     /// The name that lets the service choose.
     public static let automaticName = "Auto"
     /// The note explaining the shown round trips.
-    public static let pingNote = "Ping is the adjusted value the stream core reports"
+    public static let pingNote: LocalizedStringResource = .cloudDatacenterPingNote
 
     /// One offered datacenter.
     public struct Entry: Equatable, Identifiable, Sendable {
@@ -55,17 +55,17 @@ public struct CloudDatacenterLaunchOffer: Equatable, Sendable {
         }
 
         /// The round trip as shown.
-        public var pingDescription: String {
+        public var pingDescription: LocalizedStringResource {
             guard let rttMs else {
-                return "No reply"
+                return .cloudDatacenterNoReply
             }
-            return "\(rttMs) ms"
+            return .cloudDatacenterPing(ping: rttMs)
         }
 
         /// The bandwidth as shown, if known.
-        public var bandwidthDescription: String? {
+        public var bandwidthDescription: LocalizedStringResource? {
             bandwidthKbps.map {
-                "\($0 / 1000) Mbps"
+                .cloudBandwidthRate(mbps: $0 / 1000)
             }
         }
     }

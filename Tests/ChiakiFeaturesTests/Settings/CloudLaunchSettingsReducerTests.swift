@@ -31,9 +31,11 @@ import ComposableArchitecture
     }
     #expect(!stored.value.selectsAtLaunch)
     await store.send(.setSelectAtLaunch(false))
-    #expect(CloudLaunchSettingsReducer.title == "Select datacenter at launch")
-    #expect(CloudLaunchSettingsReducer.detail == "After the datacenters are measured, choose one before the stream "
-        + "starts. The lowest ping is chosen automatically after 15 seconds.")
+    #expect(String(localized: CloudLaunchSettingsReducer.title) == "Select datacenter at launch")
+    #expect(
+        String(localized: CloudLaunchSettingsReducer.detail) == "After the datacenters are measured, choose "
+            + "one before the stream starts. The lowest ping is chosen automatically after 15 seconds."
+    )
 }
 
 @MainActor @Test func selectDatacenterAtLaunchReportsASaveFailure() async {
@@ -49,7 +51,7 @@ import ComposableArchitecture
     await store.receive(.loaded(UUID(0), CloudDatacenterSettings())) { $0.phase = .ready }
     await store.send(.setSelectAtLaunch(false)) { $0.phase = .saving(UUID(1), false) }
     await store.receive(.failed(UUID(1))) {
-        $0.phase = .failed("Couldn’t load or save the datacenter setting. Try again.")
+        $0.phase = .failed(.settingsNetworkCloudLaunchFailed)
     }
     #expect(store.state.displayedValue)
 }

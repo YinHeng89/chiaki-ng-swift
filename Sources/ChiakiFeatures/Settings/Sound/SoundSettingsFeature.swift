@@ -106,12 +106,11 @@ public struct SoundSettingsView: View {
                 inputs: store.devices.inputs,
                 inputChoices: store.inputChoices
             )
-            SettingsPersistenceBanner(store.sound.setting, subject: "sound settings") {
+            SettingsPersistenceBanner(store.sound.setting, subject: .settingsSoundPersistenceSubject) {
                 store.send(.sound(.retry))
             }
         }
-        .frame(maxWidth: 660)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear {
             store.send(.appeared)
         }
@@ -133,20 +132,20 @@ public struct SoundSettingsForm: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            SettingsCard("Stream media") {
+            SettingsCard(.settingsSoundStreamMedia) {
                 FocusableSegments(
                     options: StreamMedia.allCases,
                     title: \.title,
                     selection: $store.draft.media
                 )
-                .accessibilityLabel("Stream media")
+                .accessibilityLabel(.settingsSoundStreamMedia)
                 Text(Self.mediaDetail(store.draft.media))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            SettingsCard("Output") {
+            SettingsCard(.settingsSoundOutput) {
                 devicePicker(
-                    "Speaker",
+                    .settingsSoundSpeaker,
                     selection: $store.draft.outputDevice,
                     connected: outputs,
                     choices: outputChoices
@@ -154,7 +153,7 @@ public struct SoundSettingsForm: View {
                 Divider()
                 VStack(spacing: 9) {
                     HStack {
-                        Text("Volume")
+                        Text(.settingsSoundVolume)
                         Spacer()
                         Text(store.draft.volume, format: .percent.precision(.fractionLength(0)))
                             .monospacedDigit()
@@ -162,13 +161,13 @@ public struct SoundSettingsForm: View {
                     Slider(value: $store.draft.volume, in: SoundSettings.volumeRange, step: 0.05)
                         .nativeFocusHighlight()
                         .focusHighlightShape(.capsule)
-                        .accessibilityLabel("Volume")
+                        .accessibilityLabel(.settingsSoundVolume)
                         .settingsSliderController(value: $store.draft.volume)
                 }
                 Divider()
                 VStack(alignment: .leading, spacing: 9) {
                     HStack {
-                        Text("Party chat volume")
+                        Text(.settingsSoundPartyChatVolume)
                         Spacer()
                         Text(store.draft.chatVolume, format: .percent.precision(.fractionLength(0)))
                             .monospacedDigit()
@@ -176,54 +175,47 @@ public struct SoundSettingsForm: View {
                     Slider(value: $store.draft.chatVolume, in: SoundSettings.volumeRange, step: 0.05)
                         .nativeFocusHighlight()
                         .focusHighlightShape(.capsule)
-                        .accessibilityLabel("Party chat volume")
+                        .accessibilityLabel(.settingsSoundPartyChatVolume)
                         .settingsSliderController(value: $store.draft.chatVolume)
-                    Text(
-                        "Only for PS4 games streamed from the cloud."
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    Text(.settingsSoundPartyChatFooter)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
-            SettingsCard("Microphone") {
+            SettingsCard(.settingsSoundMicrophone) {
                 devicePicker(
-                    "Microphone",
+                    .settingsSoundMicrophone,
                     selection: $store.draft.inputDevice,
                     connected: inputs,
                     choices: inputChoices
                 )
                 Divider()
-                Toggle("Start streams with the microphone on", isOn: $store.draft.startWithMicrophone)
+                Toggle(.settingsSoundStartWithMicrophone, isOn: $store.draft.startWithMicrophone)
                 Text(Self.microphoneNote)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            SettingsCard("Spatial sound") {
+            SettingsCard(.settingsSoundSpatialSound) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Toggle("3D audio on headphones", isOn: $store.draft.spatialAudio.audio3D)
-                    Text(
-                        "On headphones and earbuds, PS5 and PS5 cloud streams play the console’s 3D audio. "
-                            + "Other streams play stereo."
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    Toggle(.settingsSoundHeadphoneAudio, isOn: $store.draft.spatialAudio.audio3D)
+                    Text(.settingsSoundHeadphoneAudioFooter)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
                 Divider()
                 VStack(alignment: .leading, spacing: 4) {
-                    Toggle("Spatial audio", isOn: $store.draft.spatialAudio.appleSpatial)
-                    Text(
-                        "Speakers, and headphones without 3D audio, play stereo through Apple spatial audio."
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    Toggle(.settingsSoundSpatialAudio, isOn: $store.draft.spatialAudio.appleSpatial)
+                    Text(.settingsSoundSpatialAudioFooter)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
-            SettingsCard("Latency") {
+            SettingsCard(.settingsSoundLatency) {
                 VStack(alignment: .leading, spacing: 9) {
                     HStack {
-                        Text("Audio buffer")
+                        Text(.settingsSoundAudioBuffer)
                         Spacer()
-                        Text("\(store.draft.bufferMilliseconds) ms")
+                        Text(.settingsSoundBufferMilliseconds(milliseconds: store.draft.bufferMilliseconds))
                             .monospacedDigit()
                     }
                     Slider(
@@ -234,15 +226,17 @@ public struct SoundSettingsForm: View {
                     )
                     .nativeFocusHighlight()
                     .focusHighlightShape(.capsule)
-                    .accessibilityLabel("Audio buffer")
-                    .accessibilityValue("\(store.draft.bufferMilliseconds) milliseconds")
+                    .accessibilityLabel(.settingsSoundAudioBuffer)
+                    .accessibilityValue(
+                        .settingsSoundBufferMillisecondsSpoken(milliseconds: store.draft.bufferMilliseconds)
+                    )
                     .settingsSliderController(value: $store.draft.bufferSliderValue)
-                    Text("A smaller buffer lowers audio delay. Raise it if the sound crackles or drops out.")
+                    Text(.settingsSoundBufferFooter)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
-            Text("Changes apply to the next stream. Adjust volume during a stream from the stream controls.")
+            Text(.settingsSoundNextStreamFooter)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -250,13 +244,11 @@ public struct SoundSettingsForm: View {
     }
 
     /// How the microphone is switched during a stream, naming the keyboard shortcut only where one exists.
-    public static var microphoneNote: String {
+    public static var microphoneNote: LocalizedStringResource {
         #if os(macOS)
-            "Turn the microphone on or off during a console or cloud stream with Command-M, the DualSense mic "
-                + "button or the Sound panel of the stream controls."
+            .settingsSoundMicrophoneNoteMac
         #else
-            "Turn the microphone on or off during a console or cloud stream with the DualSense mic button or "
-                + "the Sound panel of the stream controls."
+            .settingsSoundMicrophoneNote
         #endif
     }
 
@@ -264,33 +256,31 @@ public struct SoundSettingsForm: View {
     ///
     /// - Parameter media: The choice.
     /// - Returns: One or two sentences describing it.
-    public static func mediaDetail(_ media: StreamMedia) -> String {
+    public static func mediaDetail(_ media: StreamMedia) -> LocalizedStringResource {
         switch media {
         case .pictureAndSound:
-            "Console and cloud streams send both picture and sound."
+            .settingsSoundMediaPictureAndSound
         case .soundOnly:
-            "This device plays sound but shows no picture. The console sends a minimal 360p picture that is "
-                + "discarded, to save bandwidth."
+            .settingsSoundMediaSoundOnly
         case .pictureOnly:
-            "This device shows the picture but plays no game sound. Haptics still play."
+            .settingsSoundMediaPictureOnly
         case .controlsOnly:
-            "This device shows no picture and plays no game sound, acting only as controller and microphone. "
-                + "Haptics still play."
+            .settingsSoundMediaControlsOnly
         }
     }
 
     private func devicePicker(
-        _ title: String,
+        _ title: LocalizedStringResource,
         selection: Binding<String?>,
         connected: [String],
         choices: [String]
     ) -> some View {
-        let detail = selection.wrappedValue.map(connected.contains) == false
-            ? "Not connected. The system default is used until it returns."
+        let detail: LocalizedStringResource? = selection.wrappedValue.map(connected.contains) == false
+            ? .settingsSoundDeviceDisconnected
             : nil
         return SettingsRow(title, detail: detail) {
             Picker(title, selection: selection) {
-                Text("System default").tag(String?.none)
+                Text(.settingsSoundSystemDefault).tag(String?.none)
                 ForEach(choices, id: \.self) { name in
                     Text(name).tag(Optional(name))
                 }

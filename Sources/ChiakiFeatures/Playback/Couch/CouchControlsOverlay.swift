@@ -44,8 +44,8 @@ struct CouchControlsOverlay: View {
                             options: [false, true],
                             title: { keyboard in
                                 keyboard
-                                    ? "Keyboard"
-                                    : "Controller"
+                                    ? .playbackCouchControlsKeyboard
+                                    : .playbackCouchControlsController
                             },
                             selection: Binding(
                                 get: { device.isKeyboard },
@@ -73,7 +73,7 @@ struct CouchControlsOverlay: View {
                         .scrollIndicators(.automatic)
                         .frame(maxHeight: 560)
                     } else if case .loadFailed = controls.setting {
-                        Text("Controls couldn’t load.")
+                        Text(.playbackCouchControlsLoadFailed)
                             .foregroundStyle(.secondary)
                     } else {
                         ProgressView()
@@ -127,14 +127,21 @@ struct CouchControlsOverlay: View {
                 .fill(store.state.lightBar(for: pad) ?? Palette.accent)
                 .frame(width: 6, height: 40)
             VStack(alignment: .leading, spacing: 3) {
-                Text("Player \(Int(pad) + 1) controls")
+                Text(.playbackCouchControlsTitle(number: Int(pad) + 1))
                     .font(.title2.weight(.semibold))
-                Text(store.state.accountName(for: pad).map { "\($0) on \(device.name)" } ?? device.name)
+                deviceLine(pad: pad, device: device)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
             Spacer()
         }
+    }
+
+    private func deviceLine(pad: UInt8, device: ControllerDevice) -> Text {
+        guard let account = store.state.accountName(for: pad) else {
+            return Text(device.name)
+        }
+        return Text(.playbackCouchControlsAccountOnDevice(account: account, device: device.name))
     }
 
     private func footer(_ controls: StoreOf<ControlsSettingsFeature>, pad: UInt8) -> some View {
@@ -145,7 +152,7 @@ struct CouchControlsOverlay: View {
                     .font(.callout)
                     .foregroundStyle(CouchTone.failed.color)
             }
-            FocusButton("Done") {
+            FocusButton(.commonDone) {
                 store.send(.finishControls)
             }
             .glassProminentControlStyle()

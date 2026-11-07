@@ -111,8 +111,10 @@ extension SettingsClient: DependencyKey {
                 ? ", negotiation on"
                 : ""
             let build = PlayBridge.builtProtocolVersion(target)
-            return "\(target.title): \(DeveloperSettings.versionTitle(for: value[target], build: build))"
-                + negotiation
+            let version = value[target] == DeveloperSettings.automaticTakionVersion
+                ? "automatic, built v\(build)"
+                : "v\(value[target])"
+            return "\(target.rawValue): \(version)" + negotiation
         }.joined(separator: "; ")
         @Dependency(\.logger) var logger
         await logger.log(.diagnostic(.app, .info, "Takion version settings saved: " + summary))

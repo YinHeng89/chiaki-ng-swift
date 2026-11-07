@@ -10,7 +10,7 @@ public struct StreamConsoleKeyboard: View {
     @Environment(\.menuNavigator) private var navigator
     @Environment(\.controllerPromptGlyphs) private var glyphs
     /// The title shown on the controller keyboard sheet.
-    public static let title = "Console text"
+    public static let title: LocalizedStringResource = .playbackStreamConsoleKeyboardTitle
 
     /// The console keyboard request to mirror, or `nil` when the console has no keyboard open.
     public let session: ConsoleKeyboardSession?

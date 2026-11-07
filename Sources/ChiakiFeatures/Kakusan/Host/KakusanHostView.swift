@@ -16,7 +16,7 @@ struct KakusanHostView: View {
                     .id(guest.id)
             }
             if let remember = store.scope(state: \.destination?.remember, action: \.destination.remember) {
-                KakusanRememberCard(store: remember, title: "Remember this device")
+                KakusanRememberCard(store: remember, title: .kakusanRememberDeviceTitle)
             }
         }
     }

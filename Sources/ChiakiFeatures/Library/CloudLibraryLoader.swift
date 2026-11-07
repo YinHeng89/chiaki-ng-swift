@@ -567,19 +567,16 @@ struct CloudLibraryLauncher: Reducer {
     }
 
     private static let websiteWarning = AlertState<Action.WebsiteWarning> {
-        TextState("Playability comes from the store page")
+        TextState(.libraryWebsiteWarningTitle)
     } actions: {
         ButtonState(action: .play) {
-            TextState("Play")
+            TextState(.libraryWebsiteWarningPlay)
         }
         ButtonState(role: .cancel) {
-            TextState("Cancel")
+            TextState(.commonCancel)
         }
     } message: {
-        TextState(
-            "The PlayStation website list marks this game as not supporting cloud streaming. "
-                + "The store page for this edition says it does, so Play follows the store page."
-        )
+        TextState(.libraryWebsiteWarningMessage)
     }
 
     private func playBundleGame(_ state: inout State, choice id: String) -> Effect<Action> {

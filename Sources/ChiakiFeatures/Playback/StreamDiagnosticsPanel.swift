@@ -46,11 +46,18 @@ struct StreamDiagnosticsPanel: View {
                 .frame(width: 8, height: 8)
                 .accessibilityLabel(toneDescription(report.compactTone))
             if report.stats.rttPresent {
-                compactValue(report.rttValue, unit: "", tone: .neutral)
+                compactValue(report.rttValue, unit: nil, tone: .neutral)
             }
-            compactValue(report.percent(report.packetLossPercent), unit: "loss",
-                         tone: report.lossTone(report.packetLossPercent))
-            compactValue(report.networkStage.headline, unit: "Mbps", tone: .neutral)
+            compactValue(
+                .verbatim(report.percent(report.packetLossPercent)),
+                unit: .playbackDiagnosticsCompactLoss,
+                tone: report.lossTone(report.packetLossPercent)
+            )
+            compactValue(
+                .verbatim(report.networkStage.headline),
+                unit: .playbackDiagnosticsCompactMbps,
+                tone: .neutral
+            )
             if let alert = report.compactAlert {
                 Text(alert.value)
                     .font(.callout.weight(.semibold))
@@ -167,7 +174,7 @@ struct StreamDiagnosticsPanel: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .center, spacing: 8) {
-                Text("Diagnostics")
+                Text(.playbackDiagnosticsTitle)
                     .font(.headline)
                 Text(report.uptime)
                     .font(.callout.monospacedDigit())
@@ -186,7 +193,7 @@ struct StreamDiagnosticsPanel: View {
 
     private var eventStrip: some View {
         HStack(spacing: 10) {
-            Text("60 s")
+            Text(.playbackDiagnosticsHistoryWindow)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
             StreamDiagnosticsEventStrip(history: report.history)
@@ -239,12 +246,16 @@ struct StreamDiagnosticsPanel: View {
         }
     }
 
-    private func compactValue(_ value: String, unit: String, tone: Tone) -> some View {
+    private func compactValue(
+        _ value: LocalizedStringResource,
+        unit: LocalizedStringResource?,
+        tone: Tone
+    ) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 3) {
             Text(value)
                 .font(.system(size: 14, weight: .semibold).monospacedDigit())
                 .foregroundStyle(tone.headlineColor)
-            if !unit.isEmpty {
+            if let unit {
                 Text(unit)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -252,14 +263,14 @@ struct StreamDiagnosticsPanel: View {
         }
     }
 
-    private func toneDescription(_ tone: Tone) -> String {
+    private func toneDescription(_ tone: Tone) -> LocalizedStringResource {
         switch tone {
         case .neutral, .good:
-            "Stream healthy"
+            .playbackDiagnosticsStreamHealthy
         case .warning:
-            "Stream degraded"
+            .playbackDiagnosticsStreamDegraded
         case .bad:
-            "Stream struggling"
+            .playbackDiagnosticsStreamStruggling
         }
     }
 
@@ -314,8 +325,8 @@ struct StreamDiagnosticsControls: View {
         }
         .buttonStyle(.plain)
         .focusable(false)
-        .help("Layout: \(appearance.layout.title)")
-        .accessibilityLabel("Diagnostics layout")
+        .help(.playbackDiagnosticsLayoutHelp(layout: String(localized: appearance.layout.title)))
+        .accessibilityLabel(.playbackDiagnosticsLayoutAccessibility)
         .accessibilityValue(appearance.layout.title)
     }
 
@@ -358,12 +369,12 @@ struct StreamDiagnosticsControls: View {
         .padding(2)
         .background(.white.opacity(0.1), in: .capsule)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Diagnostics detail")
+        .accessibilityLabel(.playbackDiagnosticsDetailAccessibility)
     }
 
     private var glassPicker: some View {
         Menu {
-            Picker("Glass", selection: Binding(get: {
+            Picker(.playbackDiagnosticsGlassPicker, selection: Binding(get: {
                 appearance.glass
             }, set: { glass in
                 selectGlass(glass)
@@ -373,7 +384,7 @@ struct StreamDiagnosticsControls: View {
                 }
             }
             .pickerStyle(.inline)
-            Picker("Layout", selection: Binding(get: {
+            Picker(.playbackDiagnosticsLayoutPicker, selection: Binding(get: {
                 appearance.layout
             }, set: { layout in
                 selectLayout(layout)
@@ -396,8 +407,8 @@ struct StreamDiagnosticsControls: View {
         .menuIndicator(.hidden)
         .focusable(false)
         .fixedSize()
-        .help("Glass: \(appearance.glass.title)")
-        .accessibilityLabel("Diagnostics glass")
+        .help(.playbackDiagnosticsGlassHelp(glass: String(localized: appearance.glass.title)))
+        .accessibilityLabel(.playbackDiagnosticsGlassAccessibility)
         .accessibilityValue(appearance.glass.title)
     }
 
@@ -449,7 +460,7 @@ struct StreamDiagnosticsStageCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(stage.kind.rawValue)
+            Text(stage.kind.title)
                 .font(.caption.weight(.medium))
                 .foregroundStyle(
                     stage.tone == .bad

@@ -19,16 +19,16 @@ public struct StreamDiagnosticsAppearance: Codable, Equatable, Sendable {
         case full
 
         /// The label shown for the level.
-        public var title: String {
+        public var title: LocalizedStringResource {
             switch self {
             case .off:
-                "Off"
+                .settingsDiagnosticsLevelOff
             case .compact:
-                "Compact"
+                .settingsDiagnosticsLevelCompact
             case .standard:
-                "Standard"
+                .settingsDiagnosticsLevelStandard
             case .full:
-                "Full"
+                .settingsDiagnosticsLevelFull
             }
         }
 
@@ -70,18 +70,18 @@ public struct StreamDiagnosticsAppearance: Codable, Equatable, Sendable {
         case solid
 
         /// The label shown for the material.
-        public var title: String {
+        public var title: LocalizedStringResource {
             switch self {
             case .regular:
-                "Regular"
+                .settingsDiagnosticsGlassRegular
             case .clear:
-                "Clear"
+                .settingsDiagnosticsGlassClear
             case .clearDimmed:
-                "Dimmed"
+                .settingsDiagnosticsGlassDimmed
             case .healthTint:
-                "Health tint"
+                .settingsDiagnosticsGlassHealthTint
             case .solid:
-                "Solid"
+                .settingsDiagnosticsGlassSolid
             }
         }
 
@@ -102,12 +102,12 @@ public struct StreamDiagnosticsAppearance: Codable, Equatable, Sendable {
         case floating
 
         /// The label shown for the arrangement.
-        public var title: String {
+        public var title: LocalizedStringResource {
             switch self {
             case .sheet:
-                "One sheet"
+                .settingsDiagnosticsLayoutSheet
             case .floating:
-                "Floating"
+                .settingsDiagnosticsLayoutFloating
             }
         }
     }

@@ -6,14 +6,14 @@ public struct ControllerGlyph: Equatable, Sendable {
     public let symbol: String?
 
     /// The button's name, such as "Cross" or "LB", also used as its accessibility label.
-    public let name: String
+    public let name: LocalizedStringResource
 
     /// Creates a glyph.
     ///
     /// - Parameters:
     ///   - symbol: The SF Symbol for the button, if one exists.
     ///   - name: The button's name.
-    public init(symbol: String?, name: String) {
+    public init(symbol: String?, name: LocalizedStringResource) {
         self.symbol = symbol
         self.name = name
     }

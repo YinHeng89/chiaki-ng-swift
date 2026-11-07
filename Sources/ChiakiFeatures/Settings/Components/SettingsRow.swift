@@ -14,8 +14,8 @@ public struct SettingsRow<Content: View>: View {
     }
 
     @Environment(\.screenLayout) private var layout
-    private let title: String
-    private let detail: String?
+    private let title: Text
+    private let detail: LocalizedStringResource?
     private let content: Content
 
     /// Creates a row.
@@ -24,8 +24,28 @@ public struct SettingsRow<Content: View>: View {
     ///   - title: What the control sets.
     ///   - detail: A short explanation under the title, if any.
     ///   - content: The control.
-    public init(_ title: String, detail: String? = nil, @ViewBuilder content: () -> Content) {
-        self.title = title
+    public init(
+        _ title: LocalizedStringResource,
+        detail: LocalizedStringResource? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = Text(title)
+        self.detail = detail
+        self.content = content()
+    }
+
+    /// Creates a row whose title is data shown as it is, such as a console's name.
+    ///
+    /// - Parameters:
+    ///   - title: What the control sets.
+    ///   - detail: A short explanation under the title, if any.
+    ///   - content: The control.
+    public init(
+        verbatim title: String,
+        detail: LocalizedStringResource? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = Text(verbatim: title)
         self.detail = detail
         self.content = content()
     }
@@ -56,7 +76,7 @@ public struct SettingsRow<Content: View>: View {
 
     private func label(singleLineTitle: Bool) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title)
+            title
                 .font(.callout)
                 .lineLimit(
                     singleLineTitle

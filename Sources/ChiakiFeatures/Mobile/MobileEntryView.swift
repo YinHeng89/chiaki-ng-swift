@@ -73,8 +73,10 @@ struct MobileEntryView: View {
             if let failure = store.accounts.operation.failure {
                 CopyableErrorMessage(message: AccountsFailureMessage.text(for: failure), font: .callout)
                 if failure == .loadFailed {
-                    Button("Reload accounts") {
+                    Button {
                         send(.reloadAccounts)
+                    } label: {
+                        Text(.mobileEntryReloadAccounts)
                     }
                     .buttonStyle(.glass)
                 }
@@ -160,7 +162,7 @@ struct MobileEntryRail: View {
                 .contentShape(.circle)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Back")
+        .accessibilityLabel(Text(.commonBack))
         .padding(6)
         .glassEffect(AppGlass.control.interactive(), in: .capsule)
     }
@@ -237,34 +239,35 @@ struct MobileSignInView: View {
 
     private var steps: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Scan with another device")
+            Text(.mobileSignInScanTitle)
                 .font(.title.bold())
-            Label(
-                "Point a phone camera at the code, then approve the sign-in.",
-                systemImage: "camera.viewfinder"
-            )
-            Label("Or tap the code to sign in on this device.", systemImage: "hand.tap")
+            Label(.mobileSignInScanStep, systemImage: "camera.viewfinder")
+            Label(.mobileSignInTapStep, systemImage: "hand.tap")
             if case .failed(let failure) = store.phase {
                 Text(AccountsFailureMessage.text(for: failure))
                     .font(.callout)
                     .foregroundStyle(.red)
             } else {
-                Text("A new code appears every few minutes.")
+                Text(.mobileSignInCodeRotates)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             HStack(spacing: 10) {
                 if case .failed = store.phase {
-                    Button("Show a New Code", systemImage: "qrcode") {
+                    Button {
                         store.send(.view(.start))
+                    } label: {
+                        Label(.mobileSignInNewCode, systemImage: "qrcode")
                     }
                     .buttonStyle(.glassProminent)
                     .tint(Palette.accent)
                     .foregroundStyle(.black)
                 }
                 if store.offersQRCode {
-                    Button("Use Web Browser Instead", systemImage: "safari") {
+                    Button {
                         store.send(.view(.choose(.browser)))
+                    } label: {
+                        Label(.mobileSignInUseBrowser, systemImage: "safari")
                     }
                     .buttonStyle(.glass)
                 }
@@ -280,14 +283,16 @@ struct MobileSignInView: View {
                     openURL(destination)
                 }
             } label: {
-                QRCodeImage(code.approvalURL, side: codeSide, label: "PlayStation sign-in code")
+                QRCodeImage(code.approvalURL, side: codeSide, label: .mobileSignInCodeLabel)
             }
             .buttonStyle(.plain)
             .disabled(!store.acknowledged)
-            .accessibilityHint("Opens the sign-in page in the PlayStation app")
+            .accessibilityHint(Text(.mobileSignInCodeHint))
         } else {
-            ProgressView("Preparing a sign-in code")
-                .frame(width: codeSide, height: codeSide)
+            ProgressView {
+                Text(.mobileSignInPreparingCode)
+            }
+            .frame(width: codeSide, height: codeSide)
         }
     }
 
@@ -311,9 +316,9 @@ struct MobileSignInView: View {
     private var browserForm: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Sign in with your email")
+                Text(.mobileSignInEmailTitle)
                     .font(.title.bold())
-                Text("Opens the PlayStation sign-in page.")
+                Text(.mobileSignInEmailDetail)
                     .foregroundStyle(.secondary)
             }
             if case .failed(let failure) = store.phase {
@@ -324,7 +329,7 @@ struct MobileSignInView: View {
             Button {
                 store.send(.view(.start))
             } label: {
-                Text("Sign In with PlayStation")
+                Text(.mobileSignInSignIn)
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
@@ -334,12 +339,14 @@ struct MobileSignInView: View {
             .controlSize(.large)
             .disabled(!store.acknowledged)
             if store.offersQRCode {
-                Button("Use a QR Code Instead", systemImage: "qrcode") {
+                Button {
                     store.send(.view(.choose(.qrCode)))
+                } label: {
+                    Label(.mobileSignInUseQRCode, systemImage: "qrcode")
                 }
                 .buttonStyle(.glass)
             }
-            Text("Accounts that use a passkey should use the QR code.")
+            Text(.mobileSignInPasskeyNote)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -393,16 +400,20 @@ struct MobileAccountIDView: View {
     private var form: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Base64 PSN ID profile")
+                Text(.mobileAccountIDTitle)
                     .font(.title.bold())
-                Text("Your account, without a PSN sign-in.")
+                Text(.mobileAccountIDDetail)
                     .foregroundStyle(.secondary)
             }
             MobileSettingsGroup(footer: failure.map(AccountsFailureMessage.text(for:))) {
-                MobileTextEntryRow(title: "Name", prompt: "Optional", text: $store.name)
                 MobileTextEntryRow(
-                    title: "Account ID",
-                    prompt: "Base64",
+                    title: .mobileAccountIDName,
+                    prompt: .mobileAccountIDNamePrompt,
+                    text: $store.name
+                )
+                MobileTextEntryRow(
+                    title: .mobileAccountIDAccountID,
+                    prompt: .mobileAccountIDAccountIDPrompt,
                     text: $store.accountID,
                     invalid: !store.accountID.isEmpty && store.validAccountID == nil
                 )
@@ -410,7 +421,7 @@ struct MobileAccountIDView: View {
             Button {
                 store.send(.view(.submit))
             } label: {
-                Text("Create Profile")
+                Text(.mobileAccountIDCreate)
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }

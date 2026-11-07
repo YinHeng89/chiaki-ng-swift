@@ -79,7 +79,7 @@ struct StreamAccessCodeOverlay: View {
                     : .center) {
                         Dimming.standard.color
                             .contentShape(Rectangle())
-                            .accessibilityLabel("Cancel code entry")
+                            .accessibilityLabel(.playbackAccessCodeCancelEntry)
                         VStack(spacing: compact
                             ? 10
                             : 20) {
@@ -110,7 +110,7 @@ struct StreamAccessCodeOverlay: View {
                                 accessField(for: prompt)
                                 if rejected {
                                     Label(
-                                        "That code wasn’t accepted. Try again.",
+                                        .playbackAccessCodeRejected,
                                         systemImage: "exclamationmark.circle"
                                     )
                                     .font(.caption)
@@ -119,7 +119,7 @@ struct StreamAccessCodeOverlay: View {
                                 }
                                 HStack(spacing: 12) {
                                     FocusButton(action: cancel) {
-                                        Text("Cancel")
+                                        Text(.commonCancel)
                                             .frame(maxWidth: .infinity, minHeight: layout.controlSize)
                                     }
                                     .glassControlStyle()
@@ -133,7 +133,7 @@ struct StreamAccessCodeOverlay: View {
                                                 .controlSize(.small)
                                                 .frame(maxWidth: .infinity, minHeight: layout.controlSize)
                                         } else {
-                                            Text("Continue")
+                                            Text(.commonContinue)
                                                 .frame(maxWidth: .infinity, minHeight: layout.controlSize)
                                         }
                                     }
@@ -323,13 +323,15 @@ extension StreamAccessCodeOverlay {
                                 : 0
                         ), lineWidth: 2)
                 }
-                SecureField("Console login PIN", text: codeBinding)
-                    .textFieldStyle(.plain)
-                    .menuFocused($focused, equals: .code)
-                    .onSubmit(submitCode)
-                    .opacity(0.02)
-                    .frame(width: 246, height: 54)
-                    .accessibilityLabel("Four-digit console login PIN")
+                SecureField(text: codeBinding) {
+                    Text(.playbackAccessCodeLoginPinTitle)
+                }
+                .textFieldStyle(.plain)
+                .menuFocused($focused, equals: .code)
+                .onSubmit(submitCode)
+                .opacity(0.02)
+                .frame(width: 246, height: 54)
+                .accessibilityLabel(.playbackAccessCodeLoginPinLabel)
                 #if os(iOS)
                     .keyboardType(.numberPad)
                 #endif
@@ -339,16 +341,18 @@ extension StreamAccessCodeOverlay {
                 beginTyping()
             }
         case .controllerPasscode(let pad, _):
-            SecureField("Four-digit controller passcode", text: codeBinding)
-                .textFieldStyle(.plain)
-                .font(.system(size: 22, weight: .medium, design: .monospaced))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 18)
-                .frame(height: 54)
-                .glassEffect(AppGlass.control, in: .rect(cornerRadius: 15))
-                .menuFocused($focused, equals: .code)
-                .onSubmit(submitCode)
-                .accessibilityLabel("Four-digit passcode for Player \(pad)")
+            SecureField(text: codeBinding) {
+                Text(.playbackAccessCodePasscodeField)
+            }
+            .textFieldStyle(.plain)
+            .font(.system(size: 22, weight: .medium, design: .monospaced))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 18)
+            .frame(height: 54)
+            .glassEffect(AppGlass.control, in: .rect(cornerRadius: 15))
+            .menuFocused($focused, equals: .code)
+            .onSubmit(submitCode)
+            .accessibilityLabel(.playbackAccessCodePasscodeLabel(player: Int(pad)))
             #if os(iOS)
                 .keyboardType(.numberPad)
             #endif
@@ -402,24 +406,24 @@ extension StreamAccessCodeOverlay {
         }
     }
 
-    private func title(for prompt: StreamAccessPrompt) -> String {
+    private func title(for prompt: StreamAccessPrompt) -> LocalizedStringResource {
         switch prompt {
         case .loginPIN:
-            "Console login PIN"
+            .playbackAccessCodeLoginPinTitle
         case .controllerPasscode:
-            "Controller passcode"
+            .playbackAccessCodePasscodeTitle
         }
     }
 
-    private func detail(for prompt: StreamAccessPrompt) -> String {
+    private func detail(for prompt: StreamAccessPrompt) -> LocalizedStringResource {
         switch prompt {
         case .loginPIN:
-            "Enter the four-digit PIN configured for console login."
+            .playbackAccessCodeLoginPinDetail
         case .controllerPasscode(let pad, _):
             if let playerName {
-                "Enter the four-digit user passcode for \(playerName), joining as Player \(Int(pad) + 1)."
+                .playbackAccessCodePasscodeDetailNamed(name: playerName, player: Int(pad) + 1)
             } else {
-                "Enter the four-digit user passcode for Player \(Int(pad) + 1)."
+                .playbackAccessCodePasscodeDetail(player: Int(pad) + 1)
             }
         }
     }

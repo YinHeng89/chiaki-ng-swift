@@ -540,15 +540,15 @@ public enum CloudTitleNotice: Equatable, Sendable {
     /// The title is still not in the library.
     case notInLibrary
     /// The refresh failed, with the message to show.
-    case failed(String)
+    case failed(LocalizedStringResource)
 
     /// The notice's text.
-    public var message: String {
+    public var message: LocalizedStringResource {
         switch self {
         case .added:
-            "Added. You can play it now."
+            .libraryTitleNoticeAdded
         case .notInLibrary:
-            "Not in your library yet. Add it on the PS Store, then refresh again."
+            .libraryTitleNoticeNotInLibrary
         case .failed(let message):
             message
         }
@@ -874,8 +874,7 @@ private struct CloudTitleRefresher: Reducer {
                 }
                 CloudLibraryLoader.settleFilter(&state, choosing: false)
             } else {
-                let message = "The library changed while checking this title. Refresh the library."
-                state.titleNotice[id] = .failed(message)
+                state.titleNotice[id] = .failed(.libraryTitleNoticeLibraryChanged)
             }
         case .notOwned:
             state.titleNotice[id] = .notInLibrary

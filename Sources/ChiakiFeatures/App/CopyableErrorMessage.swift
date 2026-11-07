@@ -7,7 +7,7 @@ import MenuFocus
 /// HTTPS link the message contains.
 public struct CopyableErrorMessage: View {
     /// The error text to show and copy.
-    public let message: String
+    public let message: LocalizedStringResource
     /// The font the message is drawn in.
     public var font: Font = .body
     /// The controller focus of the Copy error button, or `nil` when the screen leaves it to default focus.
@@ -19,7 +19,11 @@ public struct CopyableErrorMessage: View {
     ///   - message: The error text to show and copy.
     ///   - font: The font the message is drawn in.
     ///   - copyFocus: The controller focus of the Copy error button, or `nil` for default focus.
-    public init(message: String, font: Font = .body, copyFocus: MenuFocusState<Bool>.Binding? = nil) {
+    public init(
+        message: LocalizedStringResource,
+        font: Font = .body,
+        copyFocus: MenuFocusState<Bool>.Binding? = nil
+    ) {
         self.message = message
         self.font = font
         self.copyFocus = copyFocus
@@ -36,9 +40,9 @@ public struct CopyableErrorMessage: View {
                 .textSelection(.enabled)
             HStack(spacing: 8) {
                 copyButton
-                if let link = Self.link(in: message) {
+                if let link = Self.link(in: String(localized: message)) {
                     Link(destination: link) {
-                        Label("Open page", systemImage: "safari")
+                        Label(.appErrorMessageOpenPage, systemImage: "safari")
                     }
                     .glassControlStyle()
                 }
@@ -52,7 +56,7 @@ public struct CopyableErrorMessage: View {
 
     @ViewBuilder private var copyButton: some View {
         let button = FocusButton(copyTitle, systemImage: copyImage) {
-            PlatformPasteboard.copy(message)
+            PlatformPasteboard.copy(String(localized: message))
             copied = true
         }
         .glassControlStyle()
@@ -63,10 +67,10 @@ public struct CopyableErrorMessage: View {
         }
     }
 
-    private var copyTitle: String {
+    private var copyTitle: LocalizedStringResource {
         copied
-            ? "Copied"
-            : "Copy error"
+            ? .appErrorMessageCopied
+            : .appErrorMessageCopy
     }
 
     private var copyImage: String {

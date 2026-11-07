@@ -29,8 +29,8 @@ public struct AccountConsolePickerView: View {
                 options: [true, false],
                 title: { ps5 in
                     ps5
-                        ? "PS5"
-                        : "PS4"
+                        ? .consolesKindPs5
+                        : .consolesKindPs4
                 },
                 selection: Binding(
                     get: {
@@ -44,11 +44,11 @@ public struct AccountConsolePickerView: View {
             )
             switch store.phase {
             case .idle, .loading:
-                ProgressView("Finding your PlayStation consoles…").controlSize(.small).padding()
+                ProgressView(.consolesAccountPickerLoading).controlSize(.small).padding()
             case .failed:
-                Text("Couldn't load consoles from PlayStation. Try again or use a local PIN.")
+                Text(.consolesAccountPickerFailed)
                     .font(.callout).foregroundStyle(.secondary)
-                FocusButton("Retry") {
+                FocusButton(.consolesAddConsoleRetry) {
                     store.send(.view(.retry))
                     kindFocus.wrappedValue = store.ps5
                 }
@@ -56,7 +56,7 @@ public struct AccountConsolePickerView: View {
                 .menuFocused(focus, equals: .psnRetry)
             case .ready:
                 if store.consoles.isEmpty {
-                    Text("No unpaired consoles available for this account.")
+                    Text(.consolesAccountPickerEmpty)
                         .foregroundStyle(.secondary)
                 }
                 ForEach(store.consoles) { console in
@@ -74,8 +74,8 @@ public struct AccountConsolePickerView: View {
                                 Text(console.name).font(.headline)
                                 Text(
                                     console.remotePlayEnabled
-                                        ? "Register through PlayStation"
-                                        : "Enable Remote Play on this console"
+                                        ? .consolesAccountPickerRegister
+                                        : .consolesAccountPickerEnableRemotePlay
                                 )
                                 .font(.caption).foregroundStyle(.secondary)
                             }

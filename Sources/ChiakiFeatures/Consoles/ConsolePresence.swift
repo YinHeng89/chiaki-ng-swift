@@ -36,16 +36,16 @@ public enum ConsolePresence: Equatable {
     }
 
     /// The status label, or `nil` while the presence is unknown.
-    public var title: String? {
+    public var title: LocalizedStringResource? {
         switch self {
         case .unknown:
             nil
         case .ready:
-            "Ready"
+            .consolesDiscoveredReady
         case .restMode:
-            "Rest mode"
+            .consolesDiscoveredRestMode
         case .notNearby:
-            "Not nearby"
+            .consolesPresenceNotNearby
         }
     }
 

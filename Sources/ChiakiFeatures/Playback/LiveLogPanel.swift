@@ -35,7 +35,7 @@ struct LiveLogPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Developer log").font(.headline)
+                Text(.playbackLiveLogTitle).font(.headline)
                 Spacer()
                 iconButton(
                     pauseLabel,
@@ -46,18 +46,18 @@ struct LiveLogPanel: View {
                 ) {
                     store.send(.pauseResume)
                 }
-                iconButton("Copy log", target: .copy, symbol: "doc.on.doc", action: copy)
-                iconButton("Close developer log", target: .close, symbol: "xmark") {
+                iconButton(.playbackLiveLogCopy, target: .copy, symbol: "doc.on.doc", action: copy)
+                iconButton(.playbackLiveLogClose, target: .close, symbol: "xmark") {
                     store.send(.close)
                 }
             }
             HStack {
                 Text(store.phase == .paused
-                    ? "Paused"
-                    : "Live")
-                Text("Level: \(store.snapshot.level.rawValue)")
+                    ? .playbackLiveLogPaused
+                    : .playbackLiveLogLive)
+                Text(.playbackLiveLogLevel(level: store.snapshot.level.rawValue))
                 Spacer()
-                Toggle("Follow", isOn: $follow)
+                Toggle(.playbackLiveLogFollow, isOn: $follow)
                     .toggleStyle(AccentCheckboxToggleStyle(focusable: false))
                     .menuFocusable()
                     .focusEffectDisabled()
@@ -75,10 +75,10 @@ struct LiveLogPanel: View {
             }
             .font(.caption).foregroundStyle(.secondary)
             if store.snapshot.level == .off {
-                Text("Logging is off. Enable it in Settings to capture new events.").font(.caption)
+                Text(.playbackLiveLogLoggingOff).font(.caption)
             }
             if store.snapshot.writeFailed {
-                Text("Writing the log file failed. Live events remain available here.").font(.caption)
+                Text(.playbackLiveLogWriteFailed).font(.caption)
             }
             if let failure {
                 Text(failure).font(.caption).textSelection(.enabled)
@@ -87,7 +87,7 @@ struct LiveLogPanel: View {
                 ScrollView([.vertical, .horizontal]) {
                     VStack(alignment: .leading, spacing: 5) {
                         if store.snapshot.entries.isEmpty {
-                            Text("Waiting for log events in this app session…").foregroundStyle(.secondary)
+                            Text(.playbackLiveLogWaiting).foregroundStyle(.secondary)
                         }
                         ForEach(store.snapshot.entries) { entry in
                             Text(shown(entry.line)).id(entry.id).textSelection(.enabled)
@@ -142,11 +142,11 @@ struct LiveLogPanel: View {
         )
     }
 
-    private var pauseLabel: String {
+    private var pauseLabel: LocalizedStringResource {
         if store.phase == .paused {
-            return "Resume log"
+            return .playbackLiveLogResume
         }
-        return "Pause log"
+        return .playbackLiveLogPause
     }
 
     private var resizeGrip: some View {
@@ -171,8 +171,8 @@ struct LiveLogPanel: View {
                         resizeOrigin = nil
                     }
             )
-            .help("Drag to resize")
-            .accessibilityLabel("Resize developer log")
+            .help(.playbackLiveLogResizeHelp)
+            .accessibilityLabel(.playbackLiveLogResizeAccessibility)
     }
 
     private func copy() {
@@ -181,7 +181,7 @@ struct LiveLogPanel: View {
     }
 
     private func iconButton(
-        _ label: String,
+        _ label: LocalizedStringResource,
         target: LiveLogFocus,
         symbol: String,
         action: @escaping () -> Void

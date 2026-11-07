@@ -147,8 +147,8 @@ private final class Cleared: @unchecked Sendable {
     await store.send(.open(imagesCache)) {
         $0.entries = .loading(imagesCache, UUID(0))
     }
-    await store.receive(.entriesFailed(UUID(0), "The entries could not be read.")) {
-        $0.entries = .failed(imagesCache, "The entries could not be read.")
+    await store.receive(.entriesFailed(UUID(0), .settingsCachesEntriesFailed)) {
+        $0.entries = .failed(imagesCache, .settingsCachesEntriesFailed)
     }
     await store.send(.close) {
         $0.entries = .closed
@@ -158,14 +158,14 @@ private final class Cleared: @unchecked Sendable {
     await store.send(.clear(.all)) {
         $0.phase = .clearing(UUID(1))
     }
-    await store.receive(.failed(UUID(1), "The cache could not be cleared.")) {
-        $0.phase = .failed("The cache could not be cleared.")
+    await store.receive(.failed(UUID(1), .settingsCachesClearFailed)) {
+        $0.phase = .failed(.settingsCachesClearFailed)
     }
     await store.send(.load) {
         $0.phase = .loading(UUID(2))
     }
-    await store.receive(.failed(UUID(2), "The caches could not be read.")) {
-        $0.phase = .failed("The caches could not be read.")
+    await store.receive(.failed(UUID(2), .settingsCachesReadFailed)) {
+        $0.phase = .failed(.settingsCachesReadFailed)
     }
     #expect(store.state.summaries == summaries)
 }
@@ -173,12 +173,12 @@ private final class Cleared: @unchecked Sendable {
 @Test func everyCoreCacheHasItsOwnName() {
     let all = CacheKind.allCases
     #expect(all.count == 8)
-    #expect(Set(all.map(\.title)).count == 8)
-    #expect(CacheKind.forSaleTitles.title == "Available to buy")
-    #expect(CacheKind.playedGames.title == "Played games")
-    #expect(imagesCache.title == "Images")
+    #expect(Set(all.map { String(localized: $0.title) }).count == 8)
+    #expect(String(localized: CacheKind.forSaleTitles.title) == "Available to buy")
+    #expect(String(localized: CacheKind.playedGames.title) == "Played games")
+    #expect(String(localized: imagesCache.title) == "Images")
     #expect(SettingsRoute.allCases.contains(.caches))
-    #expect(CacheClearing.one(imagesCache).confirmation.title == "Clear Images?")
+    #expect(String(localized: CacheClearing.one(imagesCache).confirmation.title) == "Clear Images?")
     #expect(CacheClearing.all.confirmation.tone == .destructive)
 }
 
@@ -190,12 +190,13 @@ private final class Cleared: @unchecked Sendable {
         locale: locale,
         timeZone: .gmt
     )
-    #expect(saved.subjects == [.init(label: "Account", value: "Player")])
+    #expect(saved.subjects == [.init(kind: .account, value: "Player")])
+    #expect(saved.subjects.map { String(localized: $0.label) } == ["Account"])
     #expect(saved.size == "2.0 KB")
     #expect(saved.stored == "14 Nov 2023 at 22:13")
     #expect(saved.expires == "15 Nov 2023 at 22:13")
     let unsaved = CacheEntryPresentation(library, accountNames: [:], locale: locale, timeZone: .gmt)
-    #expect(unsaved.subjects == [.init(label: "Account", value: "Unsaved account")])
+    #expect(unsaved.subjects == [.init(kind: .account, value: "Unsaved account")])
     let details = CacheEntryPresentation(
         CacheEntry(
             cache: detailsCache, locale: "en-GB", productID: "EP9000-PPSA01968_00-DEATHSTRANDINGEU",
@@ -204,7 +205,7 @@ private final class Cleared: @unchecked Sendable {
         ),
         accountNames: [:], locale: locale, timeZone: .gmt
     )
-    #expect(details.subjects.map(\.label) == ["Store region", "Product"])
+    #expect(details.subjects.map { String(localized: $0.label) } == ["Store region", "Product"])
     #expect(details.expires == "No expiry")
     let image = CacheEntryPresentation(
         CacheEntry(
@@ -213,13 +214,17 @@ private final class Cleared: @unchecked Sendable {
         ),
         accountNames: [:], locale: locale, timeZone: .gmt
     )
-    #expect(image.subjects == [.init(label: "Image", value: "https://image.api.playstation.com/logo.png")])
+    #expect(image.subjects == [.init(kind: .image, value: "https://image.api.playstation.com/logo.png")])
+    #expect(image.subjects.map { String(localized: $0.label) } == ["Image"])
     let unreadable = CacheEntryPresentation(
         CacheEntry(cache: librariesCache, bytes: 2, storedAt: stored), accountNames: [:]
     )
-    #expect(unreadable.subjects == [.init(label: "Record", value: "Unreadable")])
+    #expect(unreadable.subjects == [.init(kind: .record, value: "Unreadable")])
+    #expect(unreadable.subjects.map { String(localized: $0.label) } == ["Record"])
     let summary = CacheSummaryPresentation(summaries[0])
-    #expect(summary.title == "Libraries" && summary.entries == "1 entry" && summary.size == "2.0 KB")
+    #expect(String(localized: summary.title) == "Libraries")
+    #expect(String(localized: summary.entries) == "1 entry")
+    #expect(summary.size == "2.0 KB")
     #expect(CacheSummaryPresentation(summaries[1]).isEmpty)
 }
 
@@ -278,8 +283,9 @@ private func coverPixel() -> CGImage {
     let images = CacheSummaryPresentation(
         CacheSummary(id: imagesCache, entries: 4, bytes: 3 * 1_048_576), decoded: 12
     )
-    #expect(images.title == "Images" && images.entries == "4 entries" && images.size == "3.0 MB")
-    #expect(images.memory == "12 in memory" && !images.isEmpty)
+    #expect(String(localized: images.title) == "Images" && String(localized: images.entries) == "4 entries")
+    #expect(images.size == "3.0 MB")
+    #expect(images.memory.map { String(localized: $0) } == "12 in memory" && !images.isEmpty)
     let libraries = CacheSummaryPresentation(summaries[0], decoded: 12)
     #expect(libraries.memory == nil)
     let emptyShelf = CacheSummary(id: imagesCache, entries: 0, bytes: 0)
@@ -325,7 +331,8 @@ private func coverPixel() -> CGImage {
         $0.decodedArtwork = 12
         $0.phase = .ready
     }
-    #expect(CacheSummaryPresentation(held[1], decoded: store.state.decodedArtwork).memory == "12 in memory")
+    let memory = CacheSummaryPresentation(held[1], decoded: store.state.decodedArtwork).memory
+    #expect(memory.map { String(localized: $0) } == "12 in memory")
     await store.send(.askClear(.one(imagesCache)))
     await store.receive(.delegate(.confirmClear(.one(imagesCache))))
     await store.send(.clear(.one(imagesCache))) {

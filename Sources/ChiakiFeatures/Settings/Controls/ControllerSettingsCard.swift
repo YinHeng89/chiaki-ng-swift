@@ -33,11 +33,11 @@ struct ControllerSettingsCard: View {
             FocusableSegments(options: [0, 1, 2], title: { option in
                 switch option {
                 case 0:
-                    "Calibration"
+                    .settingsControlsSectionCalibration
                 case 1:
-                    "Feedback"
+                    .settingsControlsSectionFeedback
                 default:
-                    "Details"
+                    .settingsControlsSectionDetails
                 }
             }, selection: $section)
             FlowTransition(selection: section) {
@@ -60,17 +60,17 @@ struct ControllerSettingsCard: View {
 
     private var details: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Details").font(.headline)
-            TextField("Nickname", text: binding(\.nickname))
+            Text(.settingsControlsSectionDetails).font(.headline)
+            TextField(.settingsControlsNickname, text: binding(\.nickname))
                 .textFieldStyle(.roundedBorder)
                 .menuFocusBinding($nicknameFocused)
                 .controllerKeyboard(
-                    title: "Controller nickname",
+                    title: .settingsControlsNicknameKeyboardTitle,
                     text: binding(\.nickname),
                     isFocused: nicknameFocused
                 )
             if !device.individual {
-                Text("This controller has no unique identity. Preferences are shared with its model.")
+                Text(.settingsControlsSharedIdentity)
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
@@ -78,9 +78,9 @@ struct ControllerSettingsCard: View {
 
     private var feedback: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Feedback").font(.headline)
+            Text(.settingsControlsSectionFeedback).font(.headline)
             HStack(spacing: 18) {
-                Text("Haptics").frame(width: 125, alignment: .leading)
+                Text(.settingsControlsHaptics).frame(width: 125, alignment: .leading)
                 FocusableSegments(
                     options: HapticFeedback.allCases,
                     title: \.title,
@@ -88,21 +88,21 @@ struct ControllerSettingsCard: View {
                 )
                 .disabled(!device.nativeHaptics && !device.rumble)
             }
-            slider("Haptic strength", key: \.hapticStrength, range: 0...2.4, step: 0.1)
+            slider(.settingsControlsHapticStrength, key: \.hapticStrength, range: 0...2.4, step: 0.1)
                 .disabled(!device.nativeHaptics && !device.rumble)
-            slider("Rumble strength", key: \.rumbleStrength).disabled(!device.rumble)
+            slider(.settingsControlsRumbleStrength, key: \.rumbleStrength).disabled(!device.rumble)
             VStack(alignment: .leading, spacing: 4) {
                 Text(hapticsCaption)
-                Text("Both strengths follow the vibration intensity set on the PS5.")
-                Text("The console sends haptics only to player 1's controller.")
+                Text(.settingsControlsStrengthsFollowConsole)
+                Text(.settingsControlsHapticsPlayerOne)
             }
             .font(.callout).foregroundStyle(.secondary)
-            Toggle("Adaptive triggers", isOn: binding(\.adaptiveTriggersEnabled))
+            Toggle(.settingsControlsAdaptiveTriggers, isOn: binding(\.adaptiveTriggersEnabled))
                 .disabled(!device.adaptiveTriggers)
             triggerStrength
             Divider()
             VStack(alignment: .leading, spacing: 10) {
-                Text("Light bar")
+                Text(.settingsControlsLightBar)
                 LightbarChooser(
                     value: preferences.lightbar,
                     inherited: lightbar,
@@ -114,23 +114,25 @@ struct ControllerSettingsCard: View {
                     enabled: device.lights
                 )
                 if !device.lights {
-                    Text("This controller has no light bar to set.")
+                    Text(.settingsControlsNoLightBar)
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
             Divider()
             HStack {
-                Text("Test feedback")
+                Text(.settingsControlsTestFeedback)
                 Spacer()
-                FocusButton("Rumble", systemImage: "waveform") { test(preferences.rumbleStrength) }
-                    .glassControlStyle().disabled(!device.rumble)
+                FocusButton(.settingsControlsTestRumble, systemImage: "waveform") {
+                    test(preferences.rumbleStrength)
+                }
+                .glassControlStyle().disabled(!device.rumble)
             }
         }
     }
 }
 
 extension ControllerSettingsCard {
-    private func slider(_ label: String, key: WritableKeyPath<ControllerPreferences, Double>,
+    private func slider(_ label: LocalizedStringResource, key: WritableKeyPath<ControllerPreferences, Double>,
                         range: ClosedRange<Double> = 0...1, step: Double = 0.05) -> some View {
         HStack(spacing: 18) {
             Text(label).frame(width: 125, alignment: .leading)
@@ -164,17 +166,16 @@ extension View {
 
 extension ControllerSettingsCard {
     /// Explains where haptics go on this controller: its own actuators, its rumble motors, or nowhere.
-    var hapticsCaption: String {
+    var hapticsCaption: LocalizedStringResource {
         switch preferences.hapticOutput(for: device) {
         case .native:
-            "Haptics play on the DualSense's own actuators and fall back to its rumble motors"
-                + " if those cannot be used."
+            .settingsControlsHapticsNative
         case .rumble:
-            "Haptics are turned into rumble on this controller's motors."
+            .settingsControlsHapticsAsRumble
         case .none:
             preferences.hapticFeedback == .off
-                ? "Only the game's rumble reaches this controller."
-                : "This controller has no motors to play haptics."
+                ? .settingsControlsHapticsGameRumbleOnly
+                : .settingsControlsHapticsNoMotors
         }
     }
 }
@@ -184,7 +185,7 @@ extension ControllerSettingsCard {
     var triggerStrength: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 18) {
-                Text("Trigger strength").frame(width: 125, alignment: .leading)
+                Text(.settingsControlsTriggerStrength).frame(width: 125, alignment: .leading)
                 FocusableSegments(
                     options: TriggerStrength.allCases,
                     title: \.title,
@@ -192,7 +193,7 @@ extension ControllerSettingsCard {
                 )
                 .disabled(!device.adaptiveTriggers || !preferences.adaptiveTriggersEnabled)
             }
-            Text("Trigger strength never goes above the intensity set on the PS5.")
+            Text(.settingsControlsTriggerStrengthFooter)
                 .font(.callout).foregroundStyle(.secondary)
         }
     }
@@ -200,28 +201,28 @@ extension ControllerSettingsCard {
 
 extension TriggerStrength {
     /// The label shown for this trigger strength in the settings segments.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .strong:
-            "Strong"
+            .settingsControlsTriggerStrong
         case .medium:
-            "Medium"
+            .settingsControlsTriggerMedium
         case .weak:
-            "Weak"
+            .settingsControlsTriggerWeak
         }
     }
 }
 
 extension HapticFeedback {
     /// The label shown for this haptic feedback mode in the settings segments.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .automatic:
-            "Automatic"
+            .commonAutomatic
         case .rumble:
-            "Rumble"
+            .settingsControlsHapticModeRumble
         case .off:
-            "Off"
+            .commonOff
         }
     }
 }
@@ -231,16 +232,16 @@ extension ControllerSettingsCard {
     /// stick gyro mode.
     var calibration: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Calibration").font(.headline)
-            slider("Stick dead zone", key: \.deadZone, range: 0...0.5, step: 0.01)
-            Toggle("Invert right stick vertically", isOn: binding(\.invertRightY))
-            Toggle("Swap left and right sticks", isOn: binding(\.swapSticks))
+            Text(.settingsControlsSectionCalibration).font(.headline)
+            slider(.settingsControlsStickDeadZone, key: \.deadZone, range: 0...0.5, step: 0.01)
+            Toggle(.settingsControlsInvertRightStick, isOn: binding(\.invertRightY))
+            Toggle(.settingsControlsSwapSticks, isOn: binding(\.swapSticks))
             if family == .nintendo {
                 ButtonLayoutChoice(preferences: preferences, update: update)
             }
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 18) {
-                    Text("Right stick gyro").frame(width: 125, alignment: .leading)
+                    Text(.settingsControlsRightStickGyro).frame(width: 125, alignment: .leading)
                     FocusableSegments(
                         options: StickGyroMode.allCases,
                         title: \.title,
@@ -257,23 +258,19 @@ extension ControllerSettingsCard {
 
     /// Explains what the right stick does under the chosen gyro mode, naming the bound gyro hold button when
     /// there is one.
-    var stickGyroCaption: String {
+    var stickGyroCaption: LocalizedStringResource {
         switch preferences.stickGyro.resolved(sensors: device.motion) {
         case .off, .automatic:
             return preferences.stickGyro == .automatic
-                ? "This controller has its own gyro, so the right stick keeps moving the camera."
-                : "The right stick moves the camera. Choose While held or Always to aim the game's motion "
-                    + "controls with it."
+                ? .settingsControlsGyroOwnSensor
+                : .settingsControlsGyroOffCaption
         case .whileHeld:
             guard let button = gyroHoldButton else {
-                return "Bind a button to Gyro (hold) above, then hold it to turn the controller with "
-                    + "the right stick."
+                return .settingsControlsGyroNoHoldButton
             }
-            return "Hold \(button) and move the right stick to turn the controller instead of the camera. A "
-                + "quick press of \(button) still does what it normally does."
+            return .settingsControlsGyroWhileHeldCaption(button: button, sameButton: button)
         case .always:
-            return "The right stick always turns the controller for the game's motion controls and no longer "
-                + "moves the camera."
+            return .settingsControlsGyroAlwaysCaption
         }
     }
 
@@ -281,23 +278,24 @@ extension ControllerSettingsCard {
         preset.bindings.first {
             $0.source == .gamepadButton && $0.target == .gyroHold
         }.map {
-            ControllerGlyphs.button($0.code, family: family, layout: preferences.buttonLayout).name
+            let glyph = ControllerGlyphs.button($0.code, family: family, layout: preferences.buttonLayout)
+            return String(localized: glyph.name)
         }
     }
 }
 
 extension StickGyroMode {
     /// The label shown for this right stick gyro mode in the settings segments.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .automatic:
-            "Automatic"
+            .commonAutomatic
         case .off:
-            "Off"
+            .commonOff
         case .whileHeld:
-            "While held"
+            .settingsControlsGyroWhileHeld
         case .always:
-            "Always"
+            .settingsControlsGyroAlways
         }
     }
 }
@@ -322,10 +320,10 @@ public struct ButtonLayoutChoice: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Toggle("Use Nintendo button labels", isOn: labels)
+            Toggle(.settingsControlsNintendoLabels, isOn: labels)
             Text(preferences.buttonLayout == .label
-                ? "A acts as Cross and B as Circle, so A confirms like on Switch. X and Y swap the same way."
-                : "Buttons work by position: the bottom button, B, acts as Cross and confirms.")
+                ? .settingsControlsNintendoLabelsOn
+                : .settingsControlsNintendoLabelsOff)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(idealWidth: 360, maxWidth: .infinity, alignment: .leading)

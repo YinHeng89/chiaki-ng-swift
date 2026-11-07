@@ -1,3 +1,5 @@
+import Foundation
+
 /// The PlayStation Plus membership tier of a signed-in account.
 ///
 /// The library header shows it beside the cloud status. An account whose tier PSN has not reported has no
@@ -13,16 +15,16 @@ public enum PlusTier: Hashable, Sendable, CaseIterable {
     case premium
 
     /// The name shown for the tier, such as `"PS Plus Premium"`.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .none:
-            "No PS Plus"
+            .cloudPlusNone
         case .essential:
-            "PS Plus Essential"
+            .cloudPlusEssential
         case .extra:
-            "PS Plus Extra"
+            .cloudPlusExtra
         case .premium:
-            "PS Plus Premium"
+            .cloudPlusPremium
         }
     }
 }

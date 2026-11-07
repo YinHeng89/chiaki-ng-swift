@@ -58,9 +58,9 @@ struct MobileAboutSettingsPage: View {
 
     private var versions: some View {
         MobileSettingsGroup {
-            MobileValueRow("Version", value: AppVersion.display())
-            MobileValueRow("Core", value: core)
-            MobileValueRow("License", value: "AGPL-3.0")
+            MobileValueRow(.mobileAboutVersion, verbatim: AppVersion.display())
+            MobileValueRow(.mobileAboutCore, verbatim: core)
+            MobileValueRow(.mobileAboutLicense, verbatim: "AGPL-3.0")
         }
     }
 
@@ -100,11 +100,11 @@ struct MobileAboutSettingsPage: View {
     }
 
     private var maintainer: some View {
-        MobileSettingsGroup("Lead maintainer") {
-            MobileValueRow("Street Pea", value: "github.com/streetpea") {
+        MobileSettingsGroup(.mobileAboutLeadMaintainer) {
+            MobileValueRow(verbatimTitle: "Street Pea", verbatim: "github.com/streetpea") {
                 store.send(.open(.leadMaintainer))
             }
-            .accessibilityHint("Opens Street Pea's GitHub profile")
+            .accessibilityHint(Text(.mobileAboutLeadMaintainerHint))
         }
     }
 
@@ -116,9 +116,9 @@ struct MobileAboutSettingsPage: View {
                     tint: Self.discordBlue,
                     fallback: "bubble.left.and.bubble.right.fill"
                 ),
-                title: "Discord", button: "Join the Discord", link: .discord
+                title: .mobileAboutDiscord, button: .mobileAboutDiscordButton, link: .discord
             ) {
-                Text("Join the chiaki-ng Discord for help, testing builds and release news.")
+                Text(.mobileAboutDiscordDetail)
             }
             tile(
                 mark: mark(
@@ -126,19 +126,19 @@ struct MobileAboutSettingsPage: View {
                     tint: Self.githubBlack,
                     fallback: "chevron.left.forwardslash.chevron.right"
                 ),
-                title: "GitHub", button: "Open GitHub", link: .github
+                title: .mobileAboutGithub, button: .mobileAboutGithubButton, link: .github
             ) {
-                Text("The chiaki-ng project")
+                Text(.mobileAboutGithubDetail)
             }
             tile(
                 mark: mark(nil, tint: Color.primary.opacity(0.08), fallback: "envelope"),
-                title: "Contact", button: "Send an email", link: .email
+                title: .mobileAboutContact, button: .mobileAboutContactButton, link: .email
             ) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("streetpea@proton.me")
+                    Text(verbatim: "streetpea@proton.me")
                         .font(.footnote.monospaced())
                         .textSelection(.enabled)
-                    Text("(we prefer Discord)")
+                    Text(.mobileAboutContactPreference)
                         .font(.caption)
                 }
             }
@@ -146,7 +146,10 @@ struct MobileAboutSettingsPage: View {
     }
 
     private func tile(
-        mark: some View, title: String, button: String, link: AboutReducer.Link,
+        mark: some View,
+        title: LocalizedStringResource,
+        button: LocalizedStringResource,
+        link: AboutReducer.Link,
         @ViewBuilder detail: () -> some View
     ) -> some View {
         let shown = detail()
@@ -172,8 +175,8 @@ struct MobileAboutSettingsPage: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(title)
-        .accessibilityHint(button)
+        .accessibilityLabel(Text(title))
+        .accessibilityHint(Text(button))
     }
 
     private func mark(_ image: PlatformImage?, tint: Color, fallback: String) -> some View {
@@ -197,8 +200,8 @@ struct MobileAboutSettingsPage: View {
     }
 
     private var thanks: some View {
-        MobileSettingsGroup("Thanks to the following affiliated projects") {
-            Text("who collaborated on chiaki-ng, without whom this would not have been possible.")
+        MobileSettingsGroup(.mobileAboutThanks) {
+            Text(.mobileAboutThanksDetail)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -217,7 +220,7 @@ struct MobileAboutSettingsPage: View {
 
     @ViewBuilder
     private func project(
-        _ name: String, author: String? = nil, note: String? = nil, link: AboutReducer.Link?
+        _ name: String, author: String? = nil, note: LocalizedStringResource? = nil, link: AboutReducer.Link?
     ) -> some View {
         let label = HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
@@ -230,7 +233,7 @@ struct MobileAboutSettingsPage: View {
                 if author != nil || note != nil {
                     HStack(spacing: 4) {
                         if let author {
-                            Text("by")
+                            Text(.mobileAboutBy)
                                 .foregroundStyle(.secondary)
                             Text(author)
                                 .foregroundStyle(Palette.accent)
@@ -259,7 +262,7 @@ struct MobileAboutSettingsPage: View {
                 label
             }
             .buttonStyle(.plain)
-            .accessibilityHint("Opens the project's page")
+            .accessibilityHint(Text(.mobileAboutProjectHint))
         } else {
             label
         }
@@ -270,7 +273,7 @@ struct MobileAboutSettingsPage: View {
             store.send(.toggleContributors)
         } label: {
             HStack(spacing: 8) {
-                Text("And all contributors to chiaki-ng")
+                Text(.mobileAboutAllContributors)
                     .multilineTextAlignment(.leading)
                 Spacer(minLength: 8)
                 Text("\(store.contributors.count)")
@@ -294,9 +297,11 @@ struct MobileAboutSettingsPage: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(
-            store.contributorsShown
-                ? "Hide the contributors"
-                : "Show the contributors"
+            Text(
+                store.contributorsShown
+                    ? .mobileAboutHideContributors
+                    : .mobileAboutShowContributors
+            )
         )
     }
 
@@ -315,7 +320,7 @@ struct MobileAboutSettingsPage: View {
                         .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
-                .accessibilityHint("Opens the contributor's GitHub profile")
+                .accessibilityHint(Text(.mobileAboutContributorHint))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -324,17 +329,13 @@ struct MobileAboutSettingsPage: View {
     }
 
     private var license: some View {
-        MobileSettingsGroup("License") {
-            Text(
-                "chiaki-ng is free and open source software developed by hobbyists and enthusiasts under the "
-                    + "GNU Affero General Public License, version 3, with several exclusions. Please refer to "
-                    + "GitHub for more information."
-            )
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mobileRowPadding()
+        MobileSettingsGroup(.mobileAboutLicense) {
+            Text(.mobileAboutLicenseText)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .mobileRowPadding()
         }
     }
 }

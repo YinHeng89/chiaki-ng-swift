@@ -2,9 +2,10 @@ import ChiakiModels
 import ComposableArchitecture
 import SwiftUI
 
-/// The Interface page in the touch library: where the library menu sits.
+/// The Interface page in the touch library: where the library menu sits and which language the app shows.
 struct MobileInterfaceSettingsPage: View {
     @Bindable private var store: StoreOf<PersistedSettingFeature<InterfaceSettings>>
+    @State private var language = AppLanguageSetting()
 
     /// Creates the page.
     ///
@@ -15,9 +16,9 @@ struct MobileInterfaceSettingsPage: View {
 
     var body: some View {
         MobileSettingsForm {
-            MobileSettingsGroup("Menu") {
+            MobileSettingsGroup(.mobileInterfaceMenu) {
                 MobilePickerRow(
-                    "Menu Position",
+                    .mobileInterfaceMenuPosition,
                     selection: $store.draft.railEdge,
                     choices: LibraryRailEdge.allCases
                 ) { edge in
@@ -25,7 +26,25 @@ struct MobileInterfaceSettingsPage: View {
                 }
             }
             .disabled(!store.isEditable)
-            SettingsPersistenceBanner(store.setting, subject: "interface settings") {
+            MobileSettingsGroup(
+                .settingsInterfaceLanguage,
+                footer: language.needsRelaunch
+                    ? .settingsInterfaceLanguageRelaunch
+                    : nil
+            ) {
+                MobilePickerRow(
+                    .settingsInterfaceLanguage,
+                    selection: Binding {
+                        language.choice
+                    } set: { choice in
+                        language.choose(choice)
+                    },
+                    choices: language.choices
+                ) { choice in
+                    AppLanguageSetting.title(choice)
+                }
+            }
+            SettingsPersistenceBanner(store.setting, subject: .mobileInterfacePersistenceSubject) {
                 store.send(.retry)
             }
         }

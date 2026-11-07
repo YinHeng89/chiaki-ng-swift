@@ -88,7 +88,8 @@ private func quitting() -> RootFeature.State {
     await store.finish()
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func systemSleepStopsActivePlaybackThroughTheSleepPath() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func systemSleepStopsActivePlaybackThroughTheSleepPath() async throws {
     let playbackID = StreamSessionID()
     let account = UUID()
     let game = try CloudLibrarySnapshot.decode(Data("""

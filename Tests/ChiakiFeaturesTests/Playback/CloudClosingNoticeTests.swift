@@ -19,12 +19,13 @@ private func cloudSource() -> StreamSource {
 }
 
 @Test func closingNoticesSayWhenAndWhyTheGameCloses() {
-    #expect(CloudClosingNotice(minutes: 5, reason: .timeLimit).message
+    #expect(String(localized: CloudClosingNotice(minutes: 5, reason: .timeLimit).message)
         == "The game closes in 5 minutes because of the streaming time limit. Save your progress.")
-    #expect(CloudClosingNotice(minutes: 1, reason: .timeLimit).message.contains("in 1 minute because"))
+    #expect(String(localized: CloudClosingNotice(minutes: 1, reason: .timeLimit).message)
+        .contains("in 1 minute because"))
     let maintenance = CloudClosingNotice(minutes: 180, reason: .maintenance)
-    #expect(maintenance.message.contains("maintenance in 3 hours"))
-    #expect(CloudClosingNotice(minutes: 30, reason: .unexplained).message
+    #expect(String(localized: maintenance.message).contains("maintenance in 3 hours"))
+    #expect(String(localized: CloudClosingNotice(minutes: 30, reason: .unexplained).message)
         == "The streaming service closes the game in 30 minutes. Save your progress.")
     #expect(CloudClosingNotice(minutes: -4, reason: .timeLimit).minutes == 0)
 }

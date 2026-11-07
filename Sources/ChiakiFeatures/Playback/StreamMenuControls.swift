@@ -8,7 +8,7 @@ struct StreamMenuChoiceRow<Value: Hashable>: View {
     /// The options in display order.
     let options: [Value]
     /// Returns the label shown for an option.
-    let title: (Value) -> String
+    let title: (Value) -> LocalizedStringResource
     /// The selected option.
     @Binding var selection: Value
     /// The stream menu focus binding, or `nil` when the row is shown outside controller navigation.
@@ -106,11 +106,11 @@ struct OptionalStreamMenuFocus: ViewModifier {
 /// dismissing returns focus to the row. The pointer opens the same choices through the SwiftUI menu.
 struct StreamMenuDropdown<Option: Hashable>: View {
     /// The label shown before the current choice.
-    let title: String
+    let title: LocalizedStringResource
     /// The choices, in order.
     let options: [Option]
     /// The title shown for a choice.
-    let optionTitle: (Option) -> String
+    let optionTitle: (Option) -> LocalizedStringResource
     /// The current choice.
     @Binding var selection: Option
     /// The control this row represents for controller focus.
@@ -171,7 +171,7 @@ struct StreamMenuDropdown<Option: Hashable>: View {
     }
 
     private func presentChoices() -> Bool {
-        _ = menuAnchor.presentMenu(titles: options.map(optionTitle),
+        _ = menuAnchor.presentMenu(titles: options.map { String(localized: optionTitle($0)) },
                                    selected: options.firstIndex(of: selection)) { index in
             guard options.indices.contains(index) else {
                 return

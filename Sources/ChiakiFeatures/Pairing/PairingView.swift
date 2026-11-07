@@ -65,18 +65,18 @@ struct PairingView: View {
         if !layout.isShort {
             ConsoleArtwork(height: 150, kind: kind)
         }
-        FlowTitle(text: "Register your console", detail: detail(target))
+        FlowTitle(text: .consolesPairingTitle, detail: detail(target))
         PairingPINEntryView(store: store, focusedInput: focusedInput)
         if let failure {
             Text(PairingFailureMessage.text(for: failure)).font(.caption).foregroundStyle(.red)
         }
         Text(
             target.kind == .ps5
-                ? "Settings → System → Remote Play → Link Device"
-                : "Settings → Remote Play Connection Settings → Add Device"
+                ? .consolesPairingInstructionsPs5
+                : .consolesPairingInstructionsPs4
         )
         .font(.caption).foregroundStyle(.secondary).padding(.top, 18)
-        FlowSecondaryButton(label: "Back", focus: "Back", focusedAction: focusedAction) {
+        FlowSecondaryButton(label: .commonBack, focus: "Back", focusedAction: focusedAction) {
             cancel()
         }
         .keyboardShortcut(.cancelAction)
@@ -103,23 +103,25 @@ struct PairingView: View {
                 ? 10
                 : 40
         )
-        FlowTitle(text: "A little closer.", detail: "Registering with your console…")
+        FlowTitle(text: .consolesPairingAttemptingTitle, detail: .consolesPairingAttemptingDetail)
         if let progress = store.flow.attempt?.progress, let reportedAt = store.reportedAt {
             OperationProgressView(progress: TimedProgress(Self.operationProgress(progress), at: reportedAt))
                 .padding(.bottom, 16)
         }
-        FlowSecondaryButton(label: "Cancel", focus: "Cancel", focusedAction: focusedAction) {
+        FlowSecondaryButton(label: .commonCancel, focus: "Cancel", focusedAction: focusedAction) {
             cancel()
         }
         .keyboardShortcut(.cancelAction)
     }
 
-    private func detail(_ target: PairingTarget) -> String {
-        let kind = Self.artworkKind(target.kind).rawValue
+    private func detail(_ target: PairingTarget) -> LocalizedStringResource {
+        let kind: LocalizedStringResource = target.kind == .ps5
+            ? .consolesKindPs5
+            : .consolesKindPs4
         guard !streamerMode, case .atHome(let address, _) = target else {
             return kind
         }
-        return "\(kind) at \(address)"
+        return .consolesPairingConsoleAtAddress(kind: String(localized: kind), address: address)
     }
 
     private func cancel() {
@@ -178,19 +180,19 @@ public struct PairingPINEntryView: View {
     /// The view.
     public var body: some View {
         HStack(spacing: 12) {
-            TextField("Eight-digit PIN", text: $store.pin)
+            TextField(.consolesPairingPinPlaceholder, text: $store.pin)
                 .menuFocusBinding(focusedInput, equals: .pin)
                 .font(.title3.monospacedDigit())
                 .controllerKeyboard(
-                    title: "Pairing PIN",
+                    title: .consolesPairingPinKeyboardTitle,
                     text: $store.pin,
                     isFocused: focusedInput.wrappedValue == .pin,
                     numberPad: true
                 )
                 .multilineTextAlignment(.center)
                 .modifier(GlassInput())
-                .accessibilityLabel("Eight-digit pairing PIN")
-            FocusButton("Pair console") {
+                .accessibilityLabel(.consolesPairingPinAccessibility)
+            FocusButton(.consolesPairingPairButton) {
                 store.send(.view(.submitPIN))
             }
             .glassControlStyle()

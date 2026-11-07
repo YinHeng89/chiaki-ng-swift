@@ -72,15 +72,15 @@ import Testing
     }
 
     @Test func takionVersionTitlesNameTheDefaultsAndTheBuildPin() {
-        #expect(DeveloperSettings.versionTitle(for: 0, build: 0) == "Automatic")
-        #expect(DeveloperSettings.versionTitle(for: 0, build: 12) == "Automatic (v12)")
-        #expect(DeveloperSettings.versionTitle(for: 0, build: 20) == "Automatic (v20)")
-        #expect(DeveloperSettings.versionTitle(for: 9, build: 0) == "v9")
-        #expect(DeveloperSettings.versionTitle(for: 12, build: 0) == "v12")
-        #expect(DeveloperSettings.versionTitle(for: 23, build: 23) == "v23")
-        #expect(DeveloperSettings.versionTitle(for: 20, build: 0) == "v20")
-        #expect(DeveloperSettings.versionTitle(for: 19, build: 0) == "v19")
-        #expect(TakionTarget.allCases.map(\.title) == [
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 0, build: 0)) == "Automatic")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 0, build: 12)) == "Automatic (v12)")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 0, build: 20)) == "Automatic (v20)")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 9, build: 0)) == "v9")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 12, build: 0)) == "v12")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 23, build: 23)) == "v23")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 20, build: 0)) == "v20")
+        #expect(String(localized: DeveloperSettings.versionTitle(for: 19, build: 0)) == "v19")
+        #expect(TakionTarget.allCases.map { String(localized: $0.title) } == [
             "PS4, local and remote", "PS5, local and remote", "PS Now, PS3 and PS4 cloud",
             "PS Cloud, PS5 cloud"
         ])

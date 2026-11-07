@@ -91,10 +91,10 @@ struct MobileSettingsPanel: View {
                 .glassControlStyle()
                 .focusBorderShape(.circle)
                 .menuFocused($headerFocus, equals: .back)
-                .accessibilityLabel("Back")
+                .accessibilityLabel(Text(.commonBack))
                 .transition(.opacity)
             }
-            Text(page?.title ?? "Settings")
+            Text(page?.title ?? .commonSettings)
                 .font(.title2.bold())
                 .lineLimit(1)
                 .accessibilityAddTraits(.isHeader)
@@ -106,7 +106,7 @@ struct MobileSettingsPanel: View {
             .glassControlStyle()
             .focusBorderShape(.circle)
             .menuFocused($headerFocus, equals: .close)
-            .accessibilityLabel("Close settings")
+            .accessibilityLabel(Text(.mobileSettingsCloseSettings))
         }
         .padding(.top, layout.topChromeInset)
         .padding(.bottom, 4)
@@ -192,7 +192,12 @@ struct MobileSettingsPanel: View {
         }
         switch direction {
         case .up:
-            let moved = navigator.moveGeometric(.up, in: window, belowGlobalY: headerBottom, allowUnaligned: true)
+            let moved = navigator.moveGeometric(
+                .up,
+                in: window,
+                belowGlobalY: headerBottom,
+                allowUnaligned: true
+            )
             if !moved {
                 headerFocus = page == nil
                     ? .close
@@ -208,7 +213,11 @@ struct MobileSettingsPanel: View {
         return true
     }
 
-    private func moveFromHeader(_ control: HeaderControl, direction: MenuMoveDirection, in window: PlatformWindow) {
+    private func moveFromHeader(
+        _ control: HeaderControl,
+        direction: MenuMoveDirection,
+        in window: PlatformWindow
+    ) {
         switch (control, direction) {
         case (.back, .right):
             headerFocus = .close
@@ -280,11 +289,11 @@ struct MobileSettingsCategories: View {
                     row(.about)
                 }
             }
-            MobileGroup(title: "Settings") {
+            MobileGroup(title: .commonSettings) {
                 ForEach(everyday, id: \.self, content: row)
             }
             if !tools.isEmpty {
-                MobileGroup(title: "Advanced") {
+                MobileGroup(title: .mobileSettingsAdvanced) {
                     ForEach(tools, id: \.self, content: row)
                 }
             }

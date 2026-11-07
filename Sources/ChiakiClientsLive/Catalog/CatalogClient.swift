@@ -280,7 +280,7 @@ extension CatalogClient {
     private static func storefrontCheck(account: UUID, game: CloudGame) async -> CloudStoreCheck {
         @Dependency(\.accountService) var accountService
         guard let bytes = try? await accountService.accountID(of: account) else {
-            return CloudStoreCheck(card: .unavailable("no PSN sign-in"))
+            return CloudStoreCheck(card: .unavailable(.noSignIn))
         }
         switch await TitleChecksBridge().storefront(account: bytes, productID: game.productId) {
         case .success(let answer):
@@ -288,8 +288,8 @@ extension CatalogClient {
         case .failure(let failure):
             return CloudStoreCheck(card: .unavailable(
                 failure.needsSignIn
-                    ? "no PSN sign-in"
-                    : "no answer"
+                    ? .noSignIn
+                    : .noAnswer
             ))
         }
     }

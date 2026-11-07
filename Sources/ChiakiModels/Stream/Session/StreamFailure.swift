@@ -1,3 +1,5 @@
+import Foundation
+
 /// Why a stream session failed.
 ///
 /// One type for console, cloud and guest streams. The text shown for each case lives with the views.
@@ -29,8 +31,8 @@ public enum StreamFailure: Error, Equatable, Sendable {
     /// The core ended the stream with an outcome, over the internet when `overInternet` is set.
     case stream(StreamOutcome, overInternet: Bool)
 
-    /// The cloud service refused the stream with its own explanation.
-    case serviceRefused(String)
+    /// The cloud service refused the stream, with the explanation shown to the player.
+    case serviceRefused(LocalizedStringResource)
 
     /// A Kakusan guest stream failed.
     case kakusan(KakusanError)

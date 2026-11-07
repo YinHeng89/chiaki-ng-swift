@@ -25,6 +25,30 @@ public enum StreamMenuPanel: String, CaseIterable, Sendable {
     /// Going to the console home screen and ending the stream.
     case session = "Session"
 
+    /// The name shown on the panel's tab.
+    var title: LocalizedStringResource {
+        switch self {
+        case .picture:
+            .playbackMenuPanelPicture
+        case .colour:
+            .playbackMenuPanelColour
+        case .sound:
+            .playbackMenuPanelSound
+        case .stream:
+            .playbackMenuPanelStream
+        case .statistics:
+            .playbackMenuPanelStatistics
+        case .players:
+            .playbackMenuPanelPlayers
+        case .invitations:
+            .playbackMenuPanelInvitations
+        case .trophies:
+            .playbackMenuPanelTrophies
+        case .session:
+            .playbackMenuPanelSession
+        }
+    }
+
     /// The SF Symbol name shown on the panel's tab.
     var symbol: String {
         switch self {
@@ -215,9 +239,9 @@ struct StreamMenuPanelContent: View {
     /// Whether frame generation can be turned on; when false the toggle is disabled with a note saying why.
     let frameGenerationEligible: Bool
     /// Why 3D audio is unavailable for this stream, or `nil` when it can be turned on.
-    var audio3DDisabledReason: String?
+    var audio3DDisabledReason: LocalizedStringResource?
     /// The title of the button that ends the stream.
-    let stopTitle: String
+    let stopTitle: LocalizedStringResource
     /// Ends the stream.
     let stop: () -> Void
     /// Returns to the console home screen, or `nil` when the stream cannot do that.
@@ -308,9 +332,12 @@ struct StreamMenuPanelContent: View {
 
     private var picturePanel: some View {
         VStack(alignment: .leading, spacing: 18) {
-            panelTitle("Picture")
+            panelTitle(.playbackMenuPanelPicture)
             focused(
-                Toggle("Generate \(configuration.sourceFPS * 2) fps", isOn: generated120),
+                Toggle(
+                    .playbackMenuPictureGenerateFrames(fps: configuration.sourceFPS * 2),
+                    isOn: generated120
+                ),
                 target: .pictureGenerated,
                 highlight: false
             )
@@ -321,7 +348,7 @@ struct StreamMenuPanelContent: View {
                     .foregroundStyle(.secondary)
             }
             StreamMenuDropdown(
-                title: "Upscaled output",
+                title: .playbackMenuPictureUpscaledOutput,
                 options: UpscaledOutput.available(for: configuration.nativeHeight),
                 optionTitle: { $0.title },
                 selection: binding(\.upscaledOutput),
@@ -330,12 +357,12 @@ struct StreamMenuPanelContent: View {
                 focused: focusedControl == .pictureOutput
             )
             StreamMenuDropdown(
-                title: "Upscaling",
+                title: .playbackMenuPictureUpscaling,
                 options: VideoUpscaler.allCases,
                 optionTitle: {
                     $0 == .metalFX
-                        ? "MetalFX Spatial"
-                        : "Advanced Spatial"
+                        ? .playbackMenuPictureUpscalerMetalFX
+                        : .playbackMenuPictureUpscalerAdvanced
                 },
                 selection: binding(\.upscaler),
                 target: .pictureUpscaler,
@@ -351,20 +378,24 @@ struct StreamMenuPanelContent: View {
         }
     }
 
-    private var frameGenerationNote: String {
+    private var frameGenerationNote: LocalizedStringResource {
         configuration.hdrRequested
-            ? "Not available for HDR streams. Frame generation works on standard dynamic range video."
-            : "Requires a 720p or 1080p stream and a \(configuration.sourceFPS * 2) Hz display."
+            ? .playbackMenuPictureFrameGenerationHdr
+            : .playbackMenuPictureFrameGenerationRequirements(rate: configuration.sourceFPS * 2)
     }
 
     private var statisticsPanel: some View {
         VStack(alignment: .leading, spacing: 18) {
-            panelTitle("Diagnostics")
+            panelTitle(.playbackMenuStatisticsTitle)
             if let datacenter {
-                LabeledContent("Datacenter", value: datacenter.statisticsDescription)
+                LabeledContent(.playbackMenuStatisticsDatacenter) {
+                    Text(datacenter.statisticsDescription)
+                }
             }
             if let bandwidth {
-                LabeledContent("Bandwidth", value: bandwidth.statisticsDescription)
+                LabeledContent(.playbackMenuStatisticsBandwidth) {
+                    Text(bandwidth.statisticsDescription)
+                }
             }
             StreamMenuChoiceRow(
                 options: StreamDiagnosticsAppearance.Level.allCases,
@@ -392,23 +423,20 @@ struct StreamMenuPanelContent: View {
             )
             StreamMenuChoiceRow(
                 options: StreamVideoAnalysisMode.allCases,
-                title: { $0.rawValue },
+                title: { $0.title },
                 selection: $videoAnalysis,
                 focus: focus,
                 focusedControl: focusedControl,
                 control: { .videoAnalysis($0.rawValue) }
             )
             if videoAnalysis != .off {
-                Text(
-                    "HDR heatmap shows luminance bands. Highlight clipping isolates extended-range "
-                        + "and near-clip pixels."
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                Text(.playbackMenuStatisticsAnalysisDetail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             if let measureBrightness {
                 FocusButton(action: measureBrightness) {
-                    Label("Measure brightness", systemImage: "scope")
+                    Label(.playbackMenuMeasureTitle, systemImage: "scope")
                         .frame(maxWidth: .infinity)
                 }
                 .modifier(OptionalStreamMenuButtonFocus(
@@ -420,13 +448,13 @@ struct StreamMenuPanelContent: View {
                 .controlSize(.large)
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 138), spacing: 12)], spacing: 12) {
-                statistic("Source frames", value: statistics.surfaces)
-                statistic("Rendered frames", value: statistics.completed)
-                statistic("Generated frames", value: statistics.frameGenerationGenerated)
-                statistic("Frame generation drops", value: statistics.generatedDrops)
-                statistic("Presentation misses", value: statistics.deadlineMisses)
-                statistic("Frames lost", value: statistics.lost)
-                statistic("GPU errors", value: statistics.gpuError)
+                statistic(.playbackMenuStatisticsSourceFrames, value: statistics.surfaces)
+                statistic(.playbackMenuStatisticsRenderedFrames, value: statistics.completed)
+                statistic(.playbackMenuStatisticsGeneratedFrames, value: statistics.frameGenerationGenerated)
+                statistic(.playbackMenuStatisticsFrameGenerationDrops, value: statistics.generatedDrops)
+                statistic(.playbackMenuStatisticsPresentationMisses, value: statistics.deadlineMisses)
+                statistic(.playbackMenuStatisticsFramesLost, value: statistics.lost)
+                statistic(.playbackMenuStatisticsGpuErrors, value: statistics.gpuError)
             }
             StreamMenuTroubleshootControls(
                 topic: $troubleshootTopic,
@@ -447,7 +475,7 @@ struct StreamMenuPanelContent: View {
         )
     }
 
-    private func panelTitle(_ title: String) -> some View {
+    private func panelTitle(_ title: LocalizedStringResource) -> some View {
         Text(title).font(.title2.weight(.semibold))
     }
 
@@ -455,7 +483,7 @@ struct StreamMenuPanelContent: View {
     private func focused<Content: View>(
         _ content: Content,
         target: StreamMenuControl,
-        title: String? = nil,
+        title: LocalizedStringResource? = nil,
         highlight: Bool = true
     ) -> some View {
         if let focus {
@@ -478,7 +506,7 @@ struct StreamMenuPanelContent: View {
         }
     }
 
-    private func statistic(_ label: String, value: Int?) -> some View {
+    private func statistic(_ label: LocalizedStringResource, value: Int?) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(label).font(.caption).foregroundStyle(.secondary)
             Text(String(value ?? 0))
@@ -526,7 +554,7 @@ extension StreamMenuPanelContent {
 /// opens PS Now's Application Saved Data Management for a PS4 game, and a button that ends the stream.
 private struct StreamMenuSessionControls: View {
     /// The title of the button that ends the stream.
-    let stopTitle: String
+    let stopTitle: LocalizedStringResource
     /// Ends the stream.
     let stop: () -> Void
     /// Sends the console to its Home screen, or `nil` to hide the Home button.
@@ -540,10 +568,10 @@ private struct StreamMenuSessionControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Session").font(.title2.weight(.semibold))
+            Text(.playbackMenuSessionTitle).font(.title2.weight(.semibold))
             if let goHome {
                 FocusButton(action: goHome) {
-                    Label("Go to Home screen", systemImage: "house")
+                    Label(.playbackMenuSessionGoHome, systemImage: "house")
                         .frame(maxWidth: .infinity)
                 }
                 .modifier(OptionalStreamMenuButtonFocus(
@@ -556,7 +584,7 @@ private struct StreamMenuSessionControls: View {
             }
             if let openSavedData {
                 FocusButton(action: openSavedData) {
-                    Label("Application Saved Data Management", systemImage: "externaldrive.badge.icloud")
+                    Label(.playbackMenuSessionSavedData, systemImage: "externaldrive.badge.icloud")
                         .frame(maxWidth: .infinity)
                 }
                 .modifier(OptionalStreamMenuButtonFocus(
@@ -630,19 +658,19 @@ struct StreamMenuDisplayControls: View {
                 control: { .pictureFit($0.rawValue) }
             )
             if videoFit.mode == .zoom {
-                LabeledContent("Zoom") {
-                    Text(zoomDescription).monospacedDigit()
+                LabeledContent(.playbackMenuPictureZoom) {
+                    zoomDescription.monospacedDigit()
                 }
                 zoomSlider
             }
         }
     }
 
-    private var zoomDescription: String {
+    private var zoomDescription: Text {
         guard videoFit.zoom > VideoFit.zoomRange.lowerBound else {
-            return "No black bars"
+            return Text(.playbackMenuPictureZoomNoBlackBars)
         }
-        return videoFit.zoom.formatted(.number.precision(.fractionLength(2))) + "×"
+        return Text(verbatim: videoFit.zoom.formatted(.number.precision(.fractionLength(2))) + "×")
     }
 
     @ViewBuilder
@@ -671,7 +699,7 @@ private struct StreamMenuSoundControls: View {
     /// The 3D audio and Apple spatial audio settings.
     @Binding var spatialAudio: SpatialAudio
     /// Why 3D audio is unavailable for this stream, which disables its toggle, or `nil` when it is available.
-    var audio3DDisabledReason: String?
+    var audio3DDisabledReason: LocalizedStringResource?
     /// The microphone store, or `nil` when the stream has no microphone.
     var microphone: StoreOf<MicrophoneReducer>?
     /// The stream menu focus binding, or `nil` when the panel is shown outside controller navigation.
@@ -681,28 +709,32 @@ private struct StreamMenuSoundControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Sound").font(.title2.weight(.semibold))
-            LabeledContent("Volume") {
+            Text(.playbackMenuSoundTitle).font(.title2.weight(.semibold))
+            LabeledContent(.playbackMenuSoundVolume) {
                 Text(volume, format: .percent.precision(.fractionLength(0))).monospacedDigit()
             }
             volumeSlider
             if let level = chatVolume {
-                LabeledContent("Party chat volume") {
+                LabeledContent(.playbackMenuSoundPartyChatVolume) {
                     Text(level, format: .percent.precision(.fractionLength(0))).monospacedDigit()
                 }
                 chatVolumeSlider
             }
-            focused(Toggle("3D audio on headphones", isOn: audio3D), target: .soundAudio3D, highlight: false)
-                .disabled(audio3DDisabledReason != nil)
-            Text(audio3DDisabledReason ?? "Headphones and earbuds play the console’s 3D audio.")
+            focused(
+                Toggle(.playbackMenuSoundHeadphoneAudio, isOn: audio3D),
+                target: .soundAudio3D,
+                highlight: false
+            )
+            .disabled(audio3DDisabledReason != nil)
+            Text(audio3DDisabledReason ?? .playbackMenuSoundHeadphoneAudioDetail)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             focused(
-                Toggle("Spatial audio", isOn: $spatialAudio.appleSpatial),
+                Toggle(.playbackMenuSoundSpatialAudio, isOn: $spatialAudio.appleSpatial),
                 target: .soundSpatial,
                 highlight: false
             )
-            Text("Speakers, and headphones without 3D audio, play stereo through Apple spatial audio.")
+            Text(.playbackMenuSoundSpatialAudioDetail)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             if let microphone, microphone.available {
@@ -733,7 +765,7 @@ private struct StreamMenuSoundControls: View {
     private func focused<Content: View>(
         _ content: Content,
         target: StreamMenuControl,
-        title: String? = nil,
+        title: LocalizedStringResource? = nil,
         highlight: Bool = true
     ) -> some View {
         if let focus {
@@ -770,7 +802,7 @@ private struct StreamMenuSoundControls: View {
     @ViewBuilder
     private var chatVolumeSlider: some View {
         let slider = Slider(value: chatLevel, in: SoundSettings.volumeRange, step: 0.05)
-            .accessibilityLabel("Party chat volume")
+            .accessibilityLabel(.playbackMenuSoundPartyChatVolume)
         if let focus {
             slider
                 .modifier(StreamMenuControlFocus(
@@ -787,7 +819,7 @@ private struct StreamMenuSoundControls: View {
     @ViewBuilder
     private var volumeSlider: some View {
         let slider = Slider(value: $volume, in: SoundSettings.volumeRange, step: 0.05)
-            .accessibilityLabel("Volume")
+            .accessibilityLabel(.playbackMenuSoundVolume)
         if let focus {
             slider
                 .modifier(StreamMenuControlFocus(
@@ -829,7 +861,7 @@ struct StreamMenuMicrophoneControl: View {
             .controlSize(.large)
             .help(Self.help)
             .accessibilityValue(status)
-            Text(status)
+            status
                 .font(.caption)
                 .foregroundStyle(statusIsProblem
                     ? Color.red
@@ -838,16 +870,16 @@ struct StreamMenuMicrophoneControl: View {
         }
     }
 
-    private var title: String {
+    private var title: LocalizedStringResource {
         switch phase {
         case .off, .denied, .failed:
-            "Turn on microphone"
+            .playbackMenuMicrophoneTurnOn
         case .requestingPermission, .connecting:
-            "Cancel microphone"
+            .playbackMenuMicrophoneCancel
         case .live(_, muted: true):
-            "Unmute microphone"
+            .playbackMenuMicrophoneUnmute
         case .live(_, muted: false):
-            "Mute microphone"
+            .playbackMenuMicrophoneMute
         }
     }
 
@@ -862,20 +894,20 @@ struct StreamMenuMicrophoneControl: View {
         }
     }
 
-    private var status: String {
+    private var status: Text {
         switch phase {
         case .off:
-            Self.offStatus
+            Text(Self.offStatus)
         case .requestingPermission:
-            "Waiting for microphone access."
+            Text(.playbackMenuMicrophoneWaitingForAccess)
         case .denied:
-            Self.deniedStatus
+            Text(Self.deniedStatus)
         case .connecting:
-            "Connecting the microphone."
+            Text(.playbackMenuMicrophoneConnecting)
         case .live(_, muted: true):
-            "Nothing is sent while the microphone is muted."
+            Text(.playbackMenuMicrophoneMuted)
         case .live(_, muted: false):
-            "Your voice is reaching the game."
+            Text(.playbackMenuMicrophoneLive)
         case .failed(let failure):
             Self.message(failure)
         }
@@ -891,42 +923,41 @@ struct StreamMenuMicrophoneControl: View {
     }
 
     /// The button's help, naming the shortcuts this platform has.
-    static var help: String {
+    static var help: LocalizedStringResource {
         #if os(macOS)
-            return "Microphone (Command-M or the controller’s mic button)"
+            return .playbackMenuMicrophoneHelpMac
         #else
-            return "Microphone (the controller’s mic button)"
+            return .playbackMenuMicrophoneHelp
         #endif
     }
 
     /// The status while the microphone is off, naming the shortcuts this platform has.
-    static var offStatus: String {
+    static var offStatus: LocalizedStringResource {
         #if os(macOS)
-            return "The microphone is off. Press Command-M or the controller’s mic button to turn it on."
+            return .playbackMenuMicrophoneOffMac
         #else
-            return "The microphone is off. Press the controller’s mic button or the button above to turn it on."
+            return .playbackMenuMicrophoneOff
         #endif
     }
 
     /// The status while microphone access is denied, naming where this platform grants it.
-    static var deniedStatus: String {
+    static var deniedStatus: LocalizedStringResource {
         #if os(macOS)
-            return "Microphone access is off. Allow chiaki-ng in System Settings under Privacy & Security, then "
-                + "try again."
+            return .playbackMenuMicrophoneDeniedMac
         #else
-            return "Microphone access is off. Allow chiaki-ng in Settings under Privacy & Security, then try again."
+            return .playbackMenuMicrophoneDenied
         #endif
     }
 
     /// Explains a microphone failure to the user.
-    static func message(_ failure: MicrophoneFailure) -> String {
+    static func message(_ failure: MicrophoneFailure) -> Text {
         switch failure {
         case .streamUnavailable:
-            "The microphone couldn’t connect because the stream isn’t ready."
+            Text(.playbackMenuMicrophoneStreamUnavailable)
         case .consoleRejected:
-            "The console didn’t accept the microphone."
+            Text(.playbackMenuMicrophoneConsoleRejected)
         case .captureUnavailable(let detail), .interrupted(let detail):
-            detail
+            Text(detail)
         }
     }
 }

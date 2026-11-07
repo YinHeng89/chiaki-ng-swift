@@ -32,7 +32,7 @@ struct CloudLayeredLoadingView: View {
     /// The game title, shown when there is no logo and used as the logo's accessibility label.
     let title: String
     /// The current launch status line shown in the strip.
-    let status: String
+    let status: LocalizedStringResource
     /// A timed service wait shown beneath the status with its live elapsed text, when present.
     var operation: TimedProgress?
     /// Whether the scene is playing its exit animation.
@@ -189,7 +189,7 @@ struct CloudLayeredLoadingView: View {
 
     private var strip: some View {
         HStack(spacing: 18) {
-            Text("Starting your stream")
+            Text(.playbackLoadingTitle)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(.white)
                 .fixedSize()
@@ -206,7 +206,7 @@ struct CloudLayeredLoadingView: View {
                         : 340,
                     alignment: .leading
                 )
-            FocusButton("Cancel") {
+            FocusButton(.commonCancel) {
                 if chrome == .status {
                     cancel()
                 }
@@ -261,7 +261,7 @@ struct CloudLayeredLoadingView: View {
     }
 
     private var statusLine: some View {
-        ScrollingText(text: status, font: .system(size: 14), trigger: .always)
+        ScrollingText(text: String(localized: status), font: .system(size: 14), trigger: .always)
             .foregroundStyle(.white.opacity(0.76))
     }
 }
@@ -279,8 +279,8 @@ struct CloudLoadingWait: Equatable {
     /// Builds the display form of an operation progress text.
     /// - Parameter text: The service's progress text at the current moment.
     init(_ text: OperationProgressText) {
-        title = text.title
-        detail = text.details.joined(separator: Self.separator)
+        title = String(localized: text.title)
+        detail = text.details.map { String(localized: $0) }.joined(separator: Self.separator)
     }
 
     /// The headline and detail joined for VoiceOver, leaving out an empty detail.
@@ -527,7 +527,7 @@ struct CloudLoadingScreen<Picker: View>: View {
     /// The cover art URL used as the card's background.
     let artwork: URL?
     /// The current launch status line.
-    let status: String
+    let status: LocalizedStringResource
     /// The index of the current startup step shown by the card's step indicator.
     let activeStep: Int
     /// A timed service wait to show beneath the status, if any.

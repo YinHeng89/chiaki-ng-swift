@@ -1,3 +1,5 @@
+import Foundation
+
 /// How a Kakusan attempt ended.
 public enum KakusanAttemptOutcome: Equatable, Sendable {
     /// The user cancelled it.
@@ -24,12 +26,12 @@ public enum KakusanAttemptOutcome: Equatable, Sendable {
     }
 
     /// The message shown for the outcome.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .cancelled:
-            "Cancelled"
+            .kakusanAttemptCancelled
         case .left:
-            "Left the game"
+            .kakusanReasonLeftGame
         case .failed(let error):
             error.label
         case let .closed(reason, byPeer):
@@ -38,16 +40,16 @@ public enum KakusanAttemptOutcome: Equatable, Sendable {
     }
 
     /// The heading of the host's card for an ended attempt.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .failed(.noPath):
-            "A direct path wasn’t available"
+            .kakusanAttemptNoPathTitle
         case .failed(.pairingFailed):
-            "We couldn’t verify this pairing"
+            .kakusanAttemptUnverifiedTitle
         case .failed(.expired):
-            "Invitation expired"
+            .kakusanAttemptExpiredTitle
         case .cancelled, .left, .failed, .closed:
-            "Connection ended"
+            .kakusanAttemptEndedTitle
         }
     }
 

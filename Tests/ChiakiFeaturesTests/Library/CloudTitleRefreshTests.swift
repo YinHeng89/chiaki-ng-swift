@@ -76,7 +76,7 @@ private func expectOnlyTitleChanged(_ state: CloudLibraryFeature.State,
                                     from initial: CloudLibraryFeature.State) throws {
     let after = try #require(state.selectedGame)
     #expect(!after.needsLibraryAdd)
-    #expect(after.standing.label == "In your library")
+    #expect(String(localized: after.standing.label) == "In your library")
     #expect(state.matchingGames(in: .owned).map(\.id).contains(addable))
     for id in [owned, browse] {
         #expect(state.listedGames.first { $0.id == id } == initial.listedGames.first { $0.id == id })
@@ -116,7 +116,10 @@ private func expectOnlyTitleChanged(_ state: CloudLibraryFeature.State,
     }
     #expect(calls.products == [addable])
     try expectOnlyTitleChanged(store.state, from: initial)
-    #expect(store.state.titleNotice[addable]?.message == "Added. You can play it now.")
+    #expect(
+        store.state.titleNotice[addable].map { String(localized: $0.message) }
+            == "Added. You can play it now."
+    )
 
     await clock.advance(by: CloudLibraryFeature.titleRefreshCooldown)
     await store.receive(.titleRefreshCooled(attempt)) {
@@ -147,7 +150,7 @@ private func expectOnlyTitleChanged(_ state: CloudLibraryFeature.State,
         $0.titleRefresh = .coolingDown(attempt, until: cooledAt)
         $0.titleNotice[addable] = .notInLibrary
     }
-    #expect(store.state.titleNotice[addable]?.message
+    #expect(store.state.titleNotice[addable].map { String(localized: $0.message) }
         == "Not in your library yet. Add it on the PS Store, then refresh again.")
     #expect(store.state.selectedGame?.needsLibraryAdd == true)
     await clock.advance(by: CloudLibraryFeature.titleRefreshCooldown)
@@ -161,8 +164,11 @@ private func expectOnlyTitleChanged(_ state: CloudLibraryFeature.State,
     let account = UUID()
     let attempt = UUID(0)
     let clock = TestClock()
-    let message = "PlayStation refused the ownership check. Sign in again in Accounts."
-    let outcome = CloudTitleRefreshOutcome.failed(CloudTitleRefreshFailure(message))
+    let failure = CloudTitleRefreshFailure.signInRefused
+    #expect(String(localized: failure.message)
+        == "PlayStation refused the ownership check. Sign in again in Accounts.")
+    let message = failure.message
+    let outcome = CloudTitleRefreshOutcome.failed(failure)
     let initial = try readyState(account)
     let store = TestStore(initialState: initial) {
         CloudLibraryFeature()

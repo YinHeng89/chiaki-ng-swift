@@ -45,16 +45,16 @@ extension FocusButton where Label == Text {
     /// Creates a button with a localized text label.
     ///
     /// - Parameters:
-    ///   - titleKey: The label's localization key.
+    ///   - title: The label, from a string catalog.
     ///   - role: The button's role.
     ///   - action: Runs when the button is activated.
-    public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () -> Void) {
+    public init(_ title: LocalizedStringResource, role: ButtonRole? = nil, action: @escaping () -> Void) {
         self.init(role: role, action: action) {
-            Text(titleKey)
+            Text(title)
         }
     }
 
-    /// Creates a button with a text label.
+    /// Creates a button whose label is data shown as it is, such as a console's name.
     ///
     /// - Parameters:
     ///   - title: The label.
@@ -71,22 +71,22 @@ extension FocusButton where Label == SwiftUI.Label<Text, Image> {
     /// Creates a button with a localized title and an SF Symbol.
     ///
     /// - Parameters:
-    ///   - titleKey: The title's localization key.
+    ///   - title: The title, from a string catalog.
     ///   - systemImage: The SF Symbol name.
     ///   - role: The button's role.
     ///   - action: Runs when the button is activated.
     public init(
-        _ titleKey: LocalizedStringKey,
+        _ title: LocalizedStringResource,
         systemImage: String,
         role: ButtonRole? = nil,
         action: @escaping () -> Void
     ) {
         self.init(role: role, action: action) {
-            SwiftUI.Label(titleKey, systemImage: systemImage)
+            SwiftUI.Label(title, systemImage: systemImage)
         }
     }
 
-    /// Creates a button with a title and an SF Symbol.
+    /// Creates a button whose title is data shown as it is, with an SF Symbol.
     ///
     /// - Parameters:
     ///   - title: The title.

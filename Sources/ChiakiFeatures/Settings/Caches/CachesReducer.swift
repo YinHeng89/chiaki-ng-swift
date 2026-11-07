@@ -18,7 +18,7 @@ import Foundation
         /// A clear is running under the given operation ID.
         case clearing(UUID)
         /// The last load or clear failed with the given message.
-        case failed(String)
+        case failed(LocalizedStringResource)
     }
 
     /// Which cache's records are open below its row, and whether they have loaded.
@@ -30,7 +30,7 @@ import Foundation
         /// The records of a cache are shown.
         case shown(CacheKind, [CacheEntry])
         /// The records of a cache could not be read, with a message to show.
-        case failed(CacheKind, String)
+        case failed(CacheKind, LocalizedStringResource)
 
         /// The cache whose records are open, loading or failed, or `nil` when closed.
         public var cache: CacheKind? {
@@ -83,7 +83,7 @@ import Foundation
         /// Summaries, account names and decoded artwork count arrived for the load with the given ID.
         case loaded(UUID, [CacheSummary], [Data: String], Int)
         /// The load or clear with the given ID failed with a message.
-        case failed(UUID, String)
+        case failed(UUID, LocalizedStringResource)
         /// Opens a cache's records below its row and loads them.
         case open(CacheKind)
         /// Closes the open records and cancels any load of them.
@@ -91,7 +91,7 @@ import Foundation
         /// Records arrived for the entries load with the given ID.
         case entriesLoaded(UUID, [CacheEntry])
         /// The entries load with the given ID failed with a message.
-        case entriesFailed(UUID, String)
+        case entriesFailed(UUID, LocalizedStringResource)
         /// Asks the parent to confirm a clear, ignored while busy.
         case askClear(CacheClearing)
         /// Clears after confirmation, then reloads the summaries.
@@ -185,7 +185,7 @@ import Foundation
                         }
                         await send(.cleared(id))
                     } catch {
-                        await send(.failed(id, "The cache could not be cleared."))
+                        await send(.failed(id, .settingsCachesClearFailed))
                     }
                 }
             case .cleared(let id):
@@ -206,7 +206,7 @@ import Foundation
                 let summaries = try await client.cacheSummaries()
                 await send(.loaded(id, summaries, await client.cacheAccountNames(), client.decodedCount()))
             } catch {
-                await send(.failed(id, "The caches could not be read."))
+                await send(.failed(id, .settingsCachesReadFailed))
             }
         }.cancellable(id: CancelID.summaries, cancelInFlight: true)
     }
@@ -218,7 +218,7 @@ import Foundation
             do {
                 await send(.entriesLoaded(id, try await client.cacheEntries(cache)))
             } catch {
-                await send(.entriesFailed(id, "The entries could not be read."))
+                await send(.entriesFailed(id, .settingsCachesEntriesFailed))
             }
         }.cancellable(id: CancelID.entries, cancelInFlight: true)
     }

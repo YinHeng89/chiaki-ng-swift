@@ -33,7 +33,7 @@ private let launchDay = Date(timeIntervalSince1970: 1_800_000_000)
         standing: .store,
         trialOffer: .playFirstTrial
     )
-    #expect(trialOffer.trialOfferLabel == "Trial available")
+    #expect(trialOffer.trialOfferLabel.map { String(localized: $0) } == "Trial available")
     #expect(trialOffer.trialOfferIcon == .trial)
     #expect(trialOffer.trialLabel == nil)
     #expect(trialOffer.standingLabel(after: nil) == CloudStanding.store.label)
@@ -44,7 +44,7 @@ private let launchDay = Date(timeIntervalSince1970: 1_800_000_000)
         standing: .store,
         trialOffer: .demo
     )
-    #expect(demoOffer.trialOfferLabel == "Demo available")
+    #expect(demoOffer.trialOfferLabel.map { String(localized: $0) } == "Demo available")
     #expect(demoOffer.trialOfferIcon == .demo)
     let sale = CloudGame(productId: "sale", name: "For sale", standing: .store)
     #expect(sale.trialOfferLabel == nil)
@@ -65,7 +65,7 @@ private let launchDay = Date(timeIntervalSince1970: 1_800_000_000)
         mayRefreshTitle: false
     )
     #expect(actions.play?.allowed != true)
-    #expect(actions.store?.title == "View in Store")
+    #expect(actions.store.map { String(localized: $0.title) } == "View in Store")
     #expect(actions.addToLibrary == nil)
 }
 
@@ -91,11 +91,17 @@ private let storeDemo = CloudGame(
     listing.snapshot = CloudLibrarySnapshot(settledLocale: "en-GB", games: [usedTrial, storeDemo])
     listing.trialsWithdrawn = [usedTrial.id, storeDemo.id]
     #expect(listing.listed.first { $0.id == usedTrial.id }?.trialOfferLabel == nil)
-    #expect(listing.listed.first { $0.id == storeDemo.id }?.trialOfferLabel == "Demo available")
+    #expect(
+        listing.listed.first { $0.id == storeDemo.id }?.trialOfferLabel.map { String(localized: $0) }
+            == "Demo available"
+    )
     listing.snapshot = CloudLibrarySnapshot(settledLocale: "en-GB", games: [usedTrial, storeDemo])
     #expect(listing.listed.first { $0.id == usedTrial.id }?.trialOfferLabel == nil)
     listing.trialsWithdrawn = []
-    #expect(listing.listed.first { $0.id == usedTrial.id }?.trialOfferLabel == "Trial available")
+    #expect(
+        listing.listed.first { $0.id == usedTrial.id }?.trialOfferLabel.map { String(localized: $0) }
+            == "Trial available"
+    )
 }
 
 @MainActor @Test func openingAStoreGameWithdrawsATrialTheStoreNoLongerOffers() async {
@@ -138,7 +144,7 @@ private let storeDemo = CloudGame(
         standing: .store,
         trialOffer: .playFirstTrial
     )
-    #expect(offer.spokenTileLabel(after: nil).hasSuffix(", trial available"))
+    #expect(String(localized: offer.spokenTileLabel(after: nil)).hasSuffix(", trial available"))
     let held = CloudGame(
         productId: "demo",
         name: "Demo game",
@@ -146,9 +152,9 @@ private let storeDemo = CloudGame(
         standing: .inLibrary,
         isTrial: true
     )
-    #expect(held.spokenTileLabel(after: nil).hasSuffix(", demo"))
+    #expect(String(localized: held.spokenTileLabel(after: nil)).hasSuffix(", demo"))
     let plain = CloudGame(productId: "plain", name: "Plain", isOwned: true, standing: .inLibrary)
-    #expect(!plain.spokenTileLabel(after: nil).contains("trial"))
+    #expect(!String(localized: plain.spokenTileLabel(after: nil)).contains("trial"))
 }
 
 @MainActor @Test func theConsoleShelfTakesTheCloudMarksOnceTheCloudLibraryLoadedForTheSameAccount() {
@@ -158,7 +164,9 @@ private let storeDemo = CloudGame(
         $0 = account
     }
     var state = LibraryFeature.State()
-    state.recentlyPlayed.trialMarks = ["PPSA00001_00": CloudTrialMark(icon: .trial, label: "Trial")]
+    state.recentlyPlayed.trialMarks = [
+        "PPSA00001_00": CloudTrialMark(icon: .trial, label: .libraryTrialTrial)
+    ]
     #expect(state.shelfTrialMarks == state.recentlyPlayed.trialMarks)
     state.cloudLibrary.accountID = account
     state.cloudLibrary.listing.now = launchDay

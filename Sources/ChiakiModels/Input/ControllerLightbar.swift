@@ -1,3 +1,5 @@
+import Foundation
+
 /// The choice of light bar colour for a controller.
 public enum ControllerLightbar: Codable, Equatable, Hashable, Sendable {
     /// Use the colour the game sets.
@@ -78,19 +80,19 @@ public struct ControllerLightbars: Equatable, Sendable {
 public struct ControllerLightbarSwatch: Equatable, Hashable, Sendable, Identifiable {
     /// The swatches offered, in order.
     public static let all: [Self] = [
-        .init(name: "Blue", rgb: 0x0050ff),
-        .init(name: "Red", rgb: 0xff2020),
-        .init(name: "Green", rgb: 0x20d040),
-        .init(name: "Pink", rgb: 0xff40a0),
-        .init(name: "Purple", rgb: 0x8a40ff),
-        .init(name: "Orange", rgb: 0xff8000),
-        .init(name: "Cyan", rgb: 0x00d0e0),
-        .init(name: "White", rgb: 0xffffff),
-        .init(name: "Off", rgb: 0x000000)
+        .init(name: .controlsLightbarBlue, rgb: 0x0050ff),
+        .init(name: .controlsLightbarRed, rgb: 0xff2020),
+        .init(name: .controlsLightbarGreen, rgb: 0x20d040),
+        .init(name: .controlsLightbarPink, rgb: 0xff40a0),
+        .init(name: .controlsLightbarPurple, rgb: 0x8a40ff),
+        .init(name: .controlsLightbarOrange, rgb: 0xff8000),
+        .init(name: .controlsLightbarCyan, rgb: 0x00d0e0),
+        .init(name: .controlsLightbarWhite, rgb: 0xffffff),
+        .init(name: .controlsLightbarOff, rgb: 0x000000)
     ]
 
     /// The colour's name.
-    public let name: String
+    public let name: LocalizedStringResource
 
     /// The 24-bit RGB value.
     public let rgb: UInt32
@@ -98,5 +100,12 @@ public struct ControllerLightbarSwatch: Equatable, Hashable, Sendable, Identifia
     /// The swatch's identity, its colour.
     public var id: UInt32 {
         rgb
+    }
+
+    /// Hashes the swatch by its colour, since its name is not hashable.
+    ///
+    /// - Parameter hasher: The hasher to feed.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(rgb)
     }
 }

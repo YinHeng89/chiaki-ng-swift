@@ -51,13 +51,13 @@ public struct SignInView: View {
             SwiftUI.Button {
                 openURL(destination)
             } label: {
-                QRCodeImage(approvalURL, side: 220, label: "PlayStation sign-in code")
+                QRCodeImage(approvalURL, side: 220, label: .accountsSignInCodeLabel)
             }
             .buttonStyle(.plain)
             .focusable(false)
-            .accessibilityHint("Opens the sign-in page in the PlayStation app")
+            .accessibilityHint(.accountsSignInCodeHint)
         } else {
-            QRCodeImage(approvalURL, side: 220, label: "PlayStation sign-in code")
+            QRCodeImage(approvalURL, side: 220, label: .accountsSignInCodeLabel)
         }
     }
 
@@ -76,13 +76,13 @@ public struct SignInView: View {
 
     @ViewBuilder private var qrCode: some View {
         notice
-        FlowTitle(text: "PSN account", detail: "Sign in with your phone.")
+        FlowTitle(text: .accountsSignInTitle, detail: .accountsSignInQrDetail)
         if case .failed(let failure) = store.phase {
             message(AccountsFailureMessage.text(for: failure))
         } else if let code = store.code {
             message(store.acknowledged
-                ? "Scan this code with your phone, sign in to PlayStation there and approve this device."
-                : "Tick the box above to show the code.")
+                ? .accountsSignInQrScan
+                : .accountsSignInQrTickFirst)
             signInCode(code.approvalURL)
                 .blur(radius: store.acknowledged
                     ? 0
@@ -95,7 +95,7 @@ public struct SignInView: View {
             ProgressView()
                 .controlSize(.small)
                 .padding(.bottom, 10)
-            message("Preparing a sign-in code")
+            message(.accountsSignInQrPreparing)
         }
     }
 
@@ -104,16 +104,16 @@ public struct SignInView: View {
         var choices: [FlowTileChoice<EntryFocus>] = []
         if case .failed = store.phase {
             choices.append(FlowTileChoice(
-                label: "Show a new code", symbol: "qrcode",
-                hint: "Ask PlayStation for a fresh code to scan.",
+                label: .accountsSignInNewCode, symbol: "qrcode",
+                hint: .accountsSignInNewCodeHint,
                 focus: .newSignInCode, prominent: true
             ) {
                 store.send(.view(.start))
             })
         }
         choices.append(FlowTileChoice(
-            label: "Web browser", symbol: "safari",
-            hint: "Sign in in a web browser with your email and password instead.",
+            label: .accountsSignInWebBrowser, symbol: "safari",
+            hint: .accountsSignInWebBrowserHint,
             focus: .signInOtherMethod
         ) {
             store.send(.view(.choose(.browser)))
@@ -124,14 +124,10 @@ public struct SignInView: View {
 
     @ViewBuilder private var browser: some View {
         notice
-        FlowTitle(text: "PSN account", detail: "Sign in securely with your PlayStation account.")
-        message(
-            "Sign in with your PlayStation account email and password. If your account uses a passkey, "
-                + (store.offersQRCode
-                    ? "use a QR code instead"
-                    : "choose the page's QR code option instead")
-                    + ", because this window cannot use passkeys."
-        )
+        FlowTitle(text: .accountsSignInTitle, detail: .accountsSignInBrowserDetail)
+        message(store.offersQRCode
+            ? .accountsSignInBrowserPasskeyUseQr
+            : .accountsSignInBrowserPasskeyPageQr)
         if case .failed(let failure) = store.phase {
             message(AccountsFailureMessage.text(for: failure))
         }
@@ -141,10 +137,10 @@ public struct SignInView: View {
     private var browserChoices: [FlowTileChoice<EntryFocus>] {
         var choices = [
             FlowTileChoice(
-                label: "Sign in with PlayStation", symbol: "arrow.up.right",
+                label: .accountsSignInWithPlayStation, symbol: "arrow.up.right",
                 hint: store.acknowledged
-                    ? "Open the PlayStation sign-in page and sign in with your email and password."
-                    : "Tick the box above first.",
+                    ? .accountsSignInWithPlayStationHint
+                    : .accountsSignInTickFirst,
                 focus: EntryFocus.signInWithPlayStation, prominent: true, enabled: store.acknowledged
             ) {
                 store.send(.view(.start))
@@ -152,8 +148,8 @@ public struct SignInView: View {
         ]
         if store.offersQRCode {
             choices.append(FlowTileChoice(
-                label: "QR code", symbol: "qrcode",
-                hint: "Show a code to scan with another device, or tap it here to open the PlayStation app.",
+                label: .accountsSignInQrCode, symbol: "qrcode",
+                hint: .accountsSignInQrCodeHint,
                 focus: .signInOtherMethod
             ) {
                 store.send(.view(.choose(.qrCode)))
@@ -165,15 +161,15 @@ public struct SignInView: View {
 
     private var backChoice: FlowTileChoice<EntryFocus> {
         FlowTileChoice(
-            label: "Back", symbol: "arrow.uturn.backward",
-            hint: "Return to the previous screen.",
+            label: .commonBack, symbol: "arrow.uturn.backward",
+            hint: .accountsSignInBackHint,
             focus: .signInBack, cancels: true
         ) {
             store.send(.view(.back))
         }
     }
 
-    private func message(_ text: String) -> some View {
+    private func message(_ text: LocalizedStringResource) -> some View {
         Text(text)
             .font(.callout)
             .foregroundStyle(.secondary)

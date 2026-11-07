@@ -11,13 +11,13 @@ import SwiftUI
 /// returns focus to the button.
 struct ChoiceDropdown<Choice: Hashable, Stop: Hashable>: View {
     /// What the choices decide, read by VoiceOver and shown before the choice unless ``titleShown`` is off.
-    let title: String
+    let title: LocalizedStringResource
     /// The choices, in order.
     let choices: [Choice]
     /// The choice in effect.
     let chosen: Choice
     /// A choice's label.
-    let label: (Choice) -> String
+    let label: (Choice) -> LocalizedStringResource
     /// A choice's focus stop.
     let stop: (Choice) -> Stop
     /// The section's focus.
@@ -65,7 +65,7 @@ struct ChoiceDropdown<Choice: Hashable, Stop: Hashable>: View {
                             : "arrow.down")
                             .font(.system(size: 11, weight: .semibold))
                             .accessibilityLabel(direction == .reversed
-                                ? "reversed"
+                                ? .libraryDropdownReversed
                                 : "")
                     }
                 }
@@ -104,7 +104,7 @@ struct ChoiceDropdown<Choice: Hashable, Stop: Hashable>: View {
         .environment(\.focusHighlightStyleShape, .capsule)
         .accessibilityLabel(title)
         .accessibilityValue(label(chosen))
-        .accessibilityHint("Opens the choices")
+        .accessibilityHint(.libraryDropdownHint)
     }
 
     private func pick(_ choice: Choice) {
@@ -114,7 +114,10 @@ struct ChoiceDropdown<Choice: Hashable, Stop: Hashable>: View {
 
     private func present() {
         menuAnchor
-            .presentMenu(titles: choices.map(label), selected: choices.firstIndex(of: chosen)) { index in
+            .presentMenu(
+                titles: choices.map { String(localized: label($0)) },
+                selected: choices.firstIndex(of: chosen)
+            ) { index in
                 guard choices.indices.contains(index) else {
                     return
                 }

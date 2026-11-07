@@ -85,6 +85,12 @@ cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 </dict></array>
 </dict></plist>
 PLIST
+localizations=("$app_dir"/Contents/Resources/ChiakiNG_ChiakiFeatures.bundle/Contents/Resources/*.lproj(N:t:r))
+/usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string en" -c "Add :CFBundleLocalizations array" \
+    "$app_dir/Contents/Info.plist"
+for localization in "${localizations[@]}"; do
+    /usr/libexec/PlistBuddy -c "Add :CFBundleLocalizations: string $localization" "$app_dir/Contents/Info.plist"
+done
 icon_source="$project_dir/Assets/Images/Branding/chiaking-color.png"
 icon_dir="$project_dir/.build/app-icon/${version_tag:-untagged}"
 icon_cache="$icon_dir/AppIcon.icns"

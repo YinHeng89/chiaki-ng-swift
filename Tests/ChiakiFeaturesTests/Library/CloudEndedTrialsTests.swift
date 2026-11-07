@@ -65,7 +65,7 @@ private func endedTrialCatalog() -> CloudLibrarySnapshot {
     )
     #expect(actions.play == nil)
     #expect(actions.store == CloudGameActions.StoreLink(
-        title: "View in Store",
+        title: .libraryActionsViewInStore,
         fallback: URL(string: concept)
     ))
     #expect(actions.addToLibrary == nil)
@@ -91,7 +91,7 @@ private func endedTrialCatalog() -> CloudLibrarySnapshot {
         mayRefreshTitle: false
     )
     #expect(actions.play == nil)
-    #expect(actions.store?.title == "View in Store")
+    #expect(actions.store.map { String(localized: $0.title) } == "View in Store")
     #expect(actions.store?.fallback == nil)
     #expect(actions.purchaseCode == nil)
     #expect(actions.focusOrder == [.store])
@@ -105,10 +105,10 @@ private func endedTrialCatalog() -> CloudLibrarySnapshot {
         isTrial: true,
         isPlayFirstTrial: true
     )
-    #expect(playable.trialLabel == "Trial")
+    #expect(playable.trialLabel.map { String(localized: $0) } == "Trial")
     #expect(playable.trialIcon == .trial)
     let demo = CloudGame(productId: "demo", name: "Demo game", isOwned: true, isTrial: true)
-    #expect(demo.trialLabel == "Demo")
+    #expect(demo.trialLabel.map { String(localized: $0) } == "Demo")
     #expect(demo.trialIcon == .demo)
     #expect(AppIcon.demo.rawValue == "play.square")
     let owned = CloudGame(productId: "owned", name: "Owned", isOwned: true)

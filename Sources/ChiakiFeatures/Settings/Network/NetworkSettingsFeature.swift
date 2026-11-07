@@ -107,17 +107,15 @@ public struct NetworkSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Console discovery").font(.headline)
-            Text(
-                "Local networks are discovered automatically. Add other subnets to search them directly."
-            )
-            .font(.caption).foregroundStyle(.secondary)
+            Text(.settingsNetworkDiscoveryHeading).font(.headline)
+            Text(.settingsNetworkDiscoveryDetail)
+                .font(.caption).foregroundStyle(.secondary)
             NetworkSweepToggle(store: store.scope(state: \.discovery, action: \.discovery), focus: $focus)
             TextField("192.168.2.0/24", text: $store.subnets, axis: .vertical)
                 .lineLimit(3...6).textFieldStyle(.plain)
                 .menuFocusBinding($focus, equals: .subnets)
                 .controllerKeyboard(
-                    title: "Discovery subnets",
+                    title: .settingsNetworkDiscoverySubnets,
                     text: $store.subnets,
                     isFocused: focus == .subnets,
                     allowsNewline: true
@@ -129,22 +127,20 @@ public struct NetworkSettingsView: View {
                             .strokeBorder(.red, lineWidth: 1.5)
                     }
                 }
-                .accessibilityLabel("Discovery subnets")
+                .accessibilityLabel(.settingsNetworkDiscoverySubnets)
             if store.subnetsRejected {
                 Label(
-                    "Enter IPv4 subnets from /24 to /32, up to 1,024 addresses, for example 192.168.2.0/24.",
+                    .settingsNetworkSubnetsRejected,
                     systemImage: "exclamationmark.triangle"
                 )
                 .font(.caption)
                 .foregroundStyle(.red)
             }
-            Text(
-                "One subnet per line, /24–/32. Up to 1,024 addresses. Local subnets use broadcast."
-            )
-            .font(.caption).foregroundStyle(.secondary)
+            Text(.settingsNetworkSubnetsHelp)
+                .font(.caption).foregroundStyle(.secondary)
             SettingsPersistenceBanner(
                 store.discovery.setting,
-                subject: "network settings",
+                subject: .settingsNetworkDiscoverySubject,
                 reportsInvalid: false
             ) {
                 store.send(.discovery(.retry))
@@ -172,7 +168,7 @@ public struct NetworkSweepToggle: View {
     @MenuFocusState.Binding var focus: NetworkSettingsFocus?
 
     public var body: some View {
-        Toggle("Unicast sweep", isOn: $store.draft.unicastEnabled)
+        Toggle(.settingsNetworkUnicastSweep, isOn: $store.draft.unicastEnabled)
             .menuFocusBinding($focus, equals: .sweep)
             .accessibilityIdentifier("network-unicast-sweep")
     }

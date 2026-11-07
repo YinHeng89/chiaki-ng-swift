@@ -51,8 +51,8 @@ public struct ConsoleArtwork: View {
         .frame(height: height)
         .accessibilityLabel(
             kind == .ps5
-                ? "PlayStation 5"
-                : "PlayStation 4"
+                ? .consolesArtworkPs5
+                : .consolesArtworkPs4
         )
     }
 }
@@ -127,7 +127,7 @@ public struct DualSenseArtwork: View {
             Image(platformImage: image).renderingMode(.template).resizable().interpolation(.high)
                 .scaledToFit()
                 .foregroundStyle(.secondary)
-                .accessibilityLabel("DualSense controller")
+                .accessibilityLabel(.consolesArtworkDualSense)
         }
     }
 }

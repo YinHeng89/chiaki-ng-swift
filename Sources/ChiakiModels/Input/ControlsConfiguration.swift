@@ -239,7 +239,7 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
         let base = String(name.trimmingCharacters(in: .whitespacesAndNewlines).prefix(70))
         let names = Set(presets.map(\.name))
         let start = base.isEmpty
-            ? "Controller"
+            ? String(localized: .controlsPresetControllerName)
             : base
         guard names.contains(start) else {
             return start
@@ -565,7 +565,8 @@ public struct RememberedController: Codable, Equatable, Sendable {
     /// - Returns: A device with no runtime identifier.
     public func device(key: String) -> ControllerDevice {
         ControllerDevice(
-            id: 0, preferenceKey: key, name: name, transport: "Not connected", individual: individual,
+            id: 0, preferenceKey: key, name: name, transport: String(localized: .controlsDeviceNotConnected),
+            individual: individual,
             rumble: rumble, lights: lights, motion: motion, touchpad: touchpad,
             adaptiveTriggers: adaptiveTriggers, family: family
         )

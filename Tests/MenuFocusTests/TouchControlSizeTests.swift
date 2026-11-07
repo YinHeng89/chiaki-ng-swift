@@ -25,10 +25,10 @@ struct TouchControlSizeTests {
 
     @Test(.requiresWindowServer) func segmentsGrowToAFingerOnTouchAndKeepTheirPointerSize() async {
         let pointer = await focusedHeight(touch: false) {
-            FocusableSegments(options: ["One", "Two"], title: { $0 }, selection: .constant("One"))
+            FocusableSegments(options: ["One", "Two"], title: { .verbatim($0) }, selection: .constant("One"))
         }
         let touch = await focusedHeight(touch: true) {
-            FocusableSegments(options: ["One", "Two"], title: { $0 }, selection: .constant("One"))
+            FocusableSegments(options: ["One", "Two"], title: { .verbatim($0) }, selection: .constant("One"))
         }
         #expect(pointer > 0)
         #expect(pointer < ScreenLayout.touchTarget - 8)

@@ -62,7 +62,7 @@ private func listing(_ snapshot: CloudLibrarySnapshot, platform: CloudPlatformFi
         mayRefreshTitle: false, otherVersion: snapshot.games[1]
     )
     #expect(actions.otherVersion == CloudGameActions.VersionSwitch(to: snapshot.games[1]))
-    #expect(actions.otherVersion?.title == "Show PS4 version")
+    #expect(actions.otherVersion.map { String(localized: $0.title) } == "Show PS4 version")
     #expect(actions.focusOrder.last == .otherVersion)
     let picking = CloudGameActions(
         game: snapshot.games[0], accountID: UUID(), check: nil, bundleChoices: [], titleRefreshIdle: true,

@@ -25,27 +25,27 @@ extension CouchSeat {
     /// The status text and tone shown for the seat.
     ///
     /// - Parameter console: What the stream plays from, which changes how a join is described.
-    func status(on console: CouchConsole) -> (text: String, tone: CouchTone) {
+    func status(on console: CouchConsole) -> (text: LocalizedStringResource, tone: CouchTone) {
         switch self {
         case .open:
-            ("Open", .idle)
+            (.playbackCouchStatusOpen, .idle)
         case .choosingAccount:
-            ("Choosing an account", .waiting)
+            (.playbackCouchStatusChoosingAccount, .waiting)
         case .joining:
             switch console {
             case .ps4:
-                ("Joining", .waiting)
+                (.playbackCouchStatusJoining, .waiting)
             case .ps5:
-                ("Waiting for the PS5", .waiting)
+                (.playbackCouchStatusWaitingForConsole, .waiting)
             case .cloud:
-                ("Joining", .waiting)
+                (.playbackCouchStatusJoining, .waiting)
             }
         case .pickingOnConsole:
-            ("Choose a user on the TV", .waiting)
+            (.playbackCouchStatusChooseUserOnTv, .waiting)
         case .passcode:
-            ("Entering a passcode", .waiting)
+            (.playbackCouchStatusEnteringPasscode, .waiting)
         case .ready:
-            ("Ready", .ready)
+            (.playbackCouchStatusReady, .ready)
         }
     }
 
@@ -84,51 +84,51 @@ enum CouchLight {
 
 extension CouchFailure {
     /// Why the join failed, as a sentence for the player.
-    var explanation: String {
+    var explanation: LocalizedStringResource {
         switch self {
         case .notSent:
-            "The join couldn’t be sent to the console."
+            .playbackCouchFailureNotSent
         case .refused(let status):
-            "The console refused the join (status \(status))."
+            .playbackCouchFailureRefused(status: String(status))
         case .timedOut:
-            "The PS5 didn’t answer in time."
+            .playbackCouchFailureTimedOut
         case .passcodeAttempts:
-            "Three passcodes weren’t accepted."
+            .playbackCouchFailurePasscodeAttempts
         case .accountUnresolvable:
-            "This PS5 doesn’t recognise that account."
+            .playbackCouchFailureAccountUnresolvable
         }
     }
 }
 
 extension CouchNotice {
     /// The notice's headline.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case let .joined(pad, player, _):
             if let name = player.remote?.name ?? player.account?.name {
-                return "\(name) joined as Player \(Int(pad) + 1)"
+                return .playbackCouchNoticeJoinedNamed(name: name, number: Int(pad) + 1)
             }
-            return "Player \(Int(pad) + 1) joined"
+            return .playbackCouchNoticeJoined(number: Int(pad) + 1)
         case .joinFailed(let pad, _):
-            return "Player \(Int(pad) + 1) couldn’t join"
+            return .playbackCouchNoticeJoinFailed(number: Int(pad) + 1)
         case .released(let pad):
-            return "Player \(Int(pad) + 1) left"
+            return .playbackCouchNoticeLeft(number: Int(pad) + 1)
         case .disconnected(let pad):
-            return "Player \(Int(pad) + 1)’s controller disconnected"
+            return .playbackCouchNoticeDisconnected(number: Int(pad) + 1)
         case .left(let pad):
-            return "Player \(Int(pad) + 1) left"
+            return .playbackCouchNoticeLeft(number: Int(pad) + 1)
         case let .switched(pad, device):
-            let target = device.isKeyboard
-                ? "the keyboard"
-                : device.name
-            return "Player \(Int(pad) + 1) switched to \(target)"
+            guard !device.isKeyboard else {
+                return .playbackCouchNoticeSwitchedToKeyboard(number: Int(pad) + 1)
+            }
+            return .playbackCouchNoticeSwitched(number: Int(pad) + 1, device: device.name)
         case .remote(let notice):
             return notice.title
         }
     }
 
     /// More about the notice, if there is more to say.
-    var detail: String? {
+    var detail: LocalizedStringResource? {
         switch self {
         case let .joinFailed(_, failure):
             failure.explanation
@@ -156,15 +156,15 @@ extension CouchNotice {
 
 extension CouchSeats {
     /// The question asked while choosing the account for a seat or a remote guest.
-    func accountQuestion(for choice: CouchAccountChoice) -> String {
+    func accountQuestion(for choice: CouchAccountChoice) -> LocalizedStringResource {
         switch choice {
         case .pad(let pad):
-            return "Who’s playing as Player \(Int(pad) + 1)?"
+            return .playbackCouchQuestionPad(number: Int(pad) + 1)
         case .remote(let guest):
             guard let name = wait(for: guest)?.remote.name else {
-                return "Which account is the remote player using?"
+                return .playbackCouchQuestionRemote
             }
-            return "Which account is \(name) using?"
+            return .playbackCouchQuestionRemoteNamed(name: name)
         }
     }
 }

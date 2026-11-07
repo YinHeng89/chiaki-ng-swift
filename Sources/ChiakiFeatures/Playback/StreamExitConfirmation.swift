@@ -18,7 +18,7 @@ struct StreamExitConfirmationOverlay: View {
     /// Whether a console or cloud stream is being left, which sets the wording and the stop trace.
     let stream: StreamStopTrace.Stream
     /// The title of the plain disconnect choice.
-    let leaveTitle: String
+    let leaveTitle: LocalizedStringResource
     @State private var selection = Choice.stay
     @State private var hostWindow: PlatformWindow?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -35,11 +35,11 @@ struct StreamExitConfirmationOverlay: View {
                         .frame(width: 56, height: 56)
                         .glassEffect(AppGlass.control, in: .circle)
                     Text(stream == .cloud
-                        ? "End the cloud session?"
-                        : "Leave the stream?")
+                        ? .playbackExitCloudTitle
+                        : .playbackExitTitle)
                         .font(.title2.weight(.semibold))
                     if store.exitChoices == .restMode {
-                        Text("Your console goes into rest mode when you leave.")
+                        Text(.playbackExitRestModeNote)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -84,20 +84,20 @@ struct StreamExitConfirmationOverlay: View {
         }
     }
 
-    private func title(_ choice: Choice) -> String {
+    private func title(_ choice: Choice) -> LocalizedStringResource {
         switch choice {
         case .stay:
-            "Keep playing"
+            .playbackExitKeepPlaying
         case .leave:
             leaveTitle
         case .rest:
             store.exitChoices == .restMode
-                ? "Leave"
-                : "Rest mode"
+                ? .playbackExitLeave
+                : .playbackExitRestMode
         }
     }
 
-    private func choice(_ choice: Choice, title: String, role: ButtonRole?) -> some View {
+    private func choice(_ choice: Choice, title: LocalizedStringResource, role: ButtonRole?) -> some View {
         let focused = selection == choice
         return FocusButton(role: role) {
             perform(choice)

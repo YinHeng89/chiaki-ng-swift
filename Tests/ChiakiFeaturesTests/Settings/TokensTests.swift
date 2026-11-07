@@ -126,7 +126,7 @@ private func useTokens(_ vault: Vault, granting: Bool, in dependencies: inout De
         $0.phase = .loading(UUID(0))
     }
     await store.receive(.failed(UUID(0))) {
-        $0.phase = .failed("Saved accounts could not be read.")
+        $0.phase = .failed(.settingsTokensAccountsUnreadable)
     }
 }
 
@@ -286,7 +286,7 @@ private func useTokens(_ vault: Vault, granting: Bool, in dependencies: inout De
         $0.unlocked = true
     }
     await store.receive(.notRevealed(UUID(0), .signedOut)) {
-        $0.reveal = .refused(appTarget, "This account is signed out.")
+        $0.reveal = .refused(appTarget, .settingsTokensNotRevealedSignedOut)
     }
     #expect(!secrets.holds(OperationID(uuid: UUID(0))))
     await store.send(.hide) {
@@ -380,43 +380,46 @@ private func useTokens(_ vault: Vault, granting: Bool, in dependencies: inout De
     let kinds = CredentialKind.allCases
     let states = CredentialState.allCases
     let uses = CredentialUse.allCases
-    #expect(kinds.map(\.title) == [
+    #expect(kinds.map { String(localized: $0.title) } == [
         "NPSSO", "App token", "App refresh token", "Remote Play token", "Remote Play refresh token",
         "Library token", "Old service checkout token"
     ])
-    #expect(states.map(\.label) == ["Usable", "Expired", "Refused", "Never obtained", "Unverified"])
-    #expect(uses.map(\.label) == [
+    #expect(states.map { String(localized: $0.label) } == [
+        "Usable", "Expired", "Refused", "Never obtained", "Unverified"
+    ])
+    #expect(uses.map { String(localized: $0.label) } == [
         "Exchanging tokens", "Cloud streaming authorisation", "Old service store", "Profile", "Membership",
         "Storefront check", "Console titles", "Starting a title", "Owned copy concepts",
         "Renewing the app token", "Account consoles", "Internet play", "Renewing the Remote Play token",
         "Owned library", "Old service checkout"
     ])
-    #expect(Set(NotRevealed.Reason.allCases.map(\.message)).count == NotRevealed.Reason.allCases.count)
+    let messages = Set(NotRevealed.Reason.allCases.map { String(localized: $0.message) })
+    #expect(messages.count == NotRevealed.Reason.allCases.count)
     #expect(SettingsRoute.allCases.contains(.tokens))
-    #expect(SettingsRoute.tokens.title == "Tokens")
+    #expect(String(localized: SettingsRoute.tokens.title) == "Tokens")
 }
 
 @Test func aCredentialRowStatesItsFactsAndNeverAValue() {
     let locale = Locale(identifier: "en_GB")
     let held = HeldCredentialPresentation(appToken, locale: locale, timeZone: .gmt)
-    #expect(held.title == "App token")
-    #expect(held.status == "Usable")
+    #expect(String(localized: held.title) == "App token")
+    #expect(String(localized: held.status) == "Usable")
     #expect(held.held)
-    #expect(held.facts == [
-        .init(label: "Obtained", value: "14 Nov 2023 at 22:13"),
-        .init(label: "Expires", value: "14 Nov 2023 at 23:13"),
-        .init(label: "Scopes", value: "psn:mobile.v2.core"),
-        .init(label: "Last reply", value: "HTTP 200"),
-        .init(label: "Used for", value: "Profile, Membership")
+    #expect(held.facts.map { String(localized: $0.label) } == [
+        "Obtained", "Expires", "Scopes", "Last reply", "Used for"
+    ])
+    #expect(held.facts.map(\.value) == [
+        "14 Nov 2023 at 22:13", "14 Nov 2023 at 23:13", "psn:mobile.v2.core", "HTTP 200",
+        "Profile, Membership"
     ])
     let missing = HeldCredentialPresentation(libraryToken, locale: locale, timeZone: .gmt)
-    #expect(missing.status == "Never obtained")
+    #expect(String(localized: missing.status) == "Never obtained")
     #expect(!missing.held)
     #expect(missing.facts.map(\.value) == ["Unknown", "Unknown", "None", "None", "Owned library"])
     let lapsed = HeldCredentialPresentation(
         HeldCredential(kind: .appToken, held: false, state: .expired), locale: locale, timeZone: .gmt
     )
-    #expect(lapsed.status == "Not held, expired")
+    #expect(String(localized: lapsed.status) == "Not held, expired")
     #expect(lapsed.facts.last?.value == "Nothing")
 }
 
@@ -429,7 +432,7 @@ private func useTokens(_ vault: Vault, granting: Bool, in dependencies: inout De
         ),
         locale: locale, timeZone: .gmt
     )
-    #expect(seed.title == "NPSSO" && seed.status == "Unverified")
+    #expect(String(localized: seed.title) == "NPSSO" && String(localized: seed.status) == "Unverified")
     #expect(seed.facts.prefix(2).map(\.value) == ["14 Nov 2023 at 22:13", "15 Nov 2023 at 22:13"])
     for kind in [CredentialKind.signInSeed, .appRefreshToken, .remotePlayRefreshToken] {
         let lapsed = HeldCredentialPresentation(
@@ -439,13 +442,13 @@ private func useTokens(_ vault: Vault, granting: Bool, in dependencies: inout De
             ),
             locale: locale, timeZone: .gmt
         )
-        #expect(lapsed.held && lapsed.status == "Expired")
+        #expect(lapsed.held && String(localized: lapsed.status) == "Expired")
         #expect(lapsed.facts.prefix(2).map(\.value) == ["14 Nov 2023 at 22:13", "14 Nov 2023 at 23:13"])
     }
     let undated = HeldCredentialPresentation(
         HeldCredential(kind: .remotePlayRefreshToken, held: true, kept: .withTheUser, state: .usable),
         locale: locale, timeZone: .gmt
     )
-    #expect(undated.status == "Usable")
+    #expect(String(localized: undated.status) == "Usable")
     #expect(undated.facts.prefix(2).map(\.value) == ["Unknown", "Unknown"])
 }

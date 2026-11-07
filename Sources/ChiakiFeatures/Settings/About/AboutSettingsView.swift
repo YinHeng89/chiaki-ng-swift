@@ -12,7 +12,6 @@ public struct AboutSettingsView: View {
     /// The About reducer the page reads and sends actions to.
     public let store: StoreOf<AboutReducer>
     @Environment(\.screenLayout) private var layout
-    @State private var hovered: AboutReducer.Link?
 
     /// Creates an About settings view.
     ///
@@ -45,9 +44,9 @@ public struct AboutSettingsView: View {
 
     private var versions: some View {
         HStack(alignment: .top, spacing: 28) {
-            figure("Version", AppVersion.display())
-            figure("Core", core)
-            figure("License", "AGPL-3.0")
+            figure(.settingsAboutVersion, AppVersion.display())
+            figure(.settingsAboutCore, core)
+            figure(.settingsAboutLicense, "AGPL-3.0")
         }
         .padding(.top, 4)
     }
@@ -61,7 +60,7 @@ public struct AboutSettingsView: View {
             : "chiaki-ng-core \(build.version) (\(build.commit))"
     }
 
-    private func figure(_ label: String, _ value: String) -> some View {
+    private func figure(_ label: LocalizedStringResource, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.caption)
@@ -74,8 +73,8 @@ public struct AboutSettingsView: View {
     }
 
     private var thanks: some View {
-        SettingsCard("Thanks to the following affiliated projects") {
-            Text("who collaborated on chiaki-ng, without whom this would not have been possible.")
+        SettingsCard(.settingsAboutThanksTitle) {
+            Text(.settingsAboutThanksDetail)
                 .font(.callout)
                 .foregroundStyle(.secondary)
             ForEach(Self.projects, id: \.name) { project in
@@ -88,8 +87,8 @@ public struct AboutSettingsView: View {
 
     /// The affiliated projects the About page thanks, in the order it lists them.
     static let projects = [
-        AboutProject(name: "thestr4ng3r", note: "for the original chiaki", link: .originalChiaki),
-        AboutProject(name: "Chiaki-TV", author: "TechAntoHere", note: "(to be released)"),
+        AboutProject(name: "thestr4ng3r", note: .settingsAboutNoteOriginalChiaki, link: .originalChiaki),
+        AboutProject(name: "Chiaki-TV", author: "TechAntoHere", note: .settingsAboutNoteToBeReleased),
         AboutProject(name: "Pylux", author: "Forward Technologies LLC", link: .pylux),
         AboutProject(name: "Pxplay", author: "grill2010", link: .pxplay),
         AboutProject(name: "Cloudpad", author: "Chaz", link: .cloudpad),
@@ -97,22 +96,19 @@ public struct AboutSettingsView: View {
     ]
 
     private func project(
-        _ name: String, author: String? = nil, note: String? = nil, link: AboutReducer.Link?
+        _ name: String, author: String? = nil, note: LocalizedStringResource? = nil, link: AboutReducer.Link?
     ) -> some View {
         HStack(spacing: 6) {
             if let link {
-                self.link(name, link, hint: "Opens the project's page")
+                self.link(Text(name), link, hint: .settingsAboutProjectHint)
             } else {
                 Text(name)
                     .font(.callout.weight(.semibold))
             }
             if let author {
-                Text("by")
+                byline(author)
                     .font(.callout)
                     .foregroundStyle(.secondary)
-                Text(author)
-                    .font(.callout.weight(.medium))
-                    .foregroundStyle(Palette.accent)
             }
             if let note {
                 Text(note)
@@ -122,6 +118,15 @@ public struct AboutSettingsView: View {
             Spacer(minLength: 0)
         }
         .frame(minHeight: 30)
+    }
+
+    private func byline(_ author: String) -> Text {
+        var line = AttributedString(localized: .settingsAboutProjectBy(author: author))
+        if let range = line.range(of: author) {
+            line[range].swiftUI.font = .callout.weight(.medium)
+            line[range].swiftUI.foregroundColor = Palette.accent
+        }
+        return Text(line)
     }
 
     private var contributors: some View {
@@ -135,7 +140,7 @@ public struct AboutSettingsView: View {
                         .rotationEffect(store.contributorsShown
                             ? .degrees(90)
                             : .zero)
-                    Text("And all contributors to chiaki-ng")
+                    Text(.settingsAboutAllContributors)
                         .font(.callout)
                     Text("\(store.contributors.count)")
                         .font(.caption.weight(.semibold))
@@ -150,8 +155,8 @@ public struct AboutSettingsView: View {
             .buttonStyle(.plain)
             .focusHighlightShape(.roundedRectangle(8))
             .accessibilityLabel(store.contributorsShown
-                ? "Hide the contributors"
-                : "Show the contributors")
+                ? .settingsAboutHideContributors
+                : .settingsAboutShowContributors)
             if store.contributorsShown {
                 WrappingRow(spacing: 6) {
                     ForEach(store.contributors, id: \.self) { login in
@@ -168,7 +173,7 @@ public struct AboutSettingsView: View {
                         }
                         .buttonStyle(.plain)
                         .focusHighlightShape(.capsule)
-                        .accessibilityHint("Opens the contributor's GitHub profile")
+                        .accessibilityHint(.settingsAboutContributorHint)
                     }
                 }
             }
@@ -176,11 +181,11 @@ public struct AboutSettingsView: View {
         .animation(.easeOut(duration: 0.15), value: store.contributorsShown)
     }
 
-    private func link(_ name: String, _ link: AboutReducer.Link, hint: String) -> some View {
+    private func link(_ name: Text, _ link: AboutReducer.Link, hint: LocalizedStringResource) -> some View {
         FocusButton {
             store.send(.open(link))
         } label: {
-            Text(name)
+            name
                 .font(.callout.weight(.semibold))
                 .underline()
                 .foregroundStyle(Palette.accent)
@@ -193,10 +198,10 @@ public struct AboutSettingsView: View {
     }
 
     private var maintainer: some View {
-        SettingsCard("Lead maintainer") {
+        SettingsCard(.settingsAboutLeadMaintainer) {
             HStack(spacing: 6) {
-                link("Street Pea", .leadMaintainer, hint: "Opens Street Pea's GitHub profile")
-                Text("github.com/streetpea")
+                link(Text(verbatim: "Street Pea"), .leadMaintainer, hint: .settingsAboutMaintainerHint)
+                Text(verbatim: "github.com/streetpea")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Spacer(minLength: 0)
@@ -212,6 +217,7 @@ public struct AboutSettingsView: View {
                 github
                 contact
             }
+            .fixedSize(horizontal: false, vertical: true)
             VStack(spacing: 16) {
                 discord
                 github
@@ -227,9 +233,9 @@ public struct AboutSettingsView: View {
                 tint: Self.discordBlue,
                 fallback: "bubble.left.and.bubble.right.fill"
             ),
-            title: "Discord", button: "Join the Discord", link: .discord
+            title: .settingsAboutDiscordTitle, button: .settingsAboutDiscordButton, link: .discord
         ) {
-            Text("Join the chiaki-ng Discord for help, testing builds and release news.")
+            Text(.settingsAboutDiscordDetail)
         }
     }
 
@@ -240,33 +246,35 @@ public struct AboutSettingsView: View {
                 tint: Self.githubBlack,
                 fallback: "chevron.left.forwardslash.chevron.right"
             ),
-            title: "GitHub", button: "Open GitHub", link: .github
+            title: .settingsAboutGithubTitle, button: .settingsAboutGithubButton, link: .github
         ) {
-            Text("The chiaki-ng project")
+            Text(.settingsAboutGithubDetail)
         }
     }
 
     private var contact: some View {
         tile(
             mark: mark(nil, tint: Color.primary.opacity(0.08), fallback: "envelope"),
-            title: "Contact", button: "Send an email", link: .email
+            title: .settingsAboutContactTitle, button: .settingsAboutContactButton, link: .email
         ) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("streetpea@proton.me")
+                Text(verbatim: "streetpea@proton.me")
                     .font(.callout.monospaced())
                     .textSelection(.enabled)
-                Text("(we prefer Discord)")
+                Text(.settingsAboutContactPreference)
                     .font(.caption)
             }
         }
     }
 
     private func tile(
-        mark: some View, title: String, button: String, link: AboutReducer.Link,
+        mark: some View,
+        title: LocalizedStringResource,
+        button: LocalizedStringResource,
+        link: AboutReducer.Link,
         @ViewBuilder detail: () -> some View
     ) -> some View {
         let radius = GlassPanel.Radius.small
-        let grown = hovered == link
         let shown = detail()
         return FocusButton {
             store.send(.open(link))
@@ -285,26 +293,15 @@ public struct AboutSettingsView: View {
             }
             .multilineTextAlignment(.leading)
             .padding(17)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .glassEffect(AppGlass.panel, in: .rect(cornerRadius: radius.points))
             .contentShape(radius.shape)
         }
         .buttonStyle(.plain)
-        .glassEffect(AppGlass.panel.interactive(), in: .rect(cornerRadius: radius.points))
         .focusHighlightShape(.roundedRectangle(radius.points))
-        .scaleEffect(grown
-            ? 1.02
-            : 1)
-            .animation(.easeOut(duration: 0.15), value: grown)
-            .onHover { hovering in
-                if hovering {
-                    hovered = link
-                } else if hovered == link {
-                    hovered = nil
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .accessibilityLabel(title)
-            .accessibilityHint(button)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityLabel(title)
+        .accessibilityHint(button)
     }
 
     private func mark(_ image: PlatformImage?, tint: Color, fallback: String) -> some View {
@@ -336,29 +333,26 @@ public struct AboutSettingsView: View {
     }
 
     private var license: some View {
-        SettingsCard("License") {
-            Text(
-                "chiaki-ng is free and open source software developed by hobbyists and enthusiasts under the "
-                    + "GNU Affero General Public License, version 3, with several exclusions. Please refer to "
-                    + "GitHub for more information."
-            )
-            .font(.callout)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
+        SettingsCard(.settingsAboutLicense) {
+            Text(.settingsAboutLicenseDetail)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
     private var privacy: some View {
-        SettingsCard("Privacy") {
+        SettingsCard(.settingsAboutPrivacy) {
             VStack(alignment: .leading, spacing: 8) {
-                Text(
-                    "chiaki-ng's developers collect nothing. Your account and consoles stay on this device and "
-                        + "are sent only to PlayStation's servers and your own consoles."
+                Text(.settingsAboutPrivacyDetail)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                link(
+                    Text(.settingsAboutPrivacyPolicy),
+                    .privacyPolicy,
+                    hint: .settingsAboutPrivacyPolicyHint
                 )
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                link("Privacy policy", .privacyPolicy, hint: "Opens the privacy policy")
             }
         }
     }
@@ -420,7 +414,7 @@ struct AboutProject {
     var author: String?
 
     /// A note shown after it.
-    var note: String?
+    var note: LocalizedStringResource?
 
     /// Its page, when it has one.
     var link: AboutReducer.Link?

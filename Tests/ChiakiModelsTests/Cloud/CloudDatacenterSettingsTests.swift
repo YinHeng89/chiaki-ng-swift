@@ -107,11 +107,12 @@ private let probes = [
     ]
     let offer = CloudDatacenterLaunchOffer(rows: rows)
     #expect(offer.entries.map(\.name) == ["us-east-1", "eu-west-1", "ap-north-1"])
-    #expect(offer.entries.map(\.pingDescription) == ["34 ms", "91 ms", "No reply"])
+    #expect(offer.entries.map { String(localized: $0.pingDescription) } == ["34 ms", "91 ms", "No reply"])
     #expect(offer.entries.map(\.highLatency) == [false, true, true])
     #expect(offer.lowest?.name == "us-east-1")
     #expect(offer.timeoutSeconds == 15)
-    #expect(CloudDatacenterLaunchOffer.pingNote == "Ping is the adjusted value the stream core reports")
+    #expect(String(localized: CloudDatacenterLaunchOffer.pingNote)
+        == "Ping is the adjusted value the stream core reports")
     #expect(offer.offers("eu-west-1") && offer.offers("Auto") && !offer.offers("sa-east-1"))
     let unanswered = CloudDatacenterLaunchOffer(rows: [rows[1]])
     #expect(unanswered.lowest == nil)
@@ -122,12 +123,13 @@ private let probes = [
     let picked = CloudDatacenterSelection.reported(
         name: "eu-west-1", rttMs: 91, forced: true, settings: settings, service: .psCloud, atLaunch: true
     )
-    #expect(picked.connectingDescription == "Connecting to eu-west-1 (91 ms)")
-    #expect(picked.statisticsDescription == "eu-west-1 at 91 ms, chosen at launch")
+    #expect(String(localized: picked.connectingDescription) == "Connecting to eu-west-1 (91 ms)")
+    #expect(String(localized: picked.statisticsDescription) == "eu-west-1 at 91 ms, chosen at launch")
     let timedOut = CloudDatacenterSelection.reported(
         name: "us-east-1", rttMs: 34, forced: false, settings: settings, service: .psCloud, atLaunch: true
     )
-    #expect(timedOut.automatic && timedOut.statisticsDescription == "us-east-1 at 34 ms, automatic")
+    #expect(timedOut.automatic && String(localized: timedOut.statisticsDescription)
+        == "us-east-1 at 34 ms, automatic")
 }
 
 @Test func lastConnectionRoundTripsSurvivesForgettingAndRejectsInvalidNames() throws {
@@ -160,7 +162,7 @@ private let probes = [
 
 @Test func launchOfferEntriesDescribeTheSavedBandwidth() {
     #expect(CloudDatacenterLaunchOffer.Entry(name: "sjcb", rttMs: 1, bandwidthKbps: 55000)
-        .bandwidthDescription == "55 Mbps")
+        .bandwidthDescription.map { String(localized: $0) } == "55 Mbps")
     #expect(CloudDatacenterLaunchOffer.Entry(name: "sjcb", rttMs: 1).bandwidthDescription == nil)
     #expect(CloudDatacenterLaunchOffer.Entry(name: "sjcb", rttMs: 1, bandwidthKbps: 0)
         .bandwidthDescription == nil)

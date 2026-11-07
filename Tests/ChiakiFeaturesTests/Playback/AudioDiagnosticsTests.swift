@@ -15,9 +15,9 @@ private func audioReport(_ raw: [String: NSNumber]) -> StreamDiagnosticsReport {
 
 @Test func audioDiagnosticsWaitForReceivedHeader() {
     let report = audioReport(["audioChannels": 2, "audioSampleRate": 48000])
-    #expect(report.receivedAudioChannels == "Waiting")
-    #expect(report.receivedAudioRate == "Waiting")
-    #expect(report.playbackAudioChannels == "2 channels")
+    #expect(String(localized: report.receivedAudioChannels) == "Waiting")
+    #expect(String(localized: report.receivedAudioRate) == "Waiting")
+    #expect(String(localized: report.playbackAudioChannels) == "2 channels")
 }
 
 @Test func audioDiagnosticsShowReceivedFormatWhenPlaybackIsUnavailable() {
@@ -30,11 +30,11 @@ private func audioReport(_ raw: [String: NSNumber]) -> StreamDiagnosticsReport {
         let label = channels == 1
             ? "channel"
             : "channels"
-        #expect(report.receivedAudioChannels == "\(channels) \(label)")
-        #expect(report.playbackAudioChannels == "Waiting")
-        #expect(report.receivedAudioRate == "48000 Hz")
-        #expect(report.audioStatus == "Unavailable")
-        #expect(report.audioUnderrunsSummary.value == "Unavailable")
+        #expect(String(localized: report.receivedAudioChannels) == "\(channels) \(label)")
+        #expect(String(localized: report.playbackAudioChannels) == "Waiting")
+        #expect(String(localized: report.receivedAudioRate) == "48000 Hz")
+        #expect(String(localized: report.audioStatus) == "Unavailable")
+        #expect(String(localized: report.audioUnderrunsSummary.value) == "Unavailable")
     }
 }
 
@@ -45,9 +45,9 @@ private func audioReport(_ raw: [String: NSNumber]) -> StreamDiagnosticsReport {
         "audioChannels": 2,
         "audioSampleRate": 44100
     ])
-    #expect(report.receivedAudioChannels == "8 channels")
-    #expect(report.receivedAudioRate == "48000 Hz")
-    #expect(report.playbackAudioChannels == "2 channels")
+    #expect(String(localized: report.receivedAudioChannels) == "8 channels")
+    #expect(String(localized: report.receivedAudioRate) == "48000 Hz")
+    #expect(String(localized: report.playbackAudioChannels) == "2 channels")
 }
 
 @Test func audioDiagnosticsShowHowManyReceivedChannelsCarrySound() {
@@ -58,7 +58,7 @@ private func audioReport(_ raw: [String: NSNumber]) -> StreamDiagnosticsReport {
             "audioReceivedActiveChannels": NSNumber(value: active)
         ])
     }
-    #expect(report(2).receivedAudioChannels == "8 channels, 2 active")
-    #expect(report(8).receivedAudioChannels == "8 channels")
-    #expect(report(0).receivedAudioChannels == "8 channels")
+    #expect(String(localized: report(2).receivedAudioChannels) == "8 channels, 2 active")
+    #expect(String(localized: report(8).receivedAudioChannels) == "8 channels")
+    #expect(String(localized: report(0).receivedAudioChannels) == "8 channels")
 }

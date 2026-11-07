@@ -18,8 +18,11 @@ import SwiftUI
 public enum ControllerKeyboardSheet {
     /// What the keyboard edits.
     public struct Request: Sendable {
+        /// The title for a field that has no label of its own.
+        public static let untitledTitle: LocalizedStringResource = .keyboardUntitledField
+
         /// The keyboard's title.
-        public let title: String
+        public let title: LocalizedStringResource
 
         /// The starting text.
         public let text: String
@@ -33,7 +36,7 @@ public enum ControllerKeyboardSheet {
         ///   - title: The keyboard's title.
         ///   - text: The starting text.
         ///   - secure: Whether the text is hidden.
-        public init(title: String, text: String, secure: Bool) {
+        public init(title: LocalizedStringResource, text: String, secure: Bool) {
             self.title = title
             self.text = text
             self.secure = secure
@@ -242,7 +245,7 @@ public enum ControllerKeyboardSheet {
 /// not inherit.
 private struct HostedControllerKeyboard: View {
     /// The keyboard's title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// The text shared with the sheet's handle.
     @Bindable var model: ControllerKeyboardSheet.KeyboardText

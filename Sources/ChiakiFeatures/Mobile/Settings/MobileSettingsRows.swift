@@ -56,10 +56,10 @@ extension MobileSettingsForm where Trailing == EmptyView {
 /// optional footer explaining the group below it.
 struct MobileSettingsGroup<Content: View>: View {
     /// The title above the group.
-    var title: String?
+    var title: Text?
 
     /// The explanation below the group.
-    var footer: String?
+    var footer: LocalizedStringResource?
 
     /// The rows.
     @ViewBuilder let content: Content
@@ -70,8 +70,28 @@ struct MobileSettingsGroup<Content: View>: View {
     ///   - title: The title above the group.
     ///   - footer: The explanation below the group.
     ///   - content: The rows.
-    init(_ title: String? = nil, footer: String? = nil, @ViewBuilder content: () -> Content) {
-        self.title = title
+    init(
+        _ title: LocalizedStringResource? = nil,
+        footer: LocalizedStringResource? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title.map { Text($0) }
+        self.footer = footer
+        self.content = content()
+    }
+
+    /// Creates a group whose title is shown as it is, such as a name.
+    ///
+    /// - Parameters:
+    ///   - verbatim: The title above the group, shown without localization.
+    ///   - footer: The explanation below the group.
+    ///   - content: The rows.
+    init(
+        verbatim: String,
+        footer: LocalizedStringResource? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        title = Text(verbatim: verbatim)
         self.footer = footer
         self.content = content()
     }
@@ -79,7 +99,8 @@ struct MobileSettingsGroup<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             if let title {
-                Text(title.uppercased())
+                title
+                    .textCase(.uppercase)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 16)
@@ -110,10 +131,10 @@ struct MobileSettingsGroup<Content: View>: View {
 /// A settings row with a switch at its trailing edge.
 struct MobileToggleRow: View {
     /// The title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// A line under the title.
-    var detail: String?
+    var detail: LocalizedStringResource?
 
     /// The setting.
     @Binding var isOn: Bool
@@ -124,7 +145,7 @@ struct MobileToggleRow: View {
     ///   - title: The title.
     ///   - detail: A line under the title.
     ///   - isOn: The setting.
-    init(_ title: String, detail: String? = nil, isOn: Binding<Bool>) {
+    init(_ title: LocalizedStringResource, detail: LocalizedStringResource? = nil, isOn: Binding<Bool>) {
         self.title = title
         self.detail = detail
         _isOn = isOn
@@ -150,10 +171,10 @@ struct MobileToggleRow: View {
 /// native menu anchored to the row.
 struct MobilePickerRow<Value: Hashable>: View {
     /// The title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// A line under the title.
-    var detail: String?
+    var detail: LocalizedStringResource?
 
     /// The chosen value.
     @Binding var selection: Value
@@ -161,8 +182,8 @@ struct MobilePickerRow<Value: Hashable>: View {
     /// The values offered, in order.
     let choices: [Value]
 
-    /// A value's name in the menu.
-    let label: (Value) -> String
+    /// A value's name in the menu, resolved for the current locale.
+    private let label: (Value) -> String
 
     @State private var menuAnchor = NativeMenuAnchorReference()
 
@@ -175,27 +196,51 @@ struct MobilePickerRow<Value: Hashable>: View {
     ///   - choices: The values offered, in order.
     ///   - label: A value's name in the menu.
     init(
-        _ title: String,
-        detail: String? = nil,
+        _ title: LocalizedStringResource,
+        detail: LocalizedStringResource? = nil,
         selection: Binding<Value>,
         choices: [Value],
-        label: @escaping (Value) -> String
+        label: @escaping (Value) -> LocalizedStringResource
     ) {
         self.title = title
         self.detail = detail
         _selection = selection
         self.choices = choices
-        self.label = label
+        self.label = { String(localized: label($0)) }
+    }
+
+    /// Creates a menu row whose values are shown as they are, such as names.
+    ///
+    /// - Parameters:
+    ///   - title: The title.
+    ///   - detail: A line under the title.
+    ///   - selection: The chosen value.
+    ///   - choices: The values offered, in order.
+    ///   - verbatimLabel: A value's name in the menu, shown without localization.
+    init(
+        _ title: LocalizedStringResource,
+        detail: LocalizedStringResource? = nil,
+        selection: Binding<Value>,
+        choices: [Value],
+        verbatimLabel: @escaping (Value) -> String
+    ) {
+        self.title = title
+        self.detail = detail
+        _selection = selection
+        self.choices = choices
+        label = verbatimLabel
     }
 
     var body: some View {
         HStack(spacing: 12) {
             MobileRowTitle(title: title, detail: detail)
             Spacer(minLength: 8)
-            Picker(title, selection: $selection) {
+            Picker(selection: $selection) {
                 ForEach(choices, id: \.self) { choice in
                     Text(verbatim: label(choice)).tag(choice)
                 }
+            } label: {
+                Text(title)
             }
             .pickerStyle(.menu)
             .labelsHidden()
@@ -224,10 +269,10 @@ struct MobilePickerRow<Value: Hashable>: View {
 /// A settings row showing a value, optionally opening something when tapped.
 struct MobileValueRow: View {
     /// The title.
-    let title: String
+    let title: Text
 
     /// The value at the trailing edge.
-    var value: String?
+    var value: Text?
 
     /// What a tap does, or `nil` for a plain row.
     var action: (() -> Void)?
@@ -238,9 +283,38 @@ struct MobileValueRow: View {
     ///   - title: The title.
     ///   - value: The value at the trailing edge.
     ///   - action: What a tap does, or `nil` for a plain row.
-    init(_ title: String, value: String? = nil, action: (() -> Void)? = nil) {
-        self.title = title
-        self.value = value
+    init(
+        _ title: LocalizedStringResource,
+        value: LocalizedStringResource? = nil,
+        action: (() -> Void)? = nil
+    ) {
+        self.title = Text(title)
+        self.value = value.map { Text($0) }
+        self.action = action
+    }
+
+    /// Creates a value row whose value is shown as it is, such as a name, a number or a path.
+    ///
+    /// - Parameters:
+    ///   - title: The title.
+    ///   - verbatim: The value at the trailing edge, shown without localization.
+    ///   - action: What a tap does, or `nil` for a plain row.
+    init(_ title: LocalizedStringResource, verbatim: String?, action: (() -> Void)? = nil) {
+        self.title = Text(title)
+        value = verbatim.map { Text(verbatim: $0) }
+        self.action = action
+    }
+
+    /// Creates a value row whose title and value are both shown as they are, such as a person's name and
+    /// their address.
+    ///
+    /// - Parameters:
+    ///   - verbatimTitle: The title, shown without localization.
+    ///   - verbatim: The value at the trailing edge, shown without localization.
+    ///   - action: What a tap does, or `nil` for a plain row.
+    init(verbatimTitle: String, verbatim: String?, action: (() -> Void)? = nil) {
+        title = Text(verbatim: verbatimTitle)
+        value = verbatim.map { Text(verbatim: $0) }
         self.action = action
     }
 
@@ -259,10 +333,10 @@ struct MobileValueRow: View {
 
     private func content(chevron: Bool) -> some View {
         HStack(spacing: 12) {
-            Text(title)
+            title
             Spacer(minLength: 8)
             if let value {
-                Text(value)
+                value
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.trailing)
                     .textSelection(.enabled)
@@ -281,7 +355,7 @@ struct MobileValueRow: View {
 /// A settings row that runs an action, its title in the accent colour, or red when destructive.
 struct MobileButtonRow: View {
     /// The title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// Whether the action destroys something.
     var destructive = false
@@ -297,7 +371,7 @@ struct MobileButtonRow: View {
     ///   - title: The title.
     ///   - destructive: Whether the action destroys something.
     ///   - action: What a tap does.
-    init(_ title: String, destructive: Bool = false, action: @escaping () -> Void) {
+    init(_ title: LocalizedStringResource, destructive: Bool = false, action: @escaping () -> Void) {
         self.title = title
         self.destructive = destructive
         self.action = action
@@ -331,10 +405,10 @@ struct MobileButtonRow: View {
 /// A settings row with a slider under its title and current value.
 struct MobileSliderRow: View {
     /// The title.
-    let title: String
+    let title: LocalizedStringResource
 
     /// The current value, as shown.
-    let valueText: String
+    let valueText: Text
 
     /// The value.
     @Binding var value: Double
@@ -350,12 +424,68 @@ struct MobileSliderRow: View {
     @MenuFocusState private var focused: Bool
     @State private var id = UUID()
 
+    /// Creates a slider row.
+    ///
+    /// - Parameters:
+    ///   - title: The title.
+    ///   - valueText: The current value, as shown.
+    ///   - value: The value.
+    ///   - range: The values the slider covers.
+    ///   - step: The step between values, or `nil` for a continuous slider.
+    init(
+        title: LocalizedStringResource,
+        valueText: LocalizedStringResource,
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        step: Double? = nil
+    ) {
+        self.init(title: title, valueText: Text(valueText), value: value, range: range, step: step)
+    }
+
+    /// Creates a slider row whose current value is shown as it is, such as a formatted number.
+    ///
+    /// - Parameters:
+    ///   - title: The title.
+    ///   - verbatimValue: The current value, shown without localization.
+    ///   - value: The value.
+    ///   - range: The values the slider covers.
+    ///   - step: The step between values, or `nil` for a continuous slider.
+    init(
+        title: LocalizedStringResource,
+        verbatimValue: String,
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        step: Double? = nil
+    ) {
+        self.init(
+            title: title,
+            valueText: Text(verbatim: verbatimValue),
+            value: value,
+            range: range,
+            step: step
+        )
+    }
+
+    private init(
+        title: LocalizedStringResource,
+        valueText: Text,
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        step: Double?
+    ) {
+        self.title = title
+        self.valueText = valueText
+        _value = value
+        self.range = range
+        self.step = step
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(title)
                 Spacer()
-                Text(valueText)
+                valueText
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
             }
@@ -484,6 +614,10 @@ struct MobileRowFocus: ViewModifier {
     /// What Confirm does.
     let activate: () -> Void
 
+    /// The row with the controller focus behaviour applied.
+    ///
+    /// - Parameter content: The row.
+    /// - Returns: The row as a focus stop.
     func body(content: Content) -> some View {
         content
             .interactiveGrowth()
@@ -496,16 +630,36 @@ struct MobileRowFocus: ViewModifier {
 /// A row's title, with an optional smaller line under it.
 struct MobileRowTitle: View {
     /// The title.
-    let title: String
+    let title: Text
 
     /// A line under the title.
-    var detail: String?
+    var detail: Text?
+
+    /// Creates a row title.
+    ///
+    /// - Parameters:
+    ///   - title: The title.
+    ///   - detail: A line under the title.
+    init(title: LocalizedStringResource, detail: LocalizedStringResource? = nil) {
+        self.title = Text(title)
+        self.detail = detail.map { Text($0) }
+    }
+
+    /// Creates a row title from text already built, such as a name shown verbatim.
+    ///
+    /// - Parameters:
+    ///   - title: The title.
+    ///   - detail: A line under the title.
+    init(title: Text, detail: Text?) {
+        self.title = title
+        self.detail = detail
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title)
+            title
             if let detail {
-                Text(detail)
+                detail
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

@@ -81,6 +81,7 @@ let dependencies = Target.Dependency.product(name: "Dependencies", package: "swi
 
 let package = Package(
     name: "ChiakiNG",
+    defaultLocalization: "en",
     platforms: [.macOS("26.0"), .iOS("26.0")],
     products: [.executable(name: "ChiakiNG", targets: ["ChiakiNG"])],
     dependencies: [
@@ -102,8 +103,16 @@ let package = Package(
             linkerSettings: [.linkedFramework("GameController")]
         ),
         .target(name: "PlatformUI"),
-        .target(name: "DesignSystem", dependencies: ["ChiakiModels", "PlatformUI", "ChiakiAssets"]),
-        .target(name: "MenuFocus", dependencies: ["ChiakiModels", "DesignSystem", "PlatformUI"]),
+        .target(
+            name: "DesignSystem",
+            dependencies: ["ChiakiModels", "PlatformUI", "ChiakiAssets"],
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "MenuFocus",
+            dependencies: ["ChiakiModels", "DesignSystem", "PlatformUI"],
+            resources: [.process("Resources")]
+        ),
         .target(
             name: "ChiakiTestSupport",
             dependencies: ["ChiakiModels", "ChiakiClients", "DesignSystem", "MenuFocus", "PlatformUI"],
@@ -141,7 +150,7 @@ let package = Package(
                 .linkedFramework("CoreAudio", .when(platforms: [.macOS]))
             ] + upscalerFrameworks
         ),
-        .target(name: "ChiakiModels", swiftSettings: kakusan + ps5CloudLaunch),
+        .target(name: "ChiakiModels", resources: [.process("Resources")], swiftSettings: kakusan + ps5CloudLaunch),
         .target(name: "ChiakiDiagnostics", dependencies: ["ChiakiModels", dependencies]),
         .target(
             name: "ChiakiPersistence",
@@ -192,7 +201,8 @@ let package = Package(
                 "ChiakiModels", "ChiakiClients", "ChiakiDiagnostics", "DesignSystem", "MenuFocus",
                 "PlatformUI",
                 "ChiakiAssets", composableArchitecture, dependencies
-            ]
+            ],
+            resources: [.process("Resources")]
         ),
         .systemLibrary(name: "ChiakiCore", path: "Sources/CBridge/ChiakiCore"),
         .systemLibrary(name: "ChiakiBridge", path: "Sources/CBridge/ChiakiBridge"),

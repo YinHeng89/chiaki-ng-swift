@@ -8,9 +8,9 @@ import SwiftUI
 struct AccountCloudSummary {
     /// The line shown under the account's name: the Plus tier when the catalog is reachable, the status
     /// otherwise.
-    let text: String
+    let text: LocalizedStringResource
     /// The help text explaining the status.
-    let help: String
+    let help: LocalizedStringResource
     /// The colour of the line.
     let color: Color
 
@@ -37,11 +37,11 @@ struct AccountCloudSummary {
 /// status check and its cached result.
 public struct CloudStatusPresentation {
     /// The short status text shown in the label.
-    public let text: String
+    public let text: LocalizedStringResource
     /// The colour the status is drawn in.
     public let color: Color
     /// The longer explanation shown as help, including the cached catalog details when there are any.
-    public let help: String
+    public let help: LocalizedStringResource
     /// Whether the account's cloud catalog is confirmed available.
     public var catalogAvailable = false
 
@@ -52,16 +52,17 @@ public struct CloudStatusPresentation {
     ///   - selectedProfileID: The account whose status is shown, or `nil` when none is selected.
     ///   - now: The current time, used to tell whether the cached result has expired.
     public init(state: CloudStatusFeature.State, selectedProfileID: UUID?, now: Date) {
-        let fallback = "Checks this account’s PlayStation cloud catalog. Use Refresh details to retry."
+        let fallback: LocalizedStringResource = .libraryCloudStatusFallbackHelp
         guard state.scope?.accountID == selectedProfileID, selectedProfileID != nil else {
-            (text, color, help) = ("Checking cloud…", .secondary, fallback)
+            (text, color, help) = (.libraryCloudStatusChecking, .secondary, fallback)
             return
         }
-        let cachedHelp: String
+        let cachedHelp: LocalizedStringResource
         if let snapshot = state.snapshot, snapshot.scope.accountID == selectedProfileID {
-            cachedHelp = "\(snapshot.catalog.gameCount) catalog games. "
-                + "Last checked \(snapshot.checkedAt.formatted()). "
-                + "Streaming access is verified separately for each game."
+            cachedHelp = .libraryCloudStatusCachedHelp(
+                count: snapshot.catalog.gameCount,
+                date: snapshot.checkedAt.formatted()
+            )
         } else {
             cachedHelp = fallback
         }
@@ -76,7 +77,7 @@ public struct CloudStatusPresentation {
                     cachedHelp: cachedHelp
                 )
             } else {
-                (text, color, help) = ("Checking cloud…", .secondary, cachedHelp)
+                (text, color, help) = (.libraryCloudStatusChecking, .secondary, cachedHelp)
             }
         case .failed(let reason):
             self = Self(failure: reason, hasSnapshot: state.snapshot != nil, cachedHelp: cachedHelp)
@@ -84,31 +85,30 @@ public struct CloudStatusPresentation {
             self = Self(ready: state, selectedProfileID: selectedProfileID, now: now, cachedHelp: cachedHelp)
         }
     }
-    private init(failure reason: CloudStatusFailure, hasSnapshot: Bool, cachedHelp: String) {
+    private init(failure reason: CloudStatusFailure, hasSnapshot: Bool, cachedHelp: LocalizedStringResource) {
         switch reason {
         case .signInRequired:
             (text, color, help) = (
-                "Cloud sign in again",
+                .libraryCloudStatusSignInAgain,
                 .orange,
-                "Sign in again to save a current NPSSO credential for cloud access."
+                .libraryCloudStatusSignInAgainHelp
             )
         case .regionUnsupported:
             (text, color, help) = (
-                "Cloud region unavailable",
+                .libraryCloudStatusRegionUnavailable,
                 .orange,
-                "PlayStation did not return a cloud store for this account’s region."
+                .libraryCloudStatusRegionUnavailableHelp
             )
         case .authorizationRejected:
             (text, color, help) = (
-                "Cloud access rejected",
+                .libraryCloudStatusAccessRejected,
                 .red,
-                "PlayStation rejected cloud authorization (HTTP 403). "
-                    + "This does not establish that your NPSSO is expired or that your subscription is ineligible."
+                .libraryCloudStatusAccessRejectedHelp
             )
         default:
-            let title = !hasSnapshot
-                ? "Cloud couldn’t check"
-                : "Cloud update failed"
+            let title: LocalizedStringResource = !hasSnapshot
+                ? .libraryCloudStatusCouldNotCheck
+                : .libraryCloudStatusUpdateFailed
             (text, color, help) = (title, .red, cachedHelp)
         }
     }
@@ -116,30 +116,29 @@ public struct CloudStatusPresentation {
         ready state: CloudStatusFeature.State,
         selectedProfileID: UUID?,
         now: Date,
-        cachedHelp: String
+        cachedHelp: LocalizedStringResource
     ) {
-        let fallback = "Checks this account’s PlayStation cloud catalog. Use Refresh details to retry."
         guard let snapshot = state.snapshot, snapshot.scope.accountID == selectedProfileID else {
-            (text, color, help) = ("Cloud unknown", .secondary, fallback)
+            (text, color, help) = (.libraryCloudStatusUnknown, .secondary, .libraryCloudStatusFallbackHelp)
             return
         }
         guard snapshot.expiresAt > now else {
-            (text, color, help) = ("Cloud cached result", .secondary, cachedHelp)
+            (text, color, help) = (.libraryCloudStatusCachedResult, .secondary, cachedHelp)
             return
         }
         help = cachedHelp
         switch snapshot.catalog.availability {
         case .catalogAvailable:
-            (text, color) = ("Cloud catalog available", Palette.accent)
+            (text, color) = (.libraryCloudStatusCatalogAvailable, Palette.accent)
             catalogAvailable = true
         case .subscriptionRequired:
-            (text, color) = ("Cloud PS Plus required", .orange)
+            (text, color) = (.libraryCloudStatusPlusRequired, .orange)
         case .signInRequired:
-            (text, color) = ("Cloud sign in again", .orange)
+            (text, color) = (.libraryCloudStatusSignInAgain, .orange)
         case .empty:
-            (text, color) = ("Cloud no games found", .secondary)
+            (text, color) = (.libraryCloudStatusNoGames, .secondary)
         case .limitedCatalog:
-            (text, color) = ("Cloud limited catalog", .orange)
+            (text, color) = (.libraryCloudStatusLimitedCatalog, .orange)
         }
     }
 }

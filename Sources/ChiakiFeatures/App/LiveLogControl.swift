@@ -160,10 +160,10 @@ struct LiveLogControl: View {
                     .environment(\.menuMove, move)
                     .accessibilityLabel(
                         store.visible
-                            ? "Hide developer log"
-                            : "Show developer log"
+                            ? .appDeveloperLogHide
+                            : .appDeveloperLogShow
                     )
-                    .help("Toggle live developer log")
+                    .help(.appDeveloperLogToggleHelp)
                     .streamChromeFocus(.topTrailing)
                     .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: { minX in
                         topControlsLayout?.logMinX = minX

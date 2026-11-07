@@ -18,7 +18,7 @@ public struct PictureStreamGroup: View {
     /// The automatic bitrate in megabits per second, shown when automatic bitrate is on.
     public var automaticBitrateMbps: Int
     /// A caption shown under the automatic bitrate toggle in place of the default one.
-    public var automaticCaption: String?
+    public var automaticCaption: LocalizedStringResource?
     /// The stream heights offered in the resolution picker.
     public var resolutions: [Int]
     @Environment(\.menuNavigator) private var navigator
@@ -41,7 +41,7 @@ public struct PictureStreamGroup: View {
         bitrate: Binding<Int>,
         automaticBitrate: Binding<Bool>,
         automaticBitrateMbps: Int,
-        automaticCaption: String? = nil,
+        automaticCaption: LocalizedStringResource? = nil,
         resolutions: [Int],
         fixedFrameRate: Bool = false
     ) {
@@ -59,33 +59,33 @@ public struct PictureStreamGroup: View {
     public var fixedFrameRate: Bool
 
     public var body: some View {
-        SettingsCard("Stream") {
-            SettingsRow("Resolution") {
-                Picker("Stream resolution", selection: $height) {
+        SettingsCard(.settingsPictureStream) {
+            SettingsRow(.settingsPictureResolution) {
+                Picker(.settingsPictureStreamResolution, selection: $height) {
                     ForEach(resolutions, id: \.self) { value in
                         Text(verbatim: "\(value)p").tag(value)
                     }
                 }
             }
             Divider()
-            SettingsRow("Frame rate") {
+            SettingsRow(.settingsPictureFrameRate) {
                 if fixedFrameRate {
-                    Text("60 fps").frame(maxWidth: .infinity, alignment: .trailing)
+                    Text(.settingsPictureFpsValue(fps: 60)).frame(maxWidth: .infinity, alignment: .trailing)
                 } else {
-                    Picker("Frame rate", selection: $fps) {
-                        Text("30 fps").tag(30)
-                        Text("60 fps").tag(60)
+                    Picker(.settingsPictureFrameRate, selection: $fps) {
+                        Text(.settingsPictureFpsValue(fps: 30)).tag(30)
+                        Text(.settingsPictureFpsValue(fps: 60)).tag(60)
                     }
                 }
             }
             Divider()
             VStack(spacing: 9) {
                 HStack {
-                    Text("Bitrate")
+                    Text(.settingsPictureBitrate)
                     Spacer()
-                    Text(verbatim: "\(shownBitrate) Mbps").monospacedDigit()
+                    Text(.settingsPictureBitrateValue(mbps: shownBitrate)).monospacedDigit()
                 }
-                Toggle("Automatic bitrate", isOn: $automaticBitrate)
+                Toggle(.settingsPictureAutomaticBitrate, isOn: $automaticBitrate)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(WindowAccessor { hostWindow = $0 })
                     .onChange(of: automaticBitrate) { _, automatic in
@@ -94,7 +94,7 @@ public struct PictureStreamGroup: View {
                         }
                     }
                 if automaticBitrate {
-                    Text(automaticCaption ?? "Uses \(automaticBitrateMbps) Mbps for \(height)p.")
+                    Text(automaticBitrateCaption)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -105,13 +105,13 @@ public struct PictureStreamGroup: View {
                            step: 1)
                         .nativeFocusHighlight()
                         .focusHighlightShape(.capsule)
-                        .accessibilityLabel("Bitrate")
-                        .accessibilityValue("\(bitrate) megabits per second")
+                        .accessibilityLabel(.settingsPictureBitrate)
+                        .accessibilityValue(.settingsPictureBitrateSpoken(mbps: bitrate))
                         .settingsSliderController(value: bitrateValue)
                     HStack {
-                        Text("Less bandwidth")
+                        Text(.settingsPictureLessBandwidth)
                         Spacer()
-                        Text("Higher quality")
+                        Text(.settingsPictureHigherQuality)
                     }.font(.caption).foregroundStyle(.secondary)
                 }
             }
@@ -146,6 +146,10 @@ extension PictureStreamGroup {
         }
     }
 
+    private var automaticBitrateCaption: LocalizedStringResource {
+        automaticCaption ?? .settingsPictureBitrateUses(mbps: automaticBitrateMbps, height: String(height))
+    }
+
     private var shownBitrate: Int {
         automaticBitrate
             ? automaticBitrateMbps
@@ -172,18 +176,18 @@ public struct PictureDynamicRangeGroup: View {
     }
 
     public var body: some View {
-        SettingsCard("Dynamic range") {
-            Toggle("HDR", isOn: $hdr)
+        SettingsCard(.settingsPictureDynamicRange) {
+            Toggle(.settingsPictureHdr, isOn: $hdr)
             Text(detail)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
     }
 
-    private var detail: String {
+    private var detail: LocalizedStringResource {
         height > CloudPictureSettings.maximumSDRHeight
-            ? "Streams in HDR when the display supports it."
-            : "PS5 cloud streams HDR only at 1440p and 4K. At \(height)p the stream stays in SDR."
+            ? .settingsPictureHdrSupported
+            : .settingsPictureHdrHeightTooLow(height: String(height))
     }
 }
 
@@ -205,17 +209,17 @@ public struct PictureCodecGroup: View {
     }
 
     public var body: some View {
-        SettingsCard("Codec") {
-            SettingsRow("PS5") {
-                Self.picker("PS5 codec", selection: $ps5)
+        SettingsCard(.settingsPictureCodec) {
+            SettingsRow(.settingsPictureCodecPS5) {
+                Self.picker(.settingsPictureCodecPicker, selection: $ps5)
             }
             Divider()
-            SettingsRow("Use HDR when the screen supports it", detail: Self.detail(for: ps5)) {
-                Toggle("Use HDR when the screen supports it", isOn: $hdr)
+            SettingsRow(.settingsPictureCodecHdr, detail: Self.detail(for: ps5)) {
+                Toggle(.settingsPictureCodecHdr, isOn: $hdr)
                     .disabled(ps5 != .hevc)
             }
             Divider()
-            Text("PS4 streams always use \(PictureSettings.Codec.h264.title).")
+            Text(.settingsPictureCodecPS4(codec: String(localized: PictureSettings.Codec.h264.title)))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -223,18 +227,17 @@ public struct PictureCodecGroup: View {
     }
 
     /// Returns the caption under the HDR toggle explaining what the given codec means for HDR.
-    public static func detail(for codec: PictureSettings.Codec) -> String {
+    public static func detail(for codec: PictureSettings.Codec) -> LocalizedStringResource {
         switch codec {
         case .hevc, .hevcHDR:
-            return "HEVC streams in HDR on HDR screens and in SDR elsewhere. "
-                + "Bright highlights also need an HDR TV connected to the PS5."
+            return .settingsPictureCodecHevcDetail
         case .h264:
-            return "HDR needs HEVC."
+            return .settingsPictureCodecAvcDetail
         }
     }
 
     private static func picker(
-        _ title: String,
+        _ title: LocalizedStringResource,
         selection: Binding<PictureSettings.Codec>
     ) -> some View {
         Picker(title, selection: selection) {
@@ -292,43 +295,42 @@ public struct PictureDisplayGroup: View {
     }
 
     public var body: some View {
-        SettingsCard("Display") {
-            SettingsRow("Upscaled output") {
-                Picker("Upscaled output", selection: $output) {
+        SettingsCard(.settingsPictureDisplay) {
+            SettingsRow(.settingsPictureUpscaledOutput) {
+                Picker(.settingsPictureUpscaledOutput, selection: $output) {
                     ForEach(UpscaledOutput.available(for: height), id: \.self) { value in
                         Text(value.title).tag(value)
                     }
                 }
             }
             Divider()
-            SettingsRow("Upscaling method") {
-                Picker("Upscaling method", selection: $upscaler) {
-                    Text("MetalFX Spatial").tag(VideoUpscaler.metalFX)
-                    Text("Advanced Spatial").tag(VideoUpscaler.advancedSpatial)
+            SettingsRow(.settingsPictureUpscalingMethod) {
+                Picker(.settingsPictureUpscalingMethod, selection: $upscaler) {
+                    Text(.settingsPictureUpscalerMetalFX).tag(VideoUpscaler.metalFX)
+                    Text(.settingsPictureUpscalerAdvancedSpatial).tag(VideoUpscaler.advancedSpatial)
                 }.disabled(output == .disabled)
             }
             Divider()
-            SettingsRow("Presentation frame rate") {
-                Picker("Presentation frame rate", selection: $presentation) {
-                    Text("\(fps) fps (native)").tag(PresentationFrameRate.source)
-                    Text("\(fps * 2) fps (2×)").tag(PresentationFrameRate.generated120)
+            SettingsRow(.settingsPicturePresentationFrameRate) {
+                Picker(.settingsPicturePresentationFrameRate, selection: $presentation) {
+                    Text(.settingsPicturePresentationNative(fps: fps)).tag(PresentationFrameRate.source)
+                    Text(.settingsPicturePresentationGenerated(fps: fps * 2))
+                        .tag(PresentationFrameRate.generated120)
                         .disabled(![720, 1080].contains(height))
                 }
             }
             if hdr {
-                Text("HDR streams play at the native frame rate; frame generation applies to standard dynamic "
-                    + "range streams.")
+                Text(.settingsPicturePresentationHdrFooter)
                     .font(.caption).foregroundStyle(.secondary)
             } else if presentation != .source {
-                Text("Frame generation requires supported hardware and a \(fps * 2) Hz display.")
+                Text(.settingsPictureFrameGenerationFooter(refreshRate: fps * 2))
                     .font(.caption).foregroundStyle(.secondary)
             }
             if let fullScreen {
                 Divider()
-                Toggle("Full screen while streaming", isOn: fullScreen)
+                Toggle(.settingsPictureFullScreen, isOn: fullScreen)
                     .accessibilityIdentifier("picture-full-screen")
-                Text("Full screen lets macOS turn on Game Mode, which doubles the Bluetooth rate for wireless "
-                    + "controllers and gives DualSense haptics over Bluetooth more headroom.")
+                Text(.settingsPictureFullScreenFooter)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -402,8 +404,8 @@ public struct PictureDisclosureStyle: DisclosureGroupStyle {
         .buttonStyle(.plain)
         .accessibilityValue(
             configuration.isExpanded
-                ? "Expanded"
-                : "Collapsed"
+                ? .settingsPictureDisclosureExpanded
+                : .settingsPictureDisclosureCollapsed
         )
     }
 }

@@ -15,12 +15,12 @@ struct PictureSettingsView: View {
         case internet
 
         /// The connection's name in the segmented picker.
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .home:
-                "Home network"
+                .settingsPictureRouteHome
             case .internet:
-                "Internet"
+                .settingsPictureRouteInternet
             }
         }
 
@@ -43,12 +43,10 @@ struct PictureSettingsView: View {
         VStack(alignment: .leading, spacing: 22) {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Stream settings for").font(.subheadline.weight(.medium))
-                    Text(
-                        "Internet covers PlayStation connections and console addresses outside your local network."
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    Text(.settingsPictureRouteHeading).font(.subheadline.weight(.medium))
+                    Text(.settingsPictureRouteFooter)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 16)
                 FocusableSegments(
@@ -92,7 +90,7 @@ struct PictureSettingsView: View {
                 adjustments: $store.draft.adjustments,
                 reduceBanding: $store.draft.reduceBanding
             )
-            SettingsPersistenceBanner(store.setting, subject: "picture settings") {
+            SettingsPersistenceBanner(store.setting, subject: .settingsPicturePersistenceSubject) {
                 store.send(.retry)
             }
         }
