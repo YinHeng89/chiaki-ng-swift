@@ -19,20 +19,23 @@ struct MobileTrophiesView: View {
         }
     }
 
+    private static let sideWidth: CGFloat = 240
+
     private var overview: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 MobilePageTitle(.mobileTrophiesTitle)
                 ViewThatFits(in: .horizontal) {
                     HStack(alignment: .top, spacing: 20) {
-                        summary
-                            .frame(width: 240)
-                        titles
+                        side
+                            .frame(width: Self.sideWidth)
+                            .modifier(MobileStickyColumn())
+                        titles(showsHeader: false)
                             .frame(minWidth: 360)
                     }
                     VStack(alignment: .leading, spacing: 16) {
                         summary
-                        titles
+                        titles(showsHeader: true)
                     }
                 }
             }
@@ -44,6 +47,75 @@ struct MobileTrophiesView: View {
             if !store.isLoading {
                 store.send(.refresh)
             }
+        }
+    }
+
+    private var side: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            summary
+            VStack(spacing: 0) {
+                filterMenu {
+                    sideRow(caption: .mobileCloudShow, value: store.titleFilter.name)
+                }
+                Divider().padding(.horizontal, 16)
+                sortMenu {
+                    sideRow(caption: .mobileTrophiesSort, value: store.titleSort.name)
+                }
+            }
+            .background(.fill.quaternary, in: .rect(cornerRadius: 20))
+        }
+    }
+
+    private func sideRow(caption: LocalizedStringResource, value: LocalizedStringResource) -> some View {
+        HStack(spacing: 6) {
+            Text(caption)
+                .foregroundStyle(.secondary)
+            Spacer(minLength: 8)
+            Text(value)
+                .foregroundStyle(Palette.accent)
+            Image(systemName: "chevron.up.chevron.down")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .font(.subheadline.weight(.medium))
+        .lineLimit(1)
+        .padding(.horizontal, 16)
+        .frame(minHeight: 44)
+        .contentShape(.rect)
+    }
+
+    private func filterMenu(@ViewBuilder label: () -> some View) -> some View {
+        Menu {
+            Picker(selection: Binding(
+                get: { store.titleFilter },
+                set: { store.send(.titleFilterChosen($0)) }
+            )) {
+                ForEach(TrophyTitleFilter.allCases, id: \.self) { filter in
+                    Text(filter.name).tag(filter)
+                }
+            } label: {
+                Text(.mobileCloudShow)
+            }
+        } label: {
+            label()
+        }
+    }
+
+    private func sortMenu(@ViewBuilder label: () -> some View) -> some View {
+        Menu {
+            ForEach(TrophyTitleSort.allCases, id: \.self) { sort in
+                Button {
+                    store.send(.titleSortChosen(sort))
+                } label: {
+                    if sort == store.titleSort {
+                        Label(sort.name, systemImage: "checkmark")
+                    } else {
+                        Text(sort.name)
+                    }
+                }
+            }
+        } label: {
+            label()
         }
     }
 
@@ -65,40 +137,19 @@ struct MobileTrophiesView: View {
         }
     }
 
-    private var titles: some View {
+    private func titles(showsHeader: Bool) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(.mobileTrophiesGames)
-                    .font(.title3.bold())
-                Spacer()
-                Menu {
-                    Picker(selection: Binding(
-                        get: { store.titleFilter },
-                        set: { store.send(.titleFilterChosen($0)) }
-                    )) {
-                        ForEach(TrophyTitleFilter.allCases, id: \.self) { filter in
-                            Text(filter.name).tag(filter)
-                        }
-                    } label: {
-                        Text(.mobileCloudShow)
+            if showsHeader {
+                HStack {
+                    Text(.mobileTrophiesGames)
+                        .font(.title3.bold())
+                    Spacer()
+                    filterMenu {
+                        MobileMenuLabel(caption: .mobileCloudShow, value: store.titleFilter.name)
                     }
-                } label: {
-                    MobileMenuLabel(caption: .mobileCloudShow, value: store.titleFilter.name)
-                }
-                Menu {
-                    ForEach(TrophyTitleSort.allCases, id: \.self) { sort in
-                        Button {
-                            store.send(.titleSortChosen(sort))
-                        } label: {
-                            if sort == store.titleSort {
-                                Label(sort.name, systemImage: "checkmark")
-                            } else {
-                                Text(sort.name)
-                            }
-                        }
+                    sortMenu {
+                        MobileMenuLabel(caption: .mobileTrophiesSort, value: store.titleSort.name)
                     }
-                } label: {
-                    MobileMenuLabel(caption: .mobileTrophiesSort, value: store.titleSort.name)
                 }
             }
             let shown = store.shownTitles

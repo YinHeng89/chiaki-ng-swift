@@ -22,6 +22,7 @@ struct MobileConsolePage: View {
                 HStack(alignment: .top, spacing: 24) {
                     controls(status)
                         .frame(width: 300)
+                        .modifier(MobileStickyColumn())
                     games
                         .frame(minWidth: 320, alignment: .topLeading)
                 }
