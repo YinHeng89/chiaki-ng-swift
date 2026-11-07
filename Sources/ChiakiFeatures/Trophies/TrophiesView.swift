@@ -794,7 +794,7 @@ struct TrophyTitleRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            CloudArtworkView(url: title.iconURL)
+            CloudArtworkView(url: title.iconURL, contentMode: .fit)
                 .frame(width: 64, height: 64)
                 .clipShape(.rect(cornerRadius: 10))
                 .accessibilityHidden(true)
@@ -927,7 +927,7 @@ struct TrophyTitleDetail: View {
             }
             .focusBorderShape(.circle)
             .accessibilityLabel(.trophiesDetailBackToGames)
-            CloudArtworkView(url: opened.title.iconURL)
+            CloudArtworkView(url: opened.title.iconURL, contentMode: .fit)
                 .frame(width: 48, height: 48)
                 .clipShape(.rect(cornerRadius: 8))
                 .accessibilityHidden(true)

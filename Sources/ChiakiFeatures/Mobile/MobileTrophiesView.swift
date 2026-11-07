@@ -140,7 +140,7 @@ struct MobileTrophyTitleRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            CloudArtworkView(url: title.iconURL)
+            CloudArtworkView(url: title.iconURL, contentMode: .fit)
                 .frame(width: 48, height: 48)
                 .clipShape(.rect(cornerRadius: 10))
             VStack(alignment: .leading, spacing: 3) {
@@ -181,8 +181,9 @@ struct MobileProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(.fill.tertiary, lineWidth: 4)
+                .strokeBorder(.fill.tertiary, lineWidth: 4)
             Circle()
+                .inset(by: 2)
                 .trim(from: 0, to: CGFloat(min(max(value, 0), 100)) / 100)
                 .stroke(
                     value >= 100
@@ -216,7 +217,7 @@ struct MobileTrophyTitleView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 14) {
-                    CloudArtworkView(url: opened.title.iconURL)
+                    CloudArtworkView(url: opened.title.iconURL, contentMode: .fit)
                         .frame(width: 64, height: 64)
                         .clipShape(.rect(cornerRadius: 12))
                     VStack(alignment: .leading, spacing: 4) {
