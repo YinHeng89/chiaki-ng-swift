@@ -1,6 +1,8 @@
-# chiaki-ng-swift
+<p align="center">
+  <img src="Assets/Images/Branding/chiaking-apple.svg" alt="chiaki-ng" width="420">
+</p>
 
-![chiaki](https://raw.githubusercontent.com/chiaki-ng/chiaki-ng/8179a2d1964c75dc32614fd27e51c2381093f539/gui/res/chiaking-logo.svg)
+<h1 align="center">chiaki-ng-swift</h1>
 
 
 ## Requirements
