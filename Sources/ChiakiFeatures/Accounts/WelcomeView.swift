@@ -14,14 +14,8 @@ struct WelcomeView: View {
     /// Sends what the user chose to the root.
     let send: (RootFeature.Action.View) -> Void
 
-    /// Whether the title shows above the tiles; the touch welcome shows the logo beside them instead.
-    var showsTitle = true
-
-    /// The view.
+    /// The view: the choices alone, beside the logo the entry screen draws.
     var body: some View {
-        if showsTitle {
-            FlowTitle(text: .accountsWelcomeTitle, detail: .accountsWelcomeDetail)
-        }
         FlowTileRow(choices, focusedAction: focusedAction)
     }
 

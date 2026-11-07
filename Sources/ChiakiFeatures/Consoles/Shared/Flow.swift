@@ -107,20 +107,20 @@ public struct FlowSecondaryButton<Focus: Hashable>: View {
     }
 }
 
-/// The headline and detail line at the top of a sign-in or console screen.
+/// The headline, and an optional detail line, at the top of a sign-in or console screen.
 public struct FlowTitle: View {
     /// The headline.
     let text: LocalizedStringResource
 
-    /// The line under the headline.
-    let detail: LocalizedStringResource
+    /// The line under the headline, if any.
+    let detail: LocalizedStringResource?
 
     /// Creates the title.
     ///
     /// - Parameters:
     ///   - text: The headline.
-    ///   - detail: The line under the headline.
-    public init(text: LocalizedStringResource, detail: LocalizedStringResource) {
+    ///   - detail: The line under the headline, or `nil` when the screen explains itself below.
+    public init(text: LocalizedStringResource, detail: LocalizedStringResource? = nil) {
         self.text = text
         self.detail = detail
     }
@@ -131,7 +131,9 @@ public struct FlowTitle: View {
     public var body: some View {
         VStack(spacing: 10) {
             Text(text).font(.system(size: 28, weight: .medium)).tracking(-0.7)
-            Text(detail).foregroundStyle(.secondary)
+            if let detail {
+                Text(detail).foregroundStyle(.secondary)
+            }
         }
         .multilineTextAlignment(.center)
         .padding(

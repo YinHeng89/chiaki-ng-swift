@@ -496,24 +496,13 @@
         }
       }
     },
-    "accounts.signIn.browserDetail" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sign in securely with your PlayStation account."
-          }
-        }
-      }
-    },
     "accounts.signIn.browserPasskeyPageQr" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sign in with your PlayStation account email and password. If your account uses a passkey, choose the page's QR code option instead, because this window cannot use passkeys."
+            "value" : "If your account uses a passkey, choose the page's QR code option instead, because this window cannot use passkeys."
           }
         }
       }
@@ -524,7 +513,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sign in with your PlayStation account email and password. If your account uses a passkey, use a QR code instead, because this window cannot use passkeys."
+            "value" : "If your account uses a passkey, use a QR code instead, because this window cannot use passkeys."
           }
         }
       }
@@ -595,17 +584,6 @@
         }
       }
     },
-    "accounts.signIn.qrDetail" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sign in with your phone."
-          }
-        }
-      }
-    },
     "accounts.signIn.qrPreparing" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -624,39 +602,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scan this code with your phone, sign in to PlayStation there and approve this device."
-          }
-        }
-      }
-    },
-    "accounts.signIn.qrTickFirst" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tick the box above to show the code."
-          }
-        }
-      }
-    },
-    "accounts.signIn.tickFirst" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tick the box above first."
-          }
-        }
-      }
-    },
-    "accounts.signIn.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PSN account"
           }
         }
       }
@@ -689,7 +634,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sign in with PlayStation"
+            "value" : "Sign in with web browser"
           }
         }
       }
@@ -832,7 +777,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "chiaki-ng is an independent, unofficial client. Signing in gives it access to your PlayStation account for remote play, your library and notifications. Your sign-in is kept only on this device and is sent only to PlayStation’s own servers, never to chiaki-ng’s developers or anyone else. The source code is available for you to audit under the terms of the AGPLv3."
+            "value" : "chiaki-ng is an **independent**, **unofficial** client. Signing in gives it access to your PlayStation account for remote play, your library and notifications. Your sign-in is kept only on this device and is sent only to PlayStation’s own servers, never to chiaki-ng’s developers or anyone else. The source code is available for you to audit under the terms of the AGPLv3."
           }
         }
       }
@@ -855,6 +800,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unchecked"
+          }
+        }
+      }
+    },
+    "accounts.unofficial.understand" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I understand"
           }
         }
       }
@@ -903,17 +859,6 @@
         }
       }
     },
-    "accounts.welcome.detail" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose how to get started."
-          }
-        }
-      }
-    },
     "accounts.welcome.joinGame" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -954,17 +899,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in with your phone or email. PSN features such as play outside your home network and cloud games are enabled."
-          }
-        }
-      }
-    },
-    "accounts.welcome.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add your account."
           }
         }
       }

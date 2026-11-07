@@ -27,13 +27,16 @@ public struct SignInView: View {
     /// The screen.
     public var body: some View {
         VStack(spacing: 0) {
-            switch store.method {
-            case .qrCode:
-                qrCode
-                FlowTileRow(qrChoices, focusedAction: focusedInput)
-            case .browser:
-                browser
-                FlowTileRow(browserChoices, focusedAction: focusedInput)
+            if !store.acknowledged {
+                notice
+            } else {
+                switch store.method {
+                case .qrCode:
+                    qrCode
+                case .browser:
+                    browser
+                    FlowTileRow(browserChoices, focusedAction: focusedInput)
+                }
             }
         }
         .onAppear {
@@ -51,51 +54,85 @@ public struct SignInView: View {
             SwiftUI.Button {
                 openURL(destination)
             } label: {
-                QRCodeImage(approvalURL, side: 220, label: .accountsSignInCodeLabel)
+                QRCodeImage(approvalURL, side: codeSide, label: .accountsSignInCodeLabel)
             }
             .buttonStyle(.plain)
             .focusable(false)
             .accessibilityHint(.accountsSignInCodeHint)
         } else {
-            QRCodeImage(approvalURL, side: 220, label: .accountsSignInCodeLabel)
+            QRCodeImage(approvalURL, side: codeSide, label: .accountsSignInCodeLabel)
         }
     }
 
-    /// The unofficial-client notice with its acknowledgement, which every sign-in must tick first.
-    private var notice: some View {
-        UnofficialClientNotice {
-            UnofficialClientAcknowledgement(acknowledged: store.acknowledged, focusedInput: focusedInput) {
-                store.send(.view(.acknowledge))
-            }
+    private var shownApprovalURL: String? {
+        if case .failed = store.phase {
+            return nil
         }
+        return store.code?.approvalURL
+    }
+
+    private var codeSide: CGFloat {
+        layout.isShort
+            ? 220
+            : 340
+    }
+
+    /// The unofficial-client notice with its acknowledgement, the first stage of every sign-in; the sign-in
+    /// itself appears once it is ticked.
+    private var notice: some View {
+        UnofficialClientNotice(footer: {
+            EmptyView()
+        }, actions: {
+            HStack(spacing: 10) {
+                FocusButton(.accountsUnofficialUnderstand) {
+                    store.send(.view(.acknowledge))
+                }
+                .glassProminentControlStyle()
+                .tint(Palette.accent)
+                .foregroundStyle(.black)
+                .menuFocused(focusedInput, equals: .acknowledgeUnofficial)
+                .accessibilityHint(.accountsUnofficialAcknowledgeHint)
+                FocusButton(.commonBack, systemImage: "xmark") {
+                    store.send(.view(.back))
+                }
+                .glassProminentControlStyle()
+                .tint(.red)
+                .foregroundStyle(.white)
+                .menuFocused(focusedInput, equals: .signInBack)
+                .accessibilityHint(.accountsSignInBackHint)
+            }
+        })
         .frame(maxWidth: 460)
         .padding(.bottom, layout.isShort
             ? 12
             : 22)
     }
 
-    @ViewBuilder private var qrCode: some View {
-        notice
-        FlowTitle(text: .accountsSignInTitle, detail: .accountsSignInQrDetail)
-        if case .failed(let failure) = store.phase {
-            message(AccountsFailureMessage.text(for: failure))
-        } else if let code = store.code {
-            message(store.acknowledged
-                ? .accountsSignInQrScan
-                : .accountsSignInQrTickFirst)
-            signInCode(code.approvalURL)
-                .blur(radius: store.acknowledged
-                    ? 0
-                    : 10)
-                    .allowsHitTesting(store.acknowledged)
-                    .accessibilityHidden(!store.acknowledged)
-                    .animation(.easeOut(duration: 0.2), value: store.acknowledged)
-                    .padding(.bottom, 8)
-        } else {
-            ProgressView()
-                .controlSize(.small)
-                .padding(.bottom, 10)
-            message(.accountsSignInQrPreparing)
+    /// The code stage: the choices on the left, the code large on the right with the instructions under it.
+    private var qrCode: some View {
+        HStack(alignment: .center, spacing: 48) {
+            FlowTileRow(qrChoices, focusedAction: focusedInput)
+                .frame(maxWidth: .infinity)
+            VStack(spacing: 14) {
+                if let approvalURL = shownApprovalURL {
+                    signInCode(approvalURL)
+                } else if case .failed = store.phase {
+                    Image(systemName: "qrcode")
+                        .font(.system(size: codeSide * 0.4))
+                        .foregroundStyle(.tertiary)
+                        .frame(width: codeSide, height: codeSide)
+                } else {
+                    ProgressView()
+                        .frame(width: codeSide, height: codeSide)
+                }
+                if case .failed(let failure) = store.phase {
+                    message(AccountsFailureMessage.text(for: failure))
+                } else if store.code == nil {
+                    message(.accountsSignInQrPreparing)
+                } else {
+                    message(.accountsSignInQrScan)
+                }
+            }
         }
     }
 
@@ -123,8 +160,6 @@ public struct SignInView: View {
     }
 
     @ViewBuilder private var browser: some View {
-        notice
-        FlowTitle(text: .accountsSignInTitle, detail: .accountsSignInBrowserDetail)
         message(store.offersQRCode
             ? .accountsSignInBrowserPasskeyUseQr
             : .accountsSignInBrowserPasskeyPageQr)
@@ -137,11 +172,9 @@ public struct SignInView: View {
     private var browserChoices: [FlowTileChoice<EntryFocus>] {
         var choices = [
             FlowTileChoice(
-                label: .accountsSignInWithPlayStation, symbol: "arrow.up.right",
-                hint: store.acknowledged
-                    ? .accountsSignInWithPlayStationHint
-                    : .accountsSignInTickFirst,
-                focus: EntryFocus.signInWithPlayStation, prominent: true, enabled: store.acknowledged
+                label: .accountsSignInWithPlayStation, symbol: "safari",
+                hint: .accountsSignInWithPlayStationHint,
+                focus: EntryFocus.signInWithPlayStation, prominent: true
             ) {
                 store.send(.view(.start))
             }

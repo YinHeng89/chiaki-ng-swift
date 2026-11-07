@@ -67,6 +67,9 @@ struct EntryScreen: View {
         .onChange(of: screen, initial: true) { _, screen in
             focusPreferred(on: screen)
         }
+        .onChange(of: conditions.signInAcknowledged) {
+            focusPreferred(on: screen)
+        }
         .onReceive(NotificationCenter.default.publisher(for: .focusLibraryContent)) { notification in
             guard let window = notification.object as? PlatformWindow, window === hostWindow,
                   EntryFocusGraph.preferred(on: screen, conditions) != nil, stops != nil else {
@@ -86,32 +89,73 @@ struct EntryScreen: View {
         })
     }
 
-    private var stack: some View {
-        VStack(spacing: 0) {
-            if presentation.usesSharedLogo {
-                ChiakiLogo(
-                    size: layout.isShort
-                        ? 64
-                        : 120,
-                    isConnecting: presentation.accountWorkInProgress
-                )
-                .frame(
-                    height: layout.isShort
-                        ? 92
-                        : 170
-                )
+    @ViewBuilder private var stack: some View {
+        if logoBeside {
+            HStack(spacing: 56) {
+                ChiakiLogo(size: 170, isConnecting: presentation.accountWorkInProgress)
+                    .frame(maxWidth: .infinity)
+                screenContent
+                    .frame(maxWidth: .infinity)
             }
-            content
-                .id(screen)
-                .transition(AppMotion.transition(reduced: reduceMotion))
-                .frame(
-                    minHeight: presentation.usesSharedLogo && !layout.isShort
-                        ? 260
-                        : nil
-                )
+            .animation(AppMotion.animation(reduced: reduceMotion), value: screen)
+            .frame(maxWidth: 1080)
+            .padding(.horizontal, 24)
+        } else {
+            VStack(spacing: 0) {
+                if presentation.usesSharedLogo, !showsSignInCode {
+                    ChiakiLogo(
+                        size: layout.isShort
+                            ? 64
+                            : 120,
+                        isConnecting: presentation.accountWorkInProgress
+                    )
+                    .frame(
+                        height: layout.isShort
+                            ? 92
+                            : 170
+                    )
+                }
+                screenContent
+                    .frame(
+                        minHeight: presentation.usesSharedLogo && !showsSignInCode && !layout.isShort
+                            ? 260
+                            : nil
+                    )
+            }
+            .animation(AppMotion.animation(reduced: reduceMotion), value: screen)
+            .frame(maxWidth: showsSignInCode
+                ? 1080
+                : 720)
         }
-        .animation(AppMotion.animation(reduced: reduceMotion), value: screen)
-        .frame(maxWidth: 720)
+    }
+
+    private var showsSignInCode: Bool {
+        switch screen {
+        case .signIn(.qrCode), .signIn(.qrFailed):
+            conditions.signInAcknowledged
+        default:
+            false
+        }
+    }
+
+    private var screenContent: some View {
+        content
+            .id(screen)
+            .transition(AppMotion.transition(reduced: reduceMotion))
+    }
+
+    private var logoBeside: Bool {
+        guard presentation.usesSharedLogo, layout.sideBySide, !layout.isShort else {
+            return false
+        }
+        switch screen {
+        case .welcome, .accountID:
+            return true
+        case .signIn:
+            return !showsSignInCode
+        default:
+            return false
+        }
     }
 
     @ViewBuilder private var content: some View {
@@ -634,22 +678,18 @@ enum EntryFocusGraph {
                         + (conditions.accountsLoadFailed
                             ? [.action("Reload accounts")]
                             : [])
+        case .signIn where !conditions.signInAcknowledged:
+            return [.input(.acknowledgeUnofficial), .input(.signInBack)]
         case .signIn(.browser(let offersQRCode)):
-            return [.input(.acknowledgeUnofficial)]
-                + (conditions.signInAcknowledged
-                    ? [.input(.signInWithPlayStation)]
+            return [.input(.signInWithPlayStation)]
+                + (offersQRCode
+                    ? [.input(.signInOtherMethod)]
                     : [])
-                    + (offersQRCode
-                        ? [.input(.signInOtherMethod)]
-                        : [])
-                        + [.input(.signInBack)]
+                    + [.input(.signInBack)]
         case .signIn(.qrCode):
-            return [.input(.acknowledgeUnofficial), .input(.signInOtherMethod), .input(.signInBack)]
+            return [.input(.signInOtherMethod), .input(.signInBack)]
         case .signIn(.qrFailed):
-            return [
-                .input(.acknowledgeUnofficial), .input(.newSignInCode), .input(.signInOtherMethod),
-                .input(.signInBack)
-            ]
+            return [.input(.newSignInCode), .input(.signInOtherMethod), .input(.signInBack)]
         case .accountID:
             return [.input(.accountName), .input(.accountID)]
                 + (conditions.validAccountID

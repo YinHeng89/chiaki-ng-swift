@@ -67,8 +67,7 @@ struct MobileEntryView: View {
             WelcomeView(
                 hasProfiles: !store.profiles.isEmpty,
                 focusedAction: $focusedAction,
-                send: send,
-                showsTitle: false
+                send: send
             )
             if let failure = store.accounts.operation.failure {
                 CopyableErrorMessage(message: AccountsFailureMessage.text(for: failure), font: .callout)

@@ -4,8 +4,9 @@ import MenuFocus
 import SwiftUI
 
 /// The orange glass notice that chiaki-ng is an unofficial client, shown before a PlayStation sign-in and on
-/// the About settings page, with room under its text for an acknowledgement.
-public struct UnofficialClientNotice<Footer: View>: View {
+/// the About settings page, with room under its text for an acknowledgement and a row of actions centred
+/// across the whole card.
+public struct UnofficialClientNotice<Footer: View, Actions: View>: View {
     /// The notice's headline.
     public static var title: LocalizedStringResource {
         .accountsUnofficialTitle
@@ -17,16 +18,34 @@ public struct UnofficialClientNotice<Footer: View>: View {
     }
 
     private let footer: Footer
+    private let actions: Actions
 
-    /// Creates the notice.
+    /// Creates the notice with something under its text and a row of actions under the whole card.
     ///
-    /// - Parameter footer: What sits under the text, such as an acknowledgement.
-    public init(@ViewBuilder footer: () -> Footer) {
+    /// - Parameters:
+    ///   - footer: What sits under the text, such as an acknowledgement.
+    ///   - actions: The buttons centred across the card under everything else.
+    public init(@ViewBuilder footer: () -> Footer, @ViewBuilder actions: () -> Actions) {
         self.footer = footer()
+        self.actions = actions()
     }
 
     /// The notice.
     public var body: some View {
+        VStack(spacing: 14) {
+            message
+            actions
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .glassEffect(AppGlass.warning, in: .rect(cornerRadius: GlassPanel.Radius.medium.points))
+        .overlay {
+            GlassPanel.Radius.medium.shape.strokeBorder(Color.orange.opacity(0.4))
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    private var message: some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 20, weight: .semibold))
@@ -37,7 +56,7 @@ public struct UnofficialClientNotice<Footer: View>: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(Self.title)
                     .font(.headline)
-                Text(Self.text)
+                Text(AttributedString(localized: Self.text))
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -45,22 +64,27 @@ public struct UnofficialClientNotice<Footer: View>: View {
             }
         }
         .multilineTextAlignment(.leading)
-        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassEffect(AppGlass.warning, in: .rect(cornerRadius: GlassPanel.Radius.medium.points))
-        .overlay {
-            GlassPanel.Radius.medium.shape.strokeBorder(Color.orange.opacity(0.4))
-        }
-        .accessibilityElement(children: .contain)
     }
 }
 
-extension UnofficialClientNotice where Footer == EmptyView {
-    /// Creates the notice with nothing under its text.
-    public init() {
-        self.init {
+extension UnofficialClientNotice where Actions == EmptyView {
+    /// Creates the notice with something under its text and no actions.
+    ///
+    /// - Parameter footer: What sits under the text, such as an acknowledgement.
+    public init(@ViewBuilder footer: () -> Footer) {
+        self.init(footer: footer) {
             EmptyView()
         }
+    }
+}
+
+extension UnofficialClientNotice where Footer == EmptyView, Actions == EmptyView {
+    /// Creates the notice with nothing under its text.
+    public init() {
+        self.init(footer: {
+            EmptyView()
+        })
     }
 }
 

@@ -83,10 +83,10 @@ struct MobileAboutSettingsPage: View {
                     .background(Color.orange, in: .rect(cornerRadius: 8))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(UnofficialClientNotice<EmptyView>.title)
+                    Text(UnofficialClientNotice<EmptyView, EmptyView>.title)
                         .font(.headline)
                         .fixedSize(horizontal: false, vertical: true)
-                    Text(UnofficialClientNotice<EmptyView>.text)
+                    Text(AttributedString(localized: UnofficialClientNotice<EmptyView, EmptyView>.text))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
