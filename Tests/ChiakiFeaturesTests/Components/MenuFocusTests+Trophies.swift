@@ -165,13 +165,13 @@ extension MenuFocusTests {
             store.trophies.overview?.titles.count == 2
         }
         store.send(.contentFocusRequested(LibraryContentFocus(.resume)))
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.back)
-        await harness.pause(300)
+        await harness.steadyFocus()
         #expect(quits.value == 1)
         #expect(testNavigator.inputGate.isBlocking)
         await harness.send(.back)
-        await harness.pause(300)
+        await harness.steadyFocus()
         #expect(!modal.shown)
         await harness.send(.confirm)
         await waitUntil(harness) {
@@ -194,7 +194,7 @@ extension MenuFocusTests {
             store.trophies.overview?.titles.count == 2
         }
         store.send(.contentFocusRequested(LibraryContentFocus(.resume)))
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.next)
         await waitUntil(harness) {
             store.trophies.titleFilter == .inProgress
@@ -242,10 +242,10 @@ extension MenuFocusTests {
         }
         #expect(store.heldFocus == .quit)
         await harness.send(.confirm)
-        await harness.pause(300)
+        await harness.steadyFocus()
         #expect(modal.shown)
         await harness.send(.back)
-        await harness.pause(300)
+        await harness.steadyFocus()
         #expect(!modal.shown)
         await harness.send(.up)
         await waitUntil(harness) {
@@ -265,12 +265,12 @@ extension MenuFocusTests {
             store.trophies.overview?.titles.count == 2
         }
         store.send(.contentFocusRequested(LibraryContentFocus(.resume)))
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send([.down, .confirm])
         await waitUntil(harness) {
             store.trophies.opened?.shown.count == 2
         }
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send([.down, .confirm])
         await waitUntil(harness) {
             store.trophies.opened?.revealed == [1]
@@ -289,9 +289,9 @@ extension MenuFocusTests {
             store.trophies.overview?.titles.count == 2
         }
         store.send(.contentFocusRequested(LibraryContentFocus(.resume)))
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send([.down, .alternate])
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send([.right, .confirm])
         await waitUntil(harness) {
             store.trophies.titleFilter == .inProgress
@@ -305,9 +305,9 @@ extension MenuFocusTests {
         await waitUntil(harness) {
             store.trophies.opened?.shown.count == 2
         }
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send([.down, .alternate])
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send([.right, .confirm])
         await waitUntil(harness) {
             store.trophies.trophyFilter == .earned
@@ -336,7 +336,7 @@ extension MenuFocusTests {
             store.section == .trophies && store.trophies.overview?.titles.count == 2
         }
         #expect(store.section == .trophies)
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.down)
         await harness.send(.confirm)
         await waitUntil(harness) {
@@ -364,7 +364,7 @@ extension MenuFocusTests {
         }
         #expect(store.heldFocus == .librarySection(.trophies))
         await harness.send(.right)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.down)
         await harness.send(.confirm)
         await waitUntil(harness) {
@@ -387,7 +387,7 @@ extension MenuFocusTests {
             store.trophies.opened == nil
         }
         #expect(store.trophies.opened == nil)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.confirm)
         await waitUntil(harness) {
             store.trophies.opened != nil
@@ -400,7 +400,7 @@ extension MenuFocusTests {
         await waitUntil(harness) {
             store.trophies.opened == nil
         }
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.back)
         await waitUntil(harness) {
             store.heldFocus == .librarySection(.trophies)
@@ -419,20 +419,20 @@ extension MenuFocusTests {
             harness.close()
         }
         await harness.open()
-        await harness.pause(500)
+        await harness.steadyFocus()
         await harness.send(.focusToolbar)
         await waitUntil(harness) {
             store.heldFocus == .librarySection(.trophies)
         }
         await harness.send(.right)
-        await harness.pause(300)
+        await harness.steadyFocus()
         released.setValue(true)
         await waitUntil(harness) {
             store.trophies.overview?.titles.count == 2
         }
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.down)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.confirm)
         await waitUntil(harness) {
             store.trophies.opened != nil
@@ -454,7 +454,7 @@ extension MenuFocusTests {
         }
         await harness.send(.focusToolbar)
         await harness.send(.right)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send([.up, .right, .right, .confirm])
         await waitUntil(harness) {
             store.trophies.titleFilter == .completed
@@ -471,7 +471,7 @@ extension MenuFocusTests {
         await waitUntil(harness) {
             store.trophies.opened?.shown.count == 2
         }
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send([.up, .right, .confirm])
         await waitUntil(harness) {
             store.trophies.trophyFilter == .earned
@@ -501,7 +501,7 @@ extension MenuFocusTests {
         }
         await harness.send(.focusToolbar)
         await harness.send(.right)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.down)
         await harness.send(.left)
         await waitUntil(harness) {
@@ -509,7 +509,7 @@ extension MenuFocusTests {
         }
         #expect(store.heldFocus == .librarySection(.trophies))
         await harness.send(.right)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.confirm)
         await waitUntil(harness) {
             store.trophies.opened != nil
@@ -531,9 +531,9 @@ extension MenuFocusTests {
         }
         await harness.send(.focusToolbar)
         await harness.send(.right)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(Array(repeating: .down, count: 30))
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.confirm)
         await waitUntil(harness) {
             store.trophies.opened != nil
@@ -546,16 +546,16 @@ extension MenuFocusTests {
             store.trophies.opened?.shown.count == 80
         }
         await harness.send(Array(repeating: .down, count: 40))
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.confirm)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.back)
         await waitUntil(harness) {
             store.trophies.opened == nil
         }
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.down)
-        await harness.pause(200)
+        await harness.steadyFocus()
         await harness.send(.confirm)
         await waitUntil(harness) {
             store.trophies.opened != nil
@@ -583,7 +583,7 @@ extension MenuFocusTests {
             store.trophies.overview?.titles.count == 2
         }
         store.send(.contentFocusRequested(LibraryContentFocus(.resume)))
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.alternate)
         await harness.pause(100)
         await harness.send([.right, .right, .confirm])
@@ -619,7 +619,7 @@ extension MenuFocusTests {
             store.trophies.overview?.titles.count == 2
         }
         store.send(.contentFocusRequested(LibraryContentFocus(.resume)))
-        await harness.pause(300)
+        await harness.steadyFocus()
         await harness.send(.next)
         await waitUntil(harness) {
             store.trophies.titleFilter == .inProgress

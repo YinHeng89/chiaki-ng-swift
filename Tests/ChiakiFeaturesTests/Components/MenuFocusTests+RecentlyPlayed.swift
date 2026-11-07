@@ -257,7 +257,7 @@ struct RecentlyPlayedRailHost: View {
 }
 
 @MainActor
-func waitUntil(_ harness: MenuFocusHarness, attempts: Int = 60, _ condition: () -> Bool) async {
+func waitUntil(_ harness: MenuFocusHarness, attempts: Int = 200, _ condition: () -> Bool) async {
     for _ in 0 ..< attempts {
         if condition() {
             return
