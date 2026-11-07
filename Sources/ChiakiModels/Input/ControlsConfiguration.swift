@@ -23,6 +23,10 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
     /// The controller chosen for player 1, by preference key.
     public var selectedControllerKey: String?
 
+    /// The controllers chosen for players 2 to 4, by preference key; `nil` where the player takes the first
+    /// available controller.
+    public var seatControllerKeys: [String?] = Array(repeating: nil, count: playerCount - 1)
+
     /// The preset used by controllers without their own.
     public var selectedPresetID = InputPreset.defaultID
 
@@ -78,7 +82,8 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case version, keyboardMode, keyboardEnabled, mouseEnabled, selectedControllerKey, selectedPresetID
+        case version, keyboardMode, keyboardEnabled, mouseEnabled, selectedControllerKey, seatControllerKeys,
+             selectedPresetID
         case presets, controllers, remembered, playerPresets, onScreenTouchpad, touchpadShortcut,
              streamMenuShortcut, backgroundInput,
              deviceMotion, virtualGamepad, lightbar
@@ -93,6 +98,8 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
         version = try values.decode(Int.self, forKey: .version)
         mouseEnabled = try values.decode(Bool.self, forKey: .mouseEnabled)
         selectedControllerKey = try values.decodeIfPresent(String.self, forKey: .selectedControllerKey)
+        seatControllerKeys = try values.decodeIfPresent([String?].self, forKey: .seatControllerKeys)
+            ?? Array(repeating: nil, count: Self.playerCount - 1)
         selectedPresetID = try values.decode(UUID.self, forKey: .selectedPresetID)
         presets = try values.decode([InputPreset].self, forKey: .presets)
         controllers = try values.decode([String: ControllerPreferences].self, forKey: .controllers)
@@ -131,6 +138,7 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
         try values.encode(keyboardMode, forKey: .keyboardMode)
         try values.encode(mouseEnabled, forKey: .mouseEnabled)
         try values.encodeIfPresent(selectedControllerKey, forKey: .selectedControllerKey)
+        try values.encode(seatControllerKeys, forKey: .seatControllerKeys)
         try values.encode(selectedPresetID, forKey: .selectedPresetID)
         try values.encode(presets, forKey: .presets)
         try values.encode(controllers, forKey: .controllers)
@@ -162,6 +170,60 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
     /// Whether player 1 is the keyboard alone.
     public var keyboardOnly: Bool {
         selectedControllerKey == Self.keyboardOnlyKey
+    }
+
+    /// The controller a player chose, by preference key.
+    ///
+    /// - Parameter player: The player, `0` for player 1.
+    /// - Returns: The preference key, ``keyboardOnlyKey`` for player 1 playing with the keyboard alone, or
+    ///   `nil` when the player takes the first available controller.
+    public func controllerKey(forPlayer player: Int) -> String? {
+        guard player > 0 else {
+            return selectedControllerKey
+        }
+        return seatControllerKeys.indices.contains(player - 1)
+            ? seatControllerKeys[player - 1]
+            : nil
+    }
+
+    /// Chooses the controller a player plays with, taking it from any other player who had chosen it.
+    ///
+    /// Only player 1 may choose ``keyboardOnlyKey``; for another player it clears the choice.
+    ///
+    /// - Parameters:
+    ///   - key: The controller's preference key, or `nil` for the first available controller.
+    ///   - player: The player, `0` for player 1.
+    public mutating func setControllerKey(_ key: String?, forPlayer player: Int) {
+        guard (0..<Self.playerCount).contains(player) else {
+            return
+        }
+        let chosen = player > 0 && key == Self.keyboardOnlyKey
+            ? nil
+            : key
+        if let chosen, chosen != Self.keyboardOnlyKey {
+            if player != 0, selectedControllerKey == chosen {
+                selectedControllerKey = nil
+            }
+            seatControllerKeys = seatControllerKeys.enumerated().map { index, key in
+                index != player - 1 && key == chosen
+                    ? nil
+                    : key
+            }
+        }
+        if player == 0 {
+            selectedControllerKey = chosen
+        } else if seatControllerKeys.indices.contains(player - 1) {
+            seatControllerKeys[player - 1] = chosen
+        }
+    }
+
+    /// The controllers the other players chose, which a player taking the first available controller skips.
+    ///
+    /// - Parameter player: The player, `0` for player 1.
+    /// - Returns: The preference keys the other players chose.
+    public func controllerKeys(takenFromPlayer player: Int) -> Set<String> {
+        Set((0..<Self.playerCount).filter { $0 != player }.compactMap { controllerKey(forPlayer: $0) })
+            .subtracting([Self.keyboardOnlyKey])
     }
 
     /// The global and per-controller light bar choices.
@@ -258,6 +320,15 @@ public struct ControlsConfiguration: Codable, Equatable, Sendable {
     ///   ``InputFailure/invalidConfiguration``.
     public func validated() throws -> Self {
         if let selectedControllerKey, selectedControllerKey.isEmpty || selectedControllerKey.count > 160 {
+            throw InputFailure.invalidConfiguration
+        }
+        let chosen = ([selectedControllerKey] + seatControllerKeys).compactMap(\.self)
+            .filter { $0 != Self.keyboardOnlyKey }
+        guard seatControllerKeys.count == Self.playerCount - 1,
+              seatControllerKeys.allSatisfy({ key in
+                  key.map { !$0.isEmpty && $0.count <= 160 && $0 != Self.keyboardOnlyKey } ?? true
+              }),
+              Set(chosen).count == chosen.count else {
             throw InputFailure.invalidConfiguration
         }
         guard version == 1, !presets.isEmpty, presets.count <= 32,
@@ -484,7 +555,7 @@ extension ControlsConfiguration {
         }
     }
 
-    /// Forgets a controller: its record, its preferences, its own preset and any player 1 choice of it.
+    /// Forgets a controller: its record, its preferences, its own preset and any player's choice of it.
     ///
     /// A preset another controller also uses is kept.
     ///
@@ -500,6 +571,11 @@ extension ControlsConfiguration {
         }
         if selectedControllerKey == key {
             selectedControllerKey = nil
+        }
+        seatControllerKeys = seatControllerKeys.map {
+            $0 == key
+                ? nil
+                : $0
         }
     }
 }

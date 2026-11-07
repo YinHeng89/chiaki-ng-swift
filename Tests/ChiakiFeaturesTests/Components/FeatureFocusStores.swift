@@ -18,6 +18,7 @@ enum FeatureFocusStores {
             $0.logSettings = .testValue
             $0.controllers = .testValue
             $0.uuid = .incrementing
+            $0.withRandomNumberGenerator = WithRandomNumberGenerator(SystemRandomNumberGenerator())
         }
     }
 

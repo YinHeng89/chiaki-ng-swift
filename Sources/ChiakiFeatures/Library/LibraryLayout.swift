@@ -41,12 +41,7 @@ struct LibraryLayout: View {
     /// each screen.
     var body: some View {
         arrangement
-            .padding(
-                .horizontal,
-                layout.isCompact
-                    ? layout.sideInset
-                    : 16
-            )
+            .padding(.horizontal, horizontalInset)
             .padding(.top, topInset)
             .padding(
                 .bottom,
@@ -54,6 +49,12 @@ struct LibraryLayout: View {
                     ? 4
                     : 24
             )
+    }
+
+    private var horizontalInset: CGFloat {
+        layout.isCompact
+            ? layout.sideInset
+            : 16
     }
 
     private var topInset: CGFloat {
@@ -131,9 +132,14 @@ struct LibraryLayout: View {
                     .padding(.horizontal, 12)
                 if railEdge == .bottom {
                     libraryRail
+                        .padding(.trailing, bottomBarLogoClearance)
                 }
             }
         }
+    }
+
+    private var bottomBarLogoClearance: CGFloat {
+        max(0, RootCornerLogo.trailingExtent(for: layout) + 12 - horizontalInset)
     }
 
     private var railSpace: some View {

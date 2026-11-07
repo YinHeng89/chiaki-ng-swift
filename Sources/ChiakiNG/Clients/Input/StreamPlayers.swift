@@ -41,6 +41,17 @@ final class StreamPlayers {
     private var configuration: ControlsConfiguration
     private var pipelineToken: UUID?
 
+    /// The controllers players 2 to 4 chose in the controls settings, by preference key and keyed by pad.
+    var chosenControllers: [UInt8: String] {
+        var chosen: [UInt8: String] = [:]
+        for player in 1..<ControlsConfiguration.playerCount {
+            if let key = configuration.controllerKey(forPlayer: player) {
+                chosen[UInt8(player)] = key
+            }
+        }
+        return chosen
+    }
+
     /// Creates the players of a stream.
     ///
     /// - Parameters:

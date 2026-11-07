@@ -71,18 +71,9 @@ public struct RootView: View {
                     )
                 }
             }
-            .overlay(
-                alignment: RootCornerLogo.besideRail(library: store.route == .library, railEdge: railEdge)
-                    ? .topLeading
-                    : .bottomTrailing
-            ) {
+            .overlay(alignment: .bottomTrailing) {
                 if showsCornerLogo {
-                    RootCornerLogo(
-                        library: store.route == .library,
-                        railEdge: railEdge,
-                        height: geometry.size.height,
-                        version: AppVersion.display()
-                    )
+                    RootCornerLogo(library: store.route == .library, version: AppVersion.display())
                 }
             }
         }
@@ -208,9 +199,7 @@ public struct RootView: View {
         switch store.route {
         case .stream, .kakusanGuest:
             return false
-        case .library:
-            return railEdge == .left || railEdge == .top
-        case .launching, .welcome, .signIn, .accountIDEntry, .addConsole, .pairing:
+        case .library, .launching, .welcome, .signIn, .accountIDEntry, .addConsole, .pairing:
             return true
         }
     }
@@ -406,19 +395,28 @@ public enum RootConfirmation: Equatable {
     }
 }
 
-/// The chiaki-ng mark in a corner of the home screens: beside a left library rail, or with the version in the
-/// bottom-right corner.
+/// The chiaki-ng mark with the version under it in the bottom-right corner of the home screens, wherever the
+/// library rail is docked.
 ///
 /// Entering the Konami code's directions with a controller in this window spins the mark.
-private struct RootCornerLogo: View {
+struct RootCornerLogo: View {
+    /// The width of the mark and its version line.
+    static let width: CGFloat = 150
+
+    /// The gap between the mark and the window's trailing and bottom edges, before the screen's side inset.
+    static let margin: CGFloat = 18
+
+    /// How far from the window's trailing edge the mark reaches, so a bar along the bottom edge can stop
+    /// short of it.
+    ///
+    /// - Parameter layout: The screen's layout traits.
+    /// - Returns: The width in points.
+    static func trailingExtent(for layout: ScreenLayout) -> CGFloat {
+        width + margin + layout.sideInset
+    }
+
     /// Whether the library is shown.
     let library: Bool
-
-    /// Where the library rail sits.
-    let railEdge: LibraryRailEdge
-
-    /// The height of the window.
-    let height: CGFloat
 
     /// The app's version.
     let version: String
@@ -427,14 +425,6 @@ private struct RootCornerLogo: View {
     @State private var spins = 0
     @State private var hostWindow: PlatformWindow?
     @Environment(\.screenLayout) private var layout
-
-    /// The smallest window height that leaves room for the mark beside the rail.
-    static let besideRailHeight: CGFloat = 680
-
-    /// Whether the mark sits beside a left library rail.
-    static func besideRail(library: Bool, railEdge: LibraryRailEdge) -> Bool {
-        library && railEdge == .left
-    }
 
     /// The view.
     var body: some View {
@@ -449,39 +439,29 @@ private struct RootCornerLogo: View {
             }
     }
 
-    @ViewBuilder private var mark: some View {
-        if Self.besideRail(library: library, railEdge: railEdge) {
-            if height >= Self.besideRailHeight {
-                ChiakiLogo(size: 30, spins: spins)
-                    .help(Text(verbatim: "chiaki-ng \(version)"))
-                    .frame(width: LibraryRailView<EmptyView, EmptyView>.collapsedWidth(for: layout))
-                    .padding(.leading, 16)
-                    .padding(.top, 77)
-            }
-        } else {
-            VStack(spacing: 9) {
-                ChiakiLogo(
-                    size: library
-                        ? 38
-                        : 48,
-                    spins: spins
-                )
-                Text(version)
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .fixedSize()
-                    .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
-            }
-            .frame(width: 150)
-            .opacity(
-                library
-                    ? 0.75
-                    : 1
+    private var mark: some View {
+        VStack(spacing: 9) {
+            ChiakiLogo(
+                size: library
+                    ? 38
+                    : 48,
+                spins: spins
             )
-            .padding(.trailing, 18 + layout.sideInset)
-            .padding(.bottom, 18)
-            .streamChromeCorner(.bottomTrailing)
+            Text(version)
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .fixedSize()
+                .foregroundStyle(.secondary)
+                .textSelection(.enabled)
         }
+        .frame(width: Self.width)
+        .opacity(
+            library
+                ? 0.75
+                : 1
+        )
+        .padding(.trailing, Self.margin + layout.sideInset)
+        .padding(.bottom, Self.margin)
+        .streamChromeCorner(.bottomTrailing)
     }
 }
 

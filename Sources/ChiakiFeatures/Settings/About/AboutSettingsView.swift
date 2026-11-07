@@ -77,9 +77,10 @@ public struct AboutSettingsView: View {
             Text(.settingsAboutThanksDetail)
                 .font(.callout)
                 .foregroundStyle(.secondary)
-            ForEach(Self.projects, id: \.name) { project in
-                self.project(project.name, author: project.author, note: project.note, link: project.link)
-                Divider()
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 10)], spacing: 10) {
+                ForEach(Self.projects, id: \.name) { project in
+                    projectCell(project)
+                }
             }
             contributors
         }
@@ -87,37 +88,70 @@ public struct AboutSettingsView: View {
 
     /// The affiliated projects the About page thanks, in the order it lists them.
     static let projects = [
-        AboutProject(name: "thestr4ng3r", note: .settingsAboutNoteOriginalChiaki, link: .originalChiaki),
-        AboutProject(name: "Chiaki-TV", author: "TechAntoHere", note: .settingsAboutNoteToBeReleased),
-        AboutProject(name: "Pylux", author: "Forward Technologies LLC", link: .pylux),
-        AboutProject(name: "Pxplay", author: "grill2010", link: .pxplay),
-        AboutProject(name: "Cloudpad", author: "Chaz", link: .cloudpad),
-        AboutProject(name: "akira", author: "xlanor", link: .akira),
+        AboutProject(name: "Chiaki", logo: .bundled("chiaki"), author: "thestr4ng3r", link: .originalChiaki),
+        AboutProject(
+            name: "Chiaki-TV", logo: .symbol("tv"), author: "TechAntoHere",
+            note: .settingsAboutNoteToBeReleased
+        ),
+        AboutProject(
+            name: "Pylux",
+            logo: .remote(URL(
+                string: "https://raw.githubusercontent.com/ForWard-Technologies-LLC/Pylux/master/pylux-logo.png"
+            )!),
+            author: "Forward Technologies LLC",
+            link: .pylux
+        ),
+        AboutProject(
+            name: "Pxplay",
+            logo: .remote(URL(
+                string: "https://cdn2.steamgriddb.com/icon_thumb/5f2e8fb6fcccffa6b083f5b411e11221.png"
+            )!),
+            author: "grill2010",
+            link: .pxplay
+        ),
+        AboutProject(
+            name: "akira",
+            logo: .remote(URL(
+                string: "https://raw.githubusercontent.com/chiaki-ng/akira/refs/heads/master/resources/img/icon.jpg"
+            )!),
+            author: "xlanor",
+            link: .akira
+        ),
     ]
 
-    private func project(
-        _ name: String, author: String? = nil, note: LocalizedStringResource? = nil, link: AboutReducer.Link?
-    ) -> some View {
-        HStack(spacing: 6) {
-            if let link {
-                self.link(Text(name), link, hint: .settingsAboutProjectHint)
-            } else {
-                Text(name)
-                    .font(.callout.weight(.semibold))
-            }
-            if let author {
+    private func projectCell(_ project: AboutProject) -> some View {
+        VStack(spacing: 8) {
+            AboutProjectLogo(logo: project.logo, side: 64)
+            projectName(project)
+            if let author = project.author {
                 byline(author)
-                    .font(.callout)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            if let note {
+            if let note = project.note {
                 Text(note)
-                    .font(.callout)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Spacer(minLength: 0)
         }
-        .frame(minHeight: 30)
+        .multilineTextAlignment(.center)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 8)
+        .frame(maxWidth: .infinity, minHeight: 150, alignment: .top)
+        .background(Palette.controlBackground.opacity(0.5), in: GlassPanel.Radius.small.shape)
+        .overlay {
+            GlassPanel.Radius.small.shape.strokeBorder(.primary.opacity(0.08))
+        }
+    }
+
+    @ViewBuilder private func projectName(_ project: AboutProject) -> some View {
+        if let link = project.link {
+            self.link(Text(verbatim: project.name), link, hint: .settingsAboutProjectHint)
+        } else {
+            Text(verbatim: project.name)
+                .font(.callout.weight(.semibold))
+                .padding(.horizontal, 3)
+        }
     }
 
     private func byline(_ author: String) -> Text {
@@ -405,10 +439,23 @@ struct WrappingRow: Layout {
     }
 }
 
-/// An affiliated project the About page thanks: its name, who made it, a note and its page.
+/// An affiliated project the About page thanks: its name and logo, who made it, a note and its page.
 struct AboutProject {
+    /// Where a project's logo comes from.
+    enum Logo {
+        /// A PNG bundled in the app's assets, by name.
+        case bundled(String)
+        /// An image on the project's own site, loaded when the page shows it.
+        case remote(URL)
+        /// An SF Symbol standing in for a project without a logo.
+        case symbol(String)
+    }
+
     /// The project's name.
     let name: String
+
+    /// The project's logo.
+    let logo: Logo
 
     /// Who made it, when credited.
     var author: String?

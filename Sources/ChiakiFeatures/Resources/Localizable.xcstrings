@@ -19123,17 +19123,6 @@
         }
       }
     },
-    "settings.about.noteOriginalChiaki" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "for the original chiaki"
-          }
-        }
-      }
-    },
     "settings.about.noteToBeReleased" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -20554,6 +20543,17 @@
         }
       }
     },
+    "settings.controls.deviceIdentity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@ · %(identity)@"
+          }
+        }
+      }
+    },
     "settings.controls.deviceKeyboard" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -21599,13 +21599,13 @@
         }
       }
     },
-    "settings.controls.playerOnePicker" : {
+    "settings.controls.playerPicker" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Player 1 plays with"
+            "value" : "Player %(number)lld plays with"
           }
         }
       }

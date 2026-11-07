@@ -51,14 +51,22 @@ public struct CouchInventory: Equatable, Sendable {
     public var controllers: [ControllerDevice]
     /// The controller player 1 uses, or `nil` when player 1 uses the keyboard.
     public var playerOne: ControllerDevice?
+    /// The controllers players 2 to 4 chose in the controls settings, by preference key and keyed by pad.
+    public var chosenControllers: [UInt8: String]
     /// Creates an inventory.
     ///
     /// - Parameters:
     ///   - controllers: Every connected controller.
     ///   - playerOne: The controller player 1 uses, or `nil` for the keyboard.
-    public init(controllers: [ControllerDevice] = [], playerOne: ControllerDevice? = nil) {
+    ///   - chosenControllers: The controllers players 2 to 4 chose, by preference key and keyed by pad.
+    public init(
+        controllers: [ControllerDevice] = [],
+        playerOne: ControllerDevice? = nil,
+        chosenControllers: [UInt8: String] = [:]
+    ) {
         self.controllers = controllers
         self.playerOne = playerOne
+        self.chosenControllers = chosenControllers
     }
 }
 

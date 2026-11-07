@@ -21,8 +21,6 @@ import Foundation
         case pylux
         /// Pxplay by grill2010.
         case pxplay
-        /// Cloudpad by Chaz.
-        case cloudpad
         /// akira by xlanor.
         case akira
         /// Street Pea, the lead maintainer, on GitHub.
@@ -45,8 +43,6 @@ import Foundation
                 URL(string: "https://github.com/ForWard-Technologies-LLC/Pylux")!
             case .pxplay:
                 URL(string: "https://streamingdv.github.io/pxplay/")!
-            case .cloudpad:
-                URL(string: "https://github.com/Chazq2023/CloudPad-Android")!
             case .akira:
                 URL(string: "https://github.com/chiaki-ng/akira")!
             case .leadMaintainer:
@@ -92,11 +88,30 @@ import Foundation
 
     @Dependency(\.settings) private var settings
     @Dependency(\.openURL) private var openURL
+    @Dependency(\.withRandomNumberGenerator) private var withRandomNumberGenerator
 
     /// Creates the reducer.
     public init() {}
 
-    /// The bundled list of chiaki-ng contributors, one login per line, in the order the page shows them.
+    /// The contributors always listed first, in this order, ahead of everyone else.
+    public static let leadingContributors = ["streetpea", "thestr4ng3r"]
+
+    /// Puts the leading contributors first and everyone else after them in a shuffled order.
+    ///
+    /// - Parameters:
+    ///   - contributors: The contributors' logins.
+    ///   - generator: The source of randomness for the shuffle.
+    /// - Returns: The logins in the order the page shows them.
+    public static func ordered(
+        _ contributors: [String],
+        using generator: inout some RandomNumberGenerator
+    ) -> [String] {
+        let leading = leadingContributors.filter(contributors.contains)
+        let rest = contributors.filter { !leadingContributors.contains($0) }
+        return leading + rest.shuffled(using: &generator)
+    }
+
+    /// The bundled list of chiaki-ng contributors, one login per line, in the file's order.
     public static var bundledContributors: [String] {
         guard let url = ChiakiAssets.licensesURL?.appending(path: "Attributions/chiaki-ng-CONTRIBUTORS.txt"),
               let text = try? String(contentsOf: url, encoding: .utf8)
@@ -129,8 +144,11 @@ import Foundation
         Reduce { state, action in
             switch action {
             case .load:
-                return .run { [settings] send in
-                    await send(.loaded(settings.coreBuild(), Self.bundledContributors))
+                return .run { [settings, withRandomNumberGenerator] send in
+                    let contributors = withRandomNumberGenerator { generator in
+                        Self.ordered(Self.bundledContributors, using: &generator)
+                    }
+                    await send(.loaded(settings.coreBuild(), contributors))
                 }
             case let .loaded(build, contributors):
                 state.coreBuild = build

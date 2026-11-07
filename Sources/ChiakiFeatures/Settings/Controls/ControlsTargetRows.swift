@@ -76,10 +76,7 @@ struct ControlsTargetRows: View {
         guard !device.isKeyboard else {
             return String(localized: .settingsControlsKeyboardAndMouse)
         }
-        let nickname = store.draft.controllers[device.preferenceKey]?.nickname ?? ""
-        return nickname.isEmpty
-            ? device.name
-            : nickname
+        return String(localized: store.state.title(of: device))
     }
 
     private func lines(for device: ControllerDevice, connected: Bool) -> [String] {
@@ -109,20 +106,18 @@ struct ControlsTargetRows: View {
         let bindings = String(localized: store.draft.playerPreset(player) == nil
             ? .settingsControlsUsesControllerBindings
             : .settingsControlsHasOwnBindings)
-        guard player == 0 else {
-            return [bindings]
-        }
-        return [bindings, playerOneController]
+        return [bindings, playerController(player)]
     }
 
-    private var playerOneController: String {
-        guard let key = store.draft.selectedControllerKey else {
+    private func playerController(_ player: Int) -> String {
+        guard let key = store.state.shownControllerKey(forPlayer: player) else {
             return String(localized: .settingsControlsFirstAvailableController)
         }
         if key == ControlsConfiguration.keyboardOnlyKey {
-            return String(localized: ControlsPlayerOneControllerPicker.withoutControllerTitle)
+            return String(localized: ControlsPlayerControllerPicker.withoutControllerTitle)
         }
-        return store.state.device(key)?.name ?? String(localized: .settingsControlsFirstAvailableController)
+        return store.state.device(key).map { String(localized: store.state.title(of: $0)) }
+            ?? String(localized: .settingsControlsFirstAvailableController)
     }
 }
 

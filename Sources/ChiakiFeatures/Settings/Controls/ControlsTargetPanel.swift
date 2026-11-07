@@ -103,9 +103,7 @@ struct ControlsTargetPanel: View {
             .padding(.top, 4)
         case .player(let player):
             VStack(alignment: .leading, spacing: 10) {
-                if player == 0 {
-                    ControlsPlayerOneControllerPicker(store: store)
-                }
+                ControlsPlayerControllerPicker(store: store, player: player)
                 if store.draft.playerPreset(player) != nil {
                     FocusButton(.settingsControlsUseControllerBindings) {
                         store.send(.removePlayerPreset(player))
@@ -172,7 +170,7 @@ struct ControlsTargetPanel: View {
         guard case .controller = store.editing else {
             return nil
         }
-        return store.editingDevice?.name
+        return store.editingDevice.map { String(localized: store.state.title(of: $0)) }
     }
 
     private var title: Text {
@@ -180,7 +178,8 @@ struct ControlsTargetPanel: View {
         case .keyboard:
             Text(.settingsControlsKeyboardAndMouse)
         case .controller:
-            store.editingDevice.map { Text($0.name) } ?? Text(.settingsControlsControllerTitle)
+            store.editingDevice.map { Text(store.state.title(of: $0)) }
+                ?? Text(.settingsControlsControllerTitle)
         case .player(let player):
             Text(.settingsControlsPlayerTitle(number: player + 1))
         }

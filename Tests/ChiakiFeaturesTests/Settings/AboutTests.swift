@@ -16,9 +16,13 @@ import Testing
             $0.settings.coreBuild = {
                 build
             }
+            $0.withRandomNumberGenerator = WithRandomNumberGenerator(SteppingGenerator())
         }
-        let contributors = AboutReducer.bundledContributors
-        #expect(contributors.prefix(3) == ["streetpea", "kyogre404", "xlanor"])
+        var generator = SteppingGenerator()
+        let bundled = AboutReducer.bundledContributors
+        let contributors = AboutReducer.ordered(bundled, using: &generator)
+        #expect(contributors.prefix(2) == ["streetpea", "thestr4ng3r"])
+        #expect(contributors.sorted() == bundled.sorted())
         await store.send(.load)
         await store.receive(.loaded(build, contributors)) {
             $0.coreBuild = build
@@ -52,5 +56,14 @@ import Testing
         #expect(AboutReducer.Link.leadMaintainer.url.absoluteString == "https://github.com/streetpea")
         #expect(AboutReducer.Link.privacyPolicy.url.absoluteString
             == "https://github.com/chiaki-ng/chiaki-ng-swift/blob/main/PRIVACY.md")
+    }
+}
+
+private struct SteppingGenerator: RandomNumberGenerator, Sendable {
+    private var state: UInt64 = 0
+
+    mutating func next() -> UInt64 {
+        state &+= 0x9E37_79B9_7F4A_7C15
+        return state
     }
 }

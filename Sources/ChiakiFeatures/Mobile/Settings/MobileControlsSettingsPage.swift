@@ -144,6 +144,10 @@ private struct MobileControlsForm: View {
             playerOne
             bindingsGroup(title: String(localized: .mobileControlsBindings))
         case .player(let player):
+            MobileSettingsGroup {
+                playsWith(player)
+            }
+            .disabled(!store.isEditable)
             bindingsGroup(title: String(localized: .mobileControlsPlayer(player: player + 1)))
         case .controller(let key):
             bindingsGroup(title: targetTitle)
@@ -169,13 +173,7 @@ private struct MobileControlsForm: View {
 
     private var playerOne: some View {
         MobileSettingsGroup(.mobileControlsPlayerOne, footer: playerOneNote) {
-            MobilePickerRow(
-                .mobileControlsPlaysWith,
-                selection: $store.draft.selectedControllerKey,
-                choices: [nil, ControlsConfiguration.keyboardOnlyKey]
-                    + store.listedDevices.filter { !$0.isKeyboard }.map { Optional($0.preferenceKey) },
-                verbatimLabel: playsWithTitle
-            )
+            playsWith(0)
             #if !os(macOS)
                 MobilePickerRow(
                     .mobileControlsTouchControls,
@@ -319,14 +317,37 @@ private struct MobileControlsForm: View {
         }
     }
 
-    private func playsWithTitle(_ key: String?) -> String {
+    private func playsWith(_ player: Int) -> some View {
+        let fixed: [String?] = player == 0
+            ? [nil, ControlsConfiguration.keyboardOnlyKey]
+            : [nil]
+        return MobilePickerRow(
+            .mobileControlsPlaysWith,
+            selection: Binding(
+                get: {
+                    store.state.shownControllerKey(forPlayer: player)
+                },
+                set: { key in
+                    var draft = store.draft
+                    draft.setControllerKey(key, forPlayer: player)
+                    store.send(.edit(draft))
+                }
+            ),
+            choices: fixed + store.state.controllerChoices(forPlayer: player).map {
+                Optional($0.preferenceKey)
+            },
+            label: playsWithTitle
+        )
+    }
+
+    private func playsWithTitle(_ key: String?) -> LocalizedStringResource {
         guard let key else {
-            return String(localized: .mobileControlsFirstAvailable)
+            return .mobileControlsFirstAvailable
         }
         if key == ControlsConfiguration.keyboardOnlyKey {
-            return String(localized: ControlsPlayerOneControllerPicker.withoutControllerTitle)
+            return ControlsPlayerControllerPicker.withoutControllerTitle
         }
-        return store.listedDevices.first { $0.preferenceKey == key }?.name ?? key
+        return store.state.device(key).map { store.state.title(of: $0) } ?? .mobileControlsFirstAvailable
     }
 
     private func deviceRow(_ device: ControllerDevice) -> some View {
@@ -758,12 +779,18 @@ extension MobileControlsForm {
     }
 
     private func touchpadButton(_ slot: Int) -> Binding<Int> {
-        Binding(
+        let shown = store.draft.touchpadShortcut.buttons
+        return Binding(
             get: {
-                store.draft.touchpadShortcut.buttons[slot]
+                shown.indices.contains(slot)
+                    ? shown[slot]
+                    : TouchpadShortcut.standard.buttons[slot]
             },
             set: { code in
                 var buttons = store.draft.touchpadShortcut.buttons
+                guard buttons.indices.contains(slot) else {
+                    return
+                }
                 if let existing = buttons.firstIndex(of: code), existing != slot {
                     buttons.swapAt(existing, slot)
                 } else {
@@ -898,12 +925,7 @@ extension MobileControlsForm {
         guard !device.isKeyboard else {
             return Text(.mobileControlsKeyboardAndMouseDevice)
         }
-        let nickname = store.draft.controllers[device.preferenceKey]?.nickname ?? ""
-        return Text(
-            verbatim: nickname.isEmpty
-                ? device.name
-                : nickname
-        )
+        return Text(store.state.title(of: device))
     }
 
     private func lines(for device: ControllerDevice, connected: Bool) -> [Text] {
@@ -933,10 +955,10 @@ extension MobileControlsForm {
                 ? .mobileControlsEachControllersBindings
                 : .mobileControlsOwnBindings
         )
-        guard player == 0 else {
-            return [Text(.mobileControlsJoinsWithPS), bindings]
+        guard player > 0, store.state.shownControllerKey(forPlayer: player) == nil else {
+            return [playerController(player), bindings]
         }
-        return [playerOneController, bindings]
+        return [Text(.mobileControlsJoinsWithPS), bindings]
     }
 
     private var playerOneNote: LocalizedStringResource {
@@ -946,17 +968,8 @@ extension MobileControlsForm {
         return .mobileControlsPlayerOneTouchNote
     }
 
-    private var playerOneController: Text {
-        guard let key = store.draft.selectedControllerKey else {
-            return Text(.mobileControlsFirstAvailable)
-        }
-        if key == ControlsConfiguration.keyboardOnlyKey {
-            return Text(ControlsPlayerOneControllerPicker.withoutControllerTitle)
-        }
-        guard let name = store.state.device(key)?.name else {
-            return Text(.mobileControlsFirstAvailable)
-        }
-        return Text(verbatim: name)
+    private func playerController(_ player: Int) -> Text {
+        Text(playsWithTitle(store.state.shownControllerKey(forPlayer: player)))
     }
 
     private var virtualGamepadNote: LocalizedStringResource {

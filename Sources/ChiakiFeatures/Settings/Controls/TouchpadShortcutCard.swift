@@ -82,9 +82,9 @@ struct TouchpadShortcutCard: View {
                 HStack(spacing: 8) {
                     Text(.settingsControlsButtons)
                     Spacer()
-                    picker(slot: 0)
-                    Text("+").foregroundStyle(.secondary)
-                    picker(slot: 1)
+                    picker(slot: 0, code: shortcut.buttons[0])
+                    Text(verbatim: "+").foregroundStyle(.secondary)
+                    picker(slot: 1, code: shortcut.buttons[1])
                 }
             }
         }
@@ -100,9 +100,9 @@ struct TouchpadShortcutCard: View {
         return Text(.settingsControlsRecordShortcut)
     }
 
-    private func picker(slot: Int) -> some View {
+    private func picker(slot: Int, code: Int) -> some View {
         Picker(.settingsControlsComboButtonPicker(number: slot + 1), selection: Binding(get: {
-            shortcut.buttons[slot]
+            code
         }, set: { code in
             choose(code, slot: slot)
         })) {
@@ -117,6 +117,9 @@ struct TouchpadShortcutCard: View {
 
     private func choose(_ code: Int, slot: Int) {
         var buttons = shortcut.buttons
+        guard buttons.indices.contains(slot) else {
+            return
+        }
         if let existing = buttons.firstIndex(of: code), existing != slot {
             buttons.swapAt(existing, slot)
         } else {

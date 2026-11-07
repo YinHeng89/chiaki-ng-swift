@@ -208,7 +208,7 @@ struct MobileAboutSettingsPage: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .mobileRowPadding()
             ForEach(AboutSettingsView.projects, id: \.name) { project in
-                self.project(project.name, author: project.author, note: project.note, link: project.link)
+                self.project(project)
             }
             contributorsRow
             if store.contributorsShown {
@@ -219,12 +219,14 @@ struct MobileAboutSettingsPage: View {
     }
 
     @ViewBuilder
-    private func project(
-        _ name: String, author: String? = nil, note: LocalizedStringResource? = nil, link: AboutReducer.Link?
-    ) -> some View {
+    private func project(_ project: AboutProject) -> some View {
+        let link = project.link
+        let author = project.author
+        let note = project.note
         let label = HStack(spacing: 12) {
+            AboutProjectLogo(logo: project.logo)
             VStack(alignment: .leading, spacing: 2) {
-                Text(name)
+                Text(verbatim: project.name)
                     .foregroundStyle(
                         link == nil
                             ? Color.primary

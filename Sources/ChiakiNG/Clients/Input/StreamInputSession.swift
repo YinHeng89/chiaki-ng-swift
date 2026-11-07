@@ -120,7 +120,8 @@ final class StreamInputSession {
     func inventory() -> CouchInventory {
         CouchInventory(
             controllers: environment.connectedDevices().filter { !$0.isKeyboard },
-            playerOne: players.playerOne.device
+            playerOne: players.playerOne.device,
+            chosenControllers: players.chosenControllers
         )
     }
 

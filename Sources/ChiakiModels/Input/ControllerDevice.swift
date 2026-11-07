@@ -91,6 +91,17 @@ public struct ControllerDevice: Equatable, Sendable, Identifiable {
         id == Self.keyboardID
     }
 
+    /// A short code that tells this controller apart from others of the same model: the last characters of
+    /// the hashed identity in its preference key, or `nil` when the model shares one key for every unit.
+    public var shortIdentity: String? {
+        guard individual, preferenceKey.hasPrefix(Self.unitKeyPrefix) else {
+            return nil
+        }
+        return String(preferenceKey.suffix(4)).uppercased()
+    }
+
+    private static let unitKeyPrefix = "unit:"
+
     /// Whether the console's haptics play natively on the device rather than as rumble.
     public var nativeHaptics: Bool {
         adaptiveTriggers
