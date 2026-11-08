@@ -1,3 +1,5 @@
+import Foundation
+
 /// A connected controller, or the keyboard and mouse, and what it can do.
 public struct ControllerDevice: Equatable, Sendable, Identifiable {
     /// The id reserved for the keyboard and mouse.
@@ -5,7 +7,8 @@ public struct ControllerDevice: Equatable, Sendable, Identifiable {
 
     /// The keyboard and mouse as a device.
     public static let keyboard = ControllerDevice(
-        id: keyboardID, preferenceKey: "keyboard", name: "Keyboard and mouse", transport: "Built in",
+        id: keyboardID, preferenceKey: "keyboard", name: String(localized: .controlsDeviceKeyboardName),
+        transport: String(localized: .controlsDeviceKeyboardTransport),
         individual: true, rumble: false, lights: false, motion: false, touchpad: false, family: .generic
     )
 
@@ -87,6 +90,17 @@ public struct ControllerDevice: Equatable, Sendable, Identifiable {
     public var isKeyboard: Bool {
         id == Self.keyboardID
     }
+
+    /// A short code that tells this controller apart from others of the same model: the last characters of
+    /// the hashed identity in its preference key, or `nil` when the model shares one key for every unit.
+    public var shortIdentity: String? {
+        guard individual, preferenceKey.hasPrefix(Self.unitKeyPrefix) else {
+            return nil
+        }
+        return String(preferenceKey.suffix(4)).uppercased()
+    }
+
+    private static let unitKeyPrefix = "unit:"
 
     /// Whether the console's haptics play natively on the device rather than as rumble.
     public var nativeHaptics: Bool {

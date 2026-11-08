@@ -201,7 +201,7 @@ private struct StreamChromeFocusReporter: ViewModifier {
 /// Play guest's joining card, which fades with that corner and keeps it visible while focused.
 struct StreamChromeBackButton<Focus: Hashable>: View {
     /// The tooltip and accessibility label.
-    let title: String
+    let title: LocalizedStringResource
     /// The menu focus binding the button joins.
     let focus: MenuFocusState<Focus?>.Binding
     /// The focus value that identifies this button.
@@ -221,7 +221,7 @@ struct StreamChromeBackButton<Focus: Hashable>: View {
         .focusBorderShape(.circle)
         .menuFocused(focus, equals: focusValue)
         .environment(\.menuMove, move)
-        .help(title)
+        .help(Text(title))
         .accessibilityLabel(title)
         .streamChromeFocus(.topLeading)
         .padding(.leading, 28 + layout.sideInset)

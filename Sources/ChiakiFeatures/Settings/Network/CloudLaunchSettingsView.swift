@@ -12,7 +12,7 @@ import SwiftUI
     public enum Phase: Equatable, Sendable {
         /// Not loaded yet, loading under an identifier, ready, saving a pending value under an identifier, or
         /// failed with a message.
-        case idle, loading(UUID), ready, saving(UUID, Bool), failed(String)
+        case idle, loading(UUID), ready, saving(UUID, Bool), failed(LocalizedStringResource)
     }
 
     /// The persisted choice and where its load or save stands.
@@ -59,10 +59,9 @@ import SwiftUI
     }
 
     /// The toggle's label.
-    public static let title = "Select datacenter at launch"
+    public static let title: LocalizedStringResource = .settingsNetworkCloudLaunchToggle
     /// The caption explaining what choosing a datacenter at launch does.
-    public static let detail = "After the datacenters are measured, choose one before the stream starts. The lowest "
-        + "ping is chosen automatically after 15 seconds."
+    public static let detail: LocalizedStringResource = .settingsNetworkCloudLaunchDetail
 
     /// Reads and writes the cloud datacenter settings.
     @Dependency(\.cloud) var client
@@ -118,7 +117,7 @@ import SwiftUI
             case .failed(let id):
                 switch state.phase {
                 case .loading(id), .saving(id, _):
-                    state.phase = .failed("Couldn’t load or save the datacenter setting. Try again.")
+                    state.phase = .failed(.settingsNetworkCloudLaunchFailed)
                 default:
                     break
                 }
@@ -142,7 +141,7 @@ public struct CloudLaunchSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Cloud datacenter").font(.headline)
+            Text(.settingsNetworkCloudDatacenterHeading).font(.headline)
             Toggle(
                 CloudLaunchSettingsReducer.title,
                 isOn: Binding(

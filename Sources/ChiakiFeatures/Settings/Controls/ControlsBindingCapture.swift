@@ -66,7 +66,7 @@ struct ControlsBindingCapture: Reducer {
                 let binding = InputBinding(
                     source: .gamepadButton,
                     code: code,
-                    label: String(name.name.prefix(40)),
+                    label: String(name.name.english.prefix(40)),
                     target: target
                 )
                 return assign(binding, to: destination, previous: previous, state: &state)
@@ -238,8 +238,12 @@ struct ControlsBindingCapture: Reducer {
                 return .none
             }
             let name = ControllerGlyphs.button(code, family: capture.family, layout: capture.layout).name
-            let binding = InputBinding(source: .gamepadButton, code: code, label: String(name.prefix(40)),
-                                       target: capture.target)
+            let binding = InputBinding(
+                source: .gamepadButton,
+                code: code,
+                label: String(name.english.prefix(40)),
+                target: capture.target
+            )
             return .merge(
                 .cancel(id: CancelID.buttonCapture),
                 assign(binding, to: destination, previous: previous, state: &state)
@@ -333,7 +337,8 @@ extension ControlsBindingCapture {
 
     private func playerDestination(_ player: Int, state: inout State) -> Destination? {
         let before = state.draft.presets.count
-        guard state.draft.givePlayerPreset(player, named: "Player \(player + 1)", id: uuid()),
+        let name = String(localized: .settingsControlsPlayerTitle(number: player + 1))
+        guard state.draft.givePlayerPreset(player, named: name, id: uuid()),
               let preset = state.draft.playerPreset(player) else {
             state.notice = .presetLimit(ControlsConfiguration.presetLimit)
             return nil

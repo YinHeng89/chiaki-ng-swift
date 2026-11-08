@@ -253,11 +253,11 @@ private func chrome(_ state: StreamFeature.State) -> CloudLoadingChrome {
     progress.elapsedMilliseconds = 15000
     let text = OperationProgressText(progress)
     let wait = CloudLoadingWait(text)
-    #expect(wait.title == text.title)
-    #expect(wait.detail == text.details.joined(separator: ", "))
+    #expect(wait.title == String(localized: text.title))
+    #expect(wait.detail == text.details.map { String(localized: $0) }.joined(separator: ", "))
     #expect(!wait.detail.contains("\n"))
     #expect(text.details.count >= 3)
-    #expect(wait.spoken == "\(text.title), \(wait.detail)")
+    #expect(wait.spoken == "\(String(localized: text.title)), \(wait.detail)")
     let bare =
         CloudLoadingWait(OperationProgressText(OperationProgress(step: .launch(.migratingData))))
     #expect(bare.detail.isEmpty)

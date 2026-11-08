@@ -1,3 +1,5 @@
+import Foundation
+
 /// A kind of stream whose sound support differs.
 public enum SoundTarget: CaseIterable, Sendable {
     /// A PS4 stream.
@@ -13,16 +15,16 @@ public enum SoundTarget: CaseIterable, Sendable {
     case psCloud
 
     /// The label shown for the target.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .ps4:
-            "PS4"
+            .settingsSoundTargetPs4
         case .ps5:
-            "PS5"
+            .settingsSoundTargetPs5
         case .psNow:
-            "PS Now"
+            .settingsSoundTargetPsNow
         case .psCloud:
-            "PS Cloud"
+            .settingsSoundTargetPsCloud
         }
     }
 }

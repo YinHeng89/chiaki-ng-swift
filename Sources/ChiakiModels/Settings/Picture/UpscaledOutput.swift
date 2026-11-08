@@ -1,3 +1,5 @@
+import Foundation
+
 /// The resolution stream video is upscaled to before it is shown.
 public enum UpscaledOutput: String, Codable, CaseIterable, Sendable {
     /// Video is shown at the stream's own resolution.
@@ -56,16 +58,16 @@ public enum UpscaledOutput: String, Codable, CaseIterable, Sendable {
     }
 
     /// The label shown for the output.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .disabled:
-            return "Disabled"
+            return .settingsPictureUpscaleDisabled
         case .fullHD:
-            return "1080p"
+            return .settingsPictureUpscale1080
         case .quadHD:
-            return "1440p"
+            return .settingsPictureUpscale1440
         case .fourK:
-            return "4K (2160p)"
+            return .settingsPictureUpscale2160
         }
     }
 }

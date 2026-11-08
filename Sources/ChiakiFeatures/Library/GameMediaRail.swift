@@ -59,16 +59,19 @@ struct GameMediaRail: View {
     /// - Parameters:
     /// - index: The tile's position in the rail.
     /// - item: The media item.
-    nonisolated static func label(_ index: Int, _ item: GameDetailPresentation.Media) -> String {
+    nonisolated static func label(
+        _ index: Int,
+        _ item: GameDetailPresentation.Media
+    ) -> LocalizedStringResource {
         item.isScreenshot
-            ? "Screenshot \(index + 1)"
-            : "Trailer \(index + 1)"
+            ? .libraryMediaScreenshot(number: index + 1)
+            : .libraryMediaTrailer(number: index + 1)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .center) {
-                Text("Screenshots and trailers")
+                Text(.libraryMediaTitle)
                     .font(.system(size: 19, weight: .semibold))
                 Spacer()
                 if metrics.maximumOffset > 1 {
@@ -155,8 +158,8 @@ struct GameMediaRail: View {
         } label: {
             Label(
                 forward
-                    ? "Scroll Forward"
-                    : "Scroll Back",
+                    ? .libraryRailScrollForward
+                    : .libraryRailScrollBack,
                 systemImage: forward
                     ? "chevron.right"
                     : "chevron.left"

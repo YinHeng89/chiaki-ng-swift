@@ -56,7 +56,9 @@ private func tab(_ filter: CloudLibraryFilter, platform: CloudPlatformFilter = .
 }
 
 @Test func aCatalogTitleKeepsTheLabelOfItsStanding() {
-    let labels = Dictionary(uniqueKeysWithValues: oneOfEachKind.games.map { ($0.id, $0.standing.label) })
+    let labels = Dictionary(uniqueKeysWithValues: oneOfEachKind.games.map {
+        ($0.id, String(localized: $0.standing.label))
+    })
     #expect(labels["catalog"] == "Included with Premium")
     #expect(labels["catalog-held"] == "In your library")
     #expect(labels["purchase"] == "In your library")

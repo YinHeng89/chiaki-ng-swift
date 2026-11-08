@@ -6,19 +6,23 @@ import SwiftUI
 import Testing
 @testable import ChiakiFeatures
 
+private func shown(_ text: LocalizedStringResource) -> String {
+    String(localized: text)
+}
+
 @Test func diagnosticsSeparateUnrequestedHDRFromConsoleSDR() {
     func report(_ raw: [String: NSNumber]) -> StreamDiagnosticsReport {
         StreamDiagnosticsReport(telemetry: StreamTelemetry(statistics: RenderStatistics(fixture: raw)))
     }
     let unrequested = report(["requestedHEVC": true])
-    #expect(unrequested.hdrLongLabel == "SDR transfer detected, HDR not requested")
+    #expect(shown(unrequested.hdrLongLabel) == "SDR transfer detected, HDR not requested")
     #expect(unrequested.requestedCodec == "HEVC")
     let requested = report(["requestedHEVC": true, "requestedHDR": true])
-    #expect(requested.hdrLongLabel == "SDR transfer detected; check console HDR")
+    #expect(shown(requested.hdrLongLabel) == "SDR transfer detected; check console HDR")
     #expect(requested.requestedCodec == "HEVC HDR")
     let received = report(["requestedHEVC": true, "requestedHDR": true, "pq": true, "layerHDR": true,
                            "displayMaximumEDR": 4])
-    #expect(received.hdrLongLabel == "PQ input with EDR active")
+    #expect(shown(received.hdrLongLabel) == "PQ input with EDR active")
     var mapped: [String: NSNumber] = [
         "pq": true,
         "layerHDR": true,
@@ -26,11 +30,11 @@ import Testing
         "toneMapSource": 1,
         "contentPeakNits": 1000
     ]
-    #expect(report(mapped)
-        .hdrLongLabel == "PQ input with EDR active, the stream's 1000 nit peak fits the screen")
+    #expect(shown(report(mapped).hdrLongLabel)
+        == "PQ input with EDR active, the stream's 1000 nit peak fits the screen")
     mapped["displayMaximumEDR"] = 3.2
     mapped["toneMapSource"] = 2
-    #expect(report(mapped).hdrLongLabel
+    #expect(shown(report(mapped).hdrLongLabel)
         == "PQ input with EDR active, compressing highlights above the screen for a default 1000 nit peak")
 }
 
@@ -91,11 +95,11 @@ func sampleDiagnosticsReport() -> StreamDiagnosticsReport {
 }
 
 private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
-    rows.map { "\($0.label)=\($0.value)" }
+    rows.map { "\(shown($0.label))=\(shown($0.value))" }
 }
 
 @Test func diagnosticsHeaderChipsComposeRouteTakionCodecFormatAndUpscaler() {
-    #expect(sampleDiagnosticsReport().headerChips.map(\.segments) == [
+    #expect(sampleDiagnosticsReport().headerChips.map { $0.segments.map(shown) } == [
         ["PS Cloud", "fraa", "1 ms"], ["Takion v23"], ["HEVC 10-bit"], ["1080p60 to 120 Hz"], ["MetalFX"]
     ])
 }
@@ -104,9 +108,9 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     let report = diagnosticsReport([
         "requestedHeight": 720, "requestedFPS": 60, "presentationFrameRate": 60, "advancedSpatial": true
     ])
-    #expect(report.headerChips.map(\.segments) == [["H.264"], ["720p60"], ["FSRCNNX"]])
+    #expect(report.headerChips.map { $0.segments.map(shown) } == [["H.264"], ["720p60"], ["FSRCNNX"]])
     let guest = diagnosticsReport(["sourceWidth": 1280, "takionVersionKnown": false, "takionVersion": 12])
-    #expect(guest.headerChips.map(\.segments) == [["H.264 8-bit"]])
+    #expect(guest.headerChips.map { $0.segments.map(shown) } == [["H.264 8-bit"]])
 }
 
 @Test func diagnosticsRouteChipNamesEveryRoute() {
@@ -114,7 +118,7 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     let chosen = CloudDatacenterSelection(name: "lona", rttMs: 30, automatic: false)
     let unmeasured = CloudDatacenterSelection(name: "ams", rttMs: nil, automatic: true)
     func route(_ raw: [String: NSNumber], _ datacenter: CloudDatacenterSelection? = nil) -> [String]? {
-        diagnosticsReport(raw, datacenter: datacenter).routeChip?.segments
+        diagnosticsReport(raw, datacenter: datacenter).routeChip?.segments.map(shown)
     }
     #expect(route(["route": 4], automatic) == ["PS Cloud", "fraa", "14 ms"])
     #expect(route(["route": 4], chosen) == ["PS Cloud", "lona"])
@@ -135,7 +139,7 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 @Test func diagnosticsStagesFollowTheFramePipeline() {
     let report = sampleDiagnosticsReport()
     #expect(report.stages.map(\.kind) == [.network, .assembly, .decode, .render, .display])
-    #expect(report.stages.map { "\($0.headline) \($0.unit)" } == [
+    #expect(report.stages.map { "\($0.headline) \(shown($0.unit))" } == [
         "6.2 Mbps", "0 lost in 10 s", "59.7 fps", "2.8 ms GPU", "120 Hz"
     ])
     #expect(pairs(report.networkStage.rows) == ["RTT=13 ms", "Loss=0.0%"])
@@ -147,7 +151,7 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 
 @Test func diagnosticsFullSectionsNameWhatEachCounterMeasures() {
     let report = sampleDiagnosticsReport()
-    #expect(report.fullSections.map(\.title) == ["Network", "Frames", "Presentation", "Audio"])
+    #expect(report.fullSections.map { shown($0.title) } == ["Network", "Frames", "Presentation", "Audio"])
     #expect(pairs(report.networkSection.rows) == [
         "Bitrate=6.2 of 35.0 Mbps", "On wire=9.0 Mbps", "Frame transfer=7.9 ms", "Jitter=0.1 ms",
         "Packets received=0", "Packets lost=7", "Rejected=0", "Crypto rejects=0", "Reordered=0",
@@ -171,9 +175,9 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 }
 
 @Test func diagnosticsZeroCopyIgnoresFramesWithoutADrawable() {
-    #expect(diagnosticsReport(["rejected": 4, "noDrawable": 4]).zeroCopyLabel == "Active")
+    #expect(shown(diagnosticsReport(["rejected": 4, "noDrawable": 4]).zeroCopyLabel) == "Active")
     let rejected = diagnosticsReport(["rejected": 6, "noDrawable": 4])
-    #expect(rejected.zeroCopyLabel == "2 rejected")
+    #expect(shown(rejected.zeroCopyLabel) == "2 rejected")
     #expect(rejected.zeroCopyTone == .bad)
 }
 
@@ -182,42 +186,43 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
         "takionVersion": 23, "rttSmoothedMicroseconds": 9000, "extensionJitterMicroseconds": 100,
         "videoThroughputBPS": 1_000_000, "tosLastDSCP": 46
     ])
-    #expect(silent.networkSection.rows.map(\.label) == [
+    #expect(silent.networkSection.rows.map { shown($0.label) } == [
         "Bitrate", "Rejected", "Crypto rejects", "Reordered", "Reorder drops", "Internal drops"
     ])
-    #expect(silent.networkStage.rows.first?.value == "–")
+    #expect(silent.networkStage.rows.first.map { shown($0.value) } == "–")
     let tosWithoutLast = diagnosticsReport(["tosPresent": true, "tosPackets": 12])
-    #expect(!tosWithoutLast.networkSection.rows.map(\.label).contains("Marking"))
+    #expect(!tosWithoutLast.networkSection.rows.map { shown($0.label) }.contains("Marking"))
     let generating = diagnosticsReport(["requestedFPS": 60, "presentationFrameRate": 120], generatedFPS: 59.8)
-    #expect(generating.presentationSection.rows.first { $0.label == "Generated" }?.value == "59.8 fps")
-    #expect(generating.presentationSection.rows.map(\.label).contains("Generated drops"))
+    #expect(generating.presentationSection.rows.first { shown($0.label) == "Generated" }
+        .map { shown($0.value) } == "59.8 fps")
+    #expect(generating.presentationSection.rows.map { shown($0.label) }.contains("Generated drops"))
 }
 
 @Test func diagnosticsPacketLossPrefersExtensionThenVideoThenFrames() {
     func loss(_ report: StreamDiagnosticsReport) -> StreamDiagnosticsReport.Row? {
-        report.networkStage.rows.first { $0.label == "Loss" }
+        report.networkStage.rows.first { shown($0.label) == "Loss" }
     }
     let all = diagnosticsReport([
         "extensionPresent": true, "extensionLossRatio": 0.0153,
         "videoMetricsPresent": true, "videoLossRatio": 0.002
     ], lossPercent: 4)
-    #expect(loss(all)?.value == "1.5%")
+    #expect(loss(all).map { shown($0.value) } == "1.5%")
     #expect(loss(all)?.tone == .warning)
     let video = diagnosticsReport(["videoMetricsPresent": true, "videoLossRatio": 0.002], lossPercent: 4)
-    #expect(loss(video)?.value == "0.2%")
+    #expect(loss(video).map { shown($0.value) } == "0.2%")
     let frames = diagnosticsReport([:], lossPercent: 4)
-    #expect(loss(frames)?.value == "4.0%")
+    #expect(loss(frames).map { shown($0.value) } == "4.0%")
     #expect(loss(frames)?.tone == .bad)
     #expect(frames.networkStage.tone == .bad)
 }
 
 @Test func diagnosticsRTTShowsVariationOnlyFromOneMillisecond() {
     func rtt(_ smoothed: Int, _ variation: Int) -> String {
-        diagnosticsReport([
+        shown(diagnosticsReport([
             "rttPresent": true,
             "rttSmoothedMicroseconds": NSNumber(value: smoothed),
             "rttVariationMicroseconds": NSNumber(value: variation)
-        ]).rttValue
+        ]).rttValue)
     }
     #expect(rtt(13000, 0) == "13 ms")
     #expect(rtt(13000, 999) == "13 ms")
@@ -246,7 +251,7 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 @Test func diagnosticsMarkingNamesDSCPAndAppendsOnlyRealECN() {
     let report = diagnosticsReport([:])
     let names = [0, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 46, 48, 56, 5]
-        .map(report.dscpName)
+        .map { shown(report.dscpName($0)) }
     #expect(names == [
         "Best effort", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32",
         "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "Expedited", "CS6", "CS7", "DSCP 5"
@@ -259,13 +264,13 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 }
 
 @Test func diagnosticsBitrateComparesGoodputWithTheGrantOrRequest() {
-    #expect(diagnosticsReport(["requestedBitrate": 35000], bitrateMbps: 6.2).bitrateRow.value
+    #expect(shown(diagnosticsReport(["requestedBitrate": 35000], bitrateMbps: 6.2).bitrateRow.value)
         == "6.2 of 35.0 Mbps")
-    #expect(diagnosticsReport(
+    #expect(shown(diagnosticsReport(
         ["requestedBitrate": 15000, "grantedPresent": true, "grantedBitrate": 10000],
         bitrateMbps: 6.2
-    ).bitrateRow.value == "6.2 of 10.0 Mbps")
-    #expect(diagnosticsReport([:], bitrateMbps: 6.2).bitrateRow.value == "6.2 Mbps")
+    ).bitrateRow.value) == "6.2 of 10.0 Mbps")
+    #expect(shown(diagnosticsReport([:], bitrateMbps: 6.2).bitrateRow.value) == "6.2 Mbps")
 }
 
 @Test func diagnosticsGrantedChipWarnsWhenTheConsoleGaveLess() {
@@ -283,9 +288,10 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
         return diagnosticsReport(raw).grantedChip
     }
     #expect(diagnosticsReport(requested).grantedChip == nil)
-    #expect(granted(1080, 60, 15000) == StreamDiagnosticsReport.Chip(["Granted 1080p60, 15.0 Mbps"]))
-    #expect(granted(1080, 60, 10000)
-        == StreamDiagnosticsReport.Chip(["Granted 1080p60, 10.0 of 15.0 Mbps"], tone: .warning))
+    #expect(granted(1080, 60, 15000)?.segments.map(shown) == ["Granted 1080p60, 15.0 Mbps"])
+    #expect(granted(1080, 60, 15000)?.tone == .neutral)
+    #expect(granted(1080, 60, 10000)?.segments.map(shown) == ["Granted 1080p60, 10.0 of 15.0 Mbps"])
+    #expect(granted(1080, 60, 10000)?.tone == .warning)
     #expect(granted(720, 60, 15000)?.tone == .warning)
 }
 
@@ -316,7 +322,7 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     #expect(late.displayStage.tone == .neutral)
     #expect(late.displayStage.rows.allSatisfy { $0.tone == .neutral })
     #expect(late.worstStage == nil)
-    #expect(late.displayStage.rows.map { "\($0.label)=\($0.value)" } == [
+    #expect(pairs(late.displayStage.rows) == [
         "Missed=5.0/s", "Idle ticks=10.0/s", "Replaced=4.0/s"
     ])
 }
@@ -333,7 +339,9 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     let report = diagnosticsReport([
         "received": 9999, "lost": 10000, "recovered": 12_345_678, "coreFecRepaired": 4321
     ])
-    let values = Dictionary(uniqueKeysWithValues: report.framesSection.rows.map { ($0.label, $0.value) })
+    let values = Dictionary(uniqueKeysWithValues: report.framesSection.rows.map {
+        (shown($0.label), shown($0.value))
+    })
     #expect(values["Received"] == "9999")
     #expect(values["Lost"] == "10.0k")
     #expect(values["Patched references"] == "12.3M")
@@ -341,8 +349,8 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 }
 
 @Test func diagnosticsAudioSummaryNamesTheLayout() {
-    #expect(sampleDiagnosticsReport().audioSummary == "5.1 at 48 kHz, 93 ms")
-    #expect(diagnosticsReport([:]).audioSummary == "Waiting for audio")
+    #expect(shown(sampleDiagnosticsReport().audioSummary) == "5.1 at 48 kHz, 93 ms")
+    #expect(shown(diagnosticsReport([:]).audioSummary) == "Waiting for audio")
 }
 
 @MainActor @Test func diagnosticsOverlayRendersEveryLevelOffscreen() throws {
@@ -385,7 +393,7 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 
 @Test func diagnosticsCompactPillLeavesDisplayOutAndSaysWhatIsWrong() {
     let slowRender = diagnosticsReport(["presentationFrameRate": 120, "gpuMilliseconds": 11])
-    #expect(slowRender.compactAlert?.value == "Render 11 ms GPU")
+    #expect(slowRender.compactAlert.map { shown($0.value) } == "Render 11 ms GPU")
     let lowFrameRate = diagnosticsReport(
         ["requestedFPS": 60, "presentationFrameRate": 60],
         sourceFPS: 59.8,
@@ -394,13 +402,13 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     #expect(lowFrameRate.worstStage == nil)
     #expect(lowFrameRate.compactAlert == nil)
     #expect(lowFrameRate.compactTone == .good)
-    #expect(sampleDiagnosticsReport().presentationSection.rows.first { $0.label == "EDR headroom" }?.tone
-        == .neutral)
+    #expect(sampleDiagnosticsReport().presentationSection.rows.first { shown($0.label) == "EDR headroom" }?
+        .tone == .neutral)
 }
 
 @Test func diagnosticsExplainWhyHDRIsNotShowing() {
     func label(_ raw: [String: NSNumber]) -> String {
-        diagnosticsReport(raw).hdrLongLabel
+        shown(diagnosticsReport(raw).hdrLongLabel)
     }
     #expect(label(["route": 4, "requestedHDR": true, "sourceHeight": 1080])
         == "SDR transfer detected; PS5 cloud sends HDR only at 1440p and 4K")
@@ -414,9 +422,9 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     #expect(label(received) == "PQ input, but macOS is not giving this screen HDR headroom right now")
     received["displayMaximumEDR"] = 4
     #expect(label(received) == "PQ input with EDR active")
-    #expect(diagnosticsReport(received).headroomValue == "4.0× of 16.0×")
+    #expect(shown(diagnosticsReport(received).headroomValue) == "4.0× of 16.0×")
     received["displayMaximumEDR"] = 16
-    #expect(diagnosticsReport(received).headroomValue == "16.0×")
+    #expect(shown(diagnosticsReport(received).headroomValue) == "16.0×")
 }
 
 @Test func diagnosticsCallOutBrightAreasThatStopAtSDRWhite() {
@@ -427,31 +435,36 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
         "maxFALL": 60, "lightAbovePercent": 0
     ]
     let console = diagnosticsReport(raw)
-    #expect(console.hdrLongLabel == "PQ input, but bright areas stop at SDR white; the PS5's TV may be off "
-        + "or in SDR, or the game may not use HDR")
-    #expect(console.hdrShortLabel == "PQ")
-    #expect(console.lightSection.rows.map(\.value) == ["198 nits", "42 nits", "203 nits", "60 nits", "0.0%"])
-    #expect(console.fullSections.map(\.title) == ["Network", "Frames", "Presentation", "HDR light", "Audio"])
+    #expect(shown(console.hdrLongLabel) == "PQ input, but bright areas stop at SDR white; the PS5's TV may "
+        + "be off or in SDR, or the game may not use HDR")
+    #expect(shown(console.hdrShortLabel) == "PQ")
+    #expect(console.lightSection.rows.map { shown($0.value) }
+        == ["198 nits", "42 nits", "203 nits", "60 nits", "0.0%"])
+    #expect(console.fullSections.map { shown($0.title) }
+        == ["Network", "Frames", "Presentation", "HDR light", "Audio"])
     raw["route"] = 4
-    #expect(diagnosticsReport(raw).hdrLongLabel
+    #expect(shown(diagnosticsReport(raw).hdrLongLabel)
         == "PQ input, but bright areas stop at SDR white; the game may not use HDR")
     raw["sessionNearWhitePercent"] = 0.2
-    #expect(diagnosticsReport(raw).hdrLongLabel == "PQ input with EDR active")
+    #expect(shown(diagnosticsReport(raw).hdrLongLabel) == "PQ input with EDR active")
     raw["sessionNearWhitePercent"] = 6
     raw["sessionAbovePercent"] = 4.2
-    #expect(diagnosticsReport(raw).hdrLongLabel == "PQ input with EDR active")
-    #expect(diagnosticsReport(raw).hdrShortLabel == "EDR")
+    #expect(shown(diagnosticsReport(raw).hdrLongLabel) == "PQ input with EDR active")
+    #expect(shown(diagnosticsReport(raw).hdrShortLabel) == "EDR")
     raw["sessionAbovePercent"] = 0
     raw["lightSeconds"] = 5
-    #expect(diagnosticsReport(raw).hdrLongLabel == "PQ input with EDR active")
+    #expect(shown(diagnosticsReport(raw).hdrLongLabel) == "PQ input with EDR active")
 }
 
 @Test func theHeatmapMarkerSaysWhetherItFollowsThePointer() {
-    #expect(diagnosticsReport(["markerFollowsPointer": true]).markerTitle == "At the pointer")
+    #expect(
+        String(localized: diagnosticsReport(["markerFollowsPointer": true]).markerTitle) == "At the pointer"
+    )
     #expect(diagnosticsReport(["markerFollowsPointer": true, "markerVisible": true]).markerHint == nil)
     #expect(diagnosticsReport(["markerVisible": true]).markerVisible)
-    #expect(diagnosticsReport([:]).markerTitle == "At the marker")
-    #expect(diagnosticsReport([:]).markerHint == StreamDiagnosticsReport.markerHint)
+    #expect(String(localized: diagnosticsReport([:]).markerTitle) == "At the marker")
+    #expect(diagnosticsReport([:]).markerHint.map { String(localized: $0) }
+        == String(localized: StreamDiagnosticsReport.markerHint))
     #expect(!diagnosticsReport([:]).markerVisible)
 }
 
@@ -459,11 +472,12 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
     let sdr = diagnosticsReport(["lightMeasurements": 12, "markerNits": 87, "lightPeakNits": 100])
     #expect(sdr.lightReadings)
     #expect(!sdr.lightMeasured)
-    #expect(sdr.nits(sdr.light.markerNits) == "87 nits")
-    #expect(sdr.sdrLegendNote == "This stream is SDR, so nothing goes above SDR white. Choose HEVC HDR "
-        + "in the Stream panel for an HDR stream.")
+    #expect(shown(sdr.nits(sdr.light.markerNits)) == "87 nits")
+    #expect(sdr.sdrLegendNote.map { String(localized: $0) }
+        == "This stream is SDR, so nothing goes above SDR white. Choose HEVC HDR in the Stream panel "
+        + "for an HDR stream.")
     #expect(diagnosticsReport(["lightMeasurements": 12, "requestedHDR": true]).sdrLegendNote
-        == "This stream arrived in SDR, so nothing goes above SDR white.")
+        .map { String(localized: $0) } == "This stream arrived in SDR, so nothing goes above SDR white.")
     #expect(diagnosticsReport(["lightMeasurements": 12, "pq": true]).sdrLegendNote == nil)
     #expect(!diagnosticsReport([:]).lightReadings)
 }
@@ -471,14 +485,14 @@ private func pairs(_ rows: [StreamDiagnosticsReport.Row]) -> [String] {
 @Test func cloudServerFiguresGetTheirOwnSectionOnlyOnceTheServerSendsThem() {
     let quiet =
         StreamDiagnosticsReport(telemetry: StreamTelemetry(statistics: RenderStatistics(fixture: [:])))
-    #expect(!quiet.fullSections.map(\.title).contains("Cloud server"))
+    #expect(!quiet.fullSections.map { shown($0.title) }.contains("Cloud server"))
     let measured = StreamDiagnosticsReport(telemetry: StreamTelemetry(statistics: RenderStatistics(fixture: [
         "serverPresent": true, "serverUsedDownKbps": 15200, "serverAvailableDownKbps": 48000,
         "serverUsedUpKbps": 310, "serverRoundTripMilliseconds": 24, "serverLossPercent": 0.5,
         "serverUpstreamLossPercent": 0, "serverWidth": 1920, "serverHeight": 1080,
         "serverAudioChannels": 2, "serverCorruptFrames": 1
     ])))
-    #expect(measured.fullSections.map(\.title) == [
+    #expect(measured.fullSections.map { shown($0.title) } == [
         "Network",
         "Cloud server",
         "Frames",

@@ -37,13 +37,13 @@ struct KakusanGuestView: View {
                 )
             }
             if let remember = store.scope(state: \.remember, action: \.remember.presented) {
-                KakusanRememberCard(store: remember, title: "Remember this host")
+                KakusanRememberCard(store: remember, title: .kakusanRememberHostTitle)
             }
         }
         .overlay(alignment: .topLeading) {
             if returnsToLibrary {
                 StreamChromeBackButton(
-                    title: "Back to library",
+                    title: .kakusanGuestBackToLibrary,
                     focus: $chromeFocus,
                     focusValue: .back,
                     move: { _ in
@@ -77,9 +77,9 @@ struct KakusanGuestView: View {
             return nil
         }
         return AppConfirmation(
-            title: "Leave this game?",
+            title: .kakusanGuestLeaveConfirm,
             systemImage: "person.badge.minus",
-            confirmTitle: "Leave",
+            confirmTitle: .kakusanGuestLeave,
             tone: .destructive
         )
     }
@@ -91,7 +91,7 @@ struct KakusanGuestView: View {
             Color.black
             StreamSurfaceView(surface: store.surface, videoFit: VideoFit())
             if !playing {
-                StreamLoadingView(status: "Waiting for video", activeStep: 3, stepCount: 4) {
+                StreamLoadingView(status: .kakusanGuestWaitingForVideo, activeStep: 3, stepCount: 4) {
                     stopTrace.record(.console, "the guest connecting screen's cancel")
                     store.send(.leave)
                 }
@@ -99,8 +99,12 @@ struct KakusanGuestView: View {
         }
         .overlay {
             if playing, let menu = store.scope(state: \.streamMenu, action: \.streamMenu) {
-                StreamMenuOverlay(store: menu, stopTitle: "Leave game")
-                StreamExitConfirmationOverlay(store: menu, stream: .console, leaveTitle: "Leave game")
+                StreamMenuOverlay(store: menu, stopTitle: .kakusanGuestLeaveGame)
+                StreamExitConfirmationOverlay(
+                    store: menu,
+                    stream: .console,
+                    leaveTitle: .kakusanGuestLeaveGame
+                )
             }
         }
         .onMenuExitCommand {

@@ -189,8 +189,8 @@ import MenuFocus
                 .onTapGesture(perform: toggle)
                 .accessibilityLabel(
                     shown
-                        ? "Hide on-screen controller"
-                        : "Show on-screen controller"
+                        ? .playbackGamepadHideController
+                        : .playbackGamepadShowController
                 )
                 .accessibilityAddTraits(.isButton)
         }
@@ -247,7 +247,7 @@ import MenuFocus
                         .position(x: size.width - 378, y: lower)
                     VirtualPadButton(
                         control: .leftStickButton,
-                        text: "L3",
+                        text: .playbackGlyphsL3,
                         shape: .circle,
                         width: 44,
                         height: 44
@@ -255,7 +255,7 @@ import MenuFocus
                     .position(x: 262, y: size.height - 36)
                     VirtualPadButton(
                         control: .rightStickButton,
-                        text: "R3",
+                        text: .playbackGlyphsR3,
                         shape: .circle,
                         width: 44,
                         height: 44
@@ -281,14 +281,38 @@ import MenuFocus
 
         private func shoulders(in size: CGSize, upper: CGFloat) -> some View {
             ZStack {
-                VirtualPadButton(control: .leftTrigger, text: "L2", shape: .trigger, width: 128, height: 50)
-                    .position(x: 186, y: upper - 262)
-                VirtualPadButton(control: .leftShoulder, text: "L1", shape: .bumper, width: 128, height: 36)
-                    .position(x: 186, y: upper - 200)
-                VirtualPadButton(control: .rightTrigger, text: "R2", shape: .trigger, width: 128, height: 50)
-                    .position(x: size.width - 186, y: upper - 262)
-                VirtualPadButton(control: .rightShoulder, text: "R1", shape: .bumper, width: 128, height: 36)
-                    .position(x: size.width - 186, y: upper - 200)
+                VirtualPadButton(
+                    control: .leftTrigger,
+                    text: .playbackGlyphsL2,
+                    shape: .trigger,
+                    width: 128,
+                    height: 50
+                )
+                .position(x: 186, y: upper - 262)
+                VirtualPadButton(
+                    control: .leftShoulder,
+                    text: .playbackGlyphsL1,
+                    shape: .bumper,
+                    width: 128,
+                    height: 36
+                )
+                .position(x: 186, y: upper - 200)
+                VirtualPadButton(
+                    control: .rightTrigger,
+                    text: .playbackGlyphsR2,
+                    shape: .trigger,
+                    width: 128,
+                    height: 50
+                )
+                .position(x: size.width - 186, y: upper - 262)
+                VirtualPadButton(
+                    control: .rightShoulder,
+                    text: .playbackGlyphsR1,
+                    shape: .bumper,
+                    width: 128,
+                    height: 36
+                )
+                .position(x: size.width - 186, y: upper - 200)
             }
         }
 
@@ -522,7 +546,7 @@ import MenuFocus
         /// The SF Symbol to show, which takes precedence over `text`.
         var symbol: String?
         /// The text to show when there is no symbol.
-        var text: String?
+        var text: LocalizedStringResource?
         /// The button outline.
         let shape: VirtualPadShape
         /// The button's width in points.
@@ -605,8 +629,8 @@ import MenuFocus
                             touch = .idle
                         }
                 )
-                .accessibilityLabel("Touchpad")
-                .accessibilityHint("Tap to click. Swipe to show the touch surface.")
+                .accessibilityLabel(.playbackGlyphsTouchpad)
+                .accessibilityHint(.playbackGamepadTouchpadHint)
                 .accessibilityAddTraits(.isButton)
         }
     }
@@ -625,8 +649,8 @@ import MenuFocus
                 }
                 .accessibilityLabel(
                     shown
-                        ? "Hide touchpad"
-                        : "Show touchpad"
+                        ? .playbackGamepadHideTouchpad
+                        : .playbackGamepadShowTouchpad
                 )
                 .accessibilityAddTraits(.isButton)
         }
@@ -651,7 +675,7 @@ import MenuFocus
                             navigator?.perform(.streamMenu)
                         }
                 )
-                .accessibilityLabel("Stream menu")
+                .accessibilityLabel(.playbackGamepadStreamMenu)
                 .accessibilityAddTraits(.isButton)
         }
     }
@@ -733,8 +757,8 @@ import MenuFocus
             )
             .accessibilityLabel(
                 stick == .left
-                    ? "Left stick"
-                    : "Right stick"
+                    ? .playbackGlyphsLeftStick
+                    : .playbackGlyphsRightStick
             )
         }
     }

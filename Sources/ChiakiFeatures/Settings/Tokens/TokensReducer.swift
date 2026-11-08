@@ -18,7 +18,7 @@ import Foundation
         /// The accounts are listed.
         case ready
         /// The last listing failed with this message.
-        case failed(String)
+        case failed(LocalizedStringResource)
     }
 
     /// One credential of one account, which can be revealed.
@@ -44,7 +44,7 @@ import Foundation
         /// The secret read by the reveal with this identifier is shown.
         case shown(Target, UUID)
         /// The credential could not be revealed, for the reason in this message.
-        case refused(Target, String)
+        case refused(Target, LocalizedStringResource)
 
         /// The identifier of the reveal in flight or shown, or `nil` when there is none.
         public var id: UUID? {
@@ -184,7 +184,7 @@ import Foundation
                 guard state.phase == .loading(id) else {
                     return .none
                 }
-                state.phase = .failed("Saved accounts could not be read.")
+                state.phase = .failed(.settingsTokensAccountsUnreadable)
                 return .none
             case let .reveal(target):
                 guard state.holds(target),
@@ -196,7 +196,8 @@ import Foundation
                 state.reveal = .authenticating(target, id)
                 return .run { [client, clock, revealedSecrets, unlocked = state.unlocked] send in
                     if !unlocked {
-                        guard await client.authenticateOwner("reveal your PlayStation tokens") else {
+                        let reason = String(localized: .settingsTokensRevealReason)
+                        guard await client.authenticateOwner(reason) else {
                             await send(.denied(id))
                             return
                         }

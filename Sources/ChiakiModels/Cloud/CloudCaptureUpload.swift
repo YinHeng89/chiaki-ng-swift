@@ -140,8 +140,8 @@ public struct CloudCaptureFileName: Equatable, Sendable {
         ))
         let name = cleaned.isEmpty
             ? (video
-                ? "Video clip"
-                : "Screenshot")
+                ? String(localized: .cloudCaptureVideoClipName)
+                : String(localized: .cloudCaptureScreenshotName))
             : cleaned
         let suffix = Self.normalized(fileExtension)
         let resolved = Self.keeps(fileExtension)

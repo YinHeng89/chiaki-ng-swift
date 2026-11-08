@@ -5,7 +5,8 @@ import Testing
 
 private let concept = "https://store.playstation.com/en-gb/concept/1"
 
-@Test(.enabled(if: PS5CloudLaunchBuild.included)) func anOwnedGameThatCanAlsoBeAddedShowsItsTitleNoticeOnce() {
+@Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func anOwnedGameThatCanAlsoBeAddedShowsItsTitleNoticeOnce() {
     let game = CloudGame(
         productId: "owned", name: "Owned", isOwned: true, conceptUrl: concept, standing: .inLibrary,
         canBeAddedToLibrary: true
@@ -46,7 +47,7 @@ private let concept = "https://store.playstation.com/en-gb/concept/1"
         mayRefreshTitle: false
     )
     #expect(actions.play?.isEnabled == false)
-    #expect(actions.store?.title == "View in Store")
+    #expect(actions.store.map { String(localized: $0.title) } == "View in Store")
     #expect(actions.purchaseCode == URL(string: concept))
     #expect(actions.focusOrder == [.store, .purchaseCode])
 }
@@ -64,7 +65,7 @@ private let concept = "https://store.playstation.com/en-gb/concept/1"
         mayRefreshTitle: false
     )
     #expect(game.isStoreOnly)
-    #expect(actions.store?.title == "View in Store")
+    #expect(actions.store.map { String(localized: $0.title) } == "View in Store")
     #expect(actions.addToLibrary == nil)
     #expect(actions.purchaseCode == URL(string: concept))
     #expect(actions.focusOrder.suffix(2) == [.store, .purchaseCode])

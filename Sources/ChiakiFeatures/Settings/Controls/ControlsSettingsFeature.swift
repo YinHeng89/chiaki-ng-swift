@@ -145,6 +145,51 @@ public struct ControlsSettingsFeature {
             devices.contains { $0.preferenceKey == key }
         }
 
+        /// The name shown for a controller: its nickname, otherwise its model followed by a short identity
+        /// when units of the model can be told apart.
+        ///
+        /// - Parameter device: The controller.
+        /// - Returns: The name.
+        public func title(of device: ControllerDevice) -> LocalizedStringResource {
+            let nickname = draft.controllers[device.preferenceKey]?.nickname ?? ""
+            guard nickname.isEmpty else {
+                return .verbatim(nickname)
+            }
+            guard let identity = device.shortIdentity else {
+                return .verbatim(device.name)
+            }
+            return .settingsControlsDeviceIdentity(name: device.name, identity: identity)
+        }
+
+        /// The connected controllers a player can choose, leaving out any another player chose.
+        ///
+        /// - Parameter player: The player, `0` for player 1.
+        /// - Returns: The controllers, in connection order.
+        public func controllerChoices(forPlayer player: Int) -> [ControllerDevice] {
+            let taken = draft.controllerKeys(takenFromPlayer: player)
+            var choices: [ControllerDevice] = []
+            for device in devices where !device.isKeyboard && !taken.contains(device.preferenceKey)
+                && !choices.contains(where: { $0.preferenceKey == device.preferenceKey }) {
+                choices.append(device)
+            }
+            return choices
+        }
+
+        /// The choice a player's picker shows: the saved controller while it is connected, otherwise the
+        /// first available controller, which is what the player plays with until the saved one returns.
+        ///
+        /// - Parameter player: The player, `0` for player 1.
+        /// - Returns: The saved preference key, `ControlsConfiguration.keyboardOnlyKey`, or `nil` for the
+        ///   first available controller.
+        public func shownControllerKey(forPlayer player: Int) -> String? {
+            guard let key = draft.controllerKey(forPlayer: player) else {
+                return nil
+            }
+            return key == ControlsConfiguration.keyboardOnlyKey || isConnected(key)
+                ? key
+                : nil
+        }
+
         /// The keyboard followed by every remembered or connected controller, connected ones first and then by
         /// when they were last seen.
         public var listedDevices: [ControllerDevice] {
@@ -596,7 +641,7 @@ private struct ControlsPresets: Reducer {
                 return .none
             }
             copy.id = uuid()
-            copy.name += " copy"
+            copy.name = String(localized: .settingsControlsPresetCopyName(name: copy.name))
             state.draft.presets.append(copy)
             use(copy.id, for: target, in: &state.draft)
         case let .deletePreset(id):

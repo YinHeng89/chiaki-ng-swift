@@ -1,3 +1,5 @@
+import Foundation
+
 /// The tab the cloud library grid shows.
 public enum CloudLibraryFilter: CaseIterable, Hashable, Sendable {
     /// Games played recently, most recent first.
@@ -14,20 +16,20 @@ public enum CloudLibraryFilter: CaseIterable, Hashable, Sendable {
     case preorders
 
     /// The tab's title.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .recent:
-            "Recently played"
+            .cloudLibraryFilterRecent
         case .all:
-            "All streamable"
+            .cloudLibraryFilterAll
         case .owned:
-            "My library"
+            .cloudLibraryFilterOwned
         case .plus:
-            "PlayStation Plus"
+            .cloudLibraryFilterPlus
         case .browse:
-            "Available to buy"
+            .cloudLibraryFilterBrowse
         case .preorders:
-            "Pre-orders"
+            .cloudLibraryFilterPreorders
         }
     }
 }
@@ -44,23 +46,23 @@ public enum CloudPlatformFilter: CaseIterable, Hashable, Sendable {
     case ps3
 
     /// The chip's title, such as `"PS5"`.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .all:
-            "All"
+            .cloudLibraryPlatformAll
         case .ps5:
-            "PS5"
+            .cloudLibraryPlatformPs5
         case .ps4:
-            "PS4"
+            .cloudLibraryPlatformPs4
         case .ps3:
-            "PS3"
+            .cloudLibraryPlatformPs3
         }
     }
 
     /// The name read by VoiceOver.
-    public var spokenTitle: String {
+    public var spokenTitle: LocalizedStringResource {
         self == .all
-            ? "All platforms"
+            ? .cloudLibraryPlatformAllSpoken
             : title
     }
 
@@ -69,6 +71,19 @@ public enum CloudPlatformFilter: CaseIterable, Hashable, Sendable {
     /// - Parameter platform: The catalog's platform text, such as `"PS5"`; compared without case.
     /// - Returns: Whether the game is shown.
     public func admits(_ platform: String) -> Bool {
-        self == .all || platform.caseInsensitiveCompare(title) == .orderedSame
+        self == .all || platform.caseInsensitiveCompare(catalogPlatform) == .orderedSame
+    }
+
+    private var catalogPlatform: String {
+        switch self {
+        case .all:
+            ""
+        case .ps5:
+            "PS5"
+        case .ps4:
+            "PS4"
+        case .ps3:
+            "PS3"
+        }
     }
 }

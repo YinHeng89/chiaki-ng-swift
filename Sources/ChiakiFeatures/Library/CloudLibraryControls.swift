@@ -9,7 +9,7 @@ extension CloudLibraryView {
     /// The library's title row: the Cloud heading with the controller hint for reaching the menu.
     var heading: some View {
         HStack(alignment: .center, spacing: 20) {
-            Text("Cloud").font(.system(size: 40, weight: .semibold))
+            Text(.libraryCloudTitle).font(.system(size: 40, weight: .semibold))
             Spacer(minLength: 0)
             LibraryMenuHint(section: .cloud)
         }
@@ -115,7 +115,7 @@ struct CloudLibraryControls: View {
     private var compactRow: some View {
         HStack(spacing: layout.controlSpacing) {
             ChoiceDropdown(
-                title: "Show",
+                title: .libraryCloudFilterTitle,
                 choices: store.filters,
                 chosen: store.filter,
                 label: \.title,
@@ -133,7 +133,7 @@ struct CloudLibraryControls: View {
                 center(.filter(store.filter), midX)
             }
             ChoiceDropdown(
-                title: "Platform",
+                title: .libraryCloudPlatformTitle,
                 choices: CloudPlatformFilter.allCases,
                 chosen: store.platform,
                 label: \.title,
@@ -157,12 +157,12 @@ struct CloudLibraryControls: View {
         .padding(.horizontal, -4)
     }
 
-    private var toolbarShortcutHelp: String {
+    private var toolbarShortcutHelp: LocalizedStringResource {
         guard controllerConnected else {
             return ""
         }
         let button = ControllerGlyphs.button(.north, family: controllerFamily).name
-        return "\(button) moves between cloud controls and your game"
+        return .libraryCloudControllerShortcutHelp(button: String(localized: button))
     }
 
     private func center(_ item: FocusItem, _ midX: CGFloat) {
@@ -258,8 +258,8 @@ struct CloudLibraryControls: View {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                         Text(
                             query.wrappedValue.isEmpty
-                                ? "Search"
-                                : query.wrappedValue
+                                ? .commonSearch
+                                : .verbatim(query.wrappedValue)
                         )
                         .lineLimit(1)
                         .frame(maxWidth: 160, alignment: .leading)
@@ -275,7 +275,7 @@ struct CloudLibraryControls: View {
                 .focusHighlightShape(.capsule)
             }
         }
-        .accessibilityLabel("Search games")
+        .accessibilityLabel(.libraryCloudSearchGames)
         .accessibilityValue(query.wrappedValue)
         .menuFocused($focus, equals: .search)
         .environment(\.menuMove, move)
@@ -293,13 +293,13 @@ struct CloudLibraryControls: View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
             TextField(
-                "Search games",
+                .libraryCloudSearchGames,
                 text: query
             )
             .textFieldStyle(.plain)
             .menuFocusBinding($focus, equals: .search)
             .controllerKeyboard(
-                title: "Search games",
+                title: .libraryCloudSearchGames,
                 text: query,
                 isFocused: focus == .search
             )
@@ -454,7 +454,7 @@ struct CloudRefreshCountdown: View {
                 Text(Duration.seconds(left).formatted(.time(pattern: .minuteSecond)))
                     .font(.system(size: 15, weight: .semibold).monospacedDigit())
                     .foregroundStyle(.white.opacity(0.72))
-                    .accessibilityLabel("Refresh available in \(left) seconds")
+                    .accessibilityLabel(.libraryCloudRefreshCountdown(seconds: left))
             }
         }
     }
@@ -471,7 +471,7 @@ struct CloudRefreshButton: View {
     let action: () -> Void
 
     var body: some View {
-        FocusButton("Refresh", systemImage: "arrow.clockwise", action: action)
+        FocusButton(.commonRefresh, systemImage: "arrow.clockwise", action: action)
             .labelStyle(.iconOnly)
             .glassControlStyle()
             .focusBorderShape(.circle)
@@ -483,14 +483,14 @@ struct CloudRefreshButton: View {
                 .accessibilityLabel(hint)
     }
 
-    private var hint: String {
+    private var hint: LocalizedStringResource {
         guard !cooldown.isReady else {
-            return "Refresh library"
+            return .libraryCloudRefreshLibrary
         }
         guard let available = cooldown.availableAt else {
-            return "Library just refreshed"
+            return .libraryCloudJustRefreshed
         }
-        return "Refresh again at \(available.formatted(date: .omitted, time: .shortened))"
+        return .libraryCloudRefreshAgainAt(time: available.formatted(date: .omitted, time: .shortened))
     }
 }
 

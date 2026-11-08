@@ -507,9 +507,19 @@ extension CouchReducer {
             if let pad = state.picking, pad != 0 {
                 return choose(device, for: pad, in: &state)
             }
-            return seat(state.seats.claim(device), in: &state)
+            return seat(state.seats.claim(device, reserved: reservedPads(in: state)), in: &state)
         case .notNow:
             return .none
+        }
+    }
+
+    private func reservedPads(in state: State) -> [UInt8: String] {
+        state.inventory.chosenControllers.filter { pad, key in
+            guard let device = state.inventory.controllers.first(where: { $0.preferenceKey == key }) else {
+                return false
+            }
+            let holder = state.seats.pad(for: device.id)
+            return device.id != state.inventory.playerOne?.id && (holder == nil || holder == pad)
         }
     }
 

@@ -79,7 +79,7 @@ private func launchRequest(_ account: UUID = profileA) -> TitleLaunch {
     store.exhaustivity = .off
     await store.send(.select(.init(profileID: profileA, eligible: true)))
     await store.receive(.trialsHeld(profileA, UUID(0), [trial])) {
-        $0.trialMarks = ["PPSA01234_00": CloudTrialMark(icon: .trial, label: "Trial")]
+        $0.trialMarks = ["PPSA01234_00": CloudTrialMark(icon: .trial, label: .libraryTrialTrial)]
     }
     await store.send(.trialsHeld(profileB, UUID(0), [trial]))
     await store.send(.trialsHeld(profileA, UUID(7), []))

@@ -17,7 +17,7 @@ public struct ControllerKeyboardPresentation: ViewModifier {
         var id: MenuHandlerID?
     }
 
-    private let title: String
+    private let title: LocalizedStringResource
     @Binding private var text: String
     private let isFocused: Bool
     private let secure: Bool
@@ -45,7 +45,7 @@ public struct ControllerKeyboardPresentation: ViewModifier {
     ///   - presentationWindow: The window to present over for a request, the key window when `nil`.
     ///   - onDismiss: Decides where focus goes when the keyboard closes; receives whether Done was chosen.
     public init(
-        title: String,
+        title: LocalizedStringResource,
         text: Binding<String>,
         isFocused: Bool,
         secure: Bool,
@@ -189,7 +189,7 @@ extension View {
     ///   - onDismiss: Decides where focus goes when the keyboard closes; receives whether Done was chosen.
     /// - Returns: The field with ``ControllerKeyboardPresentation`` applied.
     public func controllerKeyboard(
-        title: String,
+        title: LocalizedStringResource,
         text: Binding<String>,
         isFocused: Bool,
         secure: Bool = false,

@@ -148,8 +148,8 @@ struct ControlsBindingBoard: View {
             if !row.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(placement.isStacked
-                        ? "Controls"
-                        : "Not on the picture")
+                        ? .settingsControlsBoardControls
+                        : .settingsControlsNotOnPicture)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 10)], spacing: 10) {
@@ -199,7 +199,7 @@ struct ControlsBindingBoard: View {
             case .gamepadButton:
                 return .button(ControllerGlyphs.button(binding.code, family: family, layout: layout))
             case .macKey, .mouseButton:
-                return .key(binding.label)
+                return .key(KeyCodeLabels.title(for: binding))
             }
         }
         guard source == .gamepadButton else {
@@ -211,9 +211,9 @@ struct ControlsBindingBoard: View {
         case .rightTrigger:
             return .analog(ControllerGlyphs.rightTrigger(family: family).name)
         case .leftStickUp, .leftStickDown, .leftStickLeft, .leftStickRight:
-            return .analog("Left stick")
+            return .analog(.settingsControlsButtonLeftStick)
         case .rightStickUp, .rightStickDown, .rightStickLeft, .rightStickRight:
-            return .analog("Right stick")
+            return .analog(.settingsControlsButtonRightStick)
         default:
             return .none
         }
@@ -312,13 +312,13 @@ private struct ControlsBindingChip: View {
     /// What drives a control, as the chip shows it.
     enum Input: Equatable {
         /// A key or mouse button, by label.
-        case key(String)
+        case key(LocalizedStringResource)
 
         /// A controller button.
         case button(ControllerGlyph)
 
         /// The controller's own trigger or stick, with nothing bound.
-        case analog(String)
+        case analog(LocalizedStringResource)
 
         /// Nothing.
         case none
@@ -374,10 +374,12 @@ private struct ControlsBindingChip: View {
         .buttonStyle(.plain)
         .focusHighlightShape(.roundedRectangle(corner))
         .help(listening
-            ? "Listening for \(control.label)"
-            : "Change \(control.label)")
-            .accessibilityLabel("\(control.label), \(spoken)")
-            .accessibilityHint("Starts listening for a new input")
+            ? .settingsControlsChipListeningHelp(control: String(localized: control.label))
+            : .settingsControlsChipChangeHelp(control: String(localized: control.label)))
+            .accessibilityLabel(
+                .settingsControlsChipSpoken(control: String(localized: control.label), input: spoken)
+            )
+            .accessibilityHint(.settingsControlsChipHint)
             .accessibilityAddTraits(listening
                 ? .isSelected
                 : [])
@@ -410,7 +412,9 @@ private struct ControlsBindingChip: View {
     @ViewBuilder private var value: some View {
         Group {
             if listening {
-                Text("Listening").font(.caption.weight(.semibold)).foregroundStyle(Palette.accent)
+                Text(.settingsControlsListening)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Palette.accent)
             } else {
                 switch input {
                 case .key(let label):
@@ -427,7 +431,7 @@ private struct ControlsBindingChip: View {
                 case .analog(let name):
                     Text(name).font(.caption).foregroundStyle(.secondary)
                 case .none:
-                    Text("Unbound").font(.caption).foregroundStyle(.tertiary)
+                    Text(.settingsControlsUnbound).font(.caption).foregroundStyle(.tertiary)
                 }
             }
         }
@@ -447,13 +451,13 @@ private struct ControlsBindingChip: View {
     private var spoken: String {
         switch input {
         case .key(let label):
-            label
+            String(localized: label)
         case .button(let glyph):
-            glyph.name
+            String(localized: glyph.name)
         case .analog(let name):
-            name
+            String(localized: name)
         case .none:
-            "unbound"
+            String(localized: .settingsControlsUnboundSpoken)
         }
     }
 }

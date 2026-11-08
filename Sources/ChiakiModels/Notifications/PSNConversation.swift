@@ -100,7 +100,7 @@ public struct PSNConversation: Equatable, Identifiable, Sendable {
             !$0.isEmpty
         }
         guard !named.isEmpty else {
-            return "Conversation"
+            return String(localized: .notificationsConversationUntitled)
         }
         return named.formatted(.list(type: .and))
     }

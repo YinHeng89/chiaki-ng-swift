@@ -2,10 +2,10 @@ import ChiakiModels
 import ComposableArchitecture
 import SwiftUI
 
-/// The Interface page in the touch library: where the library menu sits.
+/// The Interface page in the touch library: where the library menu sits and which language the app shows.
 struct MobileInterfaceSettingsPage: View {
-    @AppStorage(AppLanguage.defaultsKey) private var appLanguage = AppLanguage.system.rawValue
     @Bindable private var store: StoreOf<PersistedSettingFeature<InterfaceSettings>>
+    @State private var language = AppLanguageSetting()
 
     /// Creates the page.
     ///
@@ -16,22 +16,35 @@ struct MobileInterfaceSettingsPage: View {
 
     var body: some View {
         MobileSettingsForm {
-            MobileSettingsGroup("Language", footer: "Choose Follow System to use your device's preferred language.") {
-                MobilePickerRow("App Language", selection: $appLanguage) {
-                    ForEach(AppLanguage.allCases) { language in
-                        Text(AppLanguage.title(language)).tag(language.rawValue)
-                    }
-                }
-            }
-            MobileSettingsGroup("Menu") {
-                MobilePickerRow("Menu Position", selection: $store.draft.railEdge) {
-                    ForEach(LibraryRailEdge.allCases, id: \.self) { edge in
-                        Text(InterfaceSettingsView.title(edge)).tag(edge)
-                    }
+            MobileSettingsGroup(.mobileInterfaceMenu) {
+                MobilePickerRow(
+                    .mobileInterfaceMenuPosition,
+                    selection: $store.draft.railEdge,
+                    choices: LibraryRailEdge.allCases
+                ) { edge in
+                    InterfaceSettingsView.title(edge)
                 }
             }
             .disabled(!store.isEditable)
-            SettingsPersistenceBanner(store.setting, subject: "interface settings") {
+            MobileSettingsGroup(
+                .settingsInterfaceLanguage,
+                footer: language.needsRelaunch
+                    ? .settingsInterfaceLanguageRelaunch
+                    : nil
+            ) {
+                MobilePickerRow(
+                    .settingsInterfaceLanguage,
+                    selection: Binding {
+                        language.choice
+                    } set: { choice in
+                        language.choose(choice)
+                    },
+                    choices: language.choices
+                ) { choice in
+                    AppLanguageSetting.title(choice)
+                }
+            }
+            SettingsPersistenceBanner(store.setting, subject: .mobileInterfacePersistenceSubject) {
                 store.send(.retry)
             }
         }

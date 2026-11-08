@@ -79,8 +79,8 @@ public struct ChiakiLogo: View {
         }
         .buttonStyle(.plain)
         .focusable(false)
-        .accessibilityLabel("chiaki-ng logo")
-        .accessibilityHint("Restart logo animation")
+        .accessibilityLabel(.logoAccessibility)
+        .accessibilityHint(.logoRestartHint)
         .onChange(of: spins) { previous, current in
             guard current > previous, !reduceMotion else {
                 return

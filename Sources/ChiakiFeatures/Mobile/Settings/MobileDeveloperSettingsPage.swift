@@ -48,7 +48,7 @@ struct MobileDeveloperSettingsPage: View {
                 Group {
                     takionGroup
                     libraryGroup
-                    SettingsPersistenceBanner(takion.setting, subject: "Developer settings") {
+                    SettingsPersistenceBanner(takion.setting, subject: .mobileDeveloperPersistenceSubject) {
                         takion.send(.retry)
                     }
                 }
@@ -65,27 +65,28 @@ struct MobileDeveloperSettingsPage: View {
 
     private var loggingGroup: some View {
         MobileSettingsGroup(
-            "Logging",
-            footer: "Local JSON captures with sensitive values redacted. "
-                + "Stream capture starts with your next connection. "
-                + "Saved in API Captures inside the log folder."
+            .mobileDeveloperLogging,
+            footer: .mobileDeveloperLoggingFooter
         ) {
-            MobileToggleRow("Show Live Log Button", isOn: $logging.draft.showLiveLogButton)
-            MobileToggleRow("Capture API Requests and Responses", isOn: $logging.draft.captureAPI)
-            MobileToggleRow("Redact Identifiers in Logs", isOn: $logging.draft.redactIdentifiers)
-            MobilePickerRow("Verbosity", selection: $logging.draft.level) {
-                ForEach(LogLevel.allCases, id: \.self) { level in
-                    Text(level.rawValue.capitalized).tag(level)
+            MobileToggleRow(.mobileDeveloperShowLiveLog, isOn: $logging.draft.showLiveLogButton)
+            MobileToggleRow(.mobileDeveloperCaptureAPI, isOn: $logging.draft.captureAPI)
+            MobileToggleRow(.mobileDeveloperRedactIdentifiers, isOn: $logging.draft.redactIdentifiers)
+            MobilePickerRow(
+                .mobileDeveloperVerbosity,
+                selection: $logging.draft.level,
+                choices: LogLevel.allCases,
+                verbatimLabel: { level in
+                    level.rawValue.capitalized
                 }
-            }
+            )
         }
         .disabled(!logging.isEditable)
     }
 
     private var folderGroup: some View {
-        MobileSettingsGroup("Log Folder") {
-            MobileValueRow("Location", value: logging.draft.directory)
-            MobileButtonRow("Export Error Report…") {
+        MobileSettingsGroup(.mobileDeveloperLogFolder) {
+            MobileValueRow(.mobileDeveloperLocation, verbatim: logging.draft.directory)
+            MobileButtonRow(.mobileDeveloperExportReport) {
                 developer.send(.exportReport)
             }
             .overlay(alignment: .trailing) {
@@ -96,10 +97,10 @@ struct MobileDeveloperSettingsPage: View {
                 }
             }
             if developer.report == .failed {
-                errorRow("Couldn’t build the error report. Check the log folder and try again.")
+                errorRow(.mobileDeveloperReportFailed)
             }
             if developer.logHealth == .unwritable {
-                errorRow("Couldn’t write the log file. Choose a writable folder.")
+                errorRow(.mobileDeveloperLogUnwritable)
             }
         }
     }
@@ -107,14 +108,14 @@ struct MobileDeveloperSettingsPage: View {
     private var loggingBanner: some View {
         SettingsPersistenceBanner(
             logging.setting,
-            subject: "logging settings",
-            invalid: "Couldn’t use that log folder. Check its write access and try again."
+            subject: .mobileDeveloperLoggingPersistenceSubject,
+            invalid: .mobileDeveloperLoggingInvalid
         ) {
             logging.send(.retry)
         }
     }
 
-    private func errorRow(_ message: String) -> some View {
+    private func errorRow(_ message: LocalizedStringResource) -> some View {
         Text(message)
             .font(.caption)
             .foregroundStyle(.red)
@@ -124,48 +125,46 @@ struct MobileDeveloperSettingsPage: View {
 
     #if DEBUG
         private var previewsGroup: some View {
-            MobileSettingsGroup("Developer Previews") {
-                MobileToggleRow("Show Sample Pre-Orders", isOn: $samplePreorders)
-                MobileToggleRow("Layered Console Cards", isOn: $layeredConsoleCards)
+            MobileSettingsGroup(.mobileDeveloperPreviews) {
+                MobileToggleRow(.mobileDeveloperSamplePreorders, isOn: $samplePreorders)
+                MobileToggleRow(.mobileDeveloperLayeredCards, isOn: $layeredConsoleCards)
             }
         }
 
         @ViewBuilder
         private var sampleConsoleGroups: some View {
             ForEach(Array(samples.consoles.enumerated()), id: \.offset) { index, sample in
-                MobileSettingsGroup(samples.name(at: index)) {
-                    MobilePickerRow("Model", selection: Binding(
+                MobileSettingsGroup(verbatim: samples.name(at: index)) {
+                    MobilePickerRow(.mobileDeveloperModel, selection: Binding(
                         get: { sample.model },
                         set: { samples.setModel($0, at: index) }
-                    )) {
-                        ForEach(SampleConsole.Model.allCases, id: \.self) { model in
-                            Text(model.title).tag(model)
-                        }
+                    ),
+                    choices: SampleConsole.Model.allCases) { model in
+                        model.title
                     }
                     .accessibilityIdentifier("sample-console-model-\(index)")
-                    MobilePickerRow("Recently Played", selection: Binding(
+                    MobilePickerRow(.mobileDeveloperRecentlyPlayed, selection: Binding(
                         get: { sample.shownRecentlyPlayed },
                         set: { samples.setRecentlyPlayed($0, at: index) }
-                    )) {
-                        ForEach(SampleConsole.RecentlyPlayed.allCases, id: \.self) { state in
-                            Text(state.title).tag(state)
-                        }
+                    ),
+                    choices: SampleConsole.RecentlyPlayed.allCases) { state in
+                        state.title
                     }
                     .disabled(sample.model == .ps4)
                     .accessibilityIdentifier("sample-console-recently-played-\(index)")
-                    MobileButtonRow("Remove", destructive: true) {
+                    MobileButtonRow(.commonRemove, destructive: true) {
                         samples.remove(at: index)
                     }
-                    .accessibilityLabel("Remove \(samples.name(at: index))")
+                    .accessibilityLabel(Text(.mobileDeveloperRemoveSample(name: samples.name(at: index))))
                     .accessibilityIdentifier("sample-console-remove-\(index)")
                 }
             }
             MobileSettingsGroup(
                 samples.consoles.isEmpty
-                    ? "Sample Consoles"
+                    ? .mobileDeveloperSampleConsoles
                     : nil
             ) {
-                MobileButtonRow("Add Sample Console") {
+                MobileButtonRow(.mobileDeveloperAddSample) {
                     samples.add()
                 }
                 .disabled(samples.isFull)
@@ -174,19 +173,20 @@ struct MobileDeveloperSettingsPage: View {
         }
 
         private var takionGroup: some View {
-            MobileSettingsGroup("Takion Version") {
+            MobileSettingsGroup(.mobileDeveloperTakionVersion) {
                 ForEach(TakionTarget.allCases, id: \.self) { target in
-                    MobilePickerRow(target.title, selection: $takion.draft[target]) {
-                        ForEach(developer.state.choices(for: target), id: \.self) { version in
-                            Text(DeveloperSettings.versionTitle(
-                                for: version,
-                                build: developer.state.buildTakionVersion(for: target)
-                            ))
-                            .tag(version)
-                        }
+                    MobilePickerRow(
+                        target.title,
+                        selection: $takion.draft[target],
+                        choices: developer.state.choices(for: target)
+                    ) { version in
+                        DeveloperSettings.versionTitle(
+                            for: version,
+                            build: developer.state.buildTakionVersion(for: target)
+                        )
                     }
                     MobileToggleRow(
-                        "Negotiate Version",
+                        .mobileDeveloperNegotiateVersion,
                         detail: target.title,
                         isOn: $takion.draft[negotiation: target]
                     )
@@ -195,15 +195,13 @@ struct MobileDeveloperSettingsPage: View {
         }
 
         private var libraryGroup: some View {
-            MobileSettingsGroup("Cloud Library") {
+            MobileSettingsGroup(.mobileDeveloperCloudLibrary) {
                 MobilePickerRow(
-                    "Refresh Cooldown",
-                    selection: $takion.draft.libraryRefreshCooldownMinutes
-                ) {
-                    ForEach(DeveloperSettings.libraryRefreshCooldownChoices, id: \.self) { minutes in
-                        Text(DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes))
-                            .tag(minutes)
-                    }
+                    .mobileDeveloperRefreshCooldown,
+                    selection: $takion.draft.libraryRefreshCooldownMinutes,
+                    choices: DeveloperSettings.libraryRefreshCooldownChoices
+                ) { minutes in
+                    DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes)
                 }
             }
         }

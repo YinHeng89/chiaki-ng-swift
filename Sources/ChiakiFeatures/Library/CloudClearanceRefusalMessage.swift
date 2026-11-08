@@ -7,54 +7,52 @@ public enum CloudClearanceRefusalMessage {
     ///
     /// - Parameter refusal: The catalog's refusal.
     /// - Returns: One sentence for the player.
-    public static func text(for refusal: CloudClearanceRefusal) -> String {
+    public static func text(for refusal: CloudClearanceRefusal) -> LocalizedStringResource {
         switch refusal.refusal {
         case .notListed, .hidden:
-            return "This title isn’t in the cloud catalog."
+            return .libraryRefusalNotListed
         case .buyToStream:
-            return "Buy this title on PlayStation Store to stream it\(priced(refusal))."
+            return refusal.price.isEmpty
+                ? .libraryRefusalBuyToStream
+                : .libraryRefusalBuyToStreamPrice(price: refusal.price)
         case .addToLibrary:
-            return "Add this title to your library on PlayStation Store to stream it."
+            return .libraryRefusalAddToLibrary
         case .needsPremium:
-            return "PlayStation Plus Premium is required to stream this title."
+            return .libraryRefusalNeedsPremium
         case .refusedByStreamService:
-            return "PlayStation refused to stream this title."
+            return .libraryRefusalRefusedByStreamService
         case .notStreamable:
             return refusal.notice.isEmpty
-                ? "This title can’t be streamed."
-                : "This title can’t be streamed: \(refusal.notice)"
+                ? .libraryRefusalNotStreamable
+                : .libraryRefusalNotStreamableNotice(notice: refusal.notice)
         case .unannounced:
-            return "This pre-order has no release date yet."
+            return .libraryRefusalUnannounced
         case .notReleased:
             guard let time = refusal.time else {
-                return "This title isn’t released yet."
+                return .libraryRefusalNotReleased
             }
-            return "Not released yet: unlocks \(time.formatted(date: .abbreviated, time: .shortened))."
+            let unlock = time.formatted(date: .abbreviated, time: .shortened)
+            return .libraryRefusalNotReleasedUntil(time: unlock)
         case .noTrustedClock:
-            return "The release time couldn’t be checked against PlayStation’s clock. Try again."
+            return .libraryRefusalNoTrustedClock
         case .checkUnavailable:
             return refusal.needsSignIn
                 ? CloudPlaybackFailureMessage.text(for: .signInRequired)
-                : "The ownership check couldn’t be completed. Try again."
+                : .libraryRefusalCheckUnavailable
         case .invalidTitle:
-            return "PlayStation has no record of your copy of this title."
+            return .libraryRefusalInvalidTitle
         case .titleTakenDown:
-            return "This title has been taken down from cloud streaming."
+            return .libraryRefusalTitleTakenDown
         case .streamingUnavailable:
-            return "Cloud streaming isn’t available for your copy of this title."
+            return .libraryRefusalStreamingUnavailable
         case .purchaseNeeded:
-            return "Your copy of this title is no longer active. "
-                + "Buy it again on PlayStation Store to stream it\(priced(refusal))."
+            return refusal.price.isEmpty
+                ? .libraryRefusalPurchaseNeeded
+                : .libraryRefusalPurchaseNeededPrice(price: refusal.price)
         case .unexpectedEntitlementState:
-            return "PlayStation reports your copy of this title in a state that can’t be streamed."
+            return .libraryRefusalUnexpectedEntitlementState
         case .chooseAGame:
-            return "Choose one of the games in this bundle to play."
+            return .libraryRefusalChooseAGame
         }
-    }
-
-    private static func priced(_ refusal: CloudClearanceRefusal) -> String {
-        refusal.price.isEmpty
-            ? ""
-            : " (\(refusal.price))"
     }
 }

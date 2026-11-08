@@ -43,6 +43,9 @@ private func wheelOffset(
 
 @Test func mediaTilesAreNamedByKindAndPosition() throws {
     let trailer = try #require(URL(string: "https://video.example/a.mp4"))
-    #expect(GameMediaRail.label(0, .screenshot("https://image.example/a.png")) == "Screenshot 1")
-    #expect(GameMediaRail.label(4, .trailer(trailer)) == "Trailer 5")
+    #expect(
+        String(localized: GameMediaRail.label(0, .screenshot("https://image.example/a.png")))
+            == "Screenshot 1"
+    )
+    #expect(String(localized: GameMediaRail.label(4, .trailer(trailer))) == "Trailer 5")
 }

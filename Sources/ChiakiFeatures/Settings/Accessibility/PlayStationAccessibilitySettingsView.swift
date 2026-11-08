@@ -22,57 +22,51 @@ public struct PlayStationAccessibilitySettingsView: View {
     /// The choices, their explanations and the button that returns to the device's preferences.
     public var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("PlayStation accessibility").font(.headline)
-            Toggle("Screen reader", isOn: choice(\.screenReaderOverride, default: \.screenReader))
-            Text(
-                "Reads PlayStation cloud system menus, including the Create menu "
-                    + "and in-game purchase screens. A game may have separate narration settings."
+            Text(.settingsAccessibilityTitle).font(.headline)
+            Toggle(
+                .settingsAccessibilityScreenReader,
+                isOn: choice(\.screenReaderOverride, default: \.screenReader)
             )
-            .font(.caption).foregroundStyle(.secondary)
+            Text(.settingsAccessibilityScreenReaderFooter)
+                .font(.caption).foregroundStyle(.secondary)
             valueSlider(
-                "Speech speed",
+                .settingsAccessibilitySpeechSpeed,
                 value: level(\.screenReaderSpeed),
                 range: PlayStationAccessibilitySettings.speedRange,
-                display: Self.speedName(store.draft.screenReaderSpeed)
+                display: String(localized: Self.speedName(store.draft.screenReaderSpeed))
             )
             valueSlider(
-                "Voice volume",
+                .settingsAccessibilityVoiceVolume,
                 value: level(\.screenReaderVolume),
                 range: PlayStationAccessibilitySettings.volumeRange,
                 display: "\(store.draft.screenReaderVolume)"
             )
-            Text(
-                "Speech speed and voice volume control the PlayStation screen reader. "
-                    + "They do not change game audio or a game’s own narration settings."
-            )
-            .font(.caption).foregroundStyle(.secondary)
+            Text(.settingsAccessibilitySpeechFooter)
+                .font(.caption).foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 6) {
-                Text("Text size")
+                Text(.settingsAccessibilityTextSize)
                 FocusableSegments(
                     options: Array(PlayStationAccessibilitySettings.textSizeRange),
                     title: Self.textSizeName,
                     selection: textSize
                 )
-                .accessibilityLabel("Text size")
+                .accessibilityLabel(.settingsAccessibilityTextSize)
             }
-            Toggle("Bold text", isOn: choice(\.boldTextOverride, default: \.boldText))
-            Toggle("Higher contrast", isOn: choice(\.higherContrastOverride, default: \.higherContrast))
-            Text(
-                "These settings apply to PlayStation cloud system menus. "
-                    + "Each game decides which settings it also uses."
+            Toggle(.settingsAccessibilityBoldText, isOn: choice(\.boldTextOverride, default: \.boldText))
+            Toggle(
+                .settingsAccessibilityHigherContrast,
+                isOn: choice(\.higherContrastOverride, default: \.higherContrast)
             )
-            .font(.caption).foregroundStyle(.secondary)
-            FocusButton("Use device accessibility settings") {
+            Text(.settingsAccessibilityScopeFooter)
+                .font(.caption).foregroundStyle(.secondary)
+            FocusButton(.settingsAccessibilityUseDeviceSettings) {
                 store.send(.edit(PlayStationAccessibilitySettings()))
             }
-            Text(
-                "Available device accessibility preferences are used until changed here. "
-                    + "Screen reader speech speed and voice volume use PlayStation defaults."
-            )
-            .font(.caption).foregroundStyle(.secondary)
-            Text("Requests these settings for the PlayStation cloud console at the next stream launch.")
+            Text(.settingsAccessibilityDeviceSettingsFooter)
                 .font(.caption).foregroundStyle(.secondary)
-            SettingsPersistenceBanner(store.setting, subject: "PlayStation accessibility settings") {
+            Text(.settingsAccessibilityNextLaunchFooter)
+                .font(.caption).foregroundStyle(.secondary)
+            SettingsPersistenceBanner(store.setting, subject: .settingsAccessibilityPersistenceSubject) {
                 store.send(.retry)
             }
         }
@@ -127,7 +121,7 @@ public struct PlayStationAccessibilitySettingsView: View {
     }
 
     private func valueSlider(
-        _ title: String,
+        _ title: LocalizedStringResource,
         value: Binding<Double>,
         range: ClosedRange<Int>,
         display: String
@@ -147,27 +141,27 @@ public struct PlayStationAccessibilitySettingsView: View {
         }
     }
 
-    private static func speedName(_ speed: Int) -> String {
+    private static func speedName(_ speed: Int) -> LocalizedStringResource {
         switch speed {
         case 0...2:
-            "Slow \(3 - speed)"
+            .settingsAccessibilitySpeedSlow(level: 3 - speed)
         case 3:
-            "Standard"
+            .settingsAccessibilitySpeedStandard
         default:
-            "Fast \(speed - 3)"
+            .settingsAccessibilitySpeedFast(level: speed - 3)
         }
     }
 
-    private static func textSizeName(_ size: Int) -> String {
+    private static func textSizeName(_ size: Int) -> LocalizedStringResource {
         switch size {
         case -1:
-            "Small"
+            .settingsAccessibilityTextSizeSmall
         case 1:
-            "Large"
+            .settingsAccessibilityTextSizeLarge
         case 2:
-            "Very large"
+            .settingsAccessibilityTextSizeVeryLarge
         default:
-            "Standard"
+            .settingsAccessibilityTextSizeStandard
         }
     }
 }

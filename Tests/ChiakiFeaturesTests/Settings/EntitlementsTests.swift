@@ -86,8 +86,8 @@ private let hidden = ExplainedTitle(
     await store.send(.load) {
         $0.phase = .loading(UUID(0))
     }
-    await store.receive(.failed(UUID(0), "not signed in")) {
-        $0.phase = .failed("not signed in")
+    await store.receive(.failed(UUID(0), .verbatim("not signed in"))) {
+        $0.phase = .failed(.verbatim("not signed in"))
     }
     await store.send(.selectAccount(nil)) {
         $0.account = nil
@@ -96,7 +96,7 @@ private let hidden = ExplainedTitle(
 }
 
 @Test func explanationStepsRenderRuleLabelsAndFacts() {
-    #expect(CatalogRule.ps5Native.label == "PS5 native")
+    #expect(String(localized: CatalogRule.ps5Native.label) == "PS5 native")
     #expect(hidden.explanation.steps[0].facts == "PS Plus Premium")
     #expect(shown.explanation.steps[1].facts == "UP9000-PPSA09006_00-FULLGAME00000000")
     #expect(SettingsRoute.allCases.contains(.entitlements))
@@ -138,13 +138,13 @@ private func leftThePlan(_ product: String, _ name: String) -> ExplainedTitle {
     ])
     #expect(carto.droppedBecause == "no PlayStation Plus plan covers the title's streaming copy")
     #expect(streamed.droppedBecause == nil)
-    #expect(carto.endResult == "Not offered")
-    #expect(streamed.endResult == "Offered: Included with Premium")
+    #expect(String(localized: carto.endResult) == "Not offered")
+    #expect(String(localized: streamed.endResult) == "Offered: Included with Premium")
     #expect(store.state.summary.held == 0)
     #expect(shown.heldRecords == ["UP9000-PPSA09006_00-FULLGAME00000000"])
     #expect(streamed.heldRecords.isEmpty)
-    #expect(EntitlementService.psNow.source.contains("PlayStation Now shelves"))
-    #expect(EntitlementService.psCloud.source.contains("Premium streaming category"))
+    #expect(String(localized: EntitlementService.psNow.source).contains("PlayStation Now shelves"))
+    #expect(String(localized: EntitlementService.psCloud.source).contains("Premium streaming category"))
     #expect(EntitlementService.psNow.rules.count == 6)
 
     await store.send(.service(.psCloud)) {
@@ -216,31 +216,40 @@ private func leftThePlan(_ product: String, _ name: String) -> ExplainedTitle {
     report.premiumCategory = .init(fetchedAt: Date(timeIntervalSince1970: 1_791_834_463), titles: 340)
     report.library = .fetched(Date(timeIntervalSince1970: 1_791_834_400), records: 50)
 
-    let now = report.source(of: .psNow)
+    let now = report.source(of: .psNow).map { String(localized: $0) }
     #expect(now[0] ==
         "781 titles on the PlayStation Now shelves, read through the account's PlayStation Now session")
     #expect(now[1].hasPrefix("The list is complete and was fetched "))
     #expect(now[2] == "Streaming copies were asked about for 531 PS4 titles and 531 were answered, "
         + "of which 9 have no copy a plan covers")
-    let cloud = report.source(of: .psCloud)
+    let cloud = report.source(of: .psCloud).map { String(localized: $0) }
     #expect(cloud[0] == "4287 titles on the PlayStation Store's PS5 lists")
     #expect(cloud[1] == "Asked as country GB, language en and age 34, taken from the account's sign-in")
     #expect(cloud[2].hasPrefix("The Premium streaming category gave 340 included titles, fetched "))
-    #expect(report.held[0].hasPrefix("The library holds 50 records, fetched "))
-    #expect(report.held[1] == "The membership tier is not known")
+    #expect(String(localized: report.held[0]).hasPrefix("The library holds 50 records, fetched "))
+    #expect(String(localized: report.held[1]) == "The membership tier is not known")
 
     var unknown = CatalogFetchReport()
     unknown.fromAccountService = false
     unknown.complete = false
-    #expect(unknown.source(of: .psNow)[0].hasSuffix("because the account's session did not answer"))
-    #expect(unknown.source(of: .psNow)[1].hasPrefix("The list is incomplete"))
-    #expect(unknown.source(of: .psNow)[2].hasPrefix("Streaming copies were not checked"))
-    #expect(unknown.source(of: .psCloud)[1].hasPrefix("The account's country, language or age is not known"))
-    #expect(unknown.held[0] == "The library has not been fetched")
+    #expect(
+        String(localized: unknown.source(of: .psNow)[0])
+            .hasSuffix("because the account's session did not answer")
+    )
+    #expect(String(localized: unknown.source(of: .psNow)[1]).hasPrefix("The list is incomplete"))
+    #expect(String(localized: unknown.source(of: .psNow)[2]).hasPrefix("Streaming copies were not checked"))
+    #expect(
+        String(localized: unknown.source(of: .psCloud)[1])
+            .hasPrefix("The account's country, language or age is not known")
+    )
+    #expect(String(localized: unknown.held[0]) == "The library has not been fetched")
     unknown.library = .unavailable
-    #expect(unknown.held[0] == "The library could not be fetched, so ownership is unknown")
+    #expect(String(localized: unknown.held[0]) == "The library could not be fetched, so ownership is unknown")
     unknown.audience = .init(country: "GB", language: "en", age: 34)
-    #expect(unknown.source(of: .psCloud)[2].hasPrefix("The Premium streaming category has not answered"))
+    #expect(
+        String(localized: unknown.source(of: .psCloud)[2])
+            .hasPrefix("The Premium streaming category has not answered")
+    )
 }
 
 @MainActor @Test func entitlementsAskForTheCatalogInTheInjectedLocale() async {

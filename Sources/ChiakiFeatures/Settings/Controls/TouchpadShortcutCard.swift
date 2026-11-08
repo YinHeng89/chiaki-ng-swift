@@ -31,10 +31,10 @@ struct TouchpadShortcutCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Virtual touchpad").font(.headline)
+            Text(.settingsControlsVirtualTouchpad).font(.headline)
             VStack(alignment: .leading, spacing: 4) {
-                Toggle("Show the on-screen touchpad", isOn: onScreen)
-                Text("When off, the touchpad never appears over the stream, even from the shortcut or combo.")
+                Toggle(.settingsControlsShowTouchpad, isOn: onScreen)
+                Text(.settingsControlsTouchpadFooter)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -55,7 +55,7 @@ struct TouchpadShortcutCard: View {
         VStack(alignment: .leading, spacing: 16) {
             #if os(macOS)
                 HStack {
-                    Text("Keyboard shortcut")
+                    Text(.settingsControlsKeyboardShortcut)
                     Spacer()
                     FocusButton {
                         if store.shortcutCapture == nil {
@@ -64,34 +64,46 @@ struct TouchpadShortcutCard: View {
                             store.send(.cancelTouchpadShortcut)
                         }
                     } label: {
-                        Text(store.shortcutCapture == nil
-                            ? shortcut.key?.title ?? "Record shortcut"
-                            : "Press a shortcut…")
+                        shortcutLabel
                             .frame(minWidth: 90)
                     }
                     .glassControlStyle()
-                    .accessibilityLabel("Virtual touchpad keyboard shortcut")
+                    .accessibilityLabel(.settingsControlsTouchpadShortcutLabel)
                 }
             #endif
-            Toggle("Controller combo", isOn: Binding(get: { !shortcut.buttons.isEmpty }, set: { enabled in
+            Toggle(.settingsControlsControllerCombo, isOn: Binding(get: {
+                !shortcut.buttons.isEmpty
+            }, set: { enabled in
                 store.send(.setTouchpadButtons(enabled
                         ? TouchpadShortcut.standard.buttons
                         : []))
             }))
             if shortcut.buttons.count >= 2 {
                 HStack(spacing: 8) {
-                    Text("Buttons")
+                    Text(.settingsControlsButtons)
                     Spacer()
-                    picker(slot: 0)
-                    Text("+").foregroundStyle(.secondary)
-                    picker(slot: 1)
+                    picker(slot: 0, code: shortcut.buttons[0])
+                    Text(verbatim: "+").foregroundStyle(.secondary)
+                    picker(slot: 1, code: shortcut.buttons[1])
                 }
             }
         }
     }
 
-    private func picker(slot: Int) -> some View {
-        Picker("Button \(slot + 1)", selection: Binding(get: { shortcut.buttons[slot] }, set: { code in
+    private var shortcutLabel: Text {
+        if store.shortcutCapture != nil {
+            return Text(.settingsControlsPressShortcut)
+        }
+        if let key = shortcut.key {
+            return Text(KeyCodeLabels.title(for: key))
+        }
+        return Text(.settingsControlsRecordShortcut)
+    }
+
+    private func picker(slot: Int, code: Int) -> some View {
+        Picker(.settingsControlsComboButtonPicker(number: slot + 1), selection: Binding(get: {
+            code
+        }, set: { code in
             choose(code, slot: slot)
         })) {
             ForEach(Self.buttonChoices, id: \.self) { code in
@@ -105,6 +117,9 @@ struct TouchpadShortcutCard: View {
 
     private func choose(_ code: Int, slot: Int) {
         var buttons = shortcut.buttons
+        guard buttons.indices.contains(slot) else {
+            return
+        }
         if let existing = buttons.firstIndex(of: code), existing != slot {
             buttons.swapAt(existing, slot)
         } else {

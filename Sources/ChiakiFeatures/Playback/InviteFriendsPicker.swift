@@ -20,7 +20,7 @@ struct InviteFriendsPicker: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
                 FocusButton(action: close) {
-                    Label("Back", systemImage: "chevron.left")
+                    Label(.commonBack, systemImage: "chevron.left")
                         .labelStyle(.iconOnly)
                         .font(.callout.weight(.semibold))
                         .frame(width: 22, height: 22)
@@ -32,8 +32,8 @@ struct InviteFriendsPicker: View {
                 ))
                 .glassControlStyle()
                 .focusBorderShape(.circle)
-                .accessibilityLabel("Back to invitations")
-                Text("Invite friends").font(.title2.weight(.semibold))
+                .accessibilityLabel(.playbackInviteBackLabel)
+                Text(.playbackInviteTitle).font(.title2.weight(.semibold))
             }
             sessionLine
             FocusButton {
@@ -66,47 +66,45 @@ struct InviteFriendsPicker: View {
     @ViewBuilder private var sessionLine: some View {
         switch store.session {
         case .finding:
-            Text("Finding your game session")
+            Text(.playbackInviteFinding)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         case .found(let session):
             if session.maxPlayers > 0 {
-                Text("\(session.players) of \(session.maxPlayers) players in your session")
+                Text(.playbackInvitePlayers(players: session.players, maxPlayers: session.maxPlayers))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
         case .none:
-            Text("Start playing online in the game to invite friends to your session.")
+            Text(.playbackInviteNotOnline)
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         case .failed:
-            Text("Couldn't find your game session. Try again later.")
+            Text(.playbackInviteSessionFailed)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         }
     }
 
-    private var sendTitle: String {
+    private var sendTitle: LocalizedStringResource {
         if case .sending = store.sending {
-            return "Sending"
+            return .playbackInviteSending
         }
         return store.selected.isEmpty
-            ? "Send invitations"
-            : "Send \(store.selected.count) invitations"
+            ? .playbackInviteSend
+            : .playbackInviteSendCount(count: store.selected.count)
     }
 
-    private var sendNote: String? {
+    private var sendNote: LocalizedStringResource? {
         switch store.sending {
         case .sent(let count):
-            count == 1
-                ? "Invitation sent."
-                : "\(count) invitations sent."
+            .playbackInviteSent(count: count)
         case .failed:
-            "The invitations couldn't be sent. Try again."
+            .playbackInviteSendFailed
         case .idle, .sending:
             store.found != nil && store.selected.isEmpty && !store.listed.isEmpty
-                ? "Pick the friends to invite below."
+                ? .playbackInvitePickHint
                 : nil
         }
     }
@@ -115,7 +113,7 @@ struct InviteFriendsPicker: View {
         FocusButton {
             store.send(.share)
         } label: {
-            Label("Share link", systemImage: "link")
+            Label(.playbackInviteShareLink, systemImage: "link")
                 .frame(maxWidth: .infinity)
         }
         .modifier(OptionalStreamMenuButtonFocus(
@@ -132,7 +130,7 @@ struct InviteFriendsPicker: View {
         case .idle:
             EmptyView()
         case .loading:
-            Text("Making a link")
+            Text(.playbackInviteMakingLink)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         case .shown(let link):
@@ -141,18 +139,18 @@ struct InviteFriendsPicker: View {
                     CloudArtworkView(url: image)
                         .frame(width: 160, height: 160)
                         .clipShape(.rect(cornerRadius: 8))
-                        .accessibilityLabel("Code for the link")
+                        .accessibilityLabel(.playbackInviteLinkCode)
                 }
                 Text(link.url.absoluteString)
                     .font(.caption.monospaced())
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("Friends who open this link can join your session.")
+                Text(.playbackInviteLinkNote)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         case .failed:
-            Text("Couldn't make a link. Try again.")
+            Text(.playbackInviteLinkFailed)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -163,17 +161,17 @@ struct InviteFriendsPicker: View {
         case .loading:
             HStack(spacing: 10) {
                 ProgressView().controlSize(.small)
-                Text("Loading friends")
+                Text(.playbackInviteLoadingFriends)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
         case .failed:
-            Text("Couldn't load your friends. Try again.")
+            Text(.playbackInviteFriendsFailed)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         case .loaded(let friends):
             if friends.isEmpty {
-                Text("Friends you add on PlayStation Network will be listed here.")
+                Text(.playbackInviteNoFriends)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } else {
@@ -233,12 +231,12 @@ struct InviteFriendsPicker: View {
     ///
     /// - Parameter friend: The friend.
     /// - Returns: The line.
-    static func status(of friend: PSNFriend) -> String {
+    static func status(of friend: PSNFriend) -> LocalizedStringResource {
         guard friend.online else {
-            return "Offline"
+            return .playbackInviteOffline
         }
         return friend.playing.isEmpty
-            ? "Online"
-            : "Playing \(friend.playing)"
+            ? .playbackInviteOnline
+            : .playbackInvitePlaying(game: friend.playing)
     }
 }

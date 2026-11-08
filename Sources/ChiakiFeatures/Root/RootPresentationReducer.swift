@@ -31,13 +31,13 @@ struct RootPresentationReducer: Reducer {
     /// - Returns: The alert, starting on Cancel.
     static func quitAlert(_ origin: RootFeature.QuitOrigin) -> AlertState<RootFeature.Destination.Alert> {
         AlertState {
-            TextState("Quit chiaki-ng?")
+            TextState(.appQuitAlertTitle)
         } actions: {
             ButtonState(role: .cancel, action: .stay(origin)) {
-                TextState("Cancel")
+                TextState(.commonCancel)
             }
             ButtonState(role: .destructive, action: .quit) {
-                TextState("Quit")
+                TextState(.appQuitConfirm)
             }
         }
     }

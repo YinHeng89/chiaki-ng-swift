@@ -139,7 +139,7 @@ struct CloudGameGrid: View {
     }
 
     private var shown: Shown {
-        Shown(listing: "\(store.query)|\(store.filter.title)|\(store.platform.title)", page: store.page)
+        Shown(listing: "\(store.query)|\(store.filter)|\(store.platform)", page: store.page)
     }
 
     var body: some View {
@@ -218,17 +218,17 @@ struct CloudGameGrid: View {
             cloudLoading
         } else if accountID == nil {
             ContentUnavailableView(
-                "Choose an account",
+                .libraryGridChooseAccount,
                 systemImage: "person.crop.circle",
-                description: Text("Cloud games belong to your PlayStation account.")
+                description: Text(.libraryGridChooseAccountDetail)
             )
         } else if store.visibleGames.isEmpty, case .failed(let failure) = store.phase {
             unavailable(failure)
         } else if store.phase == .ready && store.visibleGames.isEmpty {
             ContentUnavailableView(
-                "No matching games",
+                .libraryGridNoMatches,
                 systemImage: "magnifyingglass",
-                description: Text("Try another search or filter.")
+                description: Text(.libraryGridNoMatchesDetail)
             )
         } else if measured, fit.shape == store.gridShape {
             pages
@@ -419,8 +419,8 @@ extension CloudGameGrid {
         } label: {
             Label(
                 forward
-                    ? "Next page"
-                    : "Previous page",
+                    ? .libraryGridNextPage
+                    : .libraryGridPreviousPage,
                 systemImage: forward
                     ? "chevron.right"
                     : "chevron.left"
@@ -482,10 +482,10 @@ extension CloudGameGrid {
         return VStack(spacing: 18) {
             ChiakiLogo(size: 96, isConnecting: true)
             VStack(spacing: 6) {
-                Text(progress?.step ?? "Loading cloud library")
+                Text(progress?.step ?? .libraryGridLoading)
                     .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(.white.opacity(0.78))
-                    .id(progress?.step)
+                    .id(progress?.stage)
                     .transition(AppMotion.transition(reduced: reduceMotion))
                 if let detail = progress?.detail {
                     Text(detail)
@@ -500,7 +500,7 @@ extension CloudGameGrid {
                 }
             }
             .multilineTextAlignment(.center)
-            .animation(AppMotion.animation(reduced: reduceMotion), value: progress?.step)
+            .animation(AppMotion.animation(reduced: reduceMotion), value: progress?.stage)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .combine)
@@ -514,18 +514,18 @@ extension CloudGameGrid {
     }
 
     private func unavailable(_ failure: CloudLibraryFailure) -> some View {
-        let message: String
+        let message: LocalizedStringResource
         switch failure {
         case .unavailable:
-            message = "The cloud core is being integrated. Your consoles remain available."
+            message = .libraryGridUnavailableCore
         case .signInRequired:
-            message = "Sign in again from your account menu to load cloud games."
+            message = .libraryGridUnavailableSignIn
         case .invalidCatalog:
-            message = "The catalog format could not be read. Try refreshing."
+            message = .libraryGridUnavailableCatalog
         case .network:
-            message = "The cloud library could not refresh. Try again shortly."
+            message = .libraryGridUnavailableNetwork
         }
-        return ContentUnavailableView("Cloud library unavailable", systemImage: "cloud",
+        return ContentUnavailableView(.libraryGridUnavailableTitle, systemImage: "cloud",
                                       description: Text(message))
     }
 }

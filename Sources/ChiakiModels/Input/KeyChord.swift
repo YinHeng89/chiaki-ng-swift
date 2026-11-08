@@ -35,7 +35,7 @@ public struct KeyChord: Codable, Equatable, Sendable {
         self.label = label
     }
 
-    /// The chord as shown, such as `⇧⌘T`.
+    /// The chord in its saved, untranslated text, such as `⇧⌘T`.
     public var title: String {
         modifiers.symbols + label
     }

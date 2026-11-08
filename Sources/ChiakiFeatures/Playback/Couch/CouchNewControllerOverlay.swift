@@ -22,18 +22,18 @@ struct CouchNewControllerOverlay: View {
                         .font(.system(size: 26, weight: .medium))
                         .frame(width: 56, height: 56)
                         .glassEffect(AppGlass.control, in: .circle)
-                    Text("Who’s using the \(device.name)?")
+                    Text(.playbackCouchNewControllerQuestion(device: device.name))
                         .font(.title2.weight(.semibold))
                         .multilineTextAlignment(.center)
                     HStack(spacing: 12) {
-                        option(.playerOne, title: "Player 1")
+                        option(.playerOne, title: .playbackCouchPlayer(number: 1))
                         option(.newPlayer, title: newPlayerTitle)
                             .disabled(targetPad == nil)
                     }
                     FocusButton {
                         store.send(.newController(.notNow))
                     } label: {
-                        Text("Not now")
+                        Text(.playbackCouchNewControllerNotNow)
                             .frame(maxWidth: .infinity)
                     }
                     .glassControlStyle()
@@ -68,14 +68,14 @@ struct CouchNewControllerOverlay: View {
         return store.seats.lowestOpenPad
     }
 
-    private var newPlayerTitle: String {
+    private var newPlayerTitle: LocalizedStringResource {
         guard let pad = targetPad else {
-            return "No free seat"
+            return .playbackCouchNewControllerNoFreeSeat
         }
-        return "Player \(Int(pad) + 1)"
+        return .playbackCouchPlayer(number: Int(pad) + 1)
     }
 
-    private func option(_ choice: CouchNewControllerChoice, title: String) -> some View {
+    private func option(_ choice: CouchNewControllerChoice, title: LocalizedStringResource) -> some View {
         let focused = selection == choice
         return FocusButton {
             store.send(.newController(choice))

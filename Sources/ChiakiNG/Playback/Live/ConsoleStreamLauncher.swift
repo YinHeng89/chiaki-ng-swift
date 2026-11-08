@@ -98,7 +98,7 @@ final class ConsoleStreamLauncher {
             await attempts.failed(
                 PlaybackAttemptLog.Report(
                     outcome: outcome,
-                    message: StreamFailureMessage(error, kind: .console).text,
+                    message: StreamFailureMessage(error, kind: .console).text.english,
                     diagnostics: player.native.failureDiagnostics
                 ),
                 milliseconds: LogFormat.milliseconds(started.duration(to: .now))

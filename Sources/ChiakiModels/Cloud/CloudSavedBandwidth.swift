@@ -22,20 +22,18 @@ public struct CloudSavedBandwidth: Equatable, Sendable {
     ///
     /// - Parameter now: The current time.
     /// - Returns: The caption.
-    public func caption(now: Date) -> String {
+    public func caption(now: Date) -> LocalizedStringResource {
         let seconds = max(0, Int(now.timeIntervalSince(measuredAt)))
-        let age: String
+        let mbps = kbps / 1000
         switch seconds {
         case ..<60:
-            age = "moments ago"
+            return .cloudSavedBandwidthMomentsAgo(mbps: mbps)
         case ..<3600:
-            age = "\(seconds / 60) min ago"
+            return .cloudSavedBandwidthMinutesAgo(mbps: mbps, minutes: seconds / 60)
         case ..<86400:
-            age = "\(seconds / 3600) h ago"
+            return .cloudSavedBandwidthHoursAgo(mbps: mbps, hours: seconds / 3600)
         default:
-            age = "\(seconds / 86400) days ago"
+            return .cloudSavedBandwidthDaysAgo(mbps: mbps, days: seconds / 86400)
         }
-        return "Measured your connection at \(kbps / 1000) Mbps \(age). "
-            + "Measures again at launch when that is out of date."
     }
 }

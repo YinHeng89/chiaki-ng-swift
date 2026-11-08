@@ -167,7 +167,7 @@ import SwiftUI
         case .report(let failure):
             state.notice = Self.notice(failure)
             return .run { [logger] _ in
-                await logger.log(.diagnostic(.app, .warning, failure.message))
+                await logger.log(.diagnostic(.app, .warning, failure.logDescription))
             }
         }
     }
@@ -181,7 +181,7 @@ import SwiftUI
             TextState(failure.title)
         } actions: {
             ButtonState(role: .cancel) {
-                TextState("OK")
+                TextState(.commonOk)
             }
         } message: {
             TextState(failure.message)
@@ -210,10 +210,10 @@ public struct LaunchNoticePresentation: ViewModifier {
     /// - Returns: A card with the alert's title, message and OK button.
     public static func confirmation(_ notice: AlertState<Never>) -> AppConfirmation {
         AppConfirmation(
-            title: String(state: notice.title),
-            message: notice.message.map { String(state: $0) },
+            title: .verbatim(String(state: notice.title)),
+            message: notice.message.map { .verbatim(String(state: $0)) },
             systemImage: "exclamationmark.triangle",
-            cancelTitle: "OK"
+            cancelTitle: .commonOk
         )
     }
 }

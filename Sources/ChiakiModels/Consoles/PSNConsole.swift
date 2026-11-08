@@ -42,7 +42,7 @@ public struct PSNConsole: Equatable, Identifiable, Sendable {
     /// The account's main PS4, which PSN does not list.
     public static let mainPS4 = PSNConsole(
         deviceID: mainPS4DeviceID,
-        name: "Main PS4 Console",
+        name: String(localized: .consolesPsnMainConsoleName),
         ps5: false,
         remotePlayEnabled: true
     )

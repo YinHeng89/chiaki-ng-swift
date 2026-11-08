@@ -205,7 +205,7 @@ private func delayedConsolePower(_ clock: TestClock<Duration>) -> SettingsClient
     #expect(legacy.remotePS5Codec == .hevc)
     #expect(legacy.localPS5HDR)
     #expect(legacy.remotePS5HDR)
-    #expect(PictureSettings.Codec.choices.map(\.title) == ["H.264", "HEVC"])
+    #expect(PictureSettings.Codec.choices.map { String(localized: $0.title) } == ["H.264", "HEVC"])
 }
 
 @Test func savedHEVCHDRBecomesHEVCWithHDROn() throws {
@@ -356,13 +356,13 @@ private func delayedConsolePower(_ clock: TestClock<Duration>) -> SettingsClient
     let latest = settings.latestBandwidth(for: .psCloud)
     #expect(latest == CloudSavedBandwidth(kbps: 55000, measuredAt: measuredAt))
     #expect(settings.latestBandwidth(for: .psNow) == nil)
-    #expect(latest?.caption(now: measuredAt.addingTimeInterval(30))
+    #expect(latest.map { String(localized: $0.caption(now: measuredAt.addingTimeInterval(30))) }
         ==
         "Measured your connection at 55 Mbps moments ago. Measures again at launch when that is out of date.")
-    #expect(latest?.caption(now: measuredAt.addingTimeInterval(720))
+    #expect(latest.map { String(localized: $0.caption(now: measuredAt.addingTimeInterval(720))) }
         ==
         "Measured your connection at 55 Mbps 12 min ago. Measures again at launch when that is out of date.")
-    #expect(latest?.caption(now: measuredAt.addingTimeInterval(7200))
+    #expect(latest.map { String(localized: $0.caption(now: measuredAt.addingTimeInterval(7200))) }
         == "Measured your connection at 55 Mbps 2 h ago. Measures again at launch when that is out of date.")
 }
 

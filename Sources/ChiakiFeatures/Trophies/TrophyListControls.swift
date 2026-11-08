@@ -9,13 +9,13 @@ import SwiftUI
 /// at either end; Confirm chooses the focused choice.
 struct TrophyChoiceChips<Choice: Hashable, Stop: Hashable>: View {
     /// What the choices decide, read by VoiceOver.
-    let title: String
+    let title: LocalizedStringResource
     /// The choices, in order.
     let choices: [Choice]
     /// The choice in effect.
     let chosen: Choice
     /// A choice's label.
-    let label: (Choice) -> String
+    let label: (Choice) -> LocalizedStringResource
     /// A choice's focus stop.
     let stop: (Choice) -> Stop
     /// The section's focus.
@@ -56,8 +56,8 @@ struct TrophyChoiceChips<Choice: Hashable, Stop: Hashable>: View {
                         : "arrow.down")
                         .font(.system(size: 12, weight: .semibold))
                         .accessibilityLabel(direction == .reversed
-                            ? "reversed"
-                            : "")
+                            ? Text(.trophiesArrangementReversed)
+                            : Text(verbatim: ""))
                 }
             }
             .font(.system(
@@ -97,7 +97,7 @@ struct TrophyChoiceChips<Choice: Hashable, Stop: Hashable>: View {
 /// and Down to the section's focus moves.
 struct TrophySearchField<Stop: Hashable>: View {
     /// The placeholder and the on-screen keyboard's title.
-    let prompt: String
+    let prompt: LocalizedStringResource
     /// The text searched for.
     let query: Binding<String>
     /// The section's focus.

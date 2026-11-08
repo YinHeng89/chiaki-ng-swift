@@ -25,7 +25,7 @@ struct StreamLoadingView: View {
     /// The backdrop behind the panel.
     var background = StreamLoadingBackground.ambient
     /// The current startup status, animated as it changes.
-    let status: String
+    let status: LocalizedStringResource
     /// The zero based index of the startup step in progress.
     let activeStep: Int
     /// The number of startup steps drawn in the progress bar.
@@ -53,14 +53,14 @@ struct StreamLoadingView: View {
                         ? 12
                         : 30
                 )
-                Text("Starting your stream")
+                Text(.playbackLoadingTitle)
                     .font(.system(size: 30, weight: .semibold))
                     .tracking(-0.7)
                     .foregroundStyle(.white)
                 progress
                     .padding(.top, 24)
                 Text(status)
-                    .id(status)
+                    .id(String(localized: status))
                     .font(.callout)
                     .foregroundStyle(.white.opacity(0.72))
                     .padding(.top, 15)
@@ -71,7 +71,7 @@ struct StreamLoadingView: View {
                         .padding(.top, 12)
                 }
                 FocusButton(action: cancel) {
-                    Text("Cancel")
+                    Text(.commonCancel)
                         .padding(.horizontal, 16)
                         .frame(minHeight: layout.controlSize)
                         .contentShape(.capsule)

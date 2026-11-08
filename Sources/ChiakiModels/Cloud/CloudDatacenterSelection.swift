@@ -66,38 +66,48 @@ public struct CloudDatacenterSelection: Equatable, Sendable {
     }
 
     /// The round trip as shown, if known.
-    public var pingDescription: String? {
+    public var pingDescription: LocalizedStringResource? {
         guard let rttMs else {
             return nil
         }
         return automatic || atLaunch
-            ? "\(rttMs) ms"
-            : "last measured \(rttMs) ms"
+            ? .cloudDatacenterPing(ping: rttMs)
+            : .cloudDatacenterPingLastMeasured(ping: rttMs)
     }
 
     /// The line shown while connecting.
-    public var connectingDescription: String {
+    public var connectingDescription: LocalizedStringResource {
         guard let rttMs else {
-            return "Connecting to \(name)"
+            return .cloudDatacenterConnecting(name: name)
         }
-        return "Connecting to \(name) (\(rttMs) ms)"
+        return .cloudDatacenterConnectingPing(name: name, ping: rttMs)
     }
 
     /// How it was chosen.
-    public var modeDescription: String {
+    public var modeDescription: LocalizedStringResource {
         if atLaunch {
-            return "Chosen at launch"
+            return .cloudDatacenterModeAtLaunch
         }
         return automatic
-            ? "Automatic"
-            : "Chosen"
+            ? .cloudDatacenterModeAutomatic
+            : .cloudDatacenterModeChosen
     }
 
     /// The line shown in stream statistics.
-    public var statisticsDescription: String {
-        guard let pingDescription else {
-            return "\(name), \(modeDescription.lowercased())"
+    public var statisticsDescription: LocalizedStringResource {
+        guard let rttMs else {
+            if atLaunch {
+                return .cloudDatacenterStatsAtLaunch(name: name)
+            }
+            return automatic
+                ? .cloudDatacenterStatsAutomatic(name: name)
+                : .cloudDatacenterStatsChosen(name: name)
         }
-        return "\(name) at \(pingDescription), \(modeDescription.lowercased())"
+        if atLaunch {
+            return .cloudDatacenterStatsPingAtLaunch(name: name, ping: rttMs)
+        }
+        return automatic
+            ? .cloudDatacenterStatsPingAutomatic(name: name, ping: rttMs)
+            : .cloudDatacenterStatsPingChosen(name: name, ping: rttMs)
     }
 }

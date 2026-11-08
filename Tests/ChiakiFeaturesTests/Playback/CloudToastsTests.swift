@@ -203,7 +203,8 @@ private func cloudSource() -> StreamSource {
     await store.send(.event(firstSession, .firstFrame))
     await store.send(.failed(firstSession, .stream(.consoleQuit(.trialEnded), overInternet: true)))
     #expect(!store.state.offersRetry)
-    #expect(store.state.failureMessage?.hasPrefix("Your game trial has ended.") == true)
+    let message = store.state.failureMessage.map { String(localized: $0) }
+    #expect(message?.hasPrefix("Your game trial has ended.") == true)
     await store.send(.retry)
     #expect(store.state.offersRetry == false)
     await store.send(.stop)

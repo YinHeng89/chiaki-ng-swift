@@ -1,16 +1,19 @@
 import ChiakiModels
+import Foundation
 
 /// The words the cloud library's loading view shows for the core's fetch: one line for the current step and,
 /// under it, the current activity and its page count.
 ///
 /// Only a running step has words; an idle, ready, unanswered or cancelled fetch shows none.
 public struct CloudLibraryFetchProgress: Equatable, Sendable {
+    /// The running step the line describes, which identifies the line as it changes.
+    public let stage: CloudLibraryFetchState.Step
     /// The line for the current step.
-    public let step: String
+    public let step: LocalizedStringResource
     /// The current activity, if the step has named one.
-    public let detail: String?
+    public let detail: LocalizedStringResource?
     /// The page count of the current activity, if it has read a page.
-    public let pages: String?
+    public let pages: LocalizedStringResource?
 
     /// The words for a state of the core's fetch.
     ///
@@ -20,6 +23,7 @@ public struct CloudLibraryFetchProgress: Equatable, Sendable {
         guard let step = Self.line(of: state.step) else {
             return nil
         }
+        stage = state.step
         self.step = step
         detail = state.activity.map(Self.detail(of:))
         pages = Self.pages(read: state.pagesRead, expected: state.pagesExpected)
@@ -29,26 +33,26 @@ public struct CloudLibraryFetchProgress: Equatable, Sendable {
     ///
     /// - Parameter step: The step.
     /// - Returns: The line, or `nil` for a step that is not running.
-    public static func line(of step: CloudLibraryFetchState.Step) -> String? {
+    public static func line(of step: CloudLibraryFetchState.Step) -> LocalizedStringResource? {
         switch step {
         case .checkingSignIn:
-            "Checking your sign-in"
+            .libraryFetchCheckingSignIn
         case .cloudList:
-            "Reading the cloud catalog"
+            .libraryFetchCloudList
         case .ownedLibrary:
-            "Reading your games"
+            .libraryFetchOwnedLibrary
         case .premiumCategory:
-            "Reading the Game Catalog"
+            .libraryFetchPremiumCategory
         case .forSaleCategory:
-            "Reading cloud games for sale"
+            .libraryFetchForSaleCategory
         case .streamingAccess:
-            "Checking cloud streaming access"
+            .libraryFetchStreamingAccess
         case .matching:
-            "Putting your library together"
+            .libraryFetchMatching
         case .trustedTime:
-            "Checking the time"
+            .libraryFetchTrustedTime
         case .exclusions:
-            "Checking which games are unavailable"
+            .libraryFetchExclusions
         case .idle, .ready, .unanswered, .cancelled:
             nil
         }
@@ -58,36 +62,36 @@ public struct CloudLibraryFetchProgress: Equatable, Sendable {
     ///
     /// - Parameter activity: The activity.
     /// - Returns: The detail; for a clock sync, the time server being asked once the core has named it.
-    public static func detail(of activity: CloudLibraryFetchState.Activity) -> String {
+    public static func detail(of activity: CloudLibraryFetchState.Activity) -> LocalizedStringResource {
         switch activity {
         case .reusingHeldAnswer:
-            "Using what was saved earlier"
+            .libraryFetchActivityReusingHeldAnswer
         case .walkingPublicStore:
-            "PlayStation Store"
+            .libraryFetchActivityPublicStore
         case .walkingOldServiceShelves:
-            "PS Now shelves"
+            .libraryFetchActivityOldServiceShelves
         case .walkingPublicStoreFallback:
-            "PlayStation Store, as a fallback"
+            .libraryFetchActivityPublicStoreFallback
         case .checkingStreamingCopies:
-            "Checking which copies stream"
+            .libraryFetchActivityStreamingCopies
         case .readingPS5StoreLists:
-            "PS5 store lists"
+            .libraryFetchActivityStoreListsPs5
         case .readingEntitlements:
-            "Your entitlements"
+            .libraryFetchActivityEntitlements
         case .readingStreamedPS4Concepts:
-            "Your PS4 games"
+            .libraryFetchActivityGamesPs4
         case .scanningPS5Library:
-            "Your PS5 games"
+            .libraryFetchActivityGamesPs5
         case .readingCategoryPages:
-            "Store pages"
+            .libraryFetchActivityCategoryPages
         case .readingSubscriptions:
-            "Your subscriptions"
+            .libraryFetchActivitySubscriptions
         case .matchingGames:
-            "Matching titles"
+            .libraryFetchActivityMatchingGames
         case let .syncingClock(host):
-            host ?? "Trusted time"
+            host.map { .verbatim($0) } ?? .libraryFetchActivityTrustedTime
         case .readingExclusions:
-            "Exclusion list"
+            .libraryFetchActivityExclusions
         }
     }
 
@@ -97,13 +101,13 @@ public struct CloudLibraryFetchProgress: Equatable, Sendable {
     ///   - read: Pages read so far.
     ///   - expected: Pages expected in all, when known.
     /// - Returns: "Page 3 of 7" when the total is known, "Page 3" when it is not, and `nil` before any page.
-    public static func pages(read: Int, expected: Int?) -> String? {
+    public static func pages(read: Int, expected: Int?) -> LocalizedStringResource? {
         guard read > 0 else {
             return nil
         }
         guard let expected else {
-            return "Page \(read)"
+            return .libraryFetchPage(read: read)
         }
-        return "Page \(read) of \(expected)"
+        return .libraryFetchPageOf(read: read, expected: expected)
     }
 }

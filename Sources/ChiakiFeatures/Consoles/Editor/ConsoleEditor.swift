@@ -93,9 +93,11 @@ public struct ConsoleEditor: View {
             ConsoleArtwork(height: 82, kind: consoleKind)
                 .frame(width: 70)
             VStack(alignment: .leading, spacing: 4) {
-                Text("Edit console")
+                Text(.consolesEditorTitle)
                     .font(.title2.bold())
-                Text(draft.generation)
+                Text(consoleKind == .ps5
+                    ? .consolesKindPs5
+                    : .consolesKindPs4)
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -107,17 +109,17 @@ public struct ConsoleEditor: View {
             .focusBorderShape(.circle)
             .menuFocused($focusedField, equals: .close)
             .keyboardShortcut(.cancelAction)
-            .help("Close console editor")
-            .accessibilityLabel("Close console editor")
+            .help(.consolesEditorClose)
+            .accessibilityLabel(.consolesEditorClose)
         }
     }
 
     private var identity: some View {
-        editorSection("Identity") {
+        editorSection(.consolesEditorIdentity) {
             editorField(
-                "Name",
+                .consolesEditorName,
                 value: draft.name,
-                prompt: "Living room",
+                prompt: .consolesEditorNamePrompt,
                 focus: .name,
                 changed: nameChanged
             )
@@ -125,18 +127,18 @@ public struct ConsoleEditor: View {
     }
 
     private var connections: some View {
-        editorSection("Connections") {
+        editorSection(.consolesEditorConnections) {
             VStack(spacing: 12) {
                 editorField(
-                    "Local address",
+                    .consolesEditorLocalAddress,
                     value: draft.address,
-                    prompt: "192.168.1.50 or console.local",
+                    prompt: .consolesEditorAddressPrompt,
                     focus: .address,
                     changed: addressChanged
                 )
                 HStack(spacing: 10) {
-                    capability("Local", icon: "wifi", available: true)
-                    capability("Remote", icon: "globe", available: draft.remoteAvailable)
+                    capability(.consolesEditorLocal, icon: "wifi", available: true)
+                    capability(.consolesEditorRemote, icon: "globe", available: draft.remoteAvailable)
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
@@ -146,8 +148,8 @@ public struct ConsoleEditor: View {
 
     @ViewBuilder private var details: some View {
         if let hardwareID = draft.hardwareID {
-            editorSection("Details") {
-                editorRow("Hardware ID") {
+            editorSection(.consolesEditorDetails) {
+                editorRow(.consolesEditorHardwareID) {
                     Text(StreamerMode.identifier(hardwareID, enabled: streamerMode))
                         .font(.system(.body, design: .monospaced))
                         .textSelection(.enabled)
@@ -160,17 +162,21 @@ public struct ConsoleEditor: View {
 
     private var actions: some View {
         HStack(spacing: screenLayout.controlSpacing) {
-            FocusButton("Delete console", systemImage: AppIcon.deleteAccount.rawValue, role: .destructive) {
+            FocusButton(
+                .consolesCardDeleteConsole,
+                systemImage: AppIcon.deleteAccount.rawValue,
+                role: .destructive
+            ) {
                 delete()
             }
             .glassControlStyle()
             .menuFocused($focusedField, equals: .delete)
             Spacer()
-            FocusButton("Cancel", action: cancel)
+            FocusButton(.commonCancel, action: cancel)
                 .glassControlStyle()
                 .menuFocused($focusedField, equals: .cancel)
                 .keyboardShortcut(.cancelAction)
-            FocusButton("Save changes", action: save)
+            FocusButton(.consolesEditorSaveChanges, action: save)
                 .glassProminentControlStyle()
                 .menuFocused($focusedField, equals: .save)
                 .keyboardShortcut(.defaultAction)
@@ -188,7 +194,10 @@ public struct ConsoleEditor: View {
     ///   - label: The row's caption.
     ///   - content: The field, status or value the row holds.
     /// - Returns: The row.
-    func editorRow<Content: View>(_ label: String, @ViewBuilder content: () -> Content) -> some View {
+    func editorRow<Content: View>(
+        _ label: LocalizedStringResource,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
         let content = content()
         return ViewThatFits(in: .horizontal) {
             HStack(spacing: 18) {
@@ -215,7 +224,7 @@ public struct ConsoleEditor: View {
     ///   - content: The rows.
     /// - Returns: The section.
     public func editorSection<Content: View>(
-        _ title: String,
+        _ title: LocalizedStringResource,
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -233,9 +242,9 @@ public struct ConsoleEditor: View {
     }
 
     private func editorField(
-        _ label: String,
+        _ label: LocalizedStringResource,
         value: String,
-        prompt: String,
+        prompt: LocalizedStringResource,
         focus focusTarget: Field,
         changed: @escaping (String) -> Void
     ) -> some View {
@@ -265,7 +274,7 @@ public struct ConsoleEditor: View {
     /// both, not when the typed text grows.
     static let fieldIdealWidth: CGFloat = 220
 
-    private func capability(_ label: String, icon: String, available: Bool) -> some View {
+    private func capability(_ label: LocalizedStringResource, icon: String, available: Bool) -> some View {
         HStack(spacing: 10) {
             Label(label, systemImage: icon)
                 .fontWeight(.medium)
@@ -287,11 +296,11 @@ public struct ConsoleEditor: View {
         return .ps5
     }
 
-    private func capabilityStatus(_ available: Bool) -> String {
+    private func capabilityStatus(_ available: Bool) -> LocalizedStringResource {
         if available {
-            return "Ready"
+            return .consolesDiscoveredReady
         }
-        return "Not set up"
+        return .consolesEditorCapabilityNotSetUp
     }
 
     private func capabilityIcon(_ available: Bool) -> String {
@@ -429,10 +438,10 @@ extension ConsoleEditor {
 extension ConsoleEditor {
     /// The Launch section: the connect-at-launch toggle and the login PIN status with its Forget PIN button.
     public var launch: some View {
-        editorSection("Launch") {
+        editorSection(.consolesEditorLaunch) {
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Toggle("Connect at launch", isOn: Binding(
+                    Toggle(.consolesEditorConnectAtLaunch, isOn: Binding(
                         get: { draft.connectAtLaunch },
                         set: { connectAtLaunchChanged($0) }
                     ))
@@ -445,24 +454,24 @@ extension ConsoleEditor {
                         return .handled
                     }
                     .environment(\.menuItemFocused, focusedField == .connectAtLaunch)
-                    Text("chiaki-ng wakes this console and starts streaming when it opens.")
+                    Text(.consolesEditorConnectAtLaunchDetail)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.leading, 23)
                 }
-                editorRow("Login PIN") {
+                editorRow(.consolesEditorLoginPIN) {
                     Text(loginPINStatus)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     if draft.loginPIN == .saved {
-                        FocusButton("Forget PIN") {
+                        FocusButton(.consolesEditorForgetPIN) {
                             focusedField = .connectAtLaunch
                             forgetLoginPIN()
                         }
                         .glassControlStyle()
                         .controlSize(.small)
                         .menuFocused($focusedField, equals: .forgetLoginPIN)
-                        .accessibilityHint("Removes the saved login PIN when you save changes")
+                        .accessibilityHint(.consolesEditorForgetPINHint)
                     }
                 }
             }
@@ -470,14 +479,14 @@ extension ConsoleEditor {
         }
     }
 
-    private var loginPINStatus: String {
+    private var loginPINStatus: LocalizedStringResource {
         switch draft.loginPIN {
         case .none:
-            "Not saved"
+            .consolesEditorPinNotSaved
         case .saved:
-            "Saved and sent automatically"
+            .consolesEditorPinSaved
         case .forgotten:
-            "Forgotten when you save"
+            .consolesEditorPinForgotten
         }
     }
 }
@@ -514,7 +523,7 @@ public struct ConsoleEditorModal: View {
                     .onTapGesture {
                         store.send(.view(.cancel))
                     }
-                    .accessibilityLabel("Dismiss console editor")
+                    .accessibilityLabel(.consolesEditorDismiss)
                 ConsoleEditor(
                     draft: draft,
                     nameChanged: {

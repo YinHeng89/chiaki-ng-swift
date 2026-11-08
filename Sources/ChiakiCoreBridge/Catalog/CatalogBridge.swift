@@ -288,13 +288,11 @@ public struct CatalogBridge: Sendable {
     /// - Returns: The failed outcome.
     static func failed(_ failure: CatalogUnanswered) -> CloudTitleRefreshOutcome {
         if failure.reason == .cancelled {
-            return .failed(CloudTitleRefreshFailure("The ownership check was cancelled."))
+            return .failed(.cancelled)
         }
-        return .failed(CloudTitleRefreshFailure(
-            failure.needsSignIn
-                ? "PlayStation refused the ownership check. Sign in again in Accounts."
-                : "The ownership check failed. Try again in a moment."
-        ))
+        return .failed(failure.needsSignIn
+            ? .signInRefused
+            : .checkFailed)
     }
 
     /// The model outcome of an ownership recheck the catalog answered.
@@ -306,9 +304,7 @@ public struct CatalogBridge: Sendable {
             return .notOwned
         }
         guard let owned = ownership.game.value else {
-            return .failed(CloudTitleRefreshFailure(
-                "The ownership check did not return the updated title. Refresh the whole library instead."
-            ))
+            return .failed(.titleMissing)
         }
         return .owned(CloudGameReader.game(of: owned))
     }

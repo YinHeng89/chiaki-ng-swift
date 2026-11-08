@@ -12,6 +12,8 @@ public struct CloudArtworkView: View {
 
     /// The cover's address.
     public let url: URL?
+    /// Whether the cover fills its frame, cropping what overhangs, or fits inside it whole.
+    public let contentMode: ContentMode
     @Environment(\.catalog) private var catalog
     @Environment(\.displayScale) private var displayScale
     @State private var image: CGImage?
@@ -20,9 +22,12 @@ public struct CloudArtworkView: View {
 
     /// Creates a cover.
     ///
-    /// - Parameter url: The cover's address, or `nil` for the placeholder.
-    public init(url: URL?) {
+    /// - Parameters:
+    ///   - url: The cover's address, or `nil` for the placeholder.
+    ///   - contentMode: Whether the cover fills its frame or fits inside it whole.
+    public init(url: URL?, contentMode: ContentMode = .fill) {
         self.url = url
+        self.contentMode = contentMode
     }
 
     private var shownImage: CGImage? {
@@ -30,7 +35,7 @@ public struct CloudArtworkView: View {
     }
 
     private var placeholderOpacity: Double {
-        shownImage == nil
+        shownImage == nil || contentMode == .fit
             ? 0.06
             : 0
     }
@@ -41,7 +46,7 @@ public struct CloudArtworkView: View {
             .fill(.white.opacity(placeholderOpacity))
             .overlay {
                 if let image = shownImage {
-                    Image(decorative: image, scale: 1).resizable().scaledToFill()
+                    Image(decorative: image, scale: 1).resizable().aspectRatio(contentMode: contentMode)
                 } else {
                     Image(systemName: "gamecontroller").foregroundStyle(.white.opacity(0.4))
                 }

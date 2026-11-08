@@ -275,12 +275,12 @@ struct PSNAlertsPanel: View {
 
     private var header: some View {
         HStack {
-            Text("Notifications").font(.title3.weight(.semibold))
+            Text(.notificationsPanelTitle).font(.title3.weight(.semibold))
             Spacer()
             stopButton(.refresh) {
                 store.send(.refresh)
             } label: {
-                Label("Refresh", systemImage: "arrow.clockwise")
+                Label(.commonRefresh, systemImage: "arrow.clockwise")
                     .font(.callout.weight(.medium))
             }
             .focusBorderShape(.capsule)
@@ -289,7 +289,7 @@ struct PSNAlertsPanel: View {
                     focus = .refresh
                     store.send(.clearAll)
                 } label: {
-                    Label("Clear all", systemImage: "trash")
+                    Label(.notificationsPanelClearAll, systemImage: "trash")
                         .font(.callout.weight(.medium))
                 }
                 .focusBorderShape(.capsule)
@@ -303,7 +303,7 @@ struct PSNAlertsPanel: View {
             store.send(.openConversations)
         } label: {
             HStack {
-                Label("Messages", systemImage: "bubble.left.and.bubble.right")
+                Label(.notificationsConversationsTitle, systemImage: "bubble.left.and.bubble.right")
                 Spacer()
                 Image(systemName: "chevron.right").accessibilityHidden(true)
             }
@@ -311,7 +311,7 @@ struct PSNAlertsPanel: View {
             .frame(maxWidth: .infinity)
         }
         .focusBorderShape(.capsule)
-        .accessibilityLabel("Messages")
+        .accessibilityLabel(.notificationsConversationsTitle)
     }
 
     @ViewBuilder private var entries: some View {
@@ -363,14 +363,14 @@ struct PSNAlertsPanel: View {
         }
     }
 
-    private var emptyText: String {
+    private var emptyText: LocalizedStringResource {
         switch store.listing {
         case .loading:
-            "Loading notifications"
+            .notificationsPanelLoading
         case .failed:
-            "Couldn't load your game invitations. Try again."
+            .notificationsPanelLoadFailed
         case .idle:
-            "Nothing new. Invitations and messages will appear here."
+            .notificationsPanelEmpty
         }
     }
 
@@ -391,7 +391,7 @@ struct PSNAlertsPanel: View {
                 stopButton(.playInCloud(item.id)) {
                     store.send(.playInCloud(item.id))
                 } label: {
-                    Label("Play in the cloud", systemImage: AppIcon.cloud.rawValue)
+                    Label(.notificationsPanelPlayInCloud, systemImage: AppIcon.cloud.rawValue)
                         .font(.callout.weight(.medium))
                         .lineLimit(1)
                 }
@@ -406,8 +406,8 @@ struct PSNAlertsPanel: View {
         VStack(alignment: .leading, spacing: 6) {
             if consoles.count > 1 {
                 Text(game
-                    ? "Join the game on"
-                    : "Join the party on")
+                    ? LocalizedStringResource.notificationsPanelJoinGameOn
+                    : .notificationsPanelJoinPartyOn)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -418,11 +418,15 @@ struct PSNAlertsPanel: View {
                             ? .joinGame(session, console.hardwareID)
                             : .joinParty(session, console.hardwareID))
                     } label: {
-                        Label(joinTitle(session: session, console: console), systemImage: game
-                            ? "gamecontroller.fill"
-                            : "person.2.fill")
-                            .font(.callout.weight(.medium))
-                            .lineLimit(1)
+                        Label {
+                            joinTitle(session: session, console: console)
+                        } icon: {
+                            Image(systemName: game
+                                ? "gamecontroller.fill"
+                                : "person.2.fill")
+                        }
+                        .font(.callout.weight(.medium))
+                        .lineLimit(1)
                     }
                     .focusBorderShape(.capsule)
                 }
@@ -437,12 +441,9 @@ struct PSNAlertsPanel: View {
                 stopButton(.playOn(id, console)) {
                     store.send(.playOn(console))
                 } label: {
-                    Label(
-                        "Play on \(consoles.first { $0.hardwareID == console }?.name ?? "your PS5")",
-                        systemImage: "play.fill"
-                    )
-                    .font(.callout.weight(.medium))
-                    .lineLimit(1)
+                    Label(playOnTitle(console), systemImage: "play.fill")
+                        .font(.callout.weight(.medium))
+                        .lineLimit(1)
                 }
                 .focusBorderShape(.capsule)
             }
@@ -450,13 +451,20 @@ struct PSNAlertsPanel: View {
         .padding(.leading, 44)
     }
 
-    private func joinTitle(session: String, console: PSNAlertsFeature.PartyConsole) -> String {
+    private func joinTitle(session: String, console: PSNAlertsFeature.PartyConsole) -> Text {
         if case .joining(session, console.hardwareID, _) = store.homeJoin {
-            return "Joining"
+            return Text(.notificationsPanelJoining)
         }
         return consoles.count > 1
-            ? console.name
-            : "Join on \(console.name)"
+            ? Text(verbatim: console.name)
+            : Text(.notificationsPanelJoinOn(console: console.name))
+    }
+
+    private func playOnTitle(_ console: HardwareID) -> LocalizedStringResource {
+        guard let name = consoles.first(where: { $0.hardwareID == console })?.name else {
+            return .notificationsPanelPlayOnYourConsole
+        }
+        return .notificationsPanelPlayOn(console: name)
     }
 
     /// The line under an invitation's Join buttons about its latest join on a PS5.
@@ -472,40 +480,43 @@ struct PSNAlertsPanel: View {
         session: String,
         game: Bool,
         consoles: [PSNAlertsFeature.PartyConsole]
-    ) -> String? {
-        let what = game
-            ? "game"
-            : "party"
+    ) -> LocalizedStringResource? {
         guard join.session == session else {
             return nil
         }
         let name = { (console: HardwareID) in
-            consoles.first { $0.hardwareID == console }?.name ?? "Your PS5"
+            consoles.first { $0.hardwareID == console }?.name
+                ?? String(localized: .notificationsPanelYourConsole)
         }
         switch join {
         case .idle, .joining:
             return nil
         case .joined(_, let console):
             return game
-                ? "\(name(console)) joined the game. Play on it with Remote Play."
-                : "\(name(console)) joined the party. Connect to it with Remote Play to hear and talk."
+                ? .notificationsHomeJoinJoinedGame(console: name(console))
+                : .notificationsHomeJoinJoinedParty(console: name(console))
         case let .failed(_, console, failure):
             switch failure {
             case .sessionEnded, .cannotJoin, .full, .alreadyJoined:
-                return "You can't join this \(what)."
+                return game
+                    ? .notificationsHomeJoinCannotJoinGame
+                    : .notificationsHomeJoinCannotJoinParty
             case .rejected:
-                return "PlayStation Network didn't let \(name(console)) join the \(what)."
+                return game
+                    ? .notificationsHomeJoinRejectedGame(console: name(console))
+                    : .notificationsHomeJoinRejectedParty(console: name(console))
             case .failed:
-                return "\(name(console)) couldn't join the \(what). Try again."
+                return game
+                    ? .notificationsHomeJoinFailedGame(console: name(console))
+                    : .notificationsHomeJoinFailedParty(console: name(console))
             case .noCloudConsole, .consoleUnavailable:
-                return "\(name(console)) can't be reached through PlayStation Network. Check that it's a PS5 "
-                    + "paired with this account."
+                return .notificationsHomeJoinUnreachable(console: name(console))
             case .timedOut:
-                return "\(name(console)) didn't answer in time. Try again."
+                return .notificationsHomeJoinTimedOut(console: name(console))
             case .signedOut, .auth:
-                return "Sign in to PlayStation Network again to join."
+                return .notificationsHomeJoinSignedOut
             case .unavailable, .cancelled:
-                return "Couldn't reach PlayStation Network. Try again."
+                return .notificationsHomeJoinUnavailable
             }
         }
     }
@@ -532,10 +543,10 @@ struct PSNAlertsPanel: View {
                     returnFocus = .reply(item.id)
                     store.send(.reply(item.id))
                 } label: {
-                    Text("Reply").font(.callout.weight(.medium))
+                    Text(.notificationsPanelReply).font(.callout.weight(.medium))
                 }
                 .focusBorderShape(.capsule)
-                .accessibilityLabel("Reply to \(item.sender)")
+                .accessibilityLabel(.notificationsPanelReplyTo(sender: item.sender))
             }
             if mutes {
                 let muted = store.alertSettings.isMuted(item.sender)
@@ -543,14 +554,14 @@ struct PSNAlertsPanel: View {
                     store.send(.setMuted(item.sender, !muted))
                 } label: {
                     Text(muted
-                        ? "Unmute"
-                        : "Mute")
+                        ? LocalizedStringResource.notificationsPanelUnmute
+                        : .notificationsPanelMute)
                         .font(.callout.weight(.medium))
                 }
                 .focusBorderShape(.capsule)
                 .accessibilityLabel(muted
-                    ? "Unmute \(item.sender)"
-                    : "Mute \(item.sender)")
+                    ? LocalizedStringResource.notificationsPanelUnmuteSender(sender: item.sender)
+                    : .notificationsPanelMuteSender(sender: item.sender))
             }
         }
     }
@@ -574,14 +585,14 @@ struct PSNAlertsPanel: View {
     ///
     /// - Parameter permission: Whether macOS shows the app's alerts, or `nil` before it was checked.
     /// - Returns: The line, or `nil` when there is nothing to say.
-    static func systemAlertsNote(_ permission: PlatformClient.NotificationPermission?) -> String? {
+    static func systemAlertsNote(
+        _ permission: PlatformClient.NotificationPermission?
+    ) -> LocalizedStringResource? {
         switch permission {
         case .notAsked:
-            "chiaki-ng asks to show macOS notifications, so it can tell you about invitations and messages "
-                + "while it isn't in front."
+            .notificationsPanelSystemAlertsNotAsked
         case .denied:
-            "macOS notifications are off for chiaki-ng, so alerts only show inside the app. Turn them on in "
-                + "System Settings, Notifications."
+            .notificationsPanelSystemAlertsDenied
         case .allowed, nil:
             nil
         }
@@ -597,9 +608,9 @@ struct PSNAlertsPanel: View {
             lines.append(item.notice.detail)
         }
         if item.repeats > 1 {
-            lines.append(item.isInvitation
-                ? "Invited you \(item.repeats) times"
-                : "Sent \(item.repeats) messages")
+            lines.append(String(localized: item.isInvitation
+                    ? .notificationsPanelInvitedTimes(count: item.repeats)
+                    : .notificationsPanelSentMessages(count: item.repeats)))
         }
         lines.append(item.arrived.formatted(.relative(presentation: .named)))
         return lines
@@ -607,11 +618,15 @@ struct PSNAlertsPanel: View {
 
     private var switches: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Alert me about").font(.callout.weight(.semibold))
-            switchRow("Invitations", isOn: store.alertSettings.invitations, stop: .invitations) {
+            Text(.notificationsPanelAlertMeAbout).font(.callout.weight(.semibold))
+            switchRow(
+                .notificationsPanelInvitations,
+                isOn: store.alertSettings.invitations,
+                stop: .invitations
+            ) {
                 store.send(.setInvitations(!store.alertSettings.invitations))
             }
-            switchRow("Messages", isOn: store.alertSettings.messages, stop: .messages) {
+            switchRow(.notificationsPanelMessages, isOn: store.alertSettings.messages, stop: .messages) {
                 store.send(.setMessages(!store.alertSettings.messages))
             }
         }
@@ -619,7 +634,7 @@ struct PSNAlertsPanel: View {
 
     private var mutedSenders: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Muted").font(.callout.weight(.semibold))
+            Text(.notificationsPanelMuted).font(.callout.weight(.semibold))
             ForEach(store.muted, id: \.self) { sender in
                 HStack {
                     Text(sender).font(.callout)
@@ -627,17 +642,17 @@ struct PSNAlertsPanel: View {
                     stopButton(.unmute(sender)) {
                         store.send(.setMuted(sender, false))
                     } label: {
-                        Text("Unmute").font(.callout.weight(.medium))
+                        Text(.notificationsPanelUnmute).font(.callout.weight(.medium))
                     }
                     .focusBorderShape(.capsule)
-                    .accessibilityLabel("Unmute \(sender)")
+                    .accessibilityLabel(.notificationsPanelUnmuteSender(sender: sender))
                 }
             }
         }
     }
 
     private func switchRow(
-        _ title: String,
+        _ title: LocalizedStringResource,
         isOn: Bool,
         stop: Focus,
         action: @escaping () -> Void
@@ -658,8 +673,8 @@ struct PSNAlertsPanel: View {
         }
         .accessibilityLabel(title)
         .accessibilityValue(isOn
-            ? "On"
-            : "Off")
+            ? LocalizedStringResource.commonOn
+            : .commonOff)
             .accessibilityAddTraits(.isToggle)
     }
 

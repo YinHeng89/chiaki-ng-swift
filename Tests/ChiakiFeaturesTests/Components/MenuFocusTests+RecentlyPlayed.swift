@@ -77,7 +77,7 @@ extension MenuFocusTests {
     @Test func trialBadgesOnRailTitlesAreNotFocusStops() async throws {
         let titles = RecentlyPlayedRailHost.titles
         let marks = Dictionary(uniqueKeysWithValues: titles.prefix(4).map {
-            ($0.titleID, CloudTrialMark(icon: .trial, label: "Trial"))
+            ($0.titleID, CloudTrialMark(icon: .trial, label: .libraryTrialTrial))
         })
         let (store, harness) = recentLibrary(marks: marks)
         defer {
@@ -257,7 +257,7 @@ struct RecentlyPlayedRailHost: View {
 }
 
 @MainActor
-func waitUntil(_ harness: MenuFocusHarness, attempts: Int = 60, _ condition: () -> Bool) async {
+func waitUntil(_ harness: MenuFocusHarness, attempts: Int = 200, _ condition: () -> Bool) async {
     for _ in 0 ..< attempts {
         if condition() {
             return

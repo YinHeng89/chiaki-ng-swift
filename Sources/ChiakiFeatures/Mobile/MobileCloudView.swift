@@ -60,7 +60,7 @@ struct MobileCloudView: View {
     }
 
     private var searchField: some View {
-        MobileSearchEntry(prompt: "Search Cloud", text: $store.query)
+        MobileSearchEntry(prompt: .mobileCloudSearch, text: $store.query)
             .padding(.horizontal, 14)
             .frame(minWidth: 220, minHeight: 40)
             .background(.fill.tertiary, in: .capsule)
@@ -68,31 +68,35 @@ struct MobileCloudView: View {
 
     private var filterMenu: some View {
         Menu {
-            Picker("Show", selection: Binding(
+            Picker(selection: Binding(
                 get: { store.filter },
                 set: { store.send(.filter($0)) }
             )) {
                 ForEach(store.filters, id: \.self) { filter in
                     Text(filter.title).tag(filter)
                 }
+            } label: {
+                Text(.mobileCloudShow)
             }
         } label: {
-            MobileMenuLabel(caption: "Show", value: store.filter.title)
+            MobileMenuLabel(caption: .mobileCloudShow, value: store.filter.title)
         }
     }
 
     private var platformMenu: some View {
         Menu {
-            Picker("Platform", selection: Binding(
+            Picker(selection: Binding(
                 get: { store.platform },
                 set: { store.send(.platform($0)) }
             )) {
                 ForEach(CloudPlatformFilter.allCases, id: \.self) { platform in
                     Text(platform.title).tag(platform)
                 }
+            } label: {
+                Text(.mobileCloudPlatform)
             }
         } label: {
-            MobileMenuLabel(caption: "Platform", value: store.platform.title)
+            MobileMenuLabel(caption: .mobileCloudPlatform, value: store.platform.title)
         }
     }
 
@@ -136,20 +140,27 @@ struct MobileCloudView: View {
         case .loading:
             MobileCloudProgress(progress: store.phase.fetchProgress, compact: false)
         case .failed:
-            ContentUnavailableView(
-                "Couldn’t load your games",
-                systemImage: "cloud.slash",
-                description: Text("Pull down to try again.")
-            )
+            ContentUnavailableView {
+                Label(.mobileCloudLoadFailed, systemImage: "cloud.slash")
+            } description: {
+                Text(.mobileCloudPullToRetry)
+            }
         case .ready:
-            ContentUnavailableView(
-                store.query.isEmpty
-                    ? "No games here"
-                    : "No results",
-                systemImage: store.query.isEmpty
-                    ? "square.grid.2x2"
-                    : "magnifyingglass"
-            )
+            ContentUnavailableView {
+                Label {
+                    Text(
+                        store.query.isEmpty
+                            ? .mobileCloudNoGames
+                            : .mobileCloudNoResults
+                    )
+                } icon: {
+                    Image(
+                        systemName: store.query.isEmpty
+                            ? "square.grid.2x2"
+                            : "magnifyingglass"
+                    )
+                }
+            }
         }
     }
 }
@@ -170,7 +181,7 @@ struct MobileCloudProgress: View {
             HStack(spacing: 10) {
                 ProgressView()
                     .controlSize(.small)
-                Text([progress?.step, progress?.pages].compactMap { $0 }.joined(separator: " · "))
+                compactLine
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
@@ -183,10 +194,10 @@ struct MobileCloudProgress: View {
             VStack(spacing: 18) {
                 ChiakiLogo(size: 96, isConnecting: true)
                 VStack(spacing: 6) {
-                    Text(progress?.step ?? "Loading cloud library")
+                    Text(step)
                         .font(.headline)
                         .foregroundStyle(.white.opacity(0.78))
-                        .id(progress?.step)
+                        .id(String(localized: step))
                         .transition(AppMotion.transition(reduced: reduceMotion))
                     if let detail = progress?.detail {
                         Text(detail)
@@ -206,6 +217,22 @@ struct MobileCloudProgress: View {
             .frame(maxWidth: .infinity, minHeight: 260)
             .accessibilityElement(children: .combine)
         }
+    }
+
+    private var step: LocalizedStringResource {
+        progress?.step ?? .mobileCloudLoading
+    }
+
+    private var compactLine: Text {
+        guard let progress else {
+            return Text(verbatim: "")
+        }
+        guard let pages = progress.pages else {
+            return Text(progress.step)
+        }
+        return Text(
+            .mobileCloudProgressLine(step: String(localized: progress.step), pages: String(localized: pages))
+        )
     }
 }
 
@@ -235,7 +262,7 @@ struct MobileCloudTile: View {
                                 .frame(width: 20, height: 20)
                                 .background(.yellow, in: .rect(cornerRadius: 6))
                                 .padding(6)
-                                .accessibilityLabel("PlayStation Plus")
+                                .accessibilityLabel(Text(.mobileCloudPlus))
                         }
                     }
                 Text(game.name)
@@ -264,10 +291,10 @@ struct MobileCloudTile: View {
 /// A menu's label in the touch library: what it chooses, then the current choice.
 struct MobileMenuLabel: View {
     /// What the menu chooses.
-    let caption: String
+    let caption: LocalizedStringResource
 
     /// The current choice.
-    let value: String
+    let value: LocalizedStringResource
 
     var body: some View {
         HStack(spacing: 6) {

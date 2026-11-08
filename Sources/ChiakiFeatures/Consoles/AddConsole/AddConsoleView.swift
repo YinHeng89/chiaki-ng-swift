@@ -21,7 +21,7 @@ public struct AddConsoleView: View {
     /// The shared local-network scan, whose consoles and ranges the automatic mode lists.
     public let discovery: DiscoveryFeature.State
     /// The message of the last failed pairing attempt, shown under the mode switch.
-    public let failure: String?
+    public let failure: LocalizedStringResource?
     /// Routes controller moves and Back presses to the handlers this screen registers.
     @Environment(\.menuNavigator) var navigator
     /// The focused button, field or console row.
@@ -52,7 +52,7 @@ public struct AddConsoleView: View {
     public init(
         store: StoreOf<AddConsoleFeature>,
         discovery: DiscoveryFeature.State,
-        failure: String?,
+        failure: LocalizedStringResource?,
         focus: AddConsoleFocus? = nil,
         modeFocus: AddConsoleMode? = nil,
         kindFocus: RegistrationFlow.ConsoleKind? = nil,
@@ -74,7 +74,7 @@ public struct AddConsoleView: View {
 
     public var body: some View {
         VStack(spacing: 18) {
-            Text("Find your console").font(.system(size: 28, weight: .semibold))
+            Text(.consolesAddConsoleTitle).font(.system(size: 28, weight: .semibold))
                 .padding(.bottom, 6)
             FocusableSegments(
                 options: store.modes,
@@ -106,7 +106,7 @@ public struct AddConsoleView: View {
                     focusRow(.mode)
                 }
             )
-            FlowSecondaryButton(label: "Back", focus: AddConsoleFocus.back, focusedAction: $focus) {
+            FlowSecondaryButton(label: .commonBack, focus: AddConsoleFocus.back, focusedAction: $focus) {
                 store.send(.view(.back))
             }
         }
@@ -157,14 +157,14 @@ public struct AddConsoleView: View {
     ///
     /// - Parameter mode: The way of finding a console.
     /// - Returns: The segment title.
-    public static func title(of mode: AddConsoleMode) -> String {
+    public static func title(of mode: AddConsoleMode) -> LocalizedStringResource {
         switch mode {
         case .automatic:
-            "Auto-discovery"
+            .consolesAddConsoleModeAutomatic
         case .manual:
-            "Manual entry"
+            .consolesAddConsoleModeManual
         case .playStation:
-            "PlayStation"
+            .consolesAddConsoleModePlayStation
         }
     }
 
@@ -425,7 +425,7 @@ private struct AddConsoleModePane: View {
                         store.send(.view(.pickDiscovered($0)))
                     }
                     if availableConsoles.isEmpty, !discovery.snapshot.consoles.isEmpty {
-                        Text("All discovered consoles are already paired with this account.")
+                        Text(.consolesAddConsoleAllPaired)
                             .font(.callout).foregroundStyle(.secondary)
                     }
                 case .manual:
@@ -460,17 +460,19 @@ private struct AddConsoleManualEntry: View {
         VStack(spacing: 14) {
             FocusableSegments(
                 options: RegistrationFlow.ConsoleKind.allCases,
-                title: { $0.rawValue },
+                title: { $0 == .ps5
+                    ? .consolesKindPs5
+                    : .consolesKindPs4 },
                 selection: $store.kind,
                 focus: kindFocus
             )
             HStack(spacing: 10) {
-                TextField("IP address or hostname", text: $store.address)
+                TextField(.consolesAddressPlaceholder, text: $store.address)
                     .textFieldStyle(.plain)
                     .streamerHiddenField(store.address)
                     .menuFocusBinding(focus, equals: .address)
                     .controllerKeyboard(
-                        title: "Console address",
+                        title: .consolesAddressKeyboardTitle,
                         text: $store.address,
                         isFocused: focused == .address
                     )
@@ -478,7 +480,7 @@ private struct AddConsoleManualEntry: View {
                     .onSubmit {
                         store.send(.view(.submitAddress))
                     }
-                FocusButton("Continue") {
+                FocusButton(.commonContinue) {
                     store.send(.view(.submitAddress))
                 }
                 .glassControlStyle().controlSize(.large)
@@ -514,7 +516,7 @@ private struct AddConsoleScanPanel: View {
                 Text(status).font(.callout.weight(.medium))
                 Spacer(minLength: 0)
                 if case .failed = discovery.phase {
-                    FocusButton("Retry") {
+                    FocusButton(.consolesAddConsoleRetry) {
                         retry()
                     }
                     .glassControlStyle()
@@ -522,11 +524,11 @@ private struct AddConsoleScanPanel: View {
                 }
             }
             if !discovery.snapshot.broadcastRanges.isEmpty {
-                ranges("Broadcast", values: discovery.snapshot.broadcastRanges)
+                ranges(.consolesScanBroadcast, values: discovery.snapshot.broadcastRanges)
             }
             if !discovery.snapshot.unicastRanges.isEmpty {
-                ranges("Unicast", values: discovery.snapshot.unicastRanges)
-                Text("\(discovery.snapshot.sweepTargets) addresses, scanned in batches of 64")
+                ranges(.consolesScanUnicast, values: discovery.snapshot.unicastRanges)
+                Text(.consolesScanSweepTargets(count: discovery.snapshot.sweepTargets))
                     .font(.caption2).foregroundStyle(.secondary)
             }
         }
@@ -534,7 +536,7 @@ private struct AddConsoleScanPanel: View {
         .glassPanel(.medium)
     }
 
-    private func ranges(_ title: String, values: [String]) -> some View {
+    private func ranges(_ title: LocalizedStringResource, values: [String]) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             Text(values.joined(separator: "\n")).font(.system(.caption, design: .monospaced))
@@ -542,21 +544,21 @@ private struct AddConsoleScanPanel: View {
         }
     }
 
-    private var status: String {
+    private var status: LocalizedStringResource {
         switch discovery.phase {
         case .failed:
-            "Couldn’t scan this network"
+            .consolesScanFailed
         case .idle:
-            "Discovery paused"
+            .consolesScanPaused
         case .scanning, .listening, .searched:
             if !discovery.snapshot.networkAvailable {
-                "Waiting for a network…"
+                .consolesScanWaitingForNetwork
             } else if !discovery.snapshot.consoles.isEmpty {
-                "Scanning for consoles"
+                .consolesScanScanning
             } else if discovery.phase.hasSearched {
-                "No console has answered yet, still looking…"
+                .consolesScanNoAnswerYet
             } else {
-                "Looking for consoles…"
+                .consolesScanLooking
             }
         }
     }
@@ -634,8 +636,8 @@ private struct DiscoveredConsoleList: View {
                         .foregroundStyle(.primary)
                     Text(
                         console.standby
-                            ? "Rest mode"
-                            : "Ready"
+                            ? .consolesDiscoveredRestMode
+                            : .consolesDiscoveredReady
                     )
                     .font(.caption).foregroundStyle(
                         console.standby

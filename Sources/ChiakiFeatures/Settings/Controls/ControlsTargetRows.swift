@@ -15,16 +15,16 @@ struct ControlsTargetRows: View {
     /// Draws both rows.
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            row("Devices") {
+            row(.settingsControlsDevices) {
                 ForEach(devices, id: \.preferenceKey) { device in
                     card(for: device)
                 }
             }
-            row("Players") {
+            row(.settingsControlsPlayers) {
                 ForEach(0..<ControlsConfiguration.playerCount, id: \.self) { player in
                     ControlsTargetCard(
                         picture: .player(player),
-                        title: "Player \(player + 1)",
+                        title: String(localized: .settingsControlsPlayerTitle(number: player + 1)),
                         lines: playerLines(player),
                         selected: store.editing == .player(player)
                     ) {
@@ -45,7 +45,7 @@ struct ControlsTargetRows: View {
         #endif
     }
 
-    private func row(_ title: String, @ViewBuilder cards: () -> some View) -> some View {
+    private func row(_ title: LocalizedStringResource, @ViewBuilder cards: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title).font(.caption).foregroundStyle(.secondary)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 230), spacing: 10)], spacing: 10) {
@@ -74,50 +74,50 @@ struct ControlsTargetRows: View {
 
     private func title(for device: ControllerDevice) -> String {
         guard !device.isKeyboard else {
-            return "Keyboard and mouse"
+            return String(localized: .settingsControlsKeyboardAndMouse)
         }
-        let nickname = store.draft.controllers[device.preferenceKey]?.nickname ?? ""
-        return nickname.isEmpty
-            ? device.name
-            : nickname
+        return String(localized: store.state.title(of: device))
     }
 
     private func lines(for device: ControllerDevice, connected: Bool) -> [String] {
         guard !device.isKeyboard else {
-            return ["Plays as player 1"]
+            return [String(localized: .settingsControlsPlaysAsPlayerOne)]
         }
         var lines: [String]
         if connected {
-            lines = ["Connected", device.transport]
+            lines = [String(localized: .settingsControlsConnected), device.transport]
         } else if let seen = store.draft.remembered[device.preferenceKey]?.lastSeen {
-            lines = ["Not connected", "Last seen \(seen.formatted(.relative(presentation: .named)))"]
+            lines = [
+                String(localized: .settingsControlsNotConnected),
+                String(localized: .settingsControlsLastSeen(
+                    time: seen.formatted(.relative(presentation: .named))
+                ))
+            ]
         } else {
-            lines = ["Not connected"]
+            lines = [String(localized: .settingsControlsNotConnected)]
         }
         if !device.individual {
-            lines.append("Shared by every \(device.name)")
+            lines.append(String(localized: .settingsControlsSharedByEvery(name: device.name)))
         }
         return lines
     }
 
     private func playerLines(_ player: Int) -> [String] {
-        let bindings = store.draft.playerPreset(player) == nil
-            ? "Uses each controller’s bindings"
-            : "Has their own bindings"
-        guard player == 0 else {
-            return [bindings]
-        }
-        return [bindings, playerOneController]
+        let bindings = String(localized: store.draft.playerPreset(player) == nil
+            ? .settingsControlsUsesControllerBindings
+            : .settingsControlsHasOwnBindings)
+        return [bindings, playerController(player)]
     }
 
-    private var playerOneController: String {
-        guard let key = store.draft.selectedControllerKey else {
-            return "First available controller"
+    private func playerController(_ player: Int) -> String {
+        guard let key = store.state.shownControllerKey(forPlayer: player) else {
+            return String(localized: .settingsControlsFirstAvailableController)
         }
         if key == ControlsConfiguration.keyboardOnlyKey {
-            return ControlsPlayerOneControllerPicker.withoutControllerTitle
+            return String(localized: ControlsPlayerControllerPicker.withoutControllerTitle)
         }
-        return store.state.device(key)?.name ?? "First available controller"
+        return store.state.device(key).map { String(localized: store.state.title(of: $0)) }
+            ?? String(localized: .settingsControlsFirstAvailableController)
     }
 }
 
@@ -209,7 +209,7 @@ private struct ControlsTargetCard: View {
                 Image(systemName: "gamecontroller").font(.title2).foregroundStyle(.secondary)
             }
         case .player(let index):
-            Text("P\(index + 1)")
+            Text(.settingsControlsPlayerBadge(number: index + 1))
                 .font(.title3.weight(.bold))
                 .foregroundStyle(.secondary)
         }

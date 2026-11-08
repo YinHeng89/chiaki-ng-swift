@@ -54,10 +54,10 @@ struct StreamMenuInvitationsControls: View {
 
     private var invitations: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Invitations").font(.title2.weight(.semibold))
+            Text(.playbackMenuInvitationsTitle).font(.title2.weight(.semibold))
             content
             FocusButton(action: refresh) {
-                Label("Refresh", systemImage: "arrow.clockwise")
+                Label(.commonRefresh, systemImage: "arrow.clockwise")
                     .frame(maxWidth: .infinity)
             }
             .modifier(OptionalStreamMenuButtonFocus(
@@ -69,7 +69,7 @@ struct StreamMenuInvitationsControls: View {
             .controlSize(.large)
             if store.invitableTitle != nil {
                 FocusButton(action: openInvite) {
-                    Label("Invite friends", systemImage: "person.2.badge.plus")
+                    Label(.playbackMenuInvitationsInviteFriends, systemImage: "person.2.badge.plus")
                         .frame(maxWidth: .infinity)
                 }
                 .modifier(OptionalStreamMenuButtonFocus(
@@ -104,17 +104,17 @@ struct StreamMenuInvitationsControls: View {
         case .idle, .loading:
             HStack(spacing: 10) {
                 ProgressView().controlSize(.small)
-                Text("Loading game invitations")
+                Text(.playbackMenuInvitationsLoading)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
         case .failed:
-            Text("Couldn't load your game invitations. Try again.")
+            Text(.playbackMenuInvitationsLoadFailed)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         case .loaded:
             if store.shown.isEmpty {
-                Text("Game invitations to this game will be displayed here.")
+                Text(.playbackMenuInvitationsEmpty)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } else {
@@ -142,16 +142,19 @@ struct StreamMenuInvitationsControls: View {
                     .foregroundStyle(.secondary)
             }
             if invitation.maxPlayers > 0 {
-                Text("\(invitation.players) of \(invitation.maxPlayers) players")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text(.playbackMenuInvitationsPlayers(
+                    players: invitation.players,
+                    maxPlayers: invitation.maxPlayers
+                ))
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            if invitation.joining == .joinable {
-                joinButton(invitation)
-            } else {
-                Text(Self.unavailable(invitation.joining))
+            if let reason = Self.unavailable(invitation.joining) {
+                Text(reason)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            } else {
+                joinButton(invitation)
             }
             if let note = note(for: invitation) {
                 Text(note)
@@ -183,17 +186,17 @@ struct StreamMenuInvitationsControls: View {
         }
     }
 
-    private func joinTitle(_ invitation: CloudGameInvitation) -> String {
+    private func joinTitle(_ invitation: CloudGameInvitation) -> LocalizedStringResource {
         if case .joining(invitation.id, _) = store.joining {
-            return "Joining"
+            return .playbackMenuInvitationsJoining
         }
-        return "Join"
+        return .playbackMenuInvitationsJoin
     }
 
-    private func note(for invitation: CloudGameInvitation) -> String? {
+    private func note(for invitation: CloudGameInvitation) -> LocalizedStringResource? {
         switch store.joining {
         case .joined(invitation.id):
-            return "Sent to your cloud console."
+            return .playbackMenuInvitationsSent
         case .failed(invitation.id, let failure):
             return Self.message(failure)
         default:
@@ -205,27 +208,27 @@ struct StreamMenuInvitationsControls: View {
     ///
     /// - Parameter invitation: The invitation.
     /// - Returns: The heading.
-    static func heading(_ invitation: CloudGameInvitation) -> String {
+    static func heading(_ invitation: CloudGameInvitation) -> LocalizedStringResource {
         guard !invitation.inviter.isEmpty else {
-            return "You're invited to play this game"
+            return .playbackMenuInvitationsHeadingAnonymous
         }
-        return "\(invitation.inviter) invited you to play"
+        return .playbackMenuInvitationsHeading(inviter: invitation.inviter)
     }
 
     /// Why an invitation cannot be joined, in the service's own wording.
     ///
     /// - Parameter joining: The invitation's state.
-    /// - Returns: The explanation.
-    static func unavailable(_ joining: CloudGameInvitation.Joining) -> String {
+    /// - Returns: The explanation, or `nil` when the invitation can be joined.
+    static func unavailable(_ joining: CloudGameInvitation.Joining) -> LocalizedStringResource? {
         switch joining {
         case .joinable:
-            ""
+            nil
         case .alreadyJoined:
-            "You're already in this game."
+            .playbackMenuInvitationsAlreadyJoined
         case .full:
-            "This game group is already full."
+            .playbackMenuInvitationsFull
         case .cannotJoin:
-            "You can't join this game."
+            .playbackMenuInvitationsCannotJoin
         }
     }
 
@@ -233,27 +236,26 @@ struct StreamMenuInvitationsControls: View {
     ///
     /// - Parameter failure: Why the join failed.
     /// - Returns: The message.
-    nonisolated static func message(_ failure: CloudInvitationFailure) -> String {
+    nonisolated static func message(_ failure: CloudInvitationFailure) -> LocalizedStringResource {
         switch failure {
         case .sessionEnded:
-            "This game session has ended."
+            .playbackMenuInvitationsSessionEnded
         case .alreadyJoined:
-            "You're already in this game."
+            .playbackMenuInvitationsAlreadyJoined
         case .full:
-            "This game group is already full."
+            .playbackMenuInvitationsFull
         case .cannotJoin, .rejected:
-            "You can't join this game."
+            .playbackMenuInvitationsCannotJoin
         case .failed:
-            "The invitation couldn't be sent to your cloud console. Try again."
+            .playbackMenuInvitationsSendFailed
         case .noCloudConsole, .consoleUnavailable:
-            "Couldn't find a PlayStation 5 cloud console to join on. "
-                + "If this is a PlayStation 4 game, join using its PlayStation 5 version."
+            .playbackMenuInvitationsNoCloudConsole
         case .timedOut:
-            "Your cloud console didn't answer in time. Try again."
+            .playbackMenuInvitationsTimedOut
         case .signedOut, .auth:
-            "Sign in to PlayStation Network again to join."
+            .playbackMenuInvitationsSignedOut
         case .unavailable, .cancelled:
-            "Couldn't reach PlayStation Network. Try again."
+            .playbackMenuInvitationsUnreachable
         }
     }
 }

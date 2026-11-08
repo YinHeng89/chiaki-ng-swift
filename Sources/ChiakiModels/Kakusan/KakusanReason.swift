@@ -1,3 +1,5 @@
+import Foundation
+
 /// Why a Kakusan session closed without an error.
 ///
 /// The raw values are the native session's reason names.
@@ -24,22 +26,22 @@ public enum KakusanReason: String, Equatable, Sendable, CaseIterable {
     ///
     /// - Parameter byPeer: Whether the other participant ended it.
     /// - Returns: The message.
-    public func label(byPeer: Bool) -> String {
+    public func label(byPeer: Bool) -> LocalizedStringResource {
         switch self {
         case .user:
             byPeer
-                ? "Left the game"
-                : "Removed"
+                ? .kakusanReasonLeftGame
+                : .kakusanReasonRemoved
         case .capacity:
-            "No free seat"
+            .kakusanReasonNoFreeSeat
         case .source:
-            "The stream ended"
+            .kakusanReasonStreamEnded
         case .timeout:
-            "Timed out"
+            .kakusanReasonTimedOut
         case .network:
-            "Connection lost"
+            .kakusanReasonConnectionLost
         case .protocol:
-            "Connection error"
+            .kakusanReasonConnectionError
         }
     }
 }

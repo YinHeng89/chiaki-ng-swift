@@ -40,12 +40,6 @@ mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 mkdir -p "$app_dir/Contents/Frameworks"
 dependency_prefix="$(python3 "$project_dir/Tools/Dependencies/build.py" --prefix)"
 ditto "$dependency_prefix/share/licenses" "$app_dir/Contents/Resources/Licenses"
-# Bundle the canonical zh-Hans dictionary in the app's main bundle.
-if [[ -f "$project_dir/Localization/zh-Hans.lproj/Localizable.strings" ]]; then
-    mkdir -p "$app_dir/Contents/Resources/zh-Hans.lproj"
-    cp "$project_dir/Localization/zh-Hans.lproj/Localizable.strings" \
-        "$app_dir/Contents/Resources/zh-Hans.lproj/Localizable.strings"
-fi
 cp "$project_dir/.build/native-core/libChiakiRegistration.dylib" "$app_dir/Contents/Frameworks/"
 cp "$project_dir/.build/native-core/libChiakiInput.dylib" "$app_dir/Contents/Frameworks/"
 cp "$project_dir/.build/native-core/libSDL3.0.dylib" "$app_dir/Contents/Frameworks/"
@@ -59,8 +53,6 @@ cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 <plist version="1.0"><dict>
 <key>CFBundleName</key><string>chiaki-ng</string>
 <key>CFBundleDisplayName</key><string>chiaki-ng</string>
-<key>CFBundleDevelopmentRegion</key><string>en</string>
-<key>CFBundleLocalizations</key><array><string>en</string><string>zh-Hans</string></array>
 <key>CFBundleIdentifier</key><string>BUNDLE_ID</string>
 <key>CFBundleExecutable</key><string>ChiakiNG</string>
 <key>CFBundlePackageType</key><string>APPL</string>
@@ -93,6 +85,12 @@ cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 </dict></array>
 </dict></plist>
 PLIST
+localizations=("$app_dir"/Contents/Resources/ChiakiNG_ChiakiFeatures.bundle/Contents/Resources/*.lproj(N:t:r))
+/usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string en" -c "Add :CFBundleLocalizations array" \
+    "$app_dir/Contents/Info.plist"
+for localization in "${localizations[@]}"; do
+    /usr/libexec/PlistBuddy -c "Add :CFBundleLocalizations: string $localization" "$app_dir/Contents/Info.plist"
+done
 icon_source="$project_dir/Assets/Images/Branding/chiaking-color.png"
 icon_dir="$project_dir/.build/app-icon/${version_tag:-untagged}"
 icon_cache="$icon_dir/AppIcon.icns"

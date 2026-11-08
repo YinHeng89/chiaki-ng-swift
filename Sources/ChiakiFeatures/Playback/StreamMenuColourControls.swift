@@ -34,7 +34,7 @@ struct StreamMenuColourControls: View {
     /// One colour adjustment slider and the picture setting it edits.
     struct Row {
         /// The label shown above the slider and used as its accessibility label.
-        let title: String
+        let title: LocalizedStringResource
         /// The stream menu control that identifies the slider for focus.
         let control: StreamMenuControl
         /// The range the slider covers.
@@ -47,13 +47,17 @@ struct StreamMenuColourControls: View {
 
     /// The adjustment sliders in display order.
     static let rows = [
-        Row(title: "Brightness", control: .colourBrightness, range: PictureAdjustments.brightnessRange,
+        Row(title: .playbackMenuColourBrightness, control: .colourBrightness,
+            range: PictureAdjustments.brightnessRange,
             value: \.brightness, format: .signedPercent),
-        Row(title: "Contrast", control: .colourContrast, range: PictureAdjustments.contrastRange,
+        Row(title: .playbackMenuColourContrast, control: .colourContrast,
+            range: PictureAdjustments.contrastRange,
             value: \.contrast, format: .percent),
-        Row(title: "Saturation", control: .colourSaturation, range: PictureAdjustments.saturationRange,
+        Row(title: .playbackMenuColourSaturation, control: .colourSaturation,
+            range: PictureAdjustments.saturationRange,
             value: \.saturation, format: .percent),
-        Row(title: "Gamma", control: .colourGamma, range: PictureAdjustments.gammaRange,
+        Row(title: .playbackMenuColourGamma, control: .colourGamma,
+            range: PictureAdjustments.gammaRange,
             value: \.gamma, format: .decimal)
     ]
 
@@ -87,8 +91,8 @@ struct StreamMenuColourControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Colour").font(.title2.weight(.semibold))
-            ForEach(Self.rows, id: \.title) { row in
+            Text(.playbackMenuColourTitle).font(.title2.weight(.semibold))
+            ForEach(Self.rows, id: \.control) { row in
                 VStack(alignment: .leading, spacing: 6) {
                     LabeledContent(row.title) {
                         Text(row.format.describe(adjustments[keyPath: row.value])).monospacedDigit()
@@ -100,7 +104,7 @@ struct StreamMenuColourControls: View {
             FocusButton {
                 adjustments = PictureAdjustments()
             } label: {
-                Label("Reset", systemImage: "arrow.counterclockwise")
+                Label(.playbackMenuColourReset, systemImage: "arrow.counterclockwise")
                     .frame(maxWidth: .infinity)
             }
             .modifier(OptionalStreamMenuButtonFocus(
@@ -143,7 +147,7 @@ struct StreamMenuColourControls: View {
 
     @ViewBuilder
     private var debandToggle: some View {
-        let toggle = Toggle("Reduce colour banding", isOn: $reduceBanding)
+        let toggle = Toggle(.playbackMenuColourReduceBanding, isOn: $reduceBanding)
         if let focus {
             toggle.modifier(StreamMenuControlFocus(
                 focus: focus,

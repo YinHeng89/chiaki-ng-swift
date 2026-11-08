@@ -14,14 +14,8 @@ struct WelcomeView: View {
     /// Sends what the user chose to the root.
     let send: (RootFeature.Action.View) -> Void
 
-    /// Whether the title shows above the tiles; the touch welcome shows the logo beside them instead.
-    var showsTitle = true
-
-    /// The view.
+    /// The view: the choices alone, beside the logo the entry screen draws.
     var body: some View {
-        if showsTitle {
-            FlowTitle(text: "Add your account.", detail: "Choose how to get started.")
-        }
         FlowTileRow(choices, focusedAction: focusedAction)
     }
 
@@ -30,16 +24,15 @@ struct WelcomeView: View {
     private var choices: [FlowTileChoice<String>] {
         var choices = [
             FlowTileChoice(
-                label: "PSN account", symbol: "person.crop.circle.badge.checkmark",
-                hint: "Sign in with your phone or email. PSN features such as play outside your home network "
-                    + "and cloud games are enabled.",
+                label: .accountsWelcomePsnAccount, symbol: "person.crop.circle.badge.checkmark",
+                hint: .accountsWelcomePsnAccountHint,
                 focus: "PSN account", prominent: true
             ) {
                 send(.chooseSignIn)
             },
             FlowTileChoice(
-                label: "Base64 PSN ID", symbol: "person.text.rectangle",
-                hint: "No PSN features will be enabled, such as external network play.",
+                label: .accountsWelcomeAccountId, symbol: "person.text.rectangle",
+                hint: .accountsWelcomeAccountIdHint,
                 focus: "Base64 PSN ID profile"
             ) {
                 send(.chooseAccountID)
@@ -47,8 +40,8 @@ struct WelcomeView: View {
         ]
         if KakusanBuild.included {
             choices.append(FlowTileChoice(
-                label: "Join a game", symbol: "person.2.wave.2",
-                hint: "Join a friend's game from the invitation they sent you.",
+                label: .accountsWelcomeJoinGame, symbol: "person.2.wave.2",
+                hint: .accountsWelcomeJoinGameHint,
                 focus: "Join a game"
             ) {
                 send(.joinGame)
@@ -56,8 +49,8 @@ struct WelcomeView: View {
         }
         if hasProfiles {
             choices.append(FlowTileChoice(
-                label: "Back to profiles", symbol: "arrow.uturn.backward",
-                hint: "Return to the accounts you already added.",
+                label: .accountsWelcomeBackToProfiles, symbol: "arrow.uturn.backward",
+                hint: .accountsWelcomeBackToProfilesHint,
                 focus: "Back to profiles", cancels: true
             ) {
                 send(.showLibrary)

@@ -106,7 +106,7 @@ public struct PacketLossBadge: View {
 
     public var body: some View {
         Label {
-            Text("Packet loss \(description)").monospacedDigit()
+            Text(.playbackStreamPacketLoss(percent: description)).monospacedDigit()
         } icon: {
             Image(systemName: "wifi.exclamationmark")
         }
@@ -117,6 +117,6 @@ public struct PacketLossBadge: View {
         .glassEffect(AppGlass.control, in: .capsule)
         .allowsHitTesting(false)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Packet loss \(description)")
+        .accessibilityLabel(.playbackStreamPacketLoss(percent: description))
     }
 }

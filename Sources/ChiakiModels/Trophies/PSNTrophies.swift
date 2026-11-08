@@ -22,16 +22,16 @@ public enum TrophyGrade: Int, CaseIterable, Comparable, Sendable {
     }
 
     /// The grade's name, such as "Gold".
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .bronze:
-            "Bronze"
+            .trophiesGradeBronze
         case .silver:
-            "Silver"
+            .trophiesGradeSilver
         case .gold:
-            "Gold"
+            .trophiesGradeGold
         case .platinum:
-            "Platinum"
+            .trophiesGradePlatinum
         }
     }
 }
@@ -124,18 +124,18 @@ public enum TrophyPlatform: Int, Sendable {
     case windows
 
     /// The platform's short name, such as "PS5".
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .ps3:
-            "PS3"
+            .trophiesPlatformPs3
         case .ps4:
-            "PS4"
+            .trophiesPlatformPs4
         case .ps5:
-            "PS5"
+            .trophiesPlatformPs5
         case .psVita:
-            "PS Vita"
+            .trophiesPlatformPsVita
         case .windows:
-            "PC"
+            .trophiesPlatformWindows
         }
     }
 }
@@ -208,16 +208,16 @@ public enum TrophyRarity: Int, Sendable {
     case common
 
     /// The band's name, such as "Very rare".
-    public var name: String {
+    public var name: LocalizedStringResource {
         switch self {
         case .ultraRare:
-            "Ultra rare"
+            .trophiesRarityUltraRare
         case .veryRare:
-            "Very rare"
+            .trophiesRarityVeryRare
         case .rare:
-            "Rare"
+            .trophiesRarityRare
         case .common:
-            "Common"
+            .trophiesRarityCommon
         }
     }
 }

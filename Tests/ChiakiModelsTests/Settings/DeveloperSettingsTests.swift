@@ -114,7 +114,7 @@ import Testing
     #expect(throws: DeveloperSettingsError.unknownLibraryRefreshCooldown(7)) {
         try DeveloperSettings(libraryRefreshCooldownMinutes: 7).validated()
     }
-    #expect(DeveloperSettings.libraryRefreshCooldownTitle(minutes: 0) == "Off")
-    #expect(DeveloperSettings.libraryRefreshCooldownTitle(minutes: 1) == "1 minute")
-    #expect(DeveloperSettings.libraryRefreshCooldownTitle(minutes: 15) == "15 minutes")
+    #expect(String(localized: DeveloperSettings.libraryRefreshCooldownTitle(minutes: 0)) == "Off")
+    #expect(String(localized: DeveloperSettings.libraryRefreshCooldownTitle(minutes: 1)) == "1 minute")
+    #expect(String(localized: DeveloperSettings.libraryRefreshCooldownTitle(minutes: 15)) == "15 minutes")
 }

@@ -406,7 +406,7 @@ private func partyInvitation(_ id: String) -> CloudGameInvitation {
 @Test func aFailedJoinNoticeSaysWhy() {
     let notice = CloudSystemNotice(
         kind: .invitationJoinFailed,
-        detail: StreamMenuInvitationsControls.message(.full)
+        detail: String(localized: StreamMenuInvitationsControls.message(.full))
     )
     #expect(notice.headline == "Couldn't join the invitation")
     #expect(notice.lines == ["This game group is already full."])

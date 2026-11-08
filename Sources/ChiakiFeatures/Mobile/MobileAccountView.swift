@@ -18,7 +18,7 @@ struct MobileAccountView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                MobilePageTitle("Account and Settings")
+                MobilePageTitle(.mobileAccountTitle)
                 ViewThatFits(in: .horizontal) {
                     HStack(alignment: .top, spacing: 20) {
                         account
@@ -61,12 +61,12 @@ struct MobileAccountView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(.fill.quaternary, in: .rect(cornerRadius: 24))
             }
-            MobileGroup(title: "Profiles") {
+            MobileGroup(title: .mobileAccountProfiles) {
                 ForEach(store.accounts, id: \.id) { profile in
                     MobileRow(
-                        profile.name,
+                        verbatim: profile.name,
                         value: profile.id == store.selectedAccount
-                            ? "Current"
+                            ? .mobileAccountCurrent
                             : nil
                     ) {
                         AccountAvatar(data: profile.avatarData, name: profile.name)
@@ -76,7 +76,7 @@ struct MobileAccountView: View {
                         store.send(.requested(.selectAccount(profile.id)))
                     }
                 }
-                MobileRow("Add an Account", tint: Palette.accent) {
+                MobileRow(.mobileAccountAdd, tint: Palette.accent) {
                     MobileRowIcon(symbol: "plus", color: Palette.accent.opacity(0.25))
                 } action: {
                     store.send(.requested(.addAccount))
@@ -85,14 +85,14 @@ struct MobileAccountView: View {
             if let selected = store.selectedProfile {
                 MobileGroup(title: nil) {
                     if !store.isRefreshing {
-                        MobileRow("Refresh Account") {
+                        MobileRow(.mobileAccountRefresh) {
                             MobileRowIcon(symbol: "arrow.clockwise", color: .blue)
                         } action: {
                             store.send(.requested(.refreshAccounts))
                         }
                     }
                     MobileRow(
-                        "Sign In Again",
+                        .mobileAccountSignInAgain,
                         tint: store.needsSignIn
                             ? .orange
                             : nil
@@ -101,7 +101,7 @@ struct MobileAccountView: View {
                     } action: {
                         store.send(.requested(.reconnectAccount(selected.id)))
                     }
-                    MobileRow("Remove Account", tint: .red) {
+                    MobileRow(.mobileAccountRemove, tint: .red) {
                         MobileRowIcon(symbol: "trash", color: .red)
                     } action: {
                         store.send(.requested(.removeAccount(selected.id)))
@@ -112,51 +112,9 @@ struct MobileAccountView: View {
     }
 
     private var categories: some View {
-        let routes = settings.tabs
-        let everyday = routes.filter { !$0.isDeveloperTool && $0 != .about }
-        let tools = routes.filter(\.isDeveloperTool)
-        return VStack(alignment: .leading, spacing: 20) {
-            if routes.contains(.about) {
-                MobileGroup(title: nil) {
-                    categoryRow(.about)
-                }
-            }
-            MobileGroup(title: "Settings") {
-                ForEach(everyday, id: \.self, content: categoryRow)
-            }
-            if !tools.isEmpty {
-                MobileGroup(title: "Advanced") {
-                    ForEach(tools, id: \.self, content: categoryRow)
-                }
-            }
-        }
-    }
-
-    private func categoryRow(_ route: SettingsRoute) -> some View {
-        MobileRow(route.title, chevron: true) {
-            MobileRowIcon(symbol: route.symbol, color: Self.color(for: route))
-        } action: {
+        MobileSettingsCategories(settings: settings) { route in
             settings.send(.select(route))
             store.send(.mobile(.settingsOpened(route)))
-        }
-    }
-
-    private static func color(for route: SettingsRoute) -> Color {
-        switch route {
-        case .picture, .accessibility:
-            .blue
-        case .sound:
-            .pink
-        case .controls:
-            .green
-        case .interface:
-            .indigo
-        case .network:
-            .teal
-        case .remotePlayers:
-            .orange
-        case .developer, .entitlements, .caches, .requests, .tokens, .about:
-            .gray
         }
     }
 }
@@ -228,7 +186,7 @@ extension MobileSettingsPage {
 /// A titled group of rows in the touch library, drawn as one rounded block.
 struct MobileGroup<Content: View>: View {
     /// The group's title, or `nil` for none.
-    let title: String?
+    let title: LocalizedStringResource?
 
     /// The rows.
     @ViewBuilder let content: Content
@@ -236,7 +194,8 @@ struct MobileGroup<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             if let title {
-                Text(title.uppercased())
+                Text(title)
+                    .textCase(.uppercase)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 16)
@@ -259,10 +218,10 @@ struct MobileGroup<Content: View>: View {
 /// A tappable row in the touch library: an icon, a title, an optional value and an optional chevron.
 struct MobileRow<Icon: View>: View {
     /// The title.
-    let title: String
+    let title: Text
 
     /// The value shown at the trailing edge.
-    var value: String?
+    var value: LocalizedStringResource?
 
     /// The title's colour.
     var tint: Color?
@@ -286,26 +245,71 @@ struct MobileRow<Icon: View>: View {
     ///   - icon: The leading icon.
     ///   - action: What a tap does.
     init(
-        _ title: String,
-        value: String? = nil,
+        _ title: LocalizedStringResource,
+        value: LocalizedStringResource? = nil,
         tint: Color? = nil,
         chevron: Bool = false,
         @ViewBuilder icon: () -> Icon,
+        action: @escaping () -> Void
+    ) {
+        self.init(
+            title: Text(title),
+            value: value,
+            tint: tint,
+            chevron: chevron,
+            icon: icon(),
+            action: action
+        )
+    }
+
+    /// Creates a row whose title is shown as it is, such as a name.
+    ///
+    /// - Parameters:
+    ///   - verbatim: The title, shown without localization.
+    ///   - value: The value shown at the trailing edge.
+    ///   - tint: The title's colour.
+    ///   - chevron: Whether the row opens a page.
+    ///   - icon: The leading icon.
+    ///   - action: What a tap does.
+    init(
+        verbatim: String,
+        value: LocalizedStringResource? = nil,
+        tint: Color? = nil,
+        chevron: Bool = false,
+        @ViewBuilder icon: () -> Icon,
+        action: @escaping () -> Void
+    ) {
+        self.init(
+            title: Text(verbatim: verbatim),
+            value: value,
+            tint: tint,
+            chevron: chevron,
+            icon: icon(),
+            action: action
+        )
+    }
+
+    private init(
+        title: Text,
+        value: LocalizedStringResource?,
+        tint: Color?,
+        chevron: Bool,
+        icon: Icon,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.value = value
         self.tint = tint
         self.chevron = chevron
-        self.icon = icon()
+        self.icon = icon
         self.action = action
     }
 
     var body: some View {
-        Button(action: action) {
+        FocusButton(action: action) {
             HStack(spacing: 12) {
                 icon
-                Text(title)
+                title
                     .foregroundStyle(tint ?? .primary)
                 Spacer(minLength: 8)
                 if let value {
@@ -324,6 +328,8 @@ struct MobileRow<Icon: View>: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .focusWithoutGrowth()
+        .focusHighlightShape(MobileRowFocus.shape)
     }
 }
 

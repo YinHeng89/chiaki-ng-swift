@@ -25,13 +25,13 @@ struct MobileConsoleStatus: Equatable {
     }
 
     /// The action the card offers.
-    var actionTitle: String {
+    var actionTitle: LocalizedStringResource {
         if away {
-            return "Connect"
+            return .mobileConsoleConnect
         }
         return presence == .restMode
-            ? "Wake"
-            : "Play"
+            ? .mobileConsoleWake
+            : .mobileConsolePlay
     }
 
     /// The symbol beside the action.
@@ -50,11 +50,11 @@ struct MobileConsoleStatus: Equatable {
     }
 
     /// How the console is doing, in words.
-    var statusTitle: String {
+    var statusTitle: LocalizedStringResource {
         if away {
-            return "Away · over the internet"
+            return .mobileConsoleAway
         }
-        return presence.title ?? "Looking on your network"
+        return presence.title ?? .mobileConsoleLooking
     }
 
     /// The colour of the status.
@@ -65,10 +65,10 @@ struct MobileConsoleStatus: Equatable {
     }
 
     /// The console's model, in words.
-    var modelTitle: String {
+    var modelTitle: LocalizedStringResource {
         console.kind == .ps5
-            ? "PlayStation 5"
-            : "PlayStation 4"
+            ? .mobileConsoleModelPs5
+            : .mobileConsoleModelPs4
     }
 
     /// The order consoles are listed in: the ones that can play now first, then resting, then away, then the rest.
@@ -184,8 +184,12 @@ struct MobileConsoleCard: View {
         .padding(16)
         .background(.fill.quaternary, in: .rect(cornerRadius: 24))
         .contextMenu {
-            Button(status.actionTitle, systemImage: status.actionSymbol, action: start)
-            Button("Open", systemImage: "info.circle", action: open)
+            Button(action: start) {
+                Label(status.actionTitle, systemImage: status.actionSymbol)
+            }
+            Button(action: open) {
+                Label(.mobileConsoleOpen, systemImage: "info.circle")
+            }
         }
     }
 
@@ -251,7 +255,7 @@ struct MobileAddConsoleCard: View {
 
     var body: some View {
         Button(action: add) {
-            Label("Add a Console", systemImage: "plus")
+            Label(.mobileConsolesAdd, systemImage: "plus")
                 .font(.headline)
                 .foregroundStyle(Palette.accent)
                 .frame(maxWidth: .infinity, minHeight: 52, maxHeight: .infinity)

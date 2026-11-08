@@ -434,7 +434,7 @@ extension NativeStreamPlayer {
             height: profile.height,
             framesPerSecond: profile.fps,
             megabitsPerSecond: profile.effectiveBitrateMbps,
-            codec: codec.title,
+            codec: codec.title.english,
             dynamicRange: VideoDynamicRange(ps5: ps5, hdrCodec: codec == .hevcHDR)
         ))
         return profile

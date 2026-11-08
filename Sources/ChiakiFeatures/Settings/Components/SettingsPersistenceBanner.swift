@@ -6,7 +6,7 @@ import SwiftUI
 ///
 /// Shows nothing while the setting loads, saves or is saved.
 public struct SettingsPersistenceBanner: View {
-    private let message: String?
+    private let message: LocalizedStringResource?
     private let retries: Bool
     private let retry: () -> Void
 
@@ -14,30 +14,31 @@ public struct SettingsPersistenceBanner: View {
     ///
     /// - Parameters:
     ///   - setting: The setting's workflow.
-    ///   - subject: What the settings are, in lower case, such as `"interface settings"`.
+    ///   - subject: What the settings are, in lower case, such as "interface settings".
     ///   - invalid: What to do about a value that does not validate.
     ///   - reportsInvalid: Whether an invalid value is reported here; `false` when the pane explains it.
     ///   - retry: Loads or saves again.
     public init<Value>(
         _ setting: PersistedSetting<Value>,
-        subject: String,
-        invalid: String? = nil,
+        subject: LocalizedStringResource,
+        invalid: LocalizedStringResource? = nil,
         reportsInvalid: Bool = true,
         retry: @escaping () -> Void
     ) {
+        let subject = String(localized: subject)
         switch setting {
         case .unloaded, .loading, .ready, .saving:
             message = nil
             retries = false
         case .loadFailed:
-            message = "Couldn’t load \(subject)."
+            message = .settingsBannerLoadFailed(subject: subject)
             retries = true
         case .saveFailed(_, _, .unavailable):
-            message = "Couldn’t save \(subject). Your saved settings were kept."
+            message = .settingsBannerSaveFailed(subject: subject)
             retries = true
         case .saveFailed(_, _, .invalid):
             message = reportsInvalid
-                ? invalid ?? "These \(subject) can’t be saved yet. Your saved settings were kept."
+                ? invalid ?? .settingsBannerInvalid(subject: subject)
                 : nil
             retries = false
         }
@@ -52,7 +53,7 @@ public struct SettingsPersistenceBanner: View {
                     .font(.caption)
                     .foregroundStyle(.red)
                 if retries {
-                    FocusButton("Try again", action: retry)
+                    FocusButton(.commonTryAgain, action: retry)
                         .glassControlStyle()
                 }
             }

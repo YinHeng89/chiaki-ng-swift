@@ -11,8 +11,7 @@ extension StreamDiagnosticsReport {
     /// The share of a frame near SDR white above which an HDR stream reads as SDR brightness, in percent.
     static let sdrBrightnessNearWhitePercent = 1.0
     /// The hint shown while the brightness marker is hidden.
-    static let markerHint = "Point at the picture, or choose Measure brightness in the stream menu, "
-        + "to move the marker"
+    static let markerHint = LocalizedStringResource.playbackDiagnosticsMarkerHint
 
     /// The light levels the renderer measured.
     var light: StreamLightLevels {
@@ -20,23 +19,23 @@ extension StreamDiagnosticsReport {
     }
 
     /// The display's EDR headroom, with the headroom it could reach when macOS holds some back.
-    var headroomValue: String {
+    var headroomValue: LocalizedStringResource {
         let current = stats.displayMaximumEDR
         let potential = stats.displayPotentialEDR
         guard potential > current + Self.headroomTolerance else {
-            return "\(oneDecimal(current))×"
+            return .verbatim("\(oneDecimal(current))×")
         }
-        return "\(oneDecimal(current))× of \(oneDecimal(potential))×"
+        return .playbackDiagnosticsHeadroomOf(current: oneDecimal(current), potential: oneDecimal(potential))
     }
 
     /// Why a stream that requested HDR arrived in SDR.
-    var requestedHDRSentSDR: String {
+    var requestedHDRSentSDR: LocalizedStringResource {
         let route = Route(rawValue: stats.route) ?? .unknown
         let height = stats.sourceHeight
         if route == .psCloud, height > 0, height <= CloudPictureSettings.maximumSDRHeight {
-            return "SDR transfer detected; PS5 cloud sends HDR only at 1440p and 4K"
+            return .playbackDiagnosticsHdrCloudSentSdr
         }
-        return "SDR transfer detected; check console HDR"
+        return .playbackDiagnosticsHdrConsoleSentSdr
     }
 
     /// Whether any frame has been measured.
@@ -45,15 +44,14 @@ extension StreamDiagnosticsReport {
     }
 
     /// The legend note explaining why an SDR stream shows nothing above SDR white, or `nil` for HDR.
-    var sdrLegendNote: String? {
+    var sdrLegendNote: LocalizedStringResource? {
         guard !stats.perceptualQuantizer else {
             return nil
         }
         if stats.requestedHDR {
-            return "This stream arrived in SDR, so nothing goes above SDR white."
+            return .playbackDiagnosticsSdrArrivedNote
         }
-        return "This stream is SDR, so nothing goes above SDR white. Choose HEVC HDR in the Stream panel "
-            + "for an HDR stream."
+        return .playbackDiagnosticsSdrStreamNote
     }
 
     /// Whether an HDR stream has measured light.
@@ -70,32 +68,31 @@ extension StreamDiagnosticsReport {
     }
 
     /// Why an HDR stream carries only SDR brightness.
-    var sdrBrightnessLabel: String {
+    var sdrBrightnessLabel: LocalizedStringResource {
         let route = Route(rawValue: stats.route) ?? .unknown
         let console = RouteConsole(rawValue: stats.routeConsole) ?? .unknown
         if route == .local || route == .internet, console == .ps5 {
-            return "PQ input, but bright areas stop at SDR white; the PS5's TV may be off or in SDR, "
-                + "or the game may not use HDR"
+            return .playbackDiagnosticsSdrBrightnessConsole
         }
-        return "PQ input, but bright areas stop at SDR white; the game may not use HDR"
+        return .playbackDiagnosticsSdrBrightnessGame
     }
 
     /// The HDR light section with peak, average, MaxCLL, MaxFALL and the share above SDR white.
     var lightSection: Section {
-        Section(title: "HDR light", rows: [
-            Row("Peak", nits(light.peakNits)),
-            Row("Average", nits(light.averageNits)),
-            Row("MaxCLL", nits(light.maxCLL)),
-            Row("MaxFALL", nits(light.maxFALL)),
-            Row("Above SDR white", aboveWhite, aboveWhiteTone)
+        Section(title: .playbackDiagnosticsSectionLight, rows: [
+            Row(.playbackDiagnosticsLegendPeak, nits(light.peakNits)),
+            Row(.playbackDiagnosticsRowAverage, nits(light.averageNits)),
+            Row(.playbackDiagnosticsLegendMaxCll, nits(light.maxCLL)),
+            Row(.playbackDiagnosticsRowMaxFall, nits(light.maxFALL)),
+            Row(.playbackDiagnosticsLegendAboveSdrWhite, .verbatim(aboveWhite), aboveWhiteTone)
         ])
     }
 
     /// The title of the marker reading.
-    var markerTitle: String {
+    var markerTitle: LocalizedStringResource {
         light.markerFollowsPointer
-            ? "At the pointer"
-            : "At the marker"
+            ? .playbackDiagnosticsMarkerAtPointer
+            : .playbackDiagnosticsMarkerAtMarker
     }
 
     /// Whether the brightness marker shows.
@@ -104,7 +101,7 @@ extension StreamDiagnosticsReport {
     }
 
     /// The hint for moving the marker, or `nil` while it shows.
-    var markerHint: String? {
+    var markerHint: LocalizedStringResource? {
         markerVisible
             ? nil
             : Self.markerHint
@@ -126,7 +123,7 @@ extension StreamDiagnosticsReport {
     ///
     /// - Parameter value: The brightness in nits.
     /// - Returns: The rounded brightness with its unit.
-    func nits(_ value: Double) -> String {
-        "\(Int(value.rounded())) nits"
+    func nits(_ value: Double) -> LocalizedStringResource {
+        .playbackDiagnosticsNits(value: String(Int(value.rounded())))
     }
 }

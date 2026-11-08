@@ -32,7 +32,7 @@ public struct AccountIDEntryFeature {
         public var savedName: String {
             let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmed.isEmpty
-                ? "PSN account"
+                ? String(localized: .accountsAccountIdDefaultName)
                 : trimmed
         }
     }
@@ -121,7 +121,7 @@ public struct AccountIDEntryView: View {
     /// The screen.
     public var body: some View {
         VStack(spacing: 0) {
-            FlowTitle(text: "Base64 PSN ID profile", detail: "Your account, without a PSN sign-in.")
+            FlowTitle(text: .accountsAccountIdTitle, detail: .accountsAccountIdDetail)
             fields
             if let failure {
                 Text(AccountsFailureMessage.text(for: failure))
@@ -132,7 +132,11 @@ public struct AccountIDEntryView: View {
                     .frame(maxWidth: 380)
                     .padding(.top, 18)
             }
-            FlowSecondaryButton(label: "Back", focus: EntryFocus.accountIDBack, focusedAction: focusedInput) {
+            FlowSecondaryButton(
+                label: .commonBack,
+                focus: EntryFocus.accountIDBack,
+                focusedAction: focusedInput
+            ) {
                 store.send(.view(.back))
             }
             .keyboardShortcut(.cancelAction)
@@ -141,23 +145,23 @@ public struct AccountIDEntryView: View {
 
     private var fields: some View {
         VStack(spacing: 16) {
-            TextField("Name (optional)", text: $store.name)
+            TextField(.accountsAccountIdNamePlaceholder, text: $store.name)
                 .menuFocusBinding(focusedInput, equals: .accountName)
                 .controllerKeyboard(
-                    title: "Account name",
+                    title: .accountsAccountIdNameKeyboard,
                     text: $store.name,
                     isFocused: focusedInput.wrappedValue == .accountName
                 )
                 .modifier(GlassInput())
-            TextField("Base64 PSN account ID", text: $store.accountID)
+            TextField(.accountsAccountIdIdPlaceholder, text: $store.accountID)
                 .menuFocusBinding(focusedInput, equals: .accountID)
                 .controllerKeyboard(
-                    title: "PSN account ID",
+                    title: .accountsAccountIdIdKeyboard,
                     text: $store.accountID,
                     isFocused: focusedInput.wrappedValue == .accountID
                 )
                 .modifier(GlassInput())
-            FocusButton("Create profile") {
+            FocusButton(.accountsAccountIdCreate) {
                 store.send(.view(.submit))
             }
             .glassControlStyle()

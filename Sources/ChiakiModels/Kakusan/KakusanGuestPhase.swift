@@ -108,30 +108,30 @@ public enum KakusanGuestOutcome: Equatable, Sendable {
     }
 
     /// The message shown to the guest.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .failed(let error):
             error.label
         case .closed(.user, true):
-            "The host removed you"
+            .kakusanGuestHostRemoved
         case let .closed(reason, byPeer):
             reason.label(byPeer: byPeer)
         }
     }
 
     /// The heading of the guest's card for an ended session.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .failed(.noPath):
-            "A direct path wasn’t available"
+            .kakusanAttemptNoPathTitle
         case .failed(.pairingFailed):
-            "This invitation is closed"
+            .kakusanGuestClosedTitle
         case .failed(.expired):
-            "Invitation expired"
+            .kakusanAttemptExpiredTitle
         case .closed(.source, _), .failed(.sourceEnded):
-            "The game ended"
+            .kakusanGuestGameEndedTitle
         case .failed, .closed:
-            "Connection ended"
+            .kakusanAttemptEndedTitle
         }
     }
 

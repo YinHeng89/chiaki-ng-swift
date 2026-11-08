@@ -248,10 +248,11 @@ extension CloudLibraryView {
     static func confirmation(_ alert: AlertState<CloudLibraryFeature.Action.WebsiteWarning>)
         -> AppConfirmation {
         AppConfirmation(
-            title: String(state: alert.title),
-            message: alert.message.map { String(state: $0) },
+            title: .verbatim(String(state: alert.title)),
+            message: alert.message.map { .verbatim(String(state: $0)) },
             systemImage: "exclamationmark.triangle",
-            confirmTitle: alert.buttons.first { $0.role != .cancel }.map { String(state: $0.label) } ?? "OK"
+            confirmTitle: alert.buttons.first { $0.role != .cancel }
+                .map { .verbatim(String(state: $0.label)) } ?? .commonOk
         )
     }
 
@@ -545,7 +546,7 @@ private struct CloudSearchOverlay: View {
 
     var body: some View {
         SearchOverlay(
-            prompt: "Search games",
+            prompt: .libraryCloudSearchGames,
             query: $store.query,
             identifier: "cloud-search-overlay"
         ) {

@@ -34,7 +34,10 @@ final class PlayerOneInput {
     ) {
         self.environment = environment
         self.rumble = rumble
-        controller = PlayerOneController(primaryKey: configuration.selectedControllerKey)
+        controller = PlayerOneController(
+            primaryKey: configuration.selectedControllerKey,
+            reserved: configuration.controllerKeys(takenFromPlayer: 0)
+        )
         haptics = HapticRouter(environment: environment, rumble: rumble, consoleHaptics: consoleHaptics)
         health = InputHealthMonitor(environment: environment)
     }

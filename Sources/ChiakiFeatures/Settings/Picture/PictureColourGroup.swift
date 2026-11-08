@@ -11,30 +11,28 @@ struct PictureColourGroup: View {
     @Binding var reduceBanding: Bool
 
     var body: some View {
-        SettingsCard("Colour") {
-            ForEach(Array(StreamMenuColourControls.rows.enumerated()), id: \.element.title) { index, row in
+        SettingsCard(.settingsPictureColour) {
+            ForEach(Array(StreamMenuColourControls.rows.enumerated()), id: \.element.value) { index, row in
                 if index > 0 {
                     Divider()
                 }
                 slider(row)
             }
             Divider()
-            Toggle("Reduce colour banding", isOn: $reduceBanding)
-            Text("Smooths visible steps in skies and dark gradients, which low bitrates make worse.")
+            Toggle(.settingsPictureReduceBanding, isOn: $reduceBanding)
+            Text(.settingsPictureReduceBandingFooter)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Divider()
             HStack(alignment: .firstTextBaseline, spacing: 16) {
-                Text(
-                    "Applies to new streams. During a stream, adjust it live in the stream menu’s Colour panel."
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                Text(.settingsPictureColourFooter)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 Spacer(minLength: 8)
-                FocusButton("Reset") {
+                FocusButton(.settingsPictureColourReset) {
                     adjustments = PictureAdjustments()
                 }
-                .accessibilityLabel("Reset colour")
+                .accessibilityLabel(.settingsPictureColourResetLabel)
             }
         }
     }

@@ -51,7 +51,7 @@ public struct AddConsoleByAddressView: View {
         if !layout.isShort {
             ConsoleArtwork(height: 150, kind: .ps5)
         }
-        FlowTitle(text: "Add your console", detail: "Enter its address directly.")
+        FlowTitle(text: .consolesAddByAddressTitle, detail: .consolesAddByAddressDetail)
         ConsoleAddressEntryView(store: store, focusedInput: focusedInput, kindFocus: kindFocus)
         if let failure {
             Text(PairingFailureMessage.text(for: failure))
@@ -59,7 +59,7 @@ public struct AddConsoleByAddressView: View {
                 .foregroundStyle(.red)
                 .padding(.top, 12)
         }
-        FlowSecondaryButton(label: "Back", focus: "Back", focusedAction: focusedAction) {
+        FlowSecondaryButton(label: .commonBack, focus: "Back", focusedAction: focusedAction) {
             store.send(.view(.back))
         }
         .keyboardShortcut(.cancelAction)
@@ -81,23 +81,25 @@ public struct ConsoleAddressEntryView: View {
     /// The fields.
     public var body: some View {
         VStack(spacing: 18) {
-            TextField("IP address or hostname", text: $store.address)
+            TextField(.consolesAddressPlaceholder, text: $store.address)
                 .streamerHiddenField(store.address)
                 .menuFocusBinding(focusedInput, equals: .consoleAddress)
                 .controllerKeyboard(
-                    title: "Console address",
+                    title: .consolesAddressKeyboardTitle,
                     text: $store.address,
                     isFocused: focusedInput.wrappedValue == .consoleAddress
                 )
                 .modifier(GlassInput())
-                .accessibilityLabel("Console IP address or hostname")
+                .accessibilityLabel(.consolesAddressAccessibility)
             FocusableSegments(
                 options: RegistrationFlow.ConsoleKind.allCases,
-                title: { $0.rawValue },
+                title: { $0 == .ps5
+                    ? .consolesKindPs5
+                    : .consolesKindPs4 },
                 selection: $store.kind,
                 focus: kindFocus
             )
-            FocusButton("Continue") {
+            FocusButton(.commonContinue) {
                 store.send(.view(.submitAddress))
             }
             .glassControlStyle()

@@ -81,6 +81,24 @@
             }
         }
 
+        /// Waits until focus has come to rest: the focused view's frame is the same on three polls in a row, or
+        /// the timeout passes. Use it before controller input that depends on where focus has landed.
+        ///
+        /// - Parameter timeout: The longest to wait.
+        public func steadyFocus(timeout: Duration = .seconds(5)) async {
+            let deadline = ContinuousClock.now + timeout
+            var last = focusedFrame
+            var steady = 0
+            while steady < 3, ContinuousClock.now < deadline {
+                await pause(40)
+                let frame = focusedFrame
+                steady = frame == last
+                    ? steady + 1
+                    : 0
+                last = frame
+            }
+        }
+
         /// Waits, then settles.
         ///
         /// - Parameter milliseconds: How long to wait.

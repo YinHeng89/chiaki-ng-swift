@@ -31,7 +31,7 @@ struct MobileSoundSettingsPage: View {
                 latencyGroup
             }
             .disabled(!sound.isEditable)
-            SettingsPersistenceBanner(sound.setting, subject: "sound settings") {
+            SettingsPersistenceBanner(sound.setting, subject: .mobileSoundPersistenceSubject) {
                 store.send(.sound(.retry))
             }
         }
@@ -42,35 +42,37 @@ struct MobileSoundSettingsPage: View {
 
     private var mediaGroup: some View {
         MobileSettingsGroup(footer: SoundSettingsForm.mediaDetail(sound.draft.media)) {
-            MobilePickerRow("Stream Media", selection: $sound.draft.media) {
-                ForEach(StreamMedia.allCases, id: \.self) { media in
-                    Text(media.title).tag(media)
-                }
+            MobilePickerRow(
+                .mobileSoundStreamMedia,
+                selection: $sound.draft.media,
+                choices: StreamMedia.allCases
+            ) { media in
+                media.title
             }
         }
     }
 
     private var outputGroup: some View {
         MobileSettingsGroup(
-            "Output",
-            footer: "Party chat volume is only for PS4 games streamed from the cloud."
+            .mobileSoundOutput,
+            footer: .mobileSoundOutputFooter
         ) {
             devicePicker(
-                "Speaker",
+                .mobileSoundSpeaker,
                 selection: $sound.draft.outputDevice,
                 connected: store.devices.outputs,
                 choices: store.outputChoices
             )
             MobileSliderRow(
-                title: "Volume",
-                valueText: sound.draft.volume.formatted(.percent.precision(.fractionLength(0))),
+                title: .mobileSoundVolume,
+                verbatimValue: sound.draft.volume.formatted(.percent.precision(.fractionLength(0))),
                 value: $sound.draft.volume,
                 range: SoundSettings.volumeRange,
                 step: 0.05
             )
             MobileSliderRow(
-                title: "Party Chat Volume",
-                valueText: sound.draft.chatVolume.formatted(.percent.precision(.fractionLength(0))),
+                title: .mobileSoundPartyChatVolume,
+                verbatimValue: sound.draft.chatVolume.formatted(.percent.precision(.fractionLength(0))),
                 value: $sound.draft.chatVolume,
                 range: SoundSettings.volumeRange,
                 step: 0.05
@@ -79,28 +81,27 @@ struct MobileSoundSettingsPage: View {
     }
 
     private var microphoneGroup: some View {
-        MobileSettingsGroup("Microphone", footer: SoundSettingsForm.microphoneNote) {
+        MobileSettingsGroup(.mobileSoundMicrophone, footer: SoundSettingsForm.microphoneNote) {
             devicePicker(
-                "Microphone",
+                .mobileSoundMicrophone,
                 selection: $sound.draft.inputDevice,
                 connected: store.devices.inputs,
                 choices: store.inputChoices
             )
-            MobileToggleRow("Start Streams With the Microphone On", isOn: $sound.draft.startWithMicrophone)
+            MobileToggleRow(.mobileSoundStartWithMicrophone, isOn: $sound.draft.startWithMicrophone)
         }
     }
 
     private var spatialGroup: some View {
-        MobileSettingsGroup("Spatial Sound") {
+        MobileSettingsGroup(.mobileSoundSpatialSound) {
             MobileToggleRow(
-                "3D Audio on Headphones",
-                detail: "On headphones and earbuds, PS5 and PS5 cloud streams play the console’s 3D audio. "
-                    + "Other streams play stereo.",
+                .mobileSoundHeadphoneAudio,
+                detail: .mobileSoundHeadphoneAudioDetail,
                 isOn: $sound.draft.spatialAudio.audio3D
             )
             MobileToggleRow(
-                "Spatial Audio",
-                detail: "Speakers, and headphones without 3D audio, play stereo through Apple spatial audio.",
+                .mobileSoundSpatialAudio,
+                detail: .mobileSoundSpatialAudioDetail,
                 isOn: $sound.draft.spatialAudio.appleSpatial
             )
         }
@@ -108,18 +109,19 @@ struct MobileSoundSettingsPage: View {
 
     private var latencyGroup: some View {
         MobileSettingsGroup(
-            "Latency",
-            footer: "A smaller buffer lowers audio delay. Raise it if the sound crackles or drops out.\n\n"
-                + "Changes apply to the next stream. Adjust volume during a stream from the stream controls."
+            .mobileSoundLatency,
+            footer: .mobileSoundLatencyFooter
         ) {
             MobileSliderRow(
-                title: "Audio Buffer",
-                valueText: "\(sound.draft.bufferMilliseconds) ms",
+                title: .mobileSoundAudioBuffer,
+                valueText: .mobileSoundAudioBufferValue(ms: sound.draft.bufferMilliseconds),
                 value: bufferMilliseconds,
                 range: Self.bufferRange,
                 step: Double(SoundSettings.bufferStep)
             )
-            .accessibilityValue("\(sound.draft.bufferMilliseconds) milliseconds")
+            .accessibilityValue(
+                Text(.mobileSoundAudioBufferAccessibility(ms: sound.draft.bufferMilliseconds))
+            )
         }
     }
 
@@ -140,7 +142,7 @@ struct MobileSoundSettingsPage: View {
     }
 
     private func devicePicker(
-        _ title: String,
+        _ title: LocalizedStringResource,
         selection: Binding<String?>,
         connected: [String],
         choices: [String]
@@ -148,14 +150,13 @@ struct MobileSoundSettingsPage: View {
         MobilePickerRow(
             title,
             detail: selection.wrappedValue.map(connected.contains) == false
-                ? "Not connected. The system default is used until it returns."
+                ? .mobileSoundDeviceNotConnected
                 : nil,
-            selection: selection
-        ) {
-            Text("System default").tag(String?.none)
-            ForEach(choices, id: \.self) { name in
-                Text(name).tag(Optional(name))
+            selection: selection,
+            choices: [nil] + choices.map(Optional.init),
+            verbatimLabel: { name in
+                name ?? String(localized: .mobileSoundSystemDefault)
             }
-        }
+        )
     }
 }

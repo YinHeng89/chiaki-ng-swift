@@ -116,19 +116,19 @@ struct ConversationsView: View {
     private var header: some View {
         HStack(spacing: 12) {
             stopButton(.back, action: close) {
-                Label("Back", systemImage: "chevron.left")
+                Label(.commonBack, systemImage: "chevron.left")
                     .labelStyle(.iconOnly)
                     .font(.callout.weight(.semibold))
                     .frame(width: 22, height: 22)
             }
             .focusBorderShape(.circle)
-            .accessibilityLabel("Back to notifications")
-            Text("Messages").font(.title3.weight(.semibold))
+            .accessibilityLabel(.notificationsConversationBackToNotifications)
+            Text(.notificationsConversationsTitle).font(.title3.weight(.semibold))
             Spacer()
             stopButton(.refresh) {
                 store.send(.refresh)
             } label: {
-                Label("Refresh", systemImage: "arrow.clockwise")
+                Label(.commonRefresh, systemImage: "arrow.clockwise")
                     .font(.callout.weight(.medium))
             }
             .focusBorderShape(.capsule)
@@ -168,14 +168,14 @@ struct ConversationsView: View {
         }
     }
 
-    private var emptyText: String {
+    private var emptyText: LocalizedStringResource {
         switch store.listing {
         case .idle, .loading:
-            "Loading messages"
+            .notificationsConversationLoading
         case .failed(let failure):
             ConversationView.readFailure(failure)
         case .loaded:
-            "No conversations yet."
+            .notificationsConversationsEmpty
         }
     }
 
@@ -209,7 +209,7 @@ struct ConversationsView: View {
                     Circle()
                         .fill(Palette.accent)
                         .frame(width: 8, height: 8)
-                        .accessibilityLabel("Unread")
+                        .accessibilityLabel(.notificationsConversationsUnread)
                 }
             }
             .padding(8)
@@ -232,11 +232,12 @@ struct ConversationsView: View {
     static func details(of conversation: PSNConversation) -> [String] {
         var lines: [String] = []
         if let latest = conversation.latest {
-            lines.append(latest.fromUser
-                ? "You sent the last message"
+            let line: LocalizedStringResource = latest.fromUser
+                ? .notificationsConversationsLastFromYou
                 : latest.sender.isEmpty
-                    ? "New message"
-                    : "Last message from \(latest.sender)")
+                    ? .notificationsConversationsNewMessage
+                    : .notificationsConversationsLastFrom(sender: latest.sender)
+            lines.append(String(localized: line))
         }
         if let updated = conversation.updated {
             lines.append(updated.formatted(.relative(presentation: .named)))

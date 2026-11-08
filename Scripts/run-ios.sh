@@ -107,6 +107,12 @@ PLIST
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $bundle_id" \
     -c "Set :CFBundleSupportedPlatforms:0 $supported_platform" \
     -c "Set :CFBundleURLTypes:0:CFBundleURLName $bundle_id.stream" "$app_dir/Info.plist"
+localizations=("$app_dir"/ChiakiNG_ChiakiFeatures.bundle/*.lproj(N:t:r))
+/usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string en" -c "Add :CFBundleLocalizations array" \
+    "$app_dir/Info.plist"
+for localization in "${localizations[@]}"; do
+    /usr/libexec/PlistBuddy -c "Add :CFBundleLocalizations: string $localization" "$app_dir/Info.plist"
+done
 if [[ "${CHIAKI_KAKUSAN:-0}" == 0 ]]; then
     /usr/libexec/PlistBuddy -c "Delete :UTExportedTypeDeclarations" -c "Delete :CFBundleDocumentTypes" \
         "$app_dir/Info.plist"

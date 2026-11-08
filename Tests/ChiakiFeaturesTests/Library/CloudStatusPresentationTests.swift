@@ -9,9 +9,9 @@ import ChiakiModels
     state.scope = .init(accountID: UUID(), locale: "en-GB")
     state.phase = .failed(.signInRequired)
     let result = CloudStatusPresentation(state: state, selectedProfileID: UUID(), now: Date())
-    #expect(result.text == "Checking cloud…")
+    #expect(String(localized: result.text) == "Checking cloud…")
     #expect(result.color == .secondary)
-    #expect(!result.help.contains("Sign in again"))
+    #expect(!String(localized: result.help).contains("Sign in again"))
 }
 
 @Test @MainActor func cloudPresentationUsesOneExpiryBoundary() {
@@ -28,9 +28,9 @@ import ChiakiModels
         expiresAt: now
     )
     let result = CloudStatusPresentation(state: state, selectedProfileID: id, now: now)
-    #expect(result.text == "Cloud cached result")
+    #expect(String(localized: result.text) == "Cloud cached result")
     #expect(result.color == .secondary)
-    #expect(result.help.contains("100 catalog games"))
+    #expect(String(localized: result.help).contains("100 catalog games"))
 }
 
 @Test(arguments: [CloudStatusFeature.Phase.idle, .loading(UUID()), .refreshing(UUID())])
@@ -48,15 +48,15 @@ import ChiakiModels
         expiresAt: now.addingTimeInterval(60)
     )
     let current = CloudStatusPresentation(state: state, selectedProfileID: id, now: now)
-    #expect(current.text == "Cloud catalog available")
+    #expect(String(localized: current.text) == "Cloud catalog available")
     #expect(current.catalogAvailable)
     let expired = CloudStatusPresentation(
         state: state,
         selectedProfileID: id,
         now: now.addingTimeInterval(60)
     )
-    #expect(expired.text == "Checking cloud…")
+    #expect(String(localized: expired.text) == "Checking cloud…")
     state.snapshot = nil
     let unknown = CloudStatusPresentation(state: state, selectedProfileID: id, now: now)
-    #expect(unknown.text == "Checking cloud…")
+    #expect(String(localized: unknown.text) == "Checking cloud…")
 }

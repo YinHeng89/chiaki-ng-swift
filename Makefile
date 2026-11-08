@@ -51,6 +51,7 @@ help:
 	  'make lint-c          Check C and Objective-C formatting' \
 	  'make lint-docs       Require DocC on non-private Swift declarations, build every DocC catalog' \
 	  '                     with warnings as errors and lint the core headers' \
+	  'make lint-strings    Check the string catalog of each module' \
 	  'make analyze-c       Run Clang static analysis on bridge and discovery C' \
 	  'make core-notes      Rewrite the Swift API notes from the pinned core headers' \
 	  'make check-core-notes Fail when the Swift API notes do not match the pinned core headers' \
@@ -67,7 +68,6 @@ help:
 	  'Options: CONFIGURATION=debug|release SWIFT=swift PYTHON=python3 TAG=name HEADLESS=1 DEPS_DATE=ddmmyy' \
 	  '         CHIAKI_KAKUSAN=1|0 builds Kakusan session sharing (default 0); 0 leaves it out of the core and app' \
 	  '         CHIAKI_PS5_CLOUD_LAUNCH=1|0 allows PS Cloud launches (default 0); 0 refuses them in the core and app, PS Now still launches' \
-	  '         CHIAKI_BUILD_ONLY=1 builds the macOS app core without running native core tests' \
 	  '         IOS_PLATFORM=ios-simulator|ios IOS_TARGETS="ChiakiCoreBridge ChiakiPersistence Video PlatformUI"'
 
 build: core swift-build
@@ -184,12 +184,15 @@ video-effects-probe:
 test-video-state:
 	./Scripts/test-native.sh video
 
-.PHONY: lint lint-fix lint-docs
-lint: lint-c check-core-notes check-core-includes lint-docs
+.PHONY: lint lint-fix lint-docs lint-strings
+lint: lint-c check-core-notes check-core-includes lint-docs lint-strings
 	swiftlint lint --strict --config .swiftlint.yml
 
 lint-docs: core
 	SWIFT="$(SWIFT)" PYTHON="$(PYTHON)" $(PYTHON) Tools/Quality/docs-lint.py
+
+lint-strings:
+	$(PYTHON) Tools/Quality/strings.py
 
 lint-fix: format-c
 	./Scripts/format.sh swift

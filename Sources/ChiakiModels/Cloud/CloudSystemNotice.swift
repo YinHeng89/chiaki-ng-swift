@@ -18,16 +18,30 @@ public struct CloudSystemNotice: Equatable, Sendable {
         case platinum
 
         /// The grade's name.
-        public var name: String {
+        public var name: LocalizedStringResource {
             switch self {
             case .bronze:
-                "Bronze"
+                .trophiesGradeBronze
             case .silver:
-                "Silver"
+                .trophiesGradeSilver
             case .gold:
-                "Gold"
+                .trophiesGradeGold
             case .platinum:
-                "Platinum"
+                .trophiesGradePlatinum
+            }
+        }
+
+        /// The toast's sentence for earning a trophy of the grade.
+        var earnedSummary: LocalizedStringResource {
+            switch self {
+            case .bronze:
+                .cloudNoticeTrophyBronze
+            case .silver:
+                .cloudNoticeTrophySilver
+            case .gold:
+                .cloudNoticeTrophyGold
+            case .platinum:
+                .cloudNoticeTrophyPlatinum
             }
         }
     }
@@ -118,7 +132,7 @@ public struct CloudSystemNotice: Equatable, Sendable {
         if isTrophy || kind == .trialTimeLeft, !title.isEmpty {
             return title
         }
-        return summary
+        return String(localized: summary)
     }
 
     /// The toast's further lines.
@@ -126,7 +140,7 @@ public struct CloudSystemNotice: Equatable, Sendable {
         if isTrophy {
             return title.isEmpty
                 ? []
-                : [summary]
+                : [String(localized: summary)]
         }
         if kind == .trialTimeLeft {
             return []
@@ -141,34 +155,34 @@ public struct CloudSystemNotice: Equatable, Sendable {
         ([headline] + lines).joined(separator: "\n")
     }
 
-    private var summary: String {
+    private var summary: LocalizedStringResource {
         switch kind {
         case .screenshotSaved:
-            "Screenshot saved"
+            .cloudNoticeScreenshotSaved
         case .screenshotRefused:
-            "This game doesn't allow screenshots here"
+            .cloudNoticeScreenshotRefused
         case .recordingSaved:
-            "Video clip saved"
+            .cloudNoticeRecordingSaved
         case .recordingRefused:
-            "This game doesn't allow recording here"
+            .cloudNoticeRecordingRefused
         case .recordingPaused:
-            "Recording paused during this scene"
+            .cloudNoticeRecordingPaused
         case .recordingResumed:
-            "Recording resumed"
+            .cloudNoticeRecordingResumed
         case .recordingLimitReached:
-            "The clip reached its longest length"
+            .cloudNoticeRecordingLimitReached
         case .capturesUploading:
-            "Your captures are still uploading"
+            .cloudNoticeCapturesUploading
         case .trophyEarned(let grade):
-            "\(grade.name) trophy earned"
+            grade.earnedSummary
         case .trialTimeLeft:
-            "Your game trial is running out"
+            .cloudNoticeTrialTimeLeft
         case .invitation:
-            "Game invitation"
+            .cloudNoticeInvitation
         case .message:
-            "New message"
+            .cloudNoticeMessage
         case .invitationJoinFailed:
-            "Couldn't join the invitation"
+            .cloudNoticeInvitationJoinFailed
         }
     }
 

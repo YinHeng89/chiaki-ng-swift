@@ -4,22 +4,22 @@ import ChiakiModels
 /// Presentation of credential kinds in the Tokens panel.
 extension CredentialKind {
     /// The credential's display name.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .signInSeed:
-            "NPSSO"
+            .settingsTokensKindSignInSeed
         case .appToken:
-            "App token"
+            .settingsTokensKindAppToken
         case .appRefreshToken:
-            "App refresh token"
+            .settingsTokensKindAppRefreshToken
         case .remotePlayToken:
-            "Remote Play token"
+            .settingsTokensKindRemotePlayToken
         case .remotePlayRefreshToken:
-            "Remote Play refresh token"
+            .settingsTokensKindRemotePlayRefreshToken
         case .libraryToken:
-            "Library token"
+            .settingsTokensKindLibraryToken
         case .oldServiceCheckoutToken:
-            "Old service checkout token"
+            .settingsTokensKindOldServiceCheckoutToken
         }
     }
 }
@@ -27,18 +27,18 @@ extension CredentialKind {
 /// Presentation of credential states in the Tokens panel.
 extension CredentialState {
     /// The state's display label.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .usable:
-            "Usable"
+            .settingsTokensStateUsable
         case .expired:
-            "Expired"
+            .settingsTokensStateExpired
         case .refused:
-            "Refused"
+            .settingsTokensStateRefused
         case .neverObtained:
-            "Never obtained"
+            .settingsTokensStateNeverObtained
         case .unverified:
-            "Unverified"
+            .settingsTokensStateUnverified
         }
     }
 }
@@ -46,38 +46,38 @@ extension CredentialState {
 /// Presentation of what a credential is used for.
 extension CredentialUse {
     /// The use's display label.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .exchangingTokens:
-            "Exchanging tokens"
+            .settingsTokensUseExchangingTokens
         case .cloudStreamingAuthorisation:
-            "Cloud streaming authorisation"
+            .settingsTokensUseCloudStreamingAuthorisation
         case .oldServiceStore:
-            "Old service store"
+            .settingsTokensUseOldServiceStore
         case .profile:
-            "Profile"
+            .settingsTokensUseProfile
         case .membership:
-            "Membership"
+            .settingsTokensUseMembership
         case .storefrontCheck:
-            "Storefront check"
+            .settingsTokensUseStorefrontCheck
         case .consoleTitles:
-            "Console titles"
+            .settingsTokensUseConsoleTitles
         case .startingATitle:
-            "Starting a title"
+            .settingsTokensUseStartingATitle
         case .ownedCopyConcepts:
-            "Owned copy concepts"
+            .settingsTokensUseOwnedCopyConcepts
         case .renewingTheAppToken:
-            "Renewing the app token"
+            .settingsTokensUseRenewingTheAppToken
         case .accountConsoles:
-            "Account consoles"
+            .settingsTokensUseAccountConsoles
         case .internetPlay:
-            "Internet play"
+            .settingsTokensUseInternetPlay
         case .renewingTheRemotePlayToken:
-            "Renewing the Remote Play token"
+            .settingsTokensUseRenewingTheRemotePlayToken
         case .ownedLibrary:
-            "Owned library"
+            .settingsTokensUseOwnedLibrary
         case .oldServiceCheckout:
-            "Old service checkout"
+            .settingsTokensUseOldServiceCheckout
         }
     }
 }
@@ -85,16 +85,16 @@ extension CredentialUse {
 /// Presentation of why a credential was not revealed.
 extension NotRevealed.Reason {
     /// A sentence explaining why the credential could not be revealed.
-    public var message: String {
+    public var message: LocalizedStringResource {
         switch self {
         case .notHeld:
-            "This credential is not held."
+            .settingsTokensNotRevealedNotHeld
         case .signedOut:
-            "This account is signed out."
+            .settingsTokensNotRevealedSignedOut
         case .unknownUser:
-            "This account is not signed in."
+            .settingsTokensNotRevealedUnknownUser
         case .coreClosed:
-            "The credential could not be read."
+            .settingsTokensNotRevealedCoreClosed
         }
     }
 }
@@ -103,22 +103,53 @@ extension NotRevealed.Reason {
 public struct HeldCredentialPresentation: Equatable, Identifiable {
     /// One labelled fact about a credential.
     public struct Fact: Equatable, Identifiable {
-        /// The fact's label.
-        public let label: String
+        /// What a fact is about.
+        public enum Kind: Equatable, Hashable, Sendable {
+            /// When the credential was obtained.
+            case obtained
+            /// When the credential expires.
+            case expires
+            /// The credential's scopes.
+            case scopes
+            /// The status of the last reply that used the credential.
+            case lastReply
+            /// What the credential is used for.
+            case usedFor
+        }
+
+        /// What the fact is about, which is unique within a credential.
+        public let kind: Kind
         /// The fact's formatted value.
         public let value: String
-        /// The label, which is unique within a credential.
-        public var id: String {
-            label
+
+        /// What the fact is about, which identifies it within a credential.
+        public var id: Kind {
+            kind
+        }
+
+        /// The fact's label.
+        public var label: LocalizedStringResource {
+            switch kind {
+            case .obtained:
+                .settingsTokensFactObtained
+            case .expires:
+                .settingsTokensFactExpires
+            case .scopes:
+                .settingsTokensFactScopes
+            case .lastReply:
+                .settingsTokensFactLastReply
+            case .usedFor:
+                .settingsTokensFactUsedFor
+            }
         }
     }
 
     /// The credential kind, which identifies the row.
     public let id: CredentialKind
     /// The credential's display name.
-    public let title: String
+    public let title: LocalizedStringResource
     /// The credential's state, prefixed with Not held when the core does not hold it.
-    public let status: String
+    public let status: LocalizedStringResource
     /// Whether the core holds the credential.
     public let held: Bool
     /// When the credential was obtained and expires, its scopes, the last reply status and what it is used
@@ -128,29 +159,37 @@ public struct HeldCredentialPresentation: Equatable, Identifiable {
     /// Formats the credential, showing dates in the given locale and time zone.
     public init(_ credential: HeldCredential, locale: Locale = .current, timeZone: TimeZone = .current) {
         let style = Date.FormatStyle(date: .abbreviated, time: .shortened, locale: locale, timeZone: timeZone)
+        let unknown = String(localized: .commonUnknown)
+        let none = String(localized: .settingsTokensNoValue)
         id = credential.kind
         title = credential.kind.title
         held = credential.held
         if credential.held || credential.state == .neverObtained {
             status = credential.state.label
         } else {
-            status = "Not held, \(credential.state.label.lowercased())"
+            let state = String(localized: credential.state.label).localizedLowercase
+            status = .settingsTokensNotHeldStatus(state: state)
         }
         facts = [
-            Fact(label: "Obtained", value: credential.obtainedAt.map { $0.formatted(style) } ?? "Unknown"),
-            Fact(label: "Expires", value: credential.expiresAt.map { $0.formatted(style) } ?? "Unknown"),
+            Fact(kind: .obtained, value: credential.obtainedAt.map { $0.formatted(style) } ?? unknown),
+            Fact(kind: .expires, value: credential.expiresAt.map { $0.formatted(style) } ?? unknown),
             Fact(
-                label: "Scopes",
+                kind: .scopes,
                 value: credential.scopes.isEmpty
-                    ? "None"
+                    ? none
                     : credential.scopes
             ),
-            Fact(label: "Last reply", value: credential.lastReplyStatus.map { "HTTP \($0)" } ?? "None"),
             Fact(
-                label: "Used for",
+                kind: .lastReply,
+                value: credential.lastReplyStatus.map {
+                    String(localized: .settingsTokensLastReplyStatus(status: String($0)))
+                } ?? none
+            ),
+            Fact(
+                kind: .usedFor,
                 value: credential.usedFor.isEmpty
-                    ? "Nothing"
-                    : credential.usedFor.map(\.label).joined(separator: ", ")
+                    ? String(localized: .settingsTokensUsedForNothing)
+                    : credential.usedFor.map { String(localized: $0.label) }.joined(separator: ", ")
             )
         ]
     }

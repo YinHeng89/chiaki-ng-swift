@@ -147,8 +147,12 @@ public struct CouchSeats: Equatable, Sendable {
 
     /// The lowest open pad a local player may take once seats are kept back for remote guests.
     public var lowestOpenPad: UInt8? {
+        localOpenPads.first
+    }
+
+    private var localOpenPads: [UInt8] {
         let open = Self.pads.filter { self[$0] == .open }
-        return open.dropLast(min(heldForRemote, open.count)).first
+        return Array(open.dropLast(min(heldForRemote, open.count)))
     }
 
     /// Whether an account can join, checking player 1, earlier rejections, the other seats and remote guests.
@@ -183,13 +187,22 @@ public struct CouchSeats: Equatable, Sendable {
         return 2
     }
 
-    /// Takes the lowest open pad for a controller and starts its join the way the console expects.
+    /// Takes an open pad for a controller and starts its join the way the console expects.
     ///
-    /// On a PS5 the seat first waits for an account, a PS4 is asked to join at once, and a cloud
-    /// stream seats the player straight away. The outcome is empty when the controller is player 1's,
-    /// already seated, or no pad is open.
-    public mutating func claim(_ device: ControllerDevice) -> CouchOutcome {
-        guard device.id != primaryDevice, pad(for: device.id) == nil, let pad = lowestOpenPad else {
+    /// The controller takes the pad whose player chose it when that pad is open, otherwise the lowest open
+    /// pad no other connected controller was chosen for. On a PS5 the seat first waits for an account, a PS4
+    /// is asked to join at once, and a cloud stream seats the player straight away. The outcome is empty when
+    /// the controller is player 1's, already seated, or no pad is open to it.
+    ///
+    /// - Parameters:
+    ///   - device: The controller.
+    ///   - reserved: The connected controllers players chose, by preference key and keyed by pad.
+    /// - Returns: The commands and notice that start the join.
+    public mutating func claim(_ device: ControllerDevice, reserved: [UInt8: String] = [:]) -> CouchOutcome {
+        let open = localOpenPads
+        let chosen = open.first { reserved[$0] == device.preferenceKey }
+            ?? open.first { reserved[$0] == nil || reserved[$0] == device.preferenceKey }
+        guard device.id != primaryDevice, pad(for: device.id) == nil, let pad = chosen else {
             return CouchOutcome()
         }
         switch console {

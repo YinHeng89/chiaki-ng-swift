@@ -25,7 +25,7 @@ struct StreamMenuOverlay: View {
     /// The stream menu store that holds the draft tuning configuration, diagnostics and navigation level.
     let store: StoreOf<StreamMenuReducer>
     /// The title of the destructive button that ends the stream, such as stopping or leaving it.
-    let stopTitle: String
+    let stopTitle: LocalizedStringResource
     /// The couch co-op store behind the Players panel, or `nil` when local players are not available.
     var couch: StoreOf<CouchReducer>?
     /// The Share Play host store whose remote players appear in the Players panel, or `nil`
@@ -466,16 +466,16 @@ extension StreamMenuOverlay {
         } else {
             VStack(spacing: 12) {
                 if store.phase == .failed {
-                    Text("Stream controls couldn’t load.")
+                    Text(.playbackMenuLoadFailed)
                         .foregroundStyle(.secondary)
-                    FocusButton("Try again") {
+                    FocusButton(.commonTryAgain) {
                         store.send(.load)
                     }
                     .glassControlStyle()
                     .menuFocused($focusTarget, equals: .control(.retryLoad))
                 } else {
                     ProgressView()
-                    Text("Loading stream controls")
+                    Text(.playbackMenuLoading)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -520,7 +520,7 @@ extension StreamMenuOverlay {
             FocusButton {
                 openSettings()
             } label: {
-                railLabel(AppIcon.settings.image, "Settings", style: style)
+                railLabel(AppIcon.settings.image, .commonSettings, style: style)
                     .contentShape(.rect)
             }
             .buttonStyle(.plain)
@@ -547,7 +547,7 @@ extension StreamMenuOverlay {
                 open(focusing: .tab(item))
             }
         } label: {
-            railLabel(Image(systemName: item.symbol), item.rawValue, style: style)
+            railLabel(Image(systemName: item.symbol), item.title, style: style)
                 .background(selectionBackground(item), in: .capsule)
                 .contentShape(.rect)
         }
@@ -567,7 +567,7 @@ extension StreamMenuOverlay {
                 object: PlaybackWindowControl.keyWindow
             )
         } label: {
-            railLabel(AppIcon.logging.image, "Log", style: style)
+            railLabel(AppIcon.logging.image, .playbackMenuDockLog, style: style)
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -575,7 +575,7 @@ extension StreamMenuOverlay {
         .focusWithoutGrowth()
         .menuFocused($focusTarget, equals: .log)
         .foregroundStyle(.secondary)
-        .accessibilityLabel("Developer log")
+        .accessibilityLabel(.playbackMenuDockLogAccessibility)
     }
 
     private var railExitItem: some View {
@@ -590,11 +590,12 @@ extension StreamMenuOverlay {
         .menuFocusBinding($focusTarget, equals: .exit)
         .focusHighlightShape(.circle)
         .environment(\.menuItemFocused, focusTarget == .exit)
-        .help("Resume stream")
-        .accessibilityLabel("Resume stream")
+        .help(Text(.playbackMenuResumeStream))
+        .accessibilityLabel(.playbackMenuResumeStream)
     }
 
-    @ViewBuilder private func railLabel(_ icon: Image, _ title: String, style: RailStyle) -> some View {
+    @ViewBuilder private func railLabel(_ icon: Image, _ title: LocalizedStringResource,
+                                        style: RailStyle) -> some View {
         switch style {
         case .iconOnly:
             icon
@@ -776,8 +777,8 @@ private struct StreamDockHandle: View {
                 expand()
             }
         }
-        .help("Stream menu")
-        .accessibilityLabel("Show stream menu")
+        .help(Text(.playbackMenuHandleHelp))
+        .accessibilityLabel(.playbackMenuHandleAccessibility)
     }
 }
 
@@ -790,19 +791,22 @@ enum StreamDockHint {
     ///   - family: The family of the controller driving menus, or `nil` while none is connected.
     /// - Returns: The shortcut named in the controller's own button names, then the pointer route, or the
     ///   pointer route alone without a controller.
-    static func text(shortcut: StreamMenuShortcut, family: ControllerFamily?) -> String {
-        #if os(macOS)
-            let pointer = "point at the bottom"
-        #else
-            let pointer = "tap the handle"
-        #endif
+    static func text(shortcut: StreamMenuShortcut, family: ControllerFamily?) -> LocalizedStringResource {
         guard let family else {
-            return pointer.prefix(1).uppercased() + pointer.dropFirst() + " for the stream menu"
+            #if os(macOS)
+                return .playbackMenuHintPointer
+            #else
+                return .playbackMenuHintTouch
+            #endif
         }
         let chord = shortcut.buttons
-            .map { ControllerGlyphs.button($0, family: family).name }
+            .map { String(localized: ControllerGlyphs.button($0, family: family).name) }
             .joined(separator: " + ")
-        return "Press \(chord) or \(pointer) for the stream menu"
+        #if os(macOS)
+            return .playbackMenuHintShortcutPointer(chord: chord)
+        #else
+            return .playbackMenuHintShortcutTouch(chord: chord)
+        #endif
     }
 }
 
@@ -817,9 +821,9 @@ private struct StreamVideoOffNotice: View {
         VStack(spacing: 10) {
             Image(systemName: "eye.slash")
                 .font(.system(size: 34, weight: .medium))
-            Text("Picture is off for this stream")
+            Text(.playbackMenuVideoOffTitle)
                 .font(.title3.weight(.semibold))
-            Text("Turn it back on in Settings, Sound, Stream media, before the next stream.")
+            Text(.playbackMenuVideoOffDetail)
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -844,26 +848,23 @@ struct StreamBrightnessMeasureCard: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            Text("Measure brightness")
+            Text(.playbackMenuMeasureTitle)
                 .font(.headline)
-            Text(
-                "Glide the marker with the left stick, or nudge it with the D-pad or arrow keys. The heatmap "
-                    + "legend shows its nits."
-            )
-            .font(.callout)
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
-            .fixedSize(horizontal: false, vertical: true)
+            Text(.playbackMenuMeasureDetail)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 12) {
-                ControllerPrompt(button: .east, text: "Done")
-                arrow(.left, symbol: "chevron.left", label: "Move marker left")
-                FocusButton("Done", action: done)
+                ControllerPrompt(button: .east, text: .commonDone)
+                arrow(.left, symbol: "chevron.left", label: .playbackMenuMeasureLeft)
+                FocusButton(.commonDone, action: done)
                     .glassControlStyle()
                     .menuFocused(focus, equals: .measureDone)
                     .environment(\.menuMove) { direction in
                         nudge(Self.nudge(for: direction))
                     }
-                arrow(.right, symbol: "chevron.right", label: "Move marker right")
+                arrow(.right, symbol: "chevron.right", label: .playbackMenuMeasureRight)
             }
         }
         .padding(16)
@@ -874,7 +875,8 @@ struct StreamBrightnessMeasureCard: View {
     /// The side of the arrow buttons, a finger's target.
     static let arrowSide: CGFloat = ScreenLayout.touchTarget
 
-    private func arrow(_ step: BrightnessMarker.Nudge, symbol: String, label: String) -> some View {
+    private func arrow(_ step: BrightnessMarker.Nudge, symbol: String,
+                       label: LocalizedStringResource) -> some View {
         SwiftUI.Button {
             nudge(step)
         } label: {

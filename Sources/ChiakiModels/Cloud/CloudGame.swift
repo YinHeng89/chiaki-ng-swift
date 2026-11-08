@@ -244,16 +244,16 @@ public enum CloudStanding: String, Codable, Equatable, Sendable {
     case ownershipUnknown
 
     /// The label the library shows for the standing.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .mayStream:
-            "May stream"
+            .cloudStandingMayStream
         case .inLibrary:
-            "In your library"
+            .cloudStandingInLibrary
         case .included:
-            "Included with Premium"
+            .cloudStandingIncluded
         case .store, .ownershipUnknown:
-            "View in Store"
+            .cloudStandingStore
         }
     }
 }
@@ -331,21 +331,21 @@ public enum CloudReleaseDate: Codable, Equatable, Sendable {
     ///
     /// - Parameter now: The current time.
     /// - Returns: The label.
-    public func label(now: Date = Date()) -> String? {
+    public func label(now: Date = Date()) -> LocalizedStringResource? {
         switch self {
         case .unrestricted:
             return nil
         case .unannounced:
-            return "Release date not announced"
+            return .cloudReleaseUnannounced
         case .scheduled(let date):
             let remaining = date.timeIntervalSince(now)
             guard remaining > 0 else {
                 return nil
             }
             guard remaining < 86400 * 7 else {
-                return "Releases " + date.formatted(date: .abbreviated, time: .shortened)
+                return .cloudReleaseScheduled(date: date.formatted(date: .abbreviated, time: .shortened))
             }
-            return "Releases in " + Self.countdown(.seconds(remaining.rounded(.up)))
+            return .cloudReleaseCountdown(countdown: Self.countdown(.seconds(remaining.rounded(.up))))
         }
     }
 
@@ -391,6 +391,6 @@ public enum CloudReleaseDate: Codable, Equatable, Sendable {
         let days = total / 86400
         return days == 0
             ? clock
-            : "\(days)d " + clock
+            : String(localized: .cloudReleaseCountdownDays(days: Int(days), clock: clock))
     }
 }

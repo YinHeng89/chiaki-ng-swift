@@ -54,13 +54,17 @@ struct LibraryAccountSheet: View {
             ScrollView(.horizontal) {
                 HStack(spacing: 12) {
                     ForEach(profiles, id: \.id) { account in
-                        tile(account.name, focus: .account(account.id), chosen: account.id == selected?.id) {
+                        tile(
+                            .verbatim(account.name),
+                            focus: .account(account.id),
+                            chosen: account.id == selected?.id
+                        ) {
                             AccountAvatar(data: account.avatarData, name: account.name)
                         } action: {
                             store.send(.chose(.account(account.id)))
                         }
                     }
-                    tile("Add", focus: .add, chosen: false) {
+                    tile(.libraryAccountSheetAdd, focus: .add, chosen: false) {
                         AppIcon.addAccount.image
                             .font(.system(size: 18, weight: .medium))
                             .frame(width: 34, height: 34)
@@ -167,7 +171,7 @@ struct LibraryAccountSheet: View {
     }
 
     private func tile(
-        _ title: String,
+        _ title: LocalizedStringResource,
         focus target: Focus,
         chosen: Bool,
         @ViewBuilder image: () -> some View,
@@ -235,14 +239,14 @@ struct LibraryAccountSheet: View {
         }
     }
 
-    private func title(of action: Focus) -> String {
+    private func title(of action: Focus) -> LocalizedStringResource {
         switch action {
         case .refresh:
-            "Refresh"
+            .commonRefresh
         case .signIn:
-            "Sign in again"
+            .libraryAccountSheetSignInAgain
         case .delete:
-            "Delete"
+            .commonDelete
         case .account, .add:
             ""
         }

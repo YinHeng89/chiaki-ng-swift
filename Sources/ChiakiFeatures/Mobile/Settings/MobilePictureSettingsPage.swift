@@ -60,17 +60,18 @@ private struct MobileConsolePictureForm: View {
     var body: some View {
         MobileSettingsForm {
             MobileSettingsGroup(
-                "Stream Settings For",
-                footer: "Internet covers PlayStation connections and console addresses outside your local "
-                    + "network."
+                .mobilePictureStreamSettingsFor,
+                footer: .mobilePictureInternetFooter
             ) {
                 if let streamKind {
                     MobileStreamKindRow(selection: streamKind)
                 }
-                MobilePickerRow("Connection", selection: $routeChoice) {
-                    ForEach(PictureSettingsView.RouteChoice.allCases, id: \.self) { choice in
-                        Text(choice.title).tag(choice)
-                    }
+                MobilePickerRow(
+                    .mobilePictureConnection,
+                    selection: $routeChoice,
+                    choices: PictureSettingsView.RouteChoice.allCases
+                ) { choice in
+                    choice.title
                 }
                 .disabled(!store.isEditable)
             }
@@ -107,7 +108,7 @@ private struct MobileConsolePictureForm: View {
                 reduceBanding: $store.draft.reduceBanding
             )
             .disabled(!store.isEditable)
-            SettingsPersistenceBanner(store.setting, subject: "picture settings") {
+            SettingsPersistenceBanner(store.setting, subject: .mobilePicturePersistenceSubject) {
                 store.send(.retry)
             }
             .padding(.horizontal, 16)
@@ -125,16 +126,18 @@ private struct MobileConsolePictureForm: View {
             ? $store.draft.localPS5HDR
             : $store.draft.remotePS5HDR
         return MobileSettingsGroup(
-            "Codec",
-            footer: "PS4 streams always use \(PictureSettings.Codec.h264.title)."
+            .mobilePictureCodec,
+            footer: .mobilePictureCodecFooter(codec: String(localized: PictureSettings.Codec.h264.title))
         ) {
-            MobilePickerRow("PS5", selection: ps5) {
-                ForEach(PictureSettings.Codec.choices, id: \.self) { codec in
-                    Text(codec.title).tag(codec)
-                }
+            MobilePickerRow(
+                .mobilePictureCodecPs5,
+                selection: ps5,
+                choices: PictureSettings.Codec.choices
+            ) { codec in
+                codec.title
             }
             MobileToggleRow(
-                "Use HDR When the Screen Supports It",
+                .mobilePictureHdrWhenSupported,
                 detail: PictureCodecGroup.detail(for: ps5.wrappedValue),
                 isOn: hdr
             )
@@ -190,14 +193,16 @@ private struct MobileCloudPictureFields: View {
 
     var body: some View {
         MobileSettingsForm {
-            MobileSettingsGroup("Stream Settings For") {
+            MobileSettingsGroup(.mobilePictureStreamSettingsFor) {
                 if let streamKind {
                     MobileStreamKindRow(selection: streamKind)
                 }
-                MobilePickerRow("Service", selection: $service) {
-                    ForEach(CloudPictureSettingsView.Service.allCases, id: \.self) { choice in
-                        Text(choice.title).tag(choice)
-                    }
+                MobilePickerRow(
+                    .mobilePictureService,
+                    selection: $service,
+                    choices: CloudPictureSettingsView.Service.allCases
+                ) { choice in
+                    choice.title
                 }
                 .disabled(!store.isEditable)
             }
@@ -223,26 +228,30 @@ private struct MobileCloudPictureFields: View {
             )
             .disabled(!store.isEditable)
             if service == .psCloud {
-                MobileSettingsGroup("Dynamic Range", footer: dynamicRangeDetail) {
-                    MobileToggleRow("HDR", isOn: $store.draft.hdr)
+                MobileSettingsGroup(.mobilePictureDynamicRange, footer: dynamicRangeDetail) {
+                    MobileToggleRow(.mobilePictureHdr, isOn: $store.draft.hdr)
                 }
                 .disabled(!store.isEditable)
-                MobileSettingsGroup("Stream Quality", footer: qualityDetail) {
-                    MobilePickerRow("Quality", selection: $store.draft.psCloudQuality) {
-                        ForEach(CloudStreamQuality.allCases, id: \.self) { choice in
-                            Text(choice.title).tag(choice)
-                        }
+                MobileSettingsGroup(.mobilePictureStreamQuality, footer: qualityDetail) {
+                    MobilePickerRow(
+                        .mobilePictureQuality,
+                        selection: $store.draft.psCloudQuality,
+                        choices: CloudStreamQuality.allCases
+                    ) { choice in
+                        choice.title
                     }
                 }
                 .disabled(!store.isEditable)
             }
         } trailing: {
             if service == .psCloud {
-                MobileSettingsGroup("Captures", footer: capturesFooter) {
-                    MobilePickerRow(captureSaveTitle, selection: $store.draft.captureSaving) {
-                        ForEach(CloudCaptureSaving.allCases, id: \.self) { choice in
-                            Text(choice.title).tag(choice)
-                        }
+                MobileSettingsGroup(.mobilePictureCaptures, footer: capturesFooter) {
+                    MobilePickerRow(
+                        captureSaveTitle,
+                        selection: $store.draft.captureSaving,
+                        choices: CloudCaptureSaving.allCases
+                    ) { choice in
+                        choice.title
                     }
                 }
                 .disabled(!store.isEditable)
@@ -264,7 +273,7 @@ private struct MobileCloudPictureFields: View {
                 reduceBanding: $store.draft.reduceBanding
             )
             .disabled(!store.isEditable)
-            SettingsPersistenceBanner(store.setting, subject: "cloud picture settings") {
+            SettingsPersistenceBanner(store.setting, subject: .mobilePictureCloudPersistenceSubject) {
                 store.send(.retry)
             }
             .padding(.horizontal, 16)
@@ -279,62 +288,66 @@ private struct MobileCloudPictureFields: View {
             ?? CloudPictureSettings.automaticBitrateMbps(height: store.draft.psCloudHeight)
     }
 
-    private var measuredCaption: String {
+    private var measuredCaption: LocalizedStringResource {
         if let savedBandwidth {
             return savedBandwidth.caption(now: Date())
         }
         let fallback = CloudPictureSettings.automaticBitrateMbps(height: store.draft.psCloudHeight)
-        return "Measures your connection at launch, or uses \(fallback) Mbps if it cannot."
+        return .mobilePictureMeasuredCaption(mbps: fallback)
     }
 
-    private var dynamicRangeDetail: String {
+    private var dynamicRangeDetail: LocalizedStringResource {
         store.draft.psCloudHeight > CloudPictureSettings.maximumSDRHeight
-            ? "Streams in HDR when the display supports it."
-            : "PS5 cloud streams HDR only at 1440p and 4K. At \(store.draft.psCloudHeight)p the stream "
-                + "stays in SDR."
+            ? .mobilePictureHdrSupported
+            : .mobilePictureHdrUnsupported(height: String(store.draft.psCloudHeight))
     }
 
-    private var qualityDetail: String {
+    private var qualityDetail: LocalizedStringResource {
         switch store.draft.psCloudQuality {
         case .high:
-            "Asks the service for higher picture quality, which uses more data."
+            .mobilePictureQualityHigh
         case .stable:
-            "Asks the service to favour steady performance over picture quality."
+            .mobilePictureQualityStable
         }
     }
 
-    private var captureSaveTitle: String {
+    private var captureSaveTitle: LocalizedStringResource {
         #if os(macOS)
-            "Save Captures to This Mac"
+            .mobilePictureSaveCapturesMac
         #else
-            "Save Captures to This Device"
+            .mobilePictureSaveCapturesDevice
         #endif
     }
 
-    private var capturesFooter: String {
-        let detail = switch store.draft.captureSaving {
-        case .followPlayStation:
-            "Follows the download setting in your PS5 capture settings."
-        case .always:
-            "Downloads every screenshot and video clip once the console finishes uploading it."
-        case .never:
-            "Captures stay in your PlayStation cloud media gallery."
-        }
-        guard store.draft.captureSaving != .never else {
-            return detail
-        }
-        return detail + " " + captureDestination
+    private var capturesFooter: LocalizedStringResource {
+        #if os(macOS)
+            switch store.draft.captureSaving {
+            case .followPlayStation:
+                .mobilePictureCapturesFollowFolder(folder: captureFolder)
+            case .always:
+                .mobilePictureCapturesAlwaysFolder(folder: captureFolder)
+            case .never:
+                .mobilePictureCapturesNever
+            }
+        #else
+            switch store.draft.captureSaving {
+            case .followPlayStation:
+                .mobilePictureCapturesFollowPhotos
+            case .always:
+                .mobilePictureCapturesAlwaysPhotos
+            case .never:
+                .mobilePictureCapturesNever
+            }
+        #endif
     }
 
-    private var captureDestination: String {
-        #if os(macOS)
+    #if os(macOS)
+        private var captureFolder: String {
             store.draft.captureFolder.isEmpty
                 ? CloudPictureSettings.defaultCaptureFolder.path
                 : URL(fileURLWithPath: store.draft.captureFolder, isDirectory: true).path
-        #else
-            "Captures are added to your Photos library."
-        #endif
-    }
+        }
+    #endif
 }
 
 /// The row choosing whether console or cloud stream settings are shown.
@@ -343,10 +356,12 @@ private struct MobileStreamKindRow: View {
     @Binding var selection: PictureSettingsContainerView.StreamKind
 
     var body: some View {
-        MobilePickerRow("Streams", selection: $selection) {
-            ForEach(PictureSettingsContainerView.StreamKind.allCases, id: \.self) { kind in
-                Text(kind.title).tag(kind)
-            }
+        MobilePickerRow(
+            .mobilePictureStreams,
+            selection: $selection,
+            choices: PictureSettingsContainerView.StreamKind.allCases
+        ) { kind in
+            kind.title
         }
     }
 }
@@ -369,7 +384,7 @@ private struct MobilePictureStreamGroup: View {
     let automaticBitrateMbps: Int
 
     /// A caption shown under the group while automatic bitrate is on, in place of the default one.
-    var automaticCaption: String?
+    var automaticCaption: LocalizedStringResource?
 
     /// The stream heights offered in the resolution menu.
     let resolutions: [Int]
@@ -378,27 +393,27 @@ private struct MobilePictureStreamGroup: View {
     var fixedFrameRate = false
 
     var body: some View {
-        MobileSettingsGroup("Stream", footer: footer) {
-            MobilePickerRow("Resolution", selection: $height) {
-                ForEach(resolutions, id: \.self) { value in
-                    Text(verbatim: "\(value)p").tag(value)
-                }
+        MobileSettingsGroup(.mobilePictureStream, footer: footer) {
+            MobilePickerRow(.mobilePictureResolution, selection: $height, choices: resolutions) { value in
+                .mobilePictureResolutionValue(height: String(value))
             }
             if fixedFrameRate {
-                MobileValueRow("Frame Rate", value: "60 fps")
+                MobileValueRow(.mobilePictureFrameRate, value: .mobilePictureFrameRateValue(fps: 60))
             } else {
-                MobilePickerRow("Frame Rate", selection: $fps) {
-                    Text("30 fps").tag(30)
-                    Text("60 fps").tag(60)
+                MobilePickerRow(.mobilePictureFrameRate, selection: $fps, choices: [30, 60]) { rate in
+                    .mobilePictureFrameRateValue(fps: rate)
                 }
             }
-            MobileToggleRow("Automatic Bitrate", isOn: $automaticBitrate)
+            MobileToggleRow(.mobilePictureAutomaticBitrate, isOn: $automaticBitrate)
             if automaticBitrate {
-                MobileValueRow("Bitrate", value: "\(automaticBitrateMbps) Mbps")
+                MobileValueRow(
+                    .mobilePictureBitrate,
+                    value: .mobilePictureBitrateValue(mbps: automaticBitrateMbps)
+                )
             } else {
                 MobileSliderRow(
-                    title: "Bitrate",
-                    valueText: "\(bitrate) Mbps",
+                    title: .mobilePictureBitrate,
+                    valueText: .mobilePictureBitrateValue(mbps: bitrate),
                     value: bitrateValue,
                     range: bitrateRange,
                     step: 1
@@ -407,10 +422,13 @@ private struct MobilePictureStreamGroup: View {
         }
     }
 
-    private var footer: String {
+    private var footer: LocalizedStringResource {
         automaticBitrate
-            ? automaticCaption ?? "Uses \(automaticBitrateMbps) Mbps for \(height)p."
-            : "A lower bitrate uses less bandwidth; a higher one gives higher quality."
+            ? automaticCaption ?? .mobilePictureBitrateAutomaticFooter(
+                mbps: automaticBitrateMbps,
+                height: String(height)
+            )
+            : .mobilePictureBitrateManualFooter
     }
 
     private var bitrateRange: ClosedRange<Double> {
@@ -451,27 +469,39 @@ private struct MobilePictureDisplayGroup: View {
     var fullScreen: Binding<Bool>?
 
     var body: some View {
-        MobileSettingsGroup("Display", footer: footer) {
-            MobilePickerRow("Upscaled Output", selection: $output) {
-                ForEach(UpscaledOutput.available(for: height), id: \.self) { value in
-                    Text(value.title).tag(value)
-                }
+        MobileSettingsGroup(.mobilePictureDisplay, footer: footer) {
+            MobilePickerRow(
+                .mobilePictureUpscaledOutput,
+                selection: $output,
+                choices: UpscaledOutput.available(for: height)
+            ) { value in
+                value.title
             }
-            MobilePickerRow("Upscaling Method", selection: $upscaler) {
-                Text("MetalFX Spatial").tag(VideoUpscaler.metalFX)
-                Text("Advanced Spatial").tag(VideoUpscaler.advancedSpatial)
+            MobilePickerRow(
+                .mobilePictureUpscalingMethod,
+                selection: $upscaler,
+                choices: [VideoUpscaler.metalFX, .advancedSpatial]
+            ) { upscaler in
+                upscaler == .metalFX
+                    ? .mobilePictureUpscalerMetalFX
+                    : .mobilePictureUpscalerAdvanced
             }
             .disabled(output == .disabled)
-            MobilePickerRow("Presentation Frame Rate", selection: $presentation) {
-                Text("\(fps) fps (native)").tag(PresentationFrameRate.source)
-                Text("\(fps * 2) fps (2×)").tag(PresentationFrameRate.generated120)
-                    .disabled(![720, 1080].contains(height))
+            MobilePickerRow(
+                .mobilePicturePresentationFrameRate,
+                selection: $presentation,
+                choices: [720, 1080].contains(height) || presentation == .generated120
+                    ? [PresentationFrameRate.source, .generated120]
+                    : [.source]
+            ) { rate in
+                rate == .source
+                    ? .mobilePicturePresentationNative(fps: fps)
+                    : .mobilePicturePresentationGenerated(fps: fps * 2)
             }
             if let fullScreen {
                 MobileToggleRow(
-                    "Full Screen While Streaming",
-                    detail: "Full screen lets macOS turn on Game Mode, which doubles the Bluetooth rate for "
-                        + "wireless controllers and gives DualSense haptics over Bluetooth more headroom.",
+                    .mobilePictureFullScreen,
+                    detail: .mobilePictureFullScreenDetail,
                     isOn: fullScreen
                 )
                 .accessibilityIdentifier("picture-full-screen")
@@ -479,13 +509,12 @@ private struct MobilePictureDisplayGroup: View {
         }
     }
 
-    private var footer: String? {
+    private var footer: LocalizedStringResource? {
         if hdr {
-            return "HDR streams play at the native frame rate; frame generation applies to standard dynamic "
-                + "range streams."
+            return .mobilePictureHdrFrameGenerationFooter
         }
         if presentation != .source {
-            return "Frame generation requires supported hardware and a \(fps * 2) Hz display."
+            return .mobilePictureFrameGenerationFooter(rate: fps * 2)
         }
         return nil
     }
@@ -501,25 +530,24 @@ private struct MobilePictureColourGroup: View {
 
     var body: some View {
         MobileSettingsGroup(
-            "Colour",
-            footer: "Applies to new streams. During a stream, adjust it live in the stream menu’s Colour "
-                + "panel."
+            .mobilePictureColour,
+            footer: .mobilePictureColourFooter
         ) {
-            ForEach(StreamMenuColourControls.rows, id: \.title) { row in
+            ForEach(StreamMenuColourControls.rows, id: \.control) { row in
                 MobileSliderRow(
                     title: row.title,
-                    valueText: row.format.describe(adjustments[keyPath: row.value]),
+                    verbatimValue: row.format.describe(adjustments[keyPath: row.value]),
                     value: value(row),
                     range: row.range,
                     step: PictureAdjustments.step
                 )
             }
             MobileToggleRow(
-                "Reduce Colour Banding",
-                detail: "Smooths visible steps in skies and dark gradients, which low bitrates make worse.",
+                .mobilePictureReduceBanding,
+                detail: .mobilePictureReduceBandingDetail,
                 isOn: $reduceBanding
             )
-            MobileButtonRow("Reset Colour") {
+            MobileButtonRow(.mobilePictureResetColour) {
                 adjustments = PictureAdjustments()
             }
         }

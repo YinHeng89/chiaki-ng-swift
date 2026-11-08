@@ -63,7 +63,7 @@ final class PlaybackDiagnostic {
                 }
             }
         } catch let failure as StreamFailure {
-            return StreamFailureMessage(failure, kind: .console).text
+            return StreamFailureMessage(failure, kind: .console).text.english
         } catch {
             return "Playback diagnostic failed before native session startup."
         }

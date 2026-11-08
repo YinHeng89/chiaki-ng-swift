@@ -18,11 +18,11 @@ struct KakusanPlayersSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center) {
-                Text("Remote players")
+                Text(.kakusanPlayersTitle)
                     .font(.headline)
                 Spacer(minLength: 12)
                 button(
-                    "Invite player",
+                    .kakusanPlayersInvite,
                     symbol: "person.badge.plus",
                     target: .remote(.invite),
                     prominent: true
@@ -33,9 +33,13 @@ struct KakusanPlayersSection: View {
                 .frame(maxWidth: 200)
             }
             if case .unavailable(let error) = store.hosting {
-                KakusanErrorText(text: "Invites unavailable: \(error.hostingLabel)")
+                KakusanErrorText(
+                    text: .kakusanPlayersInvitesUnavailable(reason: String(localized: error.hostingLabel))
+                )
             } else if let until = store.cooldownUntil {
-                KakusanCountdownText(prefix: "Too many wrong codes. Try again in", deadline: until)
+                KakusanCountdownText(deadline: until) {
+                    .kakusanPlayersCooldown(time: $0)
+                }
             }
             ForEach(Self.pending(store.state, seats: seats)) { guest in
                 row(guest)
@@ -82,13 +86,13 @@ struct KakusanPlayersSection: View {
                     .foregroundStyle(status.tone.color)
             }
             Spacer(minLength: 8)
-            button("Open", symbol: nil, target: .remote(.open(guest.id))) {
+            button(.kakusanPlayersOpen, symbol: nil, target: .remote(.open(guest.id))) {
                 store.send(.present(guest.id))
             }
             .frame(maxWidth: 110)
             button(guest.attempt.outcome == nil
-                ? "Cancel"
-                : "Dismiss", symbol: nil, target: .remote(.cancel(guest.id))) {
+                ? .commonCancel
+                : .kakusanPlayersDismiss, symbol: nil, target: .remote(.cancel(guest.id))) {
                     if guest.attempt.outcome == nil {
                         store.send(.cancel(guest.id))
                     } else {
@@ -103,7 +107,7 @@ struct KakusanPlayersSection: View {
     }
 
     private func button(
-        _ title: String,
+        _ title: LocalizedStringResource,
         symbol: String?,
         target: StreamMenuControl,
         prominent: Bool = false,
@@ -131,7 +135,7 @@ struct KakusanPlayersSection: View {
     }
 
     @ViewBuilder
-    private func label(_ title: String, symbol: String?) -> some View {
+    private func label(_ title: LocalizedStringResource, symbol: String?) -> some View {
         Group {
             if let symbol {
                 Label(title, systemImage: symbol)
@@ -234,17 +238,17 @@ extension StreamPlayersPanel {
     }
 
     /// The seat's status line, or Reserved while the pad is held for a remote player.
-    func status(of pad: UInt8) -> (text: String, tone: CouchTone) {
+    func status(of pad: UInt8) -> (text: LocalizedStringResource, tone: CouchTone) {
         store.seats.heldForRemote(pad)
-            ? ("Reserved", .waiting)
+            ? (.kakusanPlayersReserved, .waiting)
             : store.seats[pad].status(on: store.seats.console)
     }
 
     /// Remote for a seat taken by a remote player, otherwise `nil`.
-    func remoteTag(_ seat: CouchSeat) -> String? {
+    func remoteTag(_ seat: CouchSeat) -> LocalizedStringResource? {
         seat.remote == nil
             ? nil
-            : "Remote"
+            : .kakusanPlayersRemoteTag
     }
 
     /// The name to show for a seat: the remote player's name or the local player's account name.
@@ -252,13 +256,16 @@ extension StreamPlayersPanel {
         guard let remote = seat.remote else {
             return seat.player?.account?.name
         }
-        return remote.name ?? "Remote player"
+        return remote.name ?? String(localized: .kakusanGuestRemotePlayer)
     }
 
     /// The seat's status line, replaced by the remote guest's status when there is one, and the
     /// account name under it for a remote player.
     @ViewBuilder
-    func seatStatus(_ seat: CouchSeat, status: (text: String, tone: CouchTone)) -> some View {
+    func seatStatus(
+        _ seat: CouchSeat,
+        status: (text: LocalizedStringResource, tone: CouchTone)
+    ) -> some View {
         let shown = remoteStatus(seat) ?? status
         Text(shown.text)
             .font(.callout)
@@ -272,7 +279,7 @@ extension StreamPlayersPanel {
     }
 
     /// The joining status of a ready seat's remote guest, or `nil` when the seat has none.
-    func remoteStatus(_ seat: CouchSeat) -> (text: String, tone: CouchTone)? {
+    func remoteStatus(_ seat: CouchSeat) -> (text: LocalizedStringResource, tone: CouchTone)? {
         guard case .ready = seat, let remote = seat.remote,
               let guest = kakusan?.state.guest(for: remote.guest) else {
             return nil
@@ -287,7 +294,7 @@ extension StreamPlayersPanel {
            let guest = kakusan.state.guest(for: remote.guest),
            guest.canRemember {
             action(
-                "Remember",
+                .kakusanPlayersRemember,
                 symbol: "person.crop.circle.badge.checkmark",
                 target: .remote(.remember(guest.id))
             ) {

@@ -18,15 +18,15 @@ public struct NatTypeSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("NAT type").font(.headline)
+            Text(.settingsNetworkNatHeading).font(.headline)
             HStack(spacing: 12) {
                 FocusButton {
                     store.send(.checkTapped)
                 } label: {
                     Label(
                         store.isChecking
-                            ? "Checking"
-                            : "Check NAT type",
+                            ? .settingsNetworkNatChecking
+                            : .settingsNetworkNatCheck,
                         systemImage: "network"
                     )
                 }
@@ -37,9 +37,9 @@ public struct NatTypeSettingsView: View {
                     ProgressView().controlSize(.small)
                 }
                 if case .found(let type) = store.check {
-                    Text("Type \(type.rawValue)")
+                    Text(.settingsNetworkNatFoundType(type: String(type.rawValue)))
                         .font(.headline)
-                        .accessibilityLabel("NAT type \(type.rawValue)")
+                        .accessibilityLabel(.settingsNetworkNatFoundTypeLabel(type: String(type.rawValue)))
                 }
             }
             Text(Self.detail(store.check))
@@ -56,28 +56,26 @@ public struct NatTypeSettingsView: View {
     ///
     /// - Parameter check: Where the check stands.
     /// - Returns: The line.
-    static func detail(_ check: NatTypeFeature.Check) -> String {
+    static func detail(_ check: NatTypeFeature.Check) -> LocalizedStringResource {
         switch check {
         case .idle, .checking:
-            "Finds how reachable this device is from the internet, as type 1, 2 or 3."
+            .settingsNetworkNatIdleDetail
         case .found(.type1):
-            "This device has a public address. Internet connections to and from it should work."
+            .settingsNetworkNatPublicDetail
         case .found(.type2):
-            "This device is behind a router that keeps one public address and port for it. "
-                + (KakusanBuild.included
-                    ? "Remote Play and Kakusan over the internet usually connect."
-                    : "Remote Play over the internet usually connects.")
+            KakusanBuild.included
+                ? .settingsNetworkNatMappedKakusanDetail
+                : .settingsNetworkNatMappedDetail
         case .found(.type3):
-            "This device is behind a strict router. Internet connections may fail; turn on Always guess ports, "
-                + "or enable UPnP or port forwarding on the router."
+            .settingsNetworkNatStrictDetail
         case .failed(.unanswered):
-            "No STUN server answered. Your network may block UDP."
+            .settingsNetworkNatUnansweredDetail
         case .failed(.incomplete):
-            "Only one server answered, which isn't enough to tell type 2 from type 3. Try again."
+            .settingsNetworkNatIncompleteDetail
         case .failed(.unresolved):
-            "The servers couldn't be found. Check your internet connection."
+            .settingsNetworkNatUnresolvedDetail
         case .failed(.network), .failed(.cancelled):
-            "The check couldn't run. Try again."
+            .settingsNetworkNatFailedDetail
         }
     }
 }

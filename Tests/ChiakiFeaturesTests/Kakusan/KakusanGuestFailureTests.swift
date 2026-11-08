@@ -75,7 +75,8 @@
             $0.followPhase()
         }
         #expect(stops.value == 1)
-        #expect(KakusanGuestOutcome.failed(.pairingFailed).title == "This invitation is closed")
+        #expect(String(localized: KakusanGuestOutcome.failed(.pairingFailed).title)
+            == "This invitation is closed")
         await store.send(.back) {
             $0.join.phase = .entering(nil)
             $0.host = .unknown
@@ -169,8 +170,10 @@
             }
             #expect(!outcome.label.isEmpty)
         }
-        #expect(KakusanGuestOutcome.closed(.user, byPeer: true).label == "The host removed you")
-        #expect(KakusanGuestOutcome.closed(.source, byPeer: true).title == "The game ended")
+        #expect(String(localized: KakusanGuestOutcome.closed(.user, byPeer: true).label)
+            == "The host removed you")
+        #expect(String(localized: KakusanGuestOutcome.closed(.source, byPeer: true).title)
+            == "The game ended")
     }
 
     @MainActor @Test func eventsFromAnotherSessionAreIgnored() async {

@@ -1,6 +1,7 @@
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// The touch Remote Players page: this device's identity and the remembered devices, each renamed or forgotten in
@@ -43,7 +44,7 @@ struct MobileRemotePlayersSettingsPage: View {
     }
 
     private var identity: some View {
-        MobileSettingsGroup("This device") {
+        MobileSettingsGroup(.mobileRemotePlayersThisDevice) {
             switch store.identity {
             case .idle, .loading:
                 ProgressView()
@@ -62,12 +63,14 @@ struct MobileRemotePlayersSettingsPage: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .mobileRowPadding()
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Fingerprint \(value.fingerprint.description)")
+                .accessibilityLabel(
+                    Text(.mobileRemotePlayersFingerprint(fingerprint: value.fingerprint.description))
+                )
             case .failed:
-                KakusanErrorText(text: "Couldn’t load this device’s identity")
+                KakusanErrorText(text: .mobileRemotePlayersIdentityFailed)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
-                MobileButtonRow("Try Again") {
+                MobileButtonRow(.mobileRemotePlayersTryAgain) {
                     store.send(.load)
                 }
             }
@@ -75,7 +78,7 @@ struct MobileRemotePlayersSettingsPage: View {
     }
 
     private var peers: some View {
-        MobileSettingsGroup("Remembered devices") {
+        MobileSettingsGroup(.mobileRemotePlayersRememberedDevices) {
             switch store.peers {
             case .idle, .loading:
                 ProgressView()
@@ -83,11 +86,11 @@ struct MobileRemotePlayersSettingsPage: View {
                     .frame(maxWidth: .infinity)
                     .mobileRowPadding()
             case .failed:
-                KakusanErrorText(text: "Couldn’t load remembered devices")
+                KakusanErrorText(text: .mobileRemotePlayersPeersFailed)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
             case .ready(let list) where list.isEmpty:
-                Text("No remembered devices")
+                Text(.mobileRemotePlayersNoPeers)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
@@ -97,7 +100,7 @@ struct MobileRemotePlayersSettingsPage: View {
                 }
             }
             if case .failed = store.forget {
-                KakusanErrorText(text: "Couldn’t forget that device")
+                KakusanErrorText(text: .mobileRemotePlayersForgetFailed)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
             }
@@ -127,12 +130,12 @@ struct MobileRemotePlayersSettingsPage: View {
                         .foregroundStyle(.secondary)
                 }
                 HStack(spacing: 10) {
-                    Button("Rename") {
+                    FocusButton(.mobileRemotePlayersRename) {
                         store.send(.startRename(peer.publicKey))
                     }
                     .buttonStyle(.bordered)
                     .disabled(store.rename != nil)
-                    Button("Forget Device", role: .destructive) {
+                    FocusButton(.mobileRemotePlayersForgetDevice, role: .destructive) {
                         store.send(.requestForget(peer.publicKey))
                     }
                     .buttonStyle(.bordered)
@@ -153,24 +156,28 @@ struct MobileRemotePlayersSettingsPage: View {
             rename.send(.binding(.set(\.name, value)))
         }
         return VStack(alignment: .leading, spacing: 10) {
-            MobileTextEntryRow(title: "Name", prompt: "Name", text: name)
-                .background(.fill.quaternary, in: .rect(cornerRadius: 14))
+            MobileTextEntryRow(
+                title: .mobileRemotePlayersName,
+                prompt: .mobileRemotePlayersName,
+                text: name
+            )
+            .background(.fill.quaternary, in: .rect(cornerRadius: 14))
             HStack(spacing: 10) {
-                Button("Save") {
+                FocusButton(.commonSave) {
                     rename.send(.view(.controlActivated(.save)))
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!rename.canSave)
-                Button("Cancel") {
+                FocusButton(.commonCancel) {
                     rename.send(.view(.controlActivated(.cancel)))
                 }
                 .buttonStyle(.bordered)
             }
             switch rename.phase {
             case .conflict(let holder):
-                KakusanErrorText(text: "Another device is saved as \(holder.nickname)")
+                KakusanErrorText(text: .mobileRemotePlayersNameConflict(name: holder.nickname))
             case .failed:
-                KakusanErrorText(text: "Couldn’t rename this device")
+                KakusanErrorText(text: .mobileRemotePlayersRenameFailed)
             case .editing, .saving:
                 EmptyView()
             }
@@ -181,14 +188,14 @@ struct MobileRemotePlayersSettingsPage: View {
 
     private func forgetRow(_ peer: KakusanPeer) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Forget \(peer.nickname)?")
+            Text(.mobileRemotePlayersForgetConfirm(name: peer.nickname))
                 .font(.body.weight(.semibold))
             HStack(spacing: 10) {
-                Button("Cancel") {
+                FocusButton(.commonCancel) {
                     store.send(.cancelForget)
                 }
                 .buttonStyle(.bordered)
-                Button("Forget Device", role: .destructive) {
+                FocusButton(.mobileRemotePlayersForgetDevice, role: .destructive) {
                     store.send(.confirmForget)
                 }
                 .buttonStyle(.borderedProminent)
@@ -204,9 +211,9 @@ struct MobileRemotePlayersSettingsPage: View {
     }
 
     private var stun: some View {
-        MobileSettingsGroup("Your own STUN servers") {
+        MobileSettingsGroup(.mobileRemotePlayersStunServers) {
             stunEditor
-            MobileButtonRow("Apply") {
+            MobileButtonRow(.mobileRemotePlayersApply) {
                 store.send(.saveStun)
             }
             .disabled(!store.stunChanged || store.settingsBusy)
@@ -217,17 +224,17 @@ struct MobileRemotePlayersSettingsPage: View {
                         .padding(.trailing, 16)
                 }
             }
-            MobileButtonRow("Use Built-In Servers") {
+            MobileButtonRow(.mobileRemotePlayersUseBuiltInServers) {
                 store.send(.restoreDefaultStun)
             }
             .disabled(store.stunDefaultsBlocked)
             switch store.stun {
             case .invalid:
-                KakusanErrorText(text: "Use host:port, one server per line, up to eight")
+                KakusanErrorText(text: .mobileRemotePlayersStunInvalid)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
             case .failed:
-                KakusanErrorText(text: "Couldn’t load or save STUN servers")
+                KakusanErrorText(text: .mobileRemotePlayersStunFailed)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
             case .idle, .loading, .ready, .saving:
@@ -242,8 +249,8 @@ struct MobileRemotePlayersSettingsPage: View {
 
     private var stunEditor: some View {
         MobileTextEntryRow(
-            title: "Servers",
-            prompt: "Built-in servers",
+            title: .mobileRemotePlayersServers,
+            prompt: .mobileRemotePlayersServersPrompt,
             text: stunDraft,
             kind: .url,
             multiline: true
@@ -251,11 +258,11 @@ struct MobileRemotePlayersSettingsPage: View {
     }
 
     private var tuning: some View {
-        MobileSettingsGroup("Media tuning") {
+        MobileSettingsGroup(.mobileRemotePlayersMediaTuning) {
             ForEach(KakusanMediaTuning.Field.allCases, id: \.self) { field in
                 tuningRow(field)
             }
-            MobileButtonRow("Save") {
+            MobileButtonRow(.commonSave) {
                 store.send(.saveTuning)
             }
             .disabled(store.tuningSaveBlocked)
@@ -266,12 +273,12 @@ struct MobileRemotePlayersSettingsPage: View {
                         .padding(.trailing, 16)
                 }
             }
-            MobileButtonRow("Restore Defaults") {
+            MobileButtonRow(.mobileRemotePlayersRestoreDefaults) {
                 store.send(.restoreDefaultTuning)
             }
             .disabled(store.tuningDefaultsBlocked)
             if store.tuning == .failed {
-                KakusanErrorText(text: "Couldn’t load or save media tuning")
+                KakusanErrorText(text: .mobileRemotePlayersTuningFailed)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .mobileRowPadding()
             }
@@ -283,7 +290,10 @@ struct MobileRemotePlayersSettingsPage: View {
         return VStack(alignment: .leading, spacing: 4) {
             MobileTextEntryRow(
                 title: field.label,
-                prompt: "\(field.range.lowerBound)–\(field.range.upperBound)",
+                prompt: .mobileRemotePlayersTuningRangePrompt(
+                    lower: String(field.range.lowerBound),
+                    upper: String(field.range.upperBound)
+                ),
                 text: text,
                 kind: .number,
                 invalid: store.tuningDraft.value(field) == nil
@@ -291,9 +301,14 @@ struct MobileRemotePlayersSettingsPage: View {
                 store.send(.saveTuning)
             }
             if store.tuningDraft.value(field) == nil {
-                KakusanErrorText(text: "\(field.range.lowerBound) to \(field.range.upperBound)")
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
+                KakusanErrorText(
+                    text: .mobileRemotePlayersTuningRangeError(
+                        lower: String(field.range.lowerBound),
+                        upper: String(field.range.upperBound)
+                    )
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
             }
         }
     }

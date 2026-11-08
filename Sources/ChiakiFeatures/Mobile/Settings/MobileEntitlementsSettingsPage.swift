@@ -1,6 +1,7 @@
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// The touch Entitlements page: the saved account to load, the service, filter and search over its cloud titles
@@ -38,19 +39,19 @@ struct MobileEntitlementsSettingsPage: View {
     }
 
     private var account: some View {
-        MobileSettingsGroup("Account") {
+        MobileSettingsGroup(.mobileEntitlementsAccount) {
             MobilePickerRow(
-                "Account",
-                selection: Binding(get: { store.account }, set: { store.send(.selectAccount($0)) })
-            ) {
-                if store.accounts.isEmpty {
-                    Text("No saved accounts").tag(UUID?.none)
+                .mobileEntitlementsAccount,
+                selection: Binding(get: { store.account }, set: { store.send(.selectAccount($0)) }),
+                choices: store.accounts.isEmpty
+                    ? [nil]
+                    : store.accounts.map { UUID?.some($0.id) },
+                verbatimLabel: { id in
+                    store.accounts.first { $0.id == id }?.name
+                        ?? String(localized: .mobileEntitlementsNoAccounts)
                 }
-                ForEach(store.accounts) { account in
-                    Text(account.name).tag(UUID?.some(account.id))
-                }
-            }
-            MobileButtonRow("Load Entitlements") {
+            )
+            MobileButtonRow(.mobileEntitlementsLoad) {
                 store.send(.load)
             }
             .disabled(store.busy || store.selectedAccount == nil)
@@ -74,21 +75,19 @@ struct MobileEntitlementsSettingsPage: View {
     private var listing: some View {
         MobileSettingsGroup {
             MobilePickerRow(
-                "Service",
-                selection: Binding(get: { store.service }, set: { store.send(.service($0)) })
-            ) {
-                ForEach(EntitlementService.allCases, id: \.self) { service in
-                    Text(service.rawValue).tag(service)
-                }
+                .mobileEntitlementsService,
+                selection: Binding(get: { store.service }, set: { store.send(.service($0)) }),
+                choices: EntitlementService.allCases
+            ) { service in
+                service.title
             }
             .accessibilityIdentifier("entitlements-service")
             MobilePickerRow(
-                "Filter",
-                selection: Binding(get: { store.filter }, set: { store.send(.filter($0)) })
-            ) {
-                ForEach(EntitlementFilter.allCases, id: \.self) { filter in
-                    Text(filter.rawValue).tag(filter)
-                }
+                .mobileEntitlementsFilter,
+                selection: Binding(get: { store.filter }, set: { store.send(.filter($0)) }),
+                choices: EntitlementFilter.allCases
+            ) { filter in
+                filter.title
             }
             search
         }
@@ -96,7 +95,7 @@ struct MobileEntitlementsSettingsPage: View {
 
     private var search: some View {
         MobileSearchEntry(
-            prompt: "Search",
+            prompt: .commonSearch,
             text: Binding(get: { store.query }, set: { store.send(.query($0)) })
         )
         .mobileRowPadding()
@@ -104,27 +103,39 @@ struct MobileEntitlementsSettingsPage: View {
 
     private var summary: some View {
         let summary = store.summary
-        return MobileSettingsGroup("Summary") {
-            fact("Source", lines: [store.service.source] + (store.report?.source(of: store.service) ?? []))
-            fact("Rules Applied", lines: store.service.rules)
+        return MobileSettingsGroup(.mobileEntitlementsSummary) {
             fact(
-                "Entitlements",
-                lines: ["\(summary.held) of this service's titles are held in the account's library"]
-                    + (store.report?.held ?? [])
+                .mobileEntitlementsSource,
+                lines: [Text(store.service.source)]
+                    + (store.report?.source(of: store.service) ?? []).map { Text($0) }
+            )
+            fact(.mobileEntitlementsRulesApplied, lines: store.service.rules.map { Text($0) })
+            fact(
+                .mobileEntitlementsEntitlements,
+                lines: [Text(.mobileEntitlementsHeldCount(count: summary.held))]
+                    + (store.report?.held ?? []).map { Text($0) }
             )
             fact(
-                "Dropped",
+                .mobileEntitlementsDropped,
                 lines: summary.dropped.isEmpty
-                    ? ["Nothing"]
-                    : summary.dropped.map { "\($0.count) because \($0.reason)" }
+                    ? [Text(.mobileEntitlementsNothing)]
+                    : summary.dropped.map {
+                        Text(.mobileEntitlementsDroppedReason(count: $0.count, reason: $0.reason))
+                    }
             )
-            MobileValueRow("End Result", value: "\(summary.present) offered, \(summary.droppedCount) dropped")
+            MobileValueRow(
+                .mobileEntitlementsEndResult,
+                value: .mobileEntitlementsEndResultValue(
+                    offered: summary.present,
+                    dropped: summary.droppedCount
+                )
+            )
         }
         .accessibilityIdentifier("entitlements-summary")
     }
 
     private var titles: some View {
-        MobileSettingsGroup("Titles") {
+        MobileSettingsGroup(.mobileEntitlementsTitles) {
             ForEach(store.rows) { title in
                 titleRow(title)
                 if store.selection == title.id {
@@ -137,7 +148,7 @@ struct MobileEntitlementsSettingsPage: View {
 
     private func titleRow(_ title: ExplainedTitle) -> some View {
         let selected = store.selection == title.id
-        return Button {
+        return FocusButton {
             store.send(.select(
                 selected
                     ? nil
@@ -152,7 +163,8 @@ struct MobileEntitlementsSettingsPage: View {
                         .font(.footnote.monospaced())
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
-                    Text(title.droppedBecause.map { "Dropped because \($0)" } ?? title.game.standing.label)
+                    (title.droppedBecause.map { Text(.mobileEntitlementsDroppedBecause(reason: $0)) }
+                        ?? Text(title.game.standing.label))
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(
                             title.game.visible
@@ -185,15 +197,17 @@ struct MobileEntitlementsSettingsPage: View {
     @ViewBuilder
     private func detail(_ title: ExplainedTitle) -> some View {
         fact(
-            "Source",
+            .mobileEntitlementsSource,
             lines: [
-                title.game.streamServiceType == "pscloud"
-                    ? "PlayStation Store PS5 lists"
-                    : "PlayStation Now shelves"
+                Text(
+                    title.game.streamServiceType == "pscloud"
+                        ? .mobileEntitlementsSourcePsCloud
+                        : .mobileEntitlementsSourcePsNow
+                )
             ]
         )
         VStack(alignment: .leading, spacing: 6) {
-            Text("Rules Applied")
+            Text(.mobileEntitlementsRulesApplied)
             ForEach(Array(title.explanation.steps.enumerated()), id: \.offset) { _, step in
                 VStack(alignment: .leading, spacing: 2) {
                     Label {
@@ -215,15 +229,16 @@ struct MobileEntitlementsSettingsPage: View {
         .textSelection(.enabled)
         .mobileRowPadding()
         fact(
-            "Entitlements",
+            .mobileEntitlementsEntitlements,
             lines: title.heldRecords.isEmpty
-                ? ["None held"]
-                : title.heldRecords,
+                ? [Text(.mobileEntitlementsNoneHeld)]
+                : title.heldRecords.map { Text($0) },
             monospaced: !title.heldRecords.isEmpty
         )
         VStack(alignment: .leading, spacing: 3) {
-            Text("Dropped")
-            Text(title.droppedBecause.map { "Because \($0)" } ?? "No")
+            Text(.mobileEntitlementsDropped)
+            (title.droppedBecause.map { Text(.mobileEntitlementsBecause(reason: $0)) }
+                ?? Text(.mobileEntitlementsNo))
                 .font(.footnote)
                 .foregroundStyle(
                     title.game.visible
@@ -234,14 +249,18 @@ struct MobileEntitlementsSettingsPage: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .textSelection(.enabled)
         .mobileRowPadding()
-        MobileValueRow("End Result", value: title.endResult)
+        MobileValueRow(.mobileEntitlementsEndResult, value: title.endResult)
     }
 
-    private func fact(_ label: String, lines: [String], monospaced: Bool = false) -> some View {
+    private func fact(
+        _ label: LocalizedStringResource,
+        lines: [Text],
+        monospaced: Bool = false
+    ) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(label)
             ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
-                Text(line)
+                line
                     .font(
                         monospaced
                             ? .footnote.monospaced()

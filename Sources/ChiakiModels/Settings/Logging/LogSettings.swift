@@ -37,7 +37,8 @@ public struct LogSettings: Equatable, Codable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case directory, directoryBookmark, level, showLiveLogButton, captureAPI, redactIdentifiers, streamerMode
+        case directory, directoryBookmark, level, showLiveLogButton, captureAPI, redactIdentifiers,
+             streamerMode
     }
 
     /// Decodes settings, defaulting any flag an older version did not store.

@@ -55,19 +55,18 @@ public struct EntitlementsSettingsView: View {
 
     private var controls: some View {
         HStack(spacing: 12) {
-            Picker(
-                "Account",
-                selection: Binding(get: { store.account }, set: { store.send(.selectAccount($0)) })
-            ) {
+            Picker(selection: Binding(get: { store.account }, set: { store.send(.selectAccount($0)) })) {
                 if store.accounts.isEmpty {
-                    Text("No saved accounts").tag(UUID?.none)
+                    Text(.settingsEntitlementsNoSavedAccounts).tag(UUID?.none)
                 }
                 ForEach(store.accounts) { account in
                     Text(account.name).tag(UUID?.some(account.id))
                 }
+            } label: {
+                Text(.settingsEntitlementsAccount)
             }
             .frame(maxWidth: 320)
-            FocusButton("Load entitlements") {
+            FocusButton(.settingsEntitlementsLoad) {
                 store.send(.load)
             }
             .glassControlStyle()
@@ -81,10 +80,10 @@ public struct EntitlementsSettingsView: View {
     private var services: some View {
         FocusableSegments(
             options: EntitlementService.allCases,
-            title: \.rawValue,
+            title: \.title,
             selection: Binding(get: { store.service }, set: { store.send(.service($0)) })
         )
-        .accessibilityLabel("Service")
+        .accessibilityLabel(.settingsEntitlementsService)
         .accessibilityIdentifier("entitlements-service")
     }
 
@@ -125,37 +124,37 @@ public struct EntitlementsSettingsView: View {
     private var summary: some View {
         let summary = store.summary
         return VStack(alignment: .leading, spacing: 8) {
-            EntitlementFact("Source") {
+            EntitlementFact(.settingsEntitlementsFactSource) {
                 Text(store.service.source)
-                ForEach(store.report?.source(of: store.service) ?? [], id: \.self) {
-                    Text($0)
-                }
+                lines(store.report?.source(of: store.service) ?? [])
             }
-            EntitlementFact("Rules applied") {
-                ForEach(store.service.rules, id: \.self) {
-                    Text($0)
-                }
+            EntitlementFact(.settingsEntitlementsFactRules) {
+                lines(store.service.rules)
             }
-            EntitlementFact("Entitlements") {
-                Text("\(summary.held) of this service's titles are held in the account's library")
-                ForEach(store.report?.held ?? [], id: \.self) {
-                    Text($0)
-                }
+            EntitlementFact(.settingsEntitlementsFactEntitlements) {
+                Text(.settingsEntitlementsHeldInLibrary(count: summary.held))
+                lines(store.report?.held ?? [])
             }
-            EntitlementFact("Dropped") {
+            EntitlementFact(.settingsEntitlementsFactDropped) {
                 if summary.dropped.isEmpty {
-                    Text("Nothing")
+                    Text(.settingsEntitlementsNothingDropped)
                 }
                 ForEach(summary.dropped, id: \.reason) { dropped in
-                    Text("\(dropped.count) because \(dropped.reason)")
+                    Text(.settingsEntitlementsDroppedGroup(count: dropped.count, reason: dropped.reason))
                 }
             }
-            EntitlementFact("End result") {
-                Text("\(summary.present) offered, \(summary.droppedCount) dropped")
+            EntitlementFact(.settingsEntitlementsFactEndResult) {
+                Text(.settingsEntitlementsEndTotals(offered: summary.present, dropped: summary.droppedCount))
             }
         }
         .textSelection(.enabled)
         .accessibilityIdentifier("entitlements-summary")
+    }
+
+    private func lines(_ lines: [LocalizedStringResource]) -> some View {
+        ForEach(lines.indices, id: \.self) {
+            Text(lines[$0])
+        }
     }
 
     private var query: Binding<String> {
@@ -166,14 +165,14 @@ public struct EntitlementsSettingsView: View {
         HStack(spacing: 12) {
             FocusableSegments(
                 options: EntitlementFilter.allCases,
-                title: \.rawValue,
+                title: \.title,
                 selection: Binding(get: { store.filter }, set: { store.send(.filter($0)) })
             )
-            .accessibilityLabel("Filter")
-            TextField("Search", text: query)
+            .accessibilityLabel(.settingsEntitlementsFilter)
+            TextField(String(localized: .commonSearch), text: query)
                 .textFieldStyle(.roundedBorder)
                 .menuFocusBinding($searchFocused)
-                .controllerKeyboard(title: "Search", text: query, isFocused: searchFocused)
+                .controllerKeyboard(title: .commonSearch, text: query, isFocused: searchFocused)
                 .frame(maxWidth: 280)
         }
     }
@@ -185,21 +184,24 @@ private struct ExplainedTitleRow: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title.game.name).lineLimit(1)
             Text(title.game.productId).font(.caption.monospaced()).foregroundStyle(.secondary).lineLimit(1)
-            Text(title.droppedBecause.map { "Dropped because \($0)" } ?? title.game.standing.label)
-                .lineLimit(2)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(title.game.visible
-                    ? Color.secondary
-                    : Color.orange)
+            Text(
+                title.droppedBecause.map { .settingsEntitlementsDroppedBecause(reason: $0) }
+                    ?? title.game.standing.label
+            )
+            .lineLimit(2)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(title.game.visible
+                ? Color.secondary
+                : Color.orange)
         }
     }
 }
 
 private struct EntitlementFact<Content: View>: View {
-    let label: String
+    let label: LocalizedStringResource
     @ViewBuilder let content: Content
 
-    init(_ label: String, @ViewBuilder content: () -> Content) {
+    init(_ label: LocalizedStringResource, @ViewBuilder content: () -> Content) {
         self.label = label
         self.content = content()
     }
@@ -226,12 +228,12 @@ private struct ExplainedTitleDetail: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(title.game.name).font(.title2.weight(.semibold)).textSelection(.enabled)
                 Text(title.game.productId).font(.callout.monospaced()).textSelection(.enabled)
-                EntitlementFact("Source") {
+                EntitlementFact(.settingsEntitlementsFactSource) {
                     Text(title.game.streamServiceType == "pscloud"
-                        ? "PlayStation Store PS5 lists"
-                        : "PlayStation Now shelves")
+                        ? .settingsEntitlementsDetailSourcePsCloud
+                        : .settingsEntitlementsDetailSourcePsNow)
                 }
-                EntitlementFact("Rules applied") {
+                EntitlementFact(.settingsEntitlementsFactRules) {
                     ForEach(Array(title.explanation.steps.enumerated()), id: \.offset) { _, step in
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Image(systemName: step.outcome.symbol).foregroundStyle(step.outcome.color)
@@ -240,21 +242,22 @@ private struct ExplainedTitleDetail: View {
                         }
                     }
                 }
-                EntitlementFact("Entitlements") {
+                EntitlementFact(.settingsEntitlementsFactEntitlements) {
                     if title.heldRecords.isEmpty {
-                        Text("None held")
+                        Text(.settingsEntitlementsNoneHeld)
                     }
                     ForEach(title.heldRecords, id: \.self) {
                         Text($0).font(.callout.monospaced())
                     }
                 }
-                EntitlementFact("Dropped") {
-                    Text(title.droppedBecause.map { "Because \($0)" } ?? "No")
+                EntitlementFact(.settingsEntitlementsFactDropped) {
+                    Text(title.droppedBecause.map { .settingsEntitlementsDetailBecause(reason: $0) }
+                        ?? .settingsEntitlementsDetailNotDropped)
                         .foregroundStyle(title.game.visible
                             ? Color.secondary
                             : Color.orange)
                 }
-                EntitlementFact("End result") {
+                EntitlementFact(.settingsEntitlementsFactEndResult) {
                     Text(title.endResult)
                 }
             }
@@ -297,7 +300,7 @@ extension CatalogStepOutcome {
 extension CatalogExplanation.Step {
     /// The step's product, ownership, title number and tier values that are present, separated by spaces.
     public var facts: String {
-        [productID, ownershipID, titleNumber, tier?.label].compactMap(\.self)
+        [productID, ownershipID, titleNumber, tier.map { String(localized: $0.label) }].compactMap(\.self)
             .joined(separator: "  ")
     }
 }
@@ -305,62 +308,62 @@ extension CatalogExplanation.Step {
 /// Presentation of catalogue rules in the entitlements detail.
 extension CatalogRule {
     /// The rule's display name.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .listedInCatalog:
-            "Listed for streaming"
+            .settingsEntitlementsRuleListedInCatalog
         case .platform:
-            "Platform"
+            .settingsEntitlementsRulePlatform
         case .service:
-            "Service"
+            .settingsEntitlementsRuleService
         case .includedWithPlus:
-            "Included with PS Plus"
+            .settingsEntitlementsRuleIncludedWithPlus
         case .tier:
-            "Tier"
+            .settingsEntitlementsRuleTier
         case .countsAsGame:
-            "Counts as a game"
+            .settingsEntitlementsRuleCountsAsGame
         case .libraryMatch:
-            "Library match"
+            .settingsEntitlementsRuleLibraryMatch
         case .mergedIntoListing:
-            "Merged into listing"
+            .settingsEntitlementsRuleMergedIntoListing
         case .ownListing:
-            "Own listing"
+            .settingsEntitlementsRuleOwnListing
         case .ownedDuplicate:
-            "Owned duplicate"
+            .settingsEntitlementsRuleOwnedDuplicate
         case .trialSuperseded:
-            "Trial superseded"
+            .settingsEntitlementsRuleTrialSuperseded
         case .discUpgrade:
-            "Disc upgrade"
+            .settingsEntitlementsRuleDiscUpgrade
         case .ownership:
-            "Ownership"
+            .settingsEntitlementsRuleOwnership
         case .ps5Native:
-            "PS5 native"
+            .settingsEntitlementsRuleNativePs5
         case .duplicateLaunch:
-            "Duplicate launch"
+            .settingsEntitlementsRuleDuplicateLaunch
         case .alreadyOwned:
-            "Already owned"
+            .settingsEntitlementsRuleAlreadyOwned
         case .listStreamability:
-            "List streamability"
+            .settingsEntitlementsRuleListStreamability
         case .storefront:
-            "Storefront"
+            .settingsEntitlementsRuleStorefront
         case .rememberedRefusal:
-            "Remembered refusal"
+            .settingsEntitlementsRuleRememberedRefusal
         case .release:
-            "Release"
+            .settingsEntitlementsRuleRelease
         case .sameProduct:
-            "Same product"
+            .settingsEntitlementsRuleSameProduct
         case .accessRoute:
-            "Access route"
+            .settingsEntitlementsRuleAccessRoute
         case .premiumBranding:
-            "Premium branding"
+            .settingsEntitlementsRulePremiumBranding
         case .premiumEntitlement:
-            "Premium entitlement"
+            .settingsEntitlementsRulePremiumEntitlement
         case .joinedByEntitlement:
-            "Joined by entitlement"
+            .settingsEntitlementsRuleJoinedByEntitlement
         case .joinedByProduct:
-            "Joined by product"
+            .settingsEntitlementsRuleJoinedByProduct
         case .bundleOwnership:
-            "Bundle ownership"
+            .settingsEntitlementsRuleBundleOwnership
         }
     }
 }
@@ -380,10 +383,10 @@ extension ExplainedTitle {
     }
 
     /// A line saying whether the title is offered, and with which standing if it is.
-    public var endResult: String {
+    public var endResult: LocalizedStringResource {
         game.visible
-            ? "Offered: \(game.standing.label)"
-            : "Not offered"
+            ? .settingsEntitlementsOffered(standing: String(localized: game.standing.label))
+            : .settingsEntitlementsNotOffered
     }
 
     /// The reason the title was dropped, or `nil` when it is offered.
@@ -398,7 +401,7 @@ extension ExplainedTitle {
 extension CatalogFetchReport {
     /// Returns lines describing where the given service's title list was read from, how complete it is and
     /// when it was fetched.
-    public func source(of service: EntitlementService) -> [String] {
+    public func source(of service: EntitlementService) -> [LocalizedStringResource] {
         switch service {
         case .psNow:
             psNowSource
@@ -411,56 +414,66 @@ extension CatalogFetchReport {
         moment.formatted(date: .abbreviated, time: .shortened)
     }
 
-    private var psNowSource: [String] {
-        let origin = fromAccountService
-            ? "read through the account's PlayStation Now session"
-            : "read from the public store because the account's session did not answer"
-        let completeness = complete
-            ? "complete"
-            : "incomplete"
-        let copies = copiesChecked.map {
-            "Streaming copies were asked about for \($0.asked) PS4 titles and \($0.answered) were answered, "
-                + "of which \(withoutACoveredCopy) have no copy a plan covers"
-        } ?? "Streaming copies were not checked because the account's country, language or age is not known"
+    private var psNowSource: [LocalizedStringResource] {
+        let titles = String(psNowTitles)
+        let fetched = Self.dated(listFetchedAt)
+        let copies: LocalizedStringResource = copiesChecked.map {
+            .settingsEntitlementsReportCopiesChecked(
+                asked: String($0.asked),
+                answered: String($0.answered),
+                uncovered: String(withoutACoveredCopy)
+            )
+        } ?? .settingsEntitlementsReportCopiesUnchecked
         return [
-            "\(psNowTitles) titles on the PlayStation Now shelves, \(origin)",
-            "The list is \(completeness) and was fetched \(Self.dated(listFetchedAt))",
+            fromAccountService
+                ? .settingsEntitlementsReportPsNowFromAccount(count: titles)
+                : .settingsEntitlementsReportPsNowFromStore(count: titles),
+            complete
+                ? .settingsEntitlementsReportListComplete(date: fetched)
+                : .settingsEntitlementsReportListIncomplete(date: fetched),
             copies
         ]
     }
 
-    private var psCloudSource: [String] {
-        var lines = ["\(psCloudTitles) titles on the PlayStation Store's PS5 lists"]
+    private var psCloudSource: [LocalizedStringResource] {
+        var lines: [LocalizedStringResource] = [
+            .settingsEntitlementsReportPsCloudTitles(count: String(psCloudTitles))
+        ]
         if let audience {
             lines.append(
-                "Asked as country \(audience.country), language \(audience.language) and age \(audience.age), "
-                    + "taken from the account's sign-in"
+                .settingsEntitlementsReportAudience(
+                    country: audience.country,
+                    language: audience.language,
+                    age: String(audience.age)
+                )
             )
             lines.append(premiumCategory.map {
-                "The Premium streaming category gave \($0.titles) included titles, fetched \(Self.dated($0.fetchedAt))"
-            } ??
-                "The Premium streaming category has not answered, so inclusion falls back to the store lists")
+                .settingsEntitlementsReportPremiumCategory(
+                    count: String($0.titles),
+                    date: Self.dated($0.fetchedAt)
+                )
+            } ?? .settingsEntitlementsReportPremiumSilent)
         } else {
-            lines.append(
-                "The account's country, language or age is not known, so the Premium streaming category was "
-                    + "not asked for and inclusion falls back to the store lists"
-            )
+            lines.append(.settingsEntitlementsReportAudienceUnknown)
         }
         return lines
     }
 
     /// Lines describing the account's library fetch and membership tier.
-    public var held: [String] {
-        let membership = tier == nil
-            ? "The membership tier is not known"
-            : "Membership tier: \(tier?.label ?? "none")"
+    public var held: [LocalizedStringResource] {
+        let membership: LocalizedStringResource = tier.map {
+            .settingsEntitlementsReportTier(tier: String(localized: $0.label))
+        } ?? .settingsEntitlementsReportTierUnknown
         switch library {
         case .unknown:
-            return ["The library has not been fetched", membership]
+            return [.settingsEntitlementsReportLibraryUnfetched, membership]
         case .unavailable:
-            return ["The library could not be fetched, so ownership is unknown", membership]
+            return [.settingsEntitlementsReportLibraryUnavailable, membership]
         case let .fetched(moment, records):
-            return ["The library holds \(records) records, fetched \(Self.dated(moment))", membership]
+            return [
+                .settingsEntitlementsReportLibraryHolds(count: String(records), date: Self.dated(moment)),
+                membership
+            ]
         }
     }
 }

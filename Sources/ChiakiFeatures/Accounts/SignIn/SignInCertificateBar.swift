@@ -42,7 +42,7 @@ struct SignInCertificateBar: View {
                 .font(.callout.monospaced().weight(.semibold))
                 .lineLimit(1)
             if let party = certificate.verifiedParty {
-                Text("Verified: \(party)")
+                Text(.accountsCertificateVerified(party: party))
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -61,8 +61,8 @@ struct SignInCertificateBar: View {
             .glassControlStyle()
             .focusBorderShape(.circle)
             .accessibilityLabel(expanded
-                ? "Hide certificate details"
-                : "Show certificate details")
+                ? LocalizedStringResource.accountsCertificateHideDetails
+                : .accountsCertificateShowDetails)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
@@ -78,16 +78,23 @@ struct SignInCertificateBar: View {
                     .gridCellColumns(2)
             }
             GridRow {
-                field("Issued to", certificate.subject)
-                field("Issued by", certificate.issuer ?? "Unknown")
+                field(.accountsCertificateIssuedTo, Text(verbatim: certificate.subject))
+                field(
+                    .accountsCertificateIssuedBy,
+                    certificate.issuer.map { Text(verbatim: $0) } ?? Text(.commonUnknown)
+                )
             }
             GridRow {
-                field("Valid", validity)
+                field(.accountsCertificateValid, validity)
                     .gridCellColumns(2)
             }
             GridRow {
-                field("SHA-256", certificate.fingerprint, monospaced: true)
-                    .gridCellColumns(2)
+                field(
+                    .accountsCertificateFingerprint,
+                    Text(verbatim: certificate.fingerprint),
+                    monospaced: true
+                )
+                .gridCellColumns(2)
             }
         }
         .padding(.horizontal, 14)
@@ -95,21 +102,20 @@ struct SignInCertificateBar: View {
     }
 
     /// Why the bar is shown, under the details.
-    static var reassurance: String {
-        "Shown for your reassurance: this is the certificate of the page you are signing in on, as it was "
-            + "verified for this connection. It changes as the sign-in moves between pages."
+    static var reassurance: LocalizedStringResource {
+        .accountsCertificateReassurance
     }
 
-    private var validity: String {
+    private var validity: Text {
         switch (certificate.validFrom, certificate.validUntil) {
         case (let from?, let until?):
-            "\(Self.shown(from)) to \(Self.shown(until))"
+            Text(.accountsCertificateValidRange(from: Self.shown(from), until: Self.shown(until)))
         case (nil, let until?):
-            "Until \(Self.shown(until))"
+            Text(.accountsCertificateValidUntil(until: Self.shown(until)))
         case (let from?, nil):
-            "From \(Self.shown(from))"
+            Text(.accountsCertificateValidFrom(from: Self.shown(from)))
         case (nil, nil):
-            "Unknown"
+            Text(.commonUnknown)
         }
     }
 
@@ -117,13 +123,17 @@ struct SignInCertificateBar: View {
         date.formatted(date: .abbreviated, time: .omitted)
     }
 
-    private func field(_ label: String, _ value: String, monospaced: Bool = false) -> some View {
+    private func field(
+        _ label: LocalizedStringResource,
+        _ value: Text,
+        monospaced: Bool = false
+    ) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.caption2.weight(.semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(.tertiary)
-            Text(value)
+            value
                 .font(monospaced
                     ? .caption.monospaced()
                     : .callout)

@@ -96,14 +96,17 @@ extension StreamView {
         if let attempt = store.session.reconnectAttempt {
             VStack(spacing: 10) {
                 if store.progress?.progress.previousFailure?.offline == true {
-                    Label("No network, waiting to reconnect", systemImage: "wifi.slash")
+                    Label(.playbackStreamNoNetwork, systemImage: "wifi.slash")
                         .font(.headline)
-                    Text("The stream reconnects once the network is back, for up to 90 seconds.")
+                    Text(.playbackStreamNoNetworkDetail)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 } else {
-                    Label("Reconnecting, attempt \(attempt)", systemImage: "arrow.triangle.2.circlepath")
-                        .font(.headline)
+                    Label(
+                        .playbackStreamReconnecting(attempt: attempt),
+                        systemImage: "arrow.triangle.2.circlepath"
+                    )
+                    .font(.headline)
                 }
                 if let operation = store.progress {
                     OperationProgressView(progress: operation)
@@ -119,9 +122,9 @@ extension StreamView {
     @ViewBuilder private var connectionWaiting: some View {
         if store.connection == .waiting, store.status == .playing, store.session.reconnectAttempt == nil {
             VStack(spacing: 6) {
-                Label("Connection lost, waiting…", systemImage: "wifi.exclamationmark")
+                Label(.playbackStreamConnectionWaiting, systemImage: "wifi.exclamationmark")
                     .font(.headline)
-                Text("The stream continues as soon as the console is heard again.")
+                Text(.playbackStreamConnectionWaitingDetail)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -137,12 +140,12 @@ extension StreamView {
         switch store.status {
         case .connecting:
             if store.session.isRelaunching {
-                ProgressView("Restarting the stream")
+                ProgressView { Text(.playbackStreamRestarting) }
             } else if store.kind != .cloud {
                 starting()
             }
         case .stopping:
-            ProgressView("Closing session")
+            ProgressView { Text(.playbackStreamClosing) }
         case .failed:
             failure
                 .transition(.opacity)
@@ -154,10 +157,10 @@ extension StreamView {
     @ViewBuilder private var failure: some View {
         VStack(spacing: 20) {
             Text(store.kind == .cloud
-                ? "Cloud connection stopped"
-                : "Connection stopped")
+                ? .playbackStreamCloudFailureTitle
+                : .playbackStreamFailureTitle)
                 .font(.title2.weight(.semibold))
-            CopyableErrorMessage(message: store.failureMessage ?? "", copyFocus: $copyFocused)
+            CopyableErrorMessage(message: failureText, copyFocus: $copyFocused)
                 .environment(\.menuMove) { direction in
                     if direction == .down {
                         focus = store.unpair == nil
@@ -166,7 +169,7 @@ extension StreamView {
                     }
                 }
             if let offer = store.unpair {
-                FocusButton("Unpair", systemImage: "link") {
+                FocusButton(.playbackStreamUnpair, systemImage: "link") {
                     store.send(.view(.unpair))
                 }
                 .glassControlStyle()
@@ -180,14 +183,14 @@ extension StreamView {
                 }
                 .disabled(offer.phase == .unpairing)
                 if offer.phase == .refused {
-                    Text("The pairing couldn’t be removed. Try again.")
+                    Text(.playbackStreamUnpairRefused)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
             }
             HStack {
                 FocusButton(titles.back) {
-                    stopTrace.record(traceOwner, "the failure screen's \(titles.back)")
+                    stopTrace.record(traceOwner, "the failure screen's \(titles.back.english)")
                     store.send(.stop)
                 }
                 .glassControlStyle()
@@ -200,7 +203,7 @@ extension StreamView {
                     }
                 }
                 if store.offersRetry {
-                    FocusButton("Try again") {
+                    FocusButton(.commonTryAgain) {
                         store.send(.retry)
                     }
                     .glassProminentControlStyle()
@@ -352,6 +355,10 @@ extension StreamView {
         return url
     }
 
+    private var failureText: LocalizedStringResource {
+        store.failureMessage ?? .verbatim("")
+    }
+
     private var titles: StreamExitTitles {
         StreamExitTitles(store.kind)
     }
@@ -411,13 +418,13 @@ extension StreamView {
 /// The words the stream screen uses for leaving, for each kind of stream.
 private struct StreamExitTitles: Equatable {
     /// The back button and the failure screen's way out.
-    public let back: String
+    public let back: LocalizedStringResource
 
     /// The stream menu's stop entry.
-    public let menuStop: String
+    public let menuStop: LocalizedStringResource
 
     /// The exit confirmation's leave choice.
-    public let confirm: String
+    public let confirm: LocalizedStringResource
 
     /// The titles for a kind of stream.
     ///
@@ -425,17 +432,17 @@ private struct StreamExitTitles: Equatable {
     public init(_ kind: StreamKind?) {
         switch kind {
         case .cloud:
-            back = "Back to library"
-            menuStop = "End cloud session"
-            confirm = "End session"
+            back = .playbackExitBackToLibrary
+            menuStop = .playbackExitEndCloudSession
+            confirm = .playbackExitEndSession
         case .guest:
-            back = "Leave game"
-            menuStop = "Leave game"
-            confirm = "Leave game"
+            back = .playbackExitLeaveGame
+            menuStop = .playbackExitLeaveGame
+            confirm = .playbackExitLeaveGame
         case .console, nil:
-            back = "Back to console"
-            menuStop = "Disconnect"
-            confirm = "Disconnect"
+            back = .playbackExitBackToConsole
+            menuStop = .playbackExitDisconnect
+            confirm = .playbackExitDisconnect
         }
     }
 }
@@ -443,7 +450,7 @@ private struct StreamExitTitles: Equatable {
 /// The status line of the cloud loading screen.
 private struct CloudStartStatus: Equatable {
     /// The text.
-    public let text: String
+    public let text: LocalizedStringResource
 
     /// Words where a cloud start is.
     ///
@@ -459,29 +466,29 @@ private struct CloudStartStatus: Equatable {
         step: CloudStartStep,
         wait: CloudStartWait?,
         datacenter: CloudDatacenterSelection?
-    ) -> String {
+    ) -> LocalizedStringResource {
         if let datacenter, step == .findingServer || step == .connecting {
             return datacenter.connectingDescription
         }
         switch wait {
         case .datacenter(.sent(let name)) where name != CloudDatacenterLaunchOffer.automaticName:
-            return "Connecting to \(name)"
+            return .playbackCloudStatusConnectingTo(name: name)
         case .datacenter(.sent), .datacenter(.expired):
-            return "Choosing the lowest ping"
+            return .playbackCloudStatusLowestPing
         case .queued(let position):
-            return "Waiting for a server, place \(position) in the queue"
+            return .playbackCloudStatusQueued(position: position)
         case .datacenter, nil:
             break
         }
         switch step {
         case .checking:
-            return "Checking access"
+            return .playbackCloudStatusChecking
         case .preparing:
-            return "Preparing game"
+            return .playbackCloudStatusPreparing
         case .findingServer:
-            return "Finding a server"
+            return .playbackCloudStatusFindingServer
         case .connecting:
-            return "Waiting for video"
+            return .playbackCloudStatusWaitingForVideo
         }
     }
 }
@@ -507,10 +514,10 @@ private struct CloudClosingNoticeView: View {
             .frame(maxWidth: 560)
             .glassEffect(AppGlass.warning, in: .capsule)
             .onAppear {
-                AccessibilityNotification.Announcement(notice.message).post()
+                AccessibilityNotification.Announcement(String(localized: notice.message)).post()
             }
             .onChange(of: notice) { _, next in
-                AccessibilityNotification.Announcement(next.message).post()
+                AccessibilityNotification.Announcement(String(localized: next.message)).post()
             }
     }
 }

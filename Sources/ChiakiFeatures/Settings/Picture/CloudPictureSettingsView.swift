@@ -15,12 +15,12 @@ struct CloudPictureSettingsView: View {
         case psNow
 
         /// The service's name in the segmented picker.
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .psCloud:
-                "PS5 cloud"
+                .settingsPictureServicePS5
             case .psNow:
-                "PS3 and PS4 cloud"
+                .settingsPictureServicePS4
             }
         }
     }
@@ -101,7 +101,7 @@ private struct CloudPictureSettingsForm: View {
                 adjustments: $store.draft.adjustments,
                 reduceBanding: $store.draft.reduceBanding
             )
-            SettingsPersistenceBanner(store.setting, subject: "cloud picture settings") {
+            SettingsPersistenceBanner(store.setting, subject: .settingsPictureCloudPersistenceSubject) {
                 store.send(.retry)
             }
         }
@@ -116,12 +116,12 @@ private struct CloudPictureSettingsForm: View {
             ?? CloudPictureSettings.automaticBitrateMbps(height: store.draft.psCloudHeight)
     }
 
-    private var measuredCaption: String {
+    private var measuredCaption: LocalizedStringResource {
         if let savedBandwidth {
             return savedBandwidth.caption(now: Date())
         }
         let fallback = CloudPictureSettings.automaticBitrateMbps(height: store.draft.psCloudHeight)
-        return "Measures your connection at launch, or uses \(fallback) Mbps if it cannot."
+        return .settingsPictureMeasuresAtLaunch(mbps: fallback)
     }
 }
 
@@ -148,7 +148,7 @@ public struct CloudCapturesGroup: View {
     }
 
     public var body: some View {
-        SettingsCard("Captures") {
+        SettingsCard(.settingsPictureCaptures) {
             SettingsRow(saveTitle, detail: detail) {
                 Picker(saveTitle, selection: $saving) {
                     ForEach(CloudCaptureSaving.allCases, id: \.self) { choice in
@@ -157,16 +157,16 @@ public struct CloudCapturesGroup: View {
                 }
             }
             if saving != .never {
-                Text(destination)
+                destination
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 #if os(macOS)
                     HStack {
-                        FocusButton("Choose folder…") {
+                        FocusButton(.settingsPictureChooseFolder) {
                             chooseFolder()
                         }
                         .glassControlStyle()
-                        FocusButton("Show in Finder") {
+                        FocusButton(.settingsPictureShowInFinder) {
                             showFolder()
                         }
                         .glassControlStyle()
@@ -176,30 +176,30 @@ public struct CloudCapturesGroup: View {
         }
     }
 
-    private var detail: String {
+    private var detail: LocalizedStringResource {
         switch saving {
         case .followPlayStation:
-            "Follows the download setting in your PS5 capture settings."
+            .settingsPictureCapturesFollowDetail
         case .always:
-            "Downloads every screenshot and video clip once the console finishes uploading it."
+            .settingsPictureCapturesAlwaysDetail
         case .never:
-            "Captures stay in your PlayStation cloud media gallery."
+            .settingsPictureCapturesNeverDetail
         }
     }
 
-    private var saveTitle: String {
+    private var saveTitle: LocalizedStringResource {
         #if os(macOS)
-            "Save captures to this Mac"
+            .settingsPictureSaveCapturesMac
         #else
-            "Save captures to this device"
+            .settingsPictureSaveCapturesDevice
         #endif
     }
 
-    private var destination: String {
+    @ViewBuilder private var destination: some View {
         #if os(macOS)
-            directory.path
+            Text(verbatim: directory.path)
         #else
-            "Captures are added to your Photos library."
+            Text(.settingsPictureCapturesPhotos)
         #endif
     }
 
@@ -216,7 +216,7 @@ public struct CloudCapturesGroup: View {
             panel.canChooseFiles = false
             panel.allowsMultipleSelection = false
             panel.canCreateDirectories = true
-            panel.prompt = "Use for captures"
+            panel.prompt = String(localized: .settingsPictureUseForCaptures)
             panel.directoryURL = directory
             panel.begin { response in
                 guard response == .OK, let url = panel.url else {
@@ -237,14 +237,14 @@ public struct CloudCapturesGroup: View {
 
 extension CloudCaptureSaving {
     /// The label shown for this choice in the settings picker.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .followPlayStation:
-            "Follow PlayStation"
+            .settingsPictureCapturesFollowPlayStation
         case .always:
-            "Always"
+            .settingsPictureCapturesAlways
         case .never:
-            "Never"
+            .settingsPictureCapturesNever
         }
     }
 }
@@ -262,9 +262,9 @@ public struct CloudQualityGroup: View {
     }
 
     public var body: some View {
-        SettingsCard("Stream quality") {
-            SettingsRow("Quality", detail: detail) {
-                Picker("Quality", selection: $quality) {
+        SettingsCard(.settingsPictureStreamQuality) {
+            SettingsRow(.settingsPictureQuality, detail: detail) {
+                Picker(.settingsPictureQuality, selection: $quality) {
                     ForEach(CloudStreamQuality.allCases, id: \.self) { choice in
                         Text(choice.title).tag(choice)
                     }
@@ -273,24 +273,24 @@ public struct CloudQualityGroup: View {
         }
     }
 
-    private var detail: String {
+    private var detail: LocalizedStringResource {
         switch quality {
         case .high:
-            "Asks the service for higher picture quality, which uses more data."
+            .settingsPictureQualityHighDetail
         case .stable:
-            "Asks the service to favour steady performance over picture quality."
+            .settingsPictureQualityStableDetail
         }
     }
 }
 
 extension CloudStreamQuality {
     /// The label shown for this quality in the settings picker.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .high:
-            "High quality"
+            .settingsPictureQualityHigh
         case .stable:
-            "Stable"
+            .settingsPictureQualityStable
         }
     }
 }

@@ -55,22 +55,41 @@ public enum LaunchFailure: Equatable, Sendable {
     case rejected(LaunchRejection)
 
     /// The short heading for the failure notice.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .consoleNotFound:
-            "Console not found"
+            .appLaunchConsoleNotFoundTitle
         case .consolesUnavailable:
-            "Couldn’t load your consoles"
+            .appLaunchConsolesUnavailableTitle
         case .remoteUnavailable, .busy, .notStarted, .rejected:
-            "Couldn’t start the stream"
+            .appLaunchStreamFailedTitle
         }
     }
 
     /// The explanation shown beneath the heading.
-    public var message: String {
+    public var message: LocalizedStringResource {
         switch self {
         case .consoleNotFound(let reference):
-            "No registered console matches \"\(reference.description)\". Run chiaki-ng with --list to see them."
+            .appLaunchConsoleNotFound(reference: reference.description)
+        case .consolesUnavailable:
+            .appLaunchConsolesUnavailable
+        case .remoteUnavailable(let name):
+            .appLaunchRemoteUnavailableNamed(name: name)
+        case .busy:
+            .appLaunchBusy
+        case .notStarted:
+            .appLaunchNotStarted
+        case .rejected(let reason):
+            Self.message(for: reason)
+        }
+    }
+
+    /// The English explanation written to the developer log.
+    public var logDescription: String {
+        switch self {
+        case .consoleNotFound(let reference):
+            "No registered console matches \"\(reference.description)\". "
+                + "Run chiaki-ng with --list to see them."
         case .consolesUnavailable:
             "Saved consoles could not be loaded, so the requested stream was not started."
         case .remoteUnavailable(let name):
@@ -80,11 +99,11 @@ public enum LaunchFailure: Equatable, Sendable {
         case .notStarted:
             "The stream didn’t start. Try again."
         case .rejected(let reason):
-            Self.message(for: reason)
+            Self.logDescription(for: reason)
         }
     }
 
-    private static func message(for reason: LaunchRejection) -> String {
+    private static func logDescription(for reason: LaunchRejection) -> String {
         switch reason {
         case .streamActive:
             "Another stream is already starting or playing."
@@ -100,6 +119,25 @@ public enum LaunchFailure: Equatable, Sendable {
             "An account is being changed. Try again when it has finished."
         case .screenBusy:
             "Finish what is open in chiaki-ng, then try again."
+        }
+    }
+
+    private static func message(for reason: LaunchRejection) -> LocalizedStringResource {
+        switch reason {
+        case .streamActive:
+            .appLaunchBusy
+        case .streamClosing:
+            .appLaunchStreamClosing
+        case .consoleNotLinked:
+            .appLaunchConsoleNotLinked
+        case .remoteUnavailable:
+            .appLaunchRemoteUnavailable
+        case .remoteNeedsSignIn:
+            .appLaunchRemoteNeedsSignIn
+        case .accountChanging:
+            .appLaunchAccountChanging
+        case .screenBusy:
+            .appLaunchScreenBusy
         }
     }
 }

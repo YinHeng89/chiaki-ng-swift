@@ -44,7 +44,8 @@ public struct PlaybackAttemptLog: Equatable, Sendable {
         let text = message?.replacingOccurrences(of: "\n", with: "; ")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard let text, !text.isEmpty else {
-            return PlaybackFailureMessage.text(for: .stream(outcome, overInternet: !local))
+            let fallback = PlaybackFailureMessage.text(for: .stream(outcome, overInternet: !local))
+            return fallback.english
         }
         return text
     }
@@ -216,7 +217,7 @@ public struct CloudSessionEnd {
             " during \($0)"
         } ?? ""
         let cause = failureMessage?.replacingOccurrences(of: "\n", with: "; ")
-            ?? CloudPlaybackFailureMessage.text(for: .stream(outcome))
+            ?? CloudPlaybackFailureMessage.text(for: .stream(outcome)).english
         let quit = parsed?.quitName.map {
             " (\($0))"
         } ?? ""

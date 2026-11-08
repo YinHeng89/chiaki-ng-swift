@@ -62,7 +62,7 @@ struct TrophiesView: View {
             content
             if store.isSearching {
                 coveringScreen(SearchOverlay(
-                    prompt: "Search games",
+                    prompt: .trophiesSearchGames,
                     query: Binding {
                         store.query
                     } set: { query in
@@ -226,7 +226,7 @@ struct TrophiesView: View {
                 .labelStyle(.iconOnly)
             if arranged {
                 ChoiceDropdown(
-                    title: "Show",
+                    title: .trophiesArrangementShow,
                     choices: TrophyTitleFilter.allCases,
                     chosen: store.titleFilter,
                     label: \.name,
@@ -237,7 +237,7 @@ struct TrophiesView: View {
                     store.send(.titleFilterChosen(filter))
                 }
                 ChoiceDropdown(
-                    title: "Sort",
+                    title: .trophiesArrangementSort,
                     choices: TrophyTitleSort.allCases,
                     chosen: store.titleSort,
                     label: \.name,
@@ -260,7 +260,7 @@ struct TrophiesView: View {
         FocusButton {
             store.send(.searchOpened)
         } label: {
-            Label("Search games", systemImage: "magnifyingglass")
+            Label(.trophiesSearchGames, systemImage: "magnifyingglass")
                 .labelStyle(.iconOnly)
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(store.query.isEmpty
@@ -278,8 +278,8 @@ struct TrophiesView: View {
             }
         }
         .accessibilityValue(store.query.isEmpty
-            ? ""
-            : "Searching for \(store.query)")
+            ? Text(verbatim: "")
+            : Text(.trophiesSearchSearchingFor(query: store.query)))
             .menuFocused($focus, equals: .search)
             .environment(\.menuMove) { direction in
                 move(from: .search, direction)
@@ -294,7 +294,7 @@ struct TrophiesView: View {
 
     private var heading: some View {
         HStack(alignment: .center, spacing: 20) {
-            Text("Trophies").font(.system(size: 40, weight: .semibold))
+            Text(.trophiesHeadingTitle).font(.system(size: 40, weight: .semibold))
             refresh
             Spacer(minLength: 0)
             TrophyChoicesHint()
@@ -309,7 +309,7 @@ struct TrophiesView: View {
             }
             store.send(.refresh)
         } label: {
-            Label("Refresh", systemImage: AppIcon.refreshDetails.rawValue)
+            Label(.commonRefresh, systemImage: AppIcon.refreshDetails.rawValue)
                 .font(.callout.weight(.medium))
                 .opacity(store.isLoading
                     ? 0.5
@@ -324,17 +324,17 @@ struct TrophiesView: View {
         }
     }
 
-    private var refreshState: String {
+    private var refreshState: Text {
         store.isLoading
-            ? "Loading"
-            : ""
+            ? Text(.trophiesRefreshLoading)
+            : Text(verbatim: "")
     }
 
     private var arrangement: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 TrophyChoiceChips(
-                    title: "Show games",
+                    title: .trophiesArrangementShowGames,
                     choices: TrophyTitleFilter.allCases,
                     chosen: store.titleFilter,
                     label: \.name,
@@ -345,7 +345,7 @@ struct TrophiesView: View {
                     store.send(.titleFilterChosen(filter))
                 }
                 TrophyChoiceChips(
-                    title: "Sort games by",
+                    title: .trophiesArrangementSortGamesBy,
                     choices: TrophyTitleSort.allCases,
                     chosen: store.titleSort,
                     label: \.name,
@@ -357,7 +357,7 @@ struct TrophiesView: View {
                     store.send(.titleSortChosen(sort))
                 }
                 TrophySearchField(
-                    prompt: "Search games",
+                    prompt: .trophiesSearchGames,
                     query: Binding {
                         store.query
                     } set: { query in
@@ -421,17 +421,17 @@ struct TrophiesView: View {
         }
     }
 
-    private var emptyText: String {
+    private var emptyText: LocalizedStringResource {
         if !(store.overview?.titles.isEmpty ?? true) {
-            return "No games match these choices."
+            return .trophiesOverviewNoMatches
         }
         return switch store.listing {
         case .idle, .loading:
-            "Loading trophies"
+            .trophiesOverviewLoading
         case .failed(let failure):
             Self.readFailure(failure)
         case .loaded:
-            "No trophies yet. Trophies you earn in games show up here."
+            .trophiesOverviewEmpty
         }
     }
 
@@ -452,7 +452,7 @@ struct TrophiesView: View {
             move(from: stop, direction)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityHint("Shows the game's trophies")
+        .accessibilityHint(.trophiesOverviewRowHint)
     }
 
     /// The overview's stops, row by row: Refresh, the filter, sort and search controls when there are games, then
@@ -742,20 +742,20 @@ struct TrophiesView: View {
     ///
     /// - Parameter failure: Why they could not be read.
     /// - Returns: The sentence.
-    static func readFailure(_ failure: PSNTrophiesFailure) -> String {
+    static func readFailure(_ failure: PSNTrophiesFailure) -> LocalizedStringResource {
         switch failure {
         case .signedOut:
-            "Sign in to PlayStation Network to see your trophies."
+            .trophiesFailureSignedOut
         case .auth:
-            "PlayStation Network needs you to sign in again."
+            .trophiesFailureAuth
         case .rateLimited:
-            "PlayStation Network asked for a pause. Try again in a few minutes."
+            .trophiesFailureRateLimited
         case .notFound:
-            "This game is no longer in your trophy list."
+            .trophiesFailureNotFound
         case .unavailable:
-            "Trophies could not be loaded. Check your connection and try again."
+            .trophiesFailureUnavailable
         case .cancelled:
-            "Loading was cancelled."
+            .trophiesFailureCancelled
         }
     }
 }
@@ -768,13 +768,13 @@ struct TrophySummaryCard: View {
     var body: some View {
         HStack(alignment: .center, spacing: 24) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Level \(summary.level)")
+                Text(.trophiesSummaryLevel(level: summary.level))
                     .font(.title2.weight(.semibold))
                 ProgressView(value: Double(summary.progress), total: 100)
                     .frame(width: 220)
-                    .accessibilityLabel("Progress to level \(summary.level + 1)")
-                    .accessibilityValue("\(summary.progress) percent")
-                Text("\(summary.progress)% to level \(summary.level + 1)")
+                    .accessibilityLabel(.trophiesSummaryProgressLabel(level: summary.level + 1))
+                    .accessibilityValue(.trophiesSummaryProgressValue(progress: summary.progress))
+                Text(.trophiesSummaryProgressToLevel(progress: summary.progress, level: summary.level + 1))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -794,7 +794,7 @@ struct TrophyTitleRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            CloudArtworkView(url: title.iconURL)
+            CloudArtworkView(url: title.iconURL, contentMode: .fit)
                 .frame(width: 64, height: 64)
                 .clipShape(.rect(cornerRadius: 10))
                 .accessibilityHidden(true)
@@ -820,7 +820,7 @@ struct TrophyTitleRow: View {
             Spacer(minLength: 12)
             TrophyCountsView(counts: title.earned, size: .small)
             VStack(alignment: .trailing, spacing: 4) {
-                Text("\(title.progress)%")
+                Text(.trophiesTitleProgress(progress: title.progress))
                     .font(.callout.weight(.semibold).monospacedDigit())
                 ProgressView(value: Double(title.progress), total: 100)
                     .frame(width: 96)
@@ -863,7 +863,9 @@ struct TrophyCountsView: View {
                         ? .title3.weight(.semibold)
                         : .callout)
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("\(counts[grade]) \(grade.name)")
+                        .accessibilityLabel(
+                            .trophiesCountsGrade(count: counts[grade], grade: String(localized: grade.name))
+                        )
                 }
             }
     }
@@ -914,7 +916,7 @@ struct TrophyTitleDetail: View {
     private var header: some View {
         HStack(spacing: 16) {
             stop(.back, action: close) {
-                Label("Back", systemImage: "chevron.left")
+                Label(.commonBack, systemImage: "chevron.left")
                     .labelStyle(.iconOnly)
                     .font(.title3.weight(.semibold))
                     .frame(width: 28, height: 28)
@@ -924,8 +926,8 @@ struct TrophyTitleDetail: View {
                     )
             }
             .focusBorderShape(.circle)
-            .accessibilityLabel("Back to all games")
-            CloudArtworkView(url: opened.title.iconURL)
+            .accessibilityLabel(.trophiesDetailBackToGames)
+            CloudArtworkView(url: opened.title.iconURL, contentMode: .fit)
                 .frame(width: 48, height: 48)
                 .clipShape(.rect(cornerRadius: 8))
                 .accessibilityHidden(true)
@@ -933,7 +935,7 @@ struct TrophyTitleDetail: View {
                 Text(opened.title.name)
                     .font(.title2.weight(.semibold))
                     .lineLimit(1)
-                Text("\(opened.title.progress)% complete")
+                Text(.trophiesDetailComplete(progress: opened.title.progress))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -948,15 +950,15 @@ struct TrophyTitleDetail: View {
     private var groups: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                groupChip(.allGroups, name: "All", selected: opened.group == nil) {
+                groupChip(.allGroups, name: Text(.trophiesDetailAllGroups), selected: opened.group == nil) {
                     select(nil)
                 }
                 ForEach(opened.groups) { group in
                     groupChip(
                         .group(group.id),
-                        name: group.name.isEmpty
+                        name: Text(verbatim: group.name.isEmpty
                             ? group.id
-                            : group.name,
+                            : group.name),
                         selected: opened.group == group.id
                     ) {
                         select(group.id)
@@ -971,7 +973,7 @@ struct TrophyTitleDetail: View {
         if layout.isCompact {
             HStack(spacing: layout.controlSpacing) {
                 ChoiceDropdown(
-                    title: "Show",
+                    title: .trophiesArrangementShow,
                     choices: TrophyFilter.allCases,
                     chosen: filter,
                     label: \.name,
@@ -981,7 +983,7 @@ struct TrophyTitleDetail: View {
                     choose: chooseFilter
                 )
                 ChoiceDropdown(
-                    title: "Sort",
+                    title: .trophiesArrangementSort,
                     choices: TrophySort.allCases,
                     chosen: sort,
                     label: \.name,
@@ -1002,7 +1004,7 @@ struct TrophyTitleDetail: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 TrophyChoiceChips(
-                    title: "Show trophies",
+                    title: .trophiesArrangementShowTrophies,
                     choices: TrophyFilter.allCases,
                     chosen: filter,
                     label: \.name,
@@ -1012,7 +1014,7 @@ struct TrophyTitleDetail: View {
                     choose: chooseFilter
                 )
                 TrophyChoiceChips(
-                    title: "Sort trophies by",
+                    title: .trophiesArrangementSortTrophiesBy,
                     choices: TrophySort.allCases,
                     chosen: sort,
                     label: \.name,
@@ -1030,12 +1032,12 @@ struct TrophyTitleDetail: View {
 
     private func groupChip(
         _ target: TrophiesView.Focus,
-        name: String,
+        name: Text,
         selected: Bool,
         action: @escaping () -> Void
     ) -> some View {
         stop(target, action: action) {
-            Text(name)
+            name
                 .font(.callout.weight(selected
                         ? .semibold
                         : .regular))
@@ -1051,7 +1053,7 @@ struct TrophyTitleDetail: View {
     @ViewBuilder private var content: some View {
         switch opened.listing {
         case .loading:
-            Text("Loading trophies")
+            Text(.trophiesOverviewLoading)
                 .font(.title3)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: 160, alignment: .center)
@@ -1061,7 +1063,7 @@ struct TrophyTitleDetail: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: 160, alignment: .center)
         case .loaded where trophies.isEmpty:
-            Text("No trophies match these choices.")
+            Text(.trophiesDetailNoMatches)
                 .font(.title3)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: 160, alignment: .center)
@@ -1115,9 +1117,9 @@ struct TrophyTitleDetail: View {
         .accessibilityElement(children: .combine)
         .accessibilityHint(trophy.hidden && !trophy.earned
             ? secret
-                ? "Reveals the hidden trophy"
-                : "Hides the trophy again"
-            : "")
+                ? Text(.trophiesDetailRevealHint)
+                : Text(.trophiesDetailHideHint)
+            : Text(verbatim: ""))
     }
 
     private func stop(
@@ -1164,13 +1166,9 @@ struct TrophyRow: View {
             }
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
-                Text(secret
-                    ? "Hidden trophy"
-                    : trophy.name)
+                shownName
                     .font(.headline)
-                Text(secret
-                    ? "Press to reveal what this trophy is for."
-                    : trophy.detail)
+                shownDetail
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1186,7 +1184,7 @@ struct TrophyRow: View {
                     .font(.callout.weight(.semibold))
                     .foregroundStyle(trophy.grade.color)
                 if trophy.earned {
-                    Label("Earned", systemImage: AppIcon.selected.rawValue)
+                    Label(.trophiesTrophyEarned, systemImage: AppIcon.selected.rawValue)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Palette.accent)
                 }
@@ -1196,6 +1194,18 @@ struct TrophyRow: View {
         .contentShape(.rect)
     }
 
+    private var shownName: Text {
+        secret
+            ? Text(.trophiesTrophyHiddenName)
+            : Text(verbatim: trophy.name)
+    }
+
+    private var shownDetail: Text {
+        secret
+            ? Text(.trophiesTrophyHiddenDetail)
+            : Text(verbatim: trophy.detail)
+    }
+
     /// The lines under a trophy's description: its progress, its rarity and when it was earned.
     ///
     /// - Parameter trophy: The trophy.
@@ -1203,20 +1213,27 @@ struct TrophyRow: View {
     static func details(of trophy: PSNTrophy) -> [String] {
         var lines: [String] = []
         if let progress = trophy.progress, !trophy.earned {
-            lines.append("\(progress.value) of \(progress.target)")
+            let line = LocalizedStringResource.trophiesTrophyProgress(
+                value: progress.value,
+                target: progress.target
+            )
+            lines.append(String(localized: line))
         }
         if let rarity = trophy.rarity {
             if let rate = trophy.earnedRate {
-                lines
-                    .append(
-                        "\(rarity.name), earned by \(rate.formatted(.number.precision(.fractionLength(1))))% of players"
-                    )
+                let shown = rate.formatted(.number.precision(.fractionLength(1)))
+                let line = LocalizedStringResource.trophiesTrophyRarity(
+                    rarity: String(localized: rarity.name),
+                    rate: shown
+                )
+                lines.append(String(localized: line))
             } else {
-                lines.append(rarity.name)
+                lines.append(String(localized: rarity.name))
             }
         }
         if let earned = trophy.earnedAt {
-            lines.append("Earned \(earned.formatted(date: .abbreviated, time: .shortened))")
+            let date = earned.formatted(date: .abbreviated, time: .shortened)
+            lines.append(String(localized: .trophiesTrophyEarnedAt(date: date)))
         }
         return lines
     }
@@ -1242,7 +1259,7 @@ extension TrophyGrade {
 /// search.
 private struct TrophyChoicesHint: View {
     var body: some View {
-        ControllerPrompt(button: .west, text: "Filters")
+        ControllerPrompt(button: .west, text: .trophiesHintFilters)
             .font(.caption)
             .foregroundStyle(.secondary)
     }

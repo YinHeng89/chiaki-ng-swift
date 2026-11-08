@@ -157,12 +157,13 @@ private func client(_ copied: Copied, log served: CoreHTTPLog = log) -> Settings
     #expect(row.time == "01:01:01")
     #expect(row.base == "https://m.np.playstation.com")
     #expect(row.path == "/api/gamelist?code=[parameter, 10 bytes]")
-    #expect(row.status == "200" && !row.failed)
-    #expect(row.duration == "120 ms" && row.size == "2.0 KB")
-    #expect(row.credentials == ["Account token"] && row.area == "Catalog")
+    #expect(String(localized: row.status) == "200" && !row.failed)
+    #expect(String(localized: row.duration) == "120 ms" && row.size == "2.0 KB")
+    #expect(row.credentials.map { String(localized: $0) } == ["Account token"])
+    #expect(String(localized: row.area) == "Catalog")
     let failed = RequestRowPresentation(config)
-    #expect(failed.status == "Timed out" && failed.failed)
-    #expect(failed.credentials == ["Anonymous"])
+    #expect(String(localized: failed.status) == "Timed out" && failed.failed)
+    #expect(failed.credentials.map { String(localized: $0) } == ["Anonymous"])
 }
 
 @MainActor @Test func requestsMaskSecretsUntilOneIsRevealedAndCopyWhatIsShown() async {
@@ -318,6 +319,6 @@ private func client(_ copied: Copied, log served: CoreHTTPLog = log) -> Settings
 }
 
 @Test func theRequestsAndNetworkTabsAreNamed() {
-    #expect(SettingsRoute.requests.title == "Requests")
-    #expect(SettingsRoute.network.title == "Network")
+    #expect(String(localized: SettingsRoute.requests.title) == "Requests")
+    #expect(String(localized: SettingsRoute.network.title) == "Network")
 }

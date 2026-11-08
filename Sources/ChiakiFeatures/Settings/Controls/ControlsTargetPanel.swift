@@ -86,7 +86,7 @@ struct ControlsTargetPanel: View {
 
     private var description: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.title3.weight(.semibold))
+            title.font(.title3.weight(.semibold))
             Text(note).font(.callout).foregroundStyle(.secondary)
                 .frame(maxWidth: 520, alignment: .leading)
             actions
@@ -96,18 +96,16 @@ struct ControlsTargetPanel: View {
     @ViewBuilder private var actions: some View {
         switch store.editing {
         case .controller(let key) where !store.state.isConnected(key):
-            FocusButton("Forget this controller", systemImage: "trash") {
+            FocusButton(.settingsControlsForgetController, systemImage: "trash") {
                 store.send(.forgetController(key))
             }
             .glassControlStyle()
             .padding(.top, 4)
         case .player(let player):
             VStack(alignment: .leading, spacing: 10) {
-                if player == 0 {
-                    ControlsPlayerOneControllerPicker(store: store)
-                }
+                ControlsPlayerControllerPicker(store: store, player: player)
                 if store.draft.playerPreset(player) != nil {
-                    FocusButton("Use each controller’s bindings") {
+                    FocusButton(.settingsControlsUseControllerBindings) {
                         store.send(.removePlayerPreset(player))
                     }
                     .glassControlStyle()
@@ -172,41 +170,38 @@ struct ControlsTargetPanel: View {
         guard case .controller = store.editing else {
             return nil
         }
-        return store.editingDevice?.name
+        return store.editingDevice.map { String(localized: store.state.title(of: $0)) }
     }
 
-    private var title: String {
+    private var title: Text {
         switch store.editing {
         case .keyboard:
-            "Keyboard and mouse"
+            Text(.settingsControlsKeyboardAndMouse)
         case .controller:
-            store.editingDevice?.name ?? "Controller"
+            store.editingDevice.map { Text(store.state.title(of: $0)) }
+                ?? Text(.settingsControlsControllerTitle)
         case .player(let player):
-            "Player \(player + 1)"
+            Text(.settingsControlsPlayerTitle(number: player + 1))
         }
     }
 
-    private var note: String {
+    private var note: LocalizedStringResource {
         switch store.editing {
         case .keyboard:
-            return "The keyboard plays as player 1. Choose an action, then press the key you want for it."
+            return .settingsControlsNoteKeyboard
         case .controller(let key):
             guard store.state.isConnected(key) else {
-                return "This controller isn’t connected. You can still change its bindings: choose an action, "
-                    + "then tap the button you want."
+                return .settingsControlsNoteDisconnected
             }
             guard store.draft.ownsPreset(key) else {
-                return "Choose an action, then press the button you want for it. Your first change saves a "
-                    + "preset just for this controller."
+                return .settingsControlsNoteFirstChange
             }
-            return "Choose an action, then press the button you want for it. A player’s own bindings take "
-                + "priority over these."
+            return .settingsControlsNotePlayerPriority
         case .player(let player):
             guard store.draft.playerPreset(player) != nil else {
-                return "Player \(player + 1) uses each controller’s own bindings. Your first change gives them "
-                    + "bindings of their own, used whichever controller they hold."
+                return .settingsControlsNotePlayerShared(number: player + 1)
             }
-            return "These bindings follow player \(player + 1) whichever controller they hold."
+            return .settingsControlsNotePlayerOwn(number: player + 1)
         }
     }
 
@@ -256,8 +251,8 @@ private struct ControlsCaptureBar: View {
                     .foregroundStyle(Palette.accent)
                     .accessibilityHidden(true)
                 Text(instruction).font(.callout).frame(maxWidth: .infinity, alignment: .leading)
-                FocusButton("Clear", action: clear).glassControlStyle()
-                FocusButton("Cancel", action: cancel).glassControlStyle()
+                FocusButton(.commonClear, action: clear).glassControlStyle()
+                FocusButton(.commonCancel, action: cancel).glassControlStyle()
             }
             if capture.source == .gamepadButton {
                 LazyVGrid(
@@ -300,19 +295,19 @@ private struct ControlsCaptureBar: View {
         max(44, layout.controlSize)
     }
 
-    private var instruction: String {
-        let control = capture.target.label
+    private var instruction: LocalizedStringResource {
+        let control = String(localized: capture.target.label)
         switch capture.source {
         case .macKey, .mouseButton:
-            return "Press the key for \(control). Escape cancels."
+            return .settingsControlsCaptureKey(control: control)
         case .gamepadButton:
             guard canListen else {
-                return "Tap the button you want for \(control)."
+                return .settingsControlsCaptureTap(control: control)
             }
             guard let controller else {
-                return "Press a button for \(control) on any controller, or tap one below."
+                return .settingsControlsCaptureAnyController(control: control)
             }
-            return "Press a button for \(control) on \(controller), or tap one below. Hold any button to cancel."
+            return .settingsControlsCaptureController(control: control, controller: controller)
         }
     }
 
@@ -345,7 +340,7 @@ private struct ControlsChangeBanner: View {
             Text(Self.sentence(for: change))
                 .font(.callout)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            FocusButton("Undo", action: undo)
+            FocusButton(.settingsControlsUndo, action: undo)
                 .glassControlStyle()
         }
         .padding(.horizontal, 16)
@@ -359,33 +354,43 @@ private struct ControlsChangeBanner: View {
     ///
     /// - Parameter change: The change.
     /// - Returns: The sentences.
-    static func sentence(for change: ControlsChange) -> String {
+    static func sentence(for change: ControlsChange) -> LocalizedStringResource {
         let name = { (input: InputBinding) in
-            input.source == .gamepadButton
-                ? ControllerGlyphs.button(input.code, family: change.family, layout: change.layout).name
-                : input.label
+            String(localized: KeyCodeLabels.title(for: input, family: change.family, layout: change.layout))
         }
-        let base: String
+        let base: LocalizedStringResource
         switch change.summary {
         case .assigned(let binding):
-            base = "\(binding.target.label) is now on \(name(binding))."
+            base = .settingsControlsChangeAssigned(
+                control: String(localized: binding.target.label),
+                input: name(binding)
+            )
         case let .moved(binding, displaced, exchanged?):
-            base = "\(name(binding)) moved from \(displaced.label). \(displaced.label) now uses \(name(exchanged))."
+            let control = String(localized: displaced.label)
+            base = .settingsControlsChangeSwapped(
+                input: name(binding),
+                from: control,
+                control: control,
+                other: name(exchanged)
+            )
         case let .moved(binding, displaced, nil):
-            base = "\(name(binding)) moved from \(displaced.label), which is now unbound."
+            base = .settingsControlsChangeMoved(
+                input: name(binding),
+                control: String(localized: displaced.label)
+            )
         case .cleared(let control):
-            base = "\(control.label) is unbound."
+            base = .settingsControlsChangeCleared(control: String(localized: control.label))
         case .forgot(let controller):
             base = controller.isEmpty
-                ? "Forgot the controller."
-                : "Forgot \(controller)."
+                ? .settingsControlsChangeForgotUnnamed
+                : .settingsControlsChangeForgot(controller: controller)
         case .playerPresetRemoved(let player):
-            base = "Player \(player + 1) uses each controller’s own bindings again."
+            base = .settingsControlsChangePlayerShared(number: player + 1)
         }
         guard let preset = change.createdPreset else {
             return base
         }
-        return base + " Saved as “\(preset)”."
+        return .settingsControlsChangeSavedAs(change: String(localized: base), preset: preset)
     }
 }
 
@@ -410,35 +415,35 @@ private struct ControlsPresetPicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Preset")
-                Picker("Preset", selection: selection) {
+                Text(.settingsControlsPreset)
+                Picker(.settingsControlsPreset, selection: selection) {
                     ForEach(store.draft.presets) {
-                        Text(chiakiLocalizedPresetName($0.name)).tag($0.id)
+                        Text($0.title).tag($0.id)
                     }
                 }
                 .labelsHidden()
                 .nativeFocusHighlight()
-                FocusButton("Duplicate", systemImage: "square.on.square") {
+                FocusButton(.settingsControlsDuplicate, systemImage: "square.on.square") {
                     store.send(.duplicatePreset(preset.id, for: target))
                 }
                 .glassControlStyle()
                 .disabled(store.draft.presets.count >= ControlsConfiguration.presetLimit)
             }
-            DisclosureGroup("Manage preset") {
+            DisclosureGroup(.settingsControlsManagePreset) {
                 VStack(alignment: .leading, spacing: 12) {
-                    TextField("Preset name", text: name)
+                    TextField(.settingsControlsPresetName, text: name)
                         .textFieldStyle(.plain).padding(10)
                         .menuFocusBinding(nameFocus)
                         .controllerKeyboard(
-                            title: "Preset name",
+                            title: .settingsControlsPresetName,
                             text: name,
                             isFocused: nameFocused
                         )
                         .glassPanel(.small)
-                    FocusButton("Reset bindings") {
+                    FocusButton(.settingsControlsResetBindings) {
                         store.send(.resetPresetBindings(preset.id))
                     }
-                    FocusButton("Delete preset", role: .destructive) {
+                    FocusButton(.settingsControlsDeletePreset, role: .destructive) {
                         store.send(.deletePreset(preset.id))
                     }
                     .disabled(store.draft.presets.count == 1)

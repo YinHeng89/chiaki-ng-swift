@@ -7,7 +7,7 @@ import SwiftUI
 /// A field for the other device's verification code, shown digit by digit.
 public struct KakusanCodeField: View {
     /// The heading above the digits.
-    public let title: String
+    public let title: LocalizedStringResource
     /// The digits typed so far.
     @Binding public var code: String
     /// Whether the card's selection is on the field.
@@ -29,7 +29,7 @@ public struct KakusanCodeField: View {
     ///   - keyboardRequest: Changes when the field should take keyboard focus.
     ///   - submit: Called when the code is submitted.
     public init(
-        title: String,
+        title: LocalizedStringResource,
         code: Binding<String>,
         selected: Bool,
         keyboardRequest: Int,
@@ -131,7 +131,7 @@ public struct KakusanCodeField: View {
 /// This device's verification code, digit by digit.
 public struct KakusanCodeDisplay: View {
     /// The heading above the digits.
-    public let title: String
+    public let title: LocalizedStringResource
     /// The code, or nothing while it is not ready.
     public let code: KakusanCode?
 
@@ -140,7 +140,7 @@ public struct KakusanCodeDisplay: View {
     /// - Parameters:
     ///   - title: The heading above the digits.
     ///   - code: The code, or nothing while it is not ready.
-    public init(title: String, code: KakusanCode?) {
+    public init(title: LocalizedStringResource, code: KakusanCode?) {
         self.title = title
         self.code = code
     }
@@ -163,8 +163,7 @@ public struct KakusanCodeDisplay: View {
                 }
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(code.map { "\(title) \($0.digits.map(String.init).joined(separator: " "))" }
-                ?? title)
+            .accessibilityLabel(spokenCode)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
@@ -172,10 +171,20 @@ public struct KakusanCodeDisplay: View {
     }
 }
 
+extension KakusanCodeDisplay {
+    private var spokenCode: LocalizedStringResource {
+        guard let code else {
+            return title
+        }
+        let digits = code.digits.map(String.init).joined(separator: " ")
+        return .kakusanCodeAccessibility(title: String(localized: title), digits: digits)
+    }
+}
+
 /// The first lines of an invitation or reply block.
 public struct KakusanBlockPreview: View {
     /// The heading above the preview.
-    public let label: String
+    public let label: LocalizedStringResource
     /// The block whose first lines are shown.
     public let block: KakusanBlock
 
@@ -184,7 +193,7 @@ public struct KakusanBlockPreview: View {
     /// - Parameters:
     ///   - label: The heading above the preview.
     ///   - block: The block whose first lines are shown.
-    public init(label: String, block: KakusanBlock) {
+    public init(label: LocalizedStringResource, block: KakusanBlock) {
         self.label = label
         self.block = block
     }
@@ -201,7 +210,7 @@ public struct KakusanBlockPreview: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(12)
                 .background(Color.primary.opacity(0.06), in: .rect(cornerRadius: 12))
-                .accessibilityLabel("\(label) text")
+                .accessibilityLabel(.kakusanBlockAccessibility(label: String(localized: label)))
         }
     }
 }
@@ -212,7 +221,7 @@ public struct KakusanBlockPreview: View {
 /// the feature removes the file when the card goes away.
 public struct KakusanCopyButton: View {
     /// The button's title before copying.
-    public let title: String
+    public let title: LocalizedStringResource
     /// The block's text, shared while no file is ready.
     public let text: String
     /// Whether the block was copied.
@@ -237,7 +246,7 @@ public struct KakusanCopyButton: View {
     ///   - copy: Copies the block.
     ///   - shown: Tells the feature the button appeared.
     public init(
-        title: String,
+        title: LocalizedStringResource,
         text: String,
         copied: Bool,
         file: URL?,
@@ -257,14 +266,15 @@ public struct KakusanCopyButton: View {
     public var body: some View {
         HStack(spacing: 10) {
             FocusButton(action: copy) {
-                Label(
-                    copied
-                        ? "Copied"
-                        : title,
-                    systemImage: copied
+                Label {
+                    Text(copied
+                        ? .kakusanCopyCopied
+                        : title)
+                } icon: {
+                    Image(systemName: copied
                         ? "checkmark"
-                        : "doc.on.doc"
-                )
+                        : "doc.on.doc")
+                }
                 .frame(maxWidth: .infinity)
             }
             .glassProminentControlStyle()
@@ -281,11 +291,11 @@ public struct KakusanCopyButton: View {
     @ViewBuilder private var share: some View {
         if let file {
             ShareLink(item: file) {
-                Label("Share", systemImage: "square.and.arrow.up")
+                Label(.kakusanCopyShare, systemImage: "square.and.arrow.up")
             }
         } else {
             ShareLink(item: text) {
-                Label("Share", systemImage: "square.and.arrow.up")
+                Label(.kakusanCopyShare, systemImage: "square.and.arrow.up")
             }
         }
     }
@@ -294,7 +304,7 @@ public struct KakusanCopyButton: View {
 /// A multi-line field for pasting an invitation or reply block.
 public struct KakusanTextBlockField: View {
     /// The field's accessibility label.
-    public let title: String
+    public let title: LocalizedStringResource
     /// The pasted text.
     @Binding public var text: String
     /// How many lines the field grows between.
@@ -318,7 +328,7 @@ public struct KakusanTextBlockField: View {
     ///   - keyboardRequest: Changes when the field should take keyboard focus.
     ///   - submit: Called when the text is submitted.
     public init(
-        title: String,
+        title: LocalizedStringResource,
         text: Binding<String>,
         lines: ClosedRange<Int>,
         selected: Bool,
@@ -334,28 +344,30 @@ public struct KakusanTextBlockField: View {
     }
 
     public var body: some View {
-        TextField("RCP1:", text: $text, axis: .vertical)
-            .textFieldStyle(.plain)
-            .font(.system(size: 11, design: .monospaced))
-            .lineLimit(lines)
-            .menuFocusBinding($focused)
-            .onSubmit(submit)
-            .padding(12)
-            .background(Color.primary.opacity(0.06), in: .rect(cornerRadius: 12))
-            .overlay {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(selected
-                        ? Palette.accent
-                        : Color.clear, lineWidth: 2)
-            }
-            .accessibilityLabel(title)
-            .controllerKeyboard(
-                title: title,
-                text: $text,
-                isFocused: focused || selected,
-                presentationRequest: keyboardRequest,
-                presentationWindow: hostWindow
-            )
-            .background(WindowAccessor { hostWindow = $0 })
+        TextField(text: $text, axis: .vertical) {
+            Text(verbatim: "RCP1:")
+        }
+        .textFieldStyle(.plain)
+        .font(.system(size: 11, design: .monospaced))
+        .lineLimit(lines)
+        .menuFocusBinding($focused)
+        .onSubmit(submit)
+        .padding(12)
+        .background(Color.primary.opacity(0.06), in: .rect(cornerRadius: 12))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(selected
+                    ? Palette.accent
+                    : Color.clear, lineWidth: 2)
+        }
+        .accessibilityLabel(title)
+        .controllerKeyboard(
+            title: title,
+            text: $text,
+            isFocused: focused || selected,
+            presentationRequest: keyboardRequest,
+            presentationWindow: hostWindow
+        )
+        .background(WindowAccessor { hostWindow = $0 })
     }
 }

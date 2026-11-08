@@ -4,11 +4,11 @@ import Testing
 @testable import ChiakiFeatures
 
 @Test func standingLabelsComeFromTheCoreStanding() {
-    #expect(CloudStanding.inLibrary.label == "In your library")
-    #expect(CloudStanding.included.label == "Included with Premium")
-    #expect(CloudStanding.mayStream.label == "May stream")
-    #expect(CloudStanding.store.label == "View in Store")
-    #expect(CloudStanding.ownershipUnknown.label == "View in Store")
+    #expect(String(localized: CloudStanding.inLibrary.label) == "In your library")
+    #expect(String(localized: CloudStanding.included.label) == "Included with Premium")
+    #expect(String(localized: CloudStanding.mayStream.label) == "May stream")
+    #expect(String(localized: CloudStanding.store.label) == "View in Store")
+    #expect(String(localized: CloudStanding.ownershipUnknown.label) == "View in Store")
 }
 
 @Test(.enabled(if: PS5CloudLaunchBuild.included)) func launchRequestsNeedACloudServiceAndAProduct() throws {
@@ -27,9 +27,13 @@ import Testing
 @Test func releaseDatesAreDisplayFactsAgainstTheDeviceClock() {
     let now = Date(timeIntervalSince1970: 1_800_000_000)
     #expect(CloudReleaseDate.unrestricted.label(now: now) == nil)
-    #expect(CloudReleaseDate.unannounced.label(now: now) == "Release date not announced")
-    #expect(CloudReleaseDate.scheduled(now.addingTimeInterval(75)).label(now: now) == "Releases in 00:01:15")
+    #expect(CloudReleaseDate.unannounced.label(now: now).map { String(localized: $0) }
+        == "Release date not announced")
+    #expect(CloudReleaseDate.scheduled(now.addingTimeInterval(75)).label(now: now)
+        .map { String(localized: $0) }
+        == "Releases in 00:01:15")
     #expect(CloudReleaseDate.scheduled(now.addingTimeInterval(-1)).label(now: now) == nil)
     #expect(CloudReleaseDate.scheduled(now.addingTimeInterval(3 * 86400 + 3600)).label(now: now)
+        .map { String(localized: $0) }
         == "Releases in 3d 01:00:00")
 }

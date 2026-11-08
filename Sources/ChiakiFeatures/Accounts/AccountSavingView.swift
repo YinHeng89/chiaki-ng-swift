@@ -22,9 +22,11 @@ public struct AccountSavingView: View {
     /// The view.
     public var body: some View {
         VStack(spacing: 24) {
-            ProgressView("Saving your account…")
+            ProgressView {
+                Text(.accountsSavingProgress)
+            }
             FlowSecondaryButton(
-                label: "Cancel",
+                label: .commonCancel,
                 focus: "Cancel",
                 focusedAction: focusedAction,
                 perform: cancel

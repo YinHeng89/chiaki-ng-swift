@@ -36,7 +36,7 @@ public struct GameDetailPresentation: Equatable {
         /// How many of the five stars are filled, the average rounded.
         public let filledStars: Int
         /// The number of ratings with its noun, such as "1 rating" or "1,204 ratings".
-        public let count: String
+        public let count: LocalizedStringResource
         /// The breakdown rows from five stars down to one.
         public let bars: [Bar]
 
@@ -47,7 +47,7 @@ public struct GameDetailPresentation: Equatable {
         ///   - filledStars: How many of the five stars are filled, the average rounded.
         ///   - count: The number of ratings with its noun, such as "1 rating" or "1,204 ratings".
         ///   - bars: The breakdown rows from five stars down to one.
-        public init(average: String, filledStars: Int, count: String, bars: [Bar]) {
+        public init(average: String, filledStars: Int, count: LocalizedStringResource, bars: [Bar]) {
             self.average = average
             self.filledStars = filledStars
             self.count = count
@@ -106,7 +106,7 @@ public struct GameDetailPresentation: Equatable {
     /// A labelled fact row such as the publisher, release date or genres.
     public struct Fact: Equatable, Identifiable {
         /// The row's label.
-        public let label: String
+        public let label: LocalizedStringResource
         /// The row's value.
         public let value: String
 
@@ -115,14 +115,14 @@ public struct GameDetailPresentation: Equatable {
         /// - Parameters:
         ///   - label: The row's label.
         ///   - value: The row's value.
-        public init(label: String, value: String) {
+        public init(label: LocalizedStringResource, value: String) {
             self.label = label
             self.value = value
         }
 
-        /// Identifies the row by its label.
+        /// Identifies the row by its label's catalog key.
         public var id: String {
-            label
+            label.key
         }
     }
 
@@ -147,14 +147,14 @@ public struct GameDetailPresentation: Equatable {
         media = details.screenshots.map(Media.screenshot) + details.trailers.map(Media.trailer)
         var facts: [Fact] = []
         if !details.publisher.isEmpty {
-            facts.append(Fact(label: "Publisher", value: details.publisher))
+            facts.append(Fact(label: .libraryDetailPublisher, value: details.publisher))
         }
         if let released = details.releasedAt {
             let style = Date.FormatStyle(date: .long, time: .omitted, locale: locale, timeZone: timeZone)
-            facts.append(Fact(label: "Released", value: released.formatted(style)))
+            facts.append(Fact(label: .libraryDetailReleased, value: released.formatted(style)))
         }
         if !details.genres.isEmpty {
-            facts.append(Fact(label: "Genres", value: details.genres.joined(separator: ", ")))
+            facts.append(Fact(label: .libraryDetailGenres, value: details.genres.joined(separator: ", ")))
         }
         self.facts = facts
     }
@@ -168,15 +168,14 @@ public struct GameDetailPresentation: Equatable {
         guard stars.ratings > 0, stars.percentByStars.count == 5 else {
             return nil
         }
-        let count = stars.ratings.formatted(.number.locale(locale))
+        var count: LocalizedStringResource = .libraryDetailRatingCount(count: stars.ratings)
+        count.locale = locale
         return Rating(
             average: stars.averageText.isEmpty
                 ? stars.average.formatted(.number.precision(.fractionLength(2)).locale(locale))
                 : stars.averageText,
             filledStars: min(5, max(0, Int(stars.average.rounded()))),
-            count: stars.ratings == 1
-                ? "\(count) rating"
-                : "\(count) ratings",
+            count: count,
             bars: (1...5).reversed().map { Bar(
                 stars: $0,
                 percent: min(100, max(0, stars.percentByStars[$0 - 1]))

@@ -18,18 +18,15 @@ public struct InternetConnectionSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Internet connections").font(.headline)
+            Text(.settingsNetworkInternetHeading).font(.headline)
             VStack(alignment: .leading, spacing: 10) {
-                Toggle("Always guess ports", isOn: $store.draft.forcePortGuessing)
+                Toggle(.settingsNetworkAlwaysGuessPorts, isOn: $store.draft.forcePortGuessing)
                     .accessibilityIdentifier("internet-force-port-guessing")
-                Text(
-                    "Connections through the PlayStation Network guess ports only when the router needs it. "
-                        + "Turn this on if Internet connections fail behind a strict router."
-                )
-                .font(.caption).foregroundStyle(.secondary)
+                Text(.settingsNetworkAlwaysGuessPortsDetail)
+                    .font(.caption).foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 9) {
                     HStack {
-                        Text("Port guesses")
+                        Text(.settingsNetworkPortGuesses)
                         Spacer()
                         Text("\(store.draft.portGuessCount)")
                             .monospacedDigit()
@@ -43,16 +40,16 @@ public struct InternetConnectionSettingsView: View {
                     )
                     .nativeFocusHighlight()
                     .focusHighlightShape(.capsule)
-                    .accessibilityLabel("Port guesses")
-                    .accessibilityValue("\(store.draft.portGuessCount) ports")
+                    .accessibilityLabel(.settingsNetworkPortGuesses)
+                    .accessibilityValue(.settingsNetworkPortGuessCount(count: store.draft.portGuessCount))
                     .settingsSliderController(value: $store.draft.portGuessSliderValue)
-                    Text("More guesses can get through stricter routers but take longer to connect.")
+                    Text(.settingsNetworkPortGuessesDetail)
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 .padding(.top, 6)
             }
             .disabled(!store.isEditable)
-            SettingsPersistenceBanner(store.setting, subject: "Internet connection settings") {
+            SettingsPersistenceBanner(store.setting, subject: .settingsNetworkInternetSubject) {
                 store.send(.retry)
             }
         }

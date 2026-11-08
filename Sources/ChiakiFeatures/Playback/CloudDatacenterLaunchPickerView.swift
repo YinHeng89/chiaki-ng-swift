@@ -49,7 +49,7 @@ public struct CloudDatacenterLaunchPickerView: View {
     }
 
     /// The heading shown at the top of the picker.
-    public static let title = "Choose a datacenter"
+    public static let title: LocalizedStringResource = .playbackCloudPickerTitle
     /// The tallest the list grows before it scrolls, on a tall screen.
     public static let tallListHeight: CGFloat = 360
     /// The tallest the list grows before it scrolls on a short screen, which leaves the heading and the panel's
@@ -148,11 +148,11 @@ public struct CloudDatacenterLaunchPickerView: View {
         offer.lowest?.name ?? offer.entries.first?.name
     }
 
-    private var countdownText: String {
+    private var countdownText: LocalizedStringResource {
         guard let remaining else {
-            return "Lowest ping"
+            return .playbackCloudPickerLowestPing
         }
-        return "Lowest ping, connecting in \(remaining) s"
+        return .playbackCloudPickerCountdown(seconds: remaining)
     }
 
     private func updateDrain(_ value: Int?) {
@@ -171,19 +171,19 @@ public struct CloudDatacenterLaunchPickerView: View {
     private func detail(
         _ entry: CloudDatacenterLaunchOffer.Entry,
         lowest: Bool
-    ) -> (text: String, colour: Color)? {
+    ) -> (text: LocalizedStringResource, colour: Color)? {
         if let pending {
             if pending == entry.name || (lowest && pending == CloudDatacenterLaunchOffer.automaticName) {
-                return ("Connecting", Palette.accent)
+                return (.playbackCloudPickerConnecting, Palette.accent)
             }
             if lowest {
-                return ("Lowest ping", Palette.accent)
+                return (.playbackCloudPickerLowestPing, Palette.accent)
             }
         } else if lowest {
             return (countdownText, Palette.accent)
         }
         if entry.highLatency {
-            return ("High latency", .orange)
+            return (.playbackCloudPickerHighLatency, .orange)
         }
         return nil
     }
@@ -260,20 +260,29 @@ public struct CloudDatacenterLaunchPickerView: View {
         }
     }
 
-    private func accessibilityLabel(_ entry: CloudDatacenterLaunchOffer.Entry, lowest: Bool) -> String {
-        var label = entry.answered
-            ? "\(entry.name), adjusted ping \(entry.pingDescription)"
-            : "\(entry.name), \(entry.pingDescription)"
+    private func accessibilityLabel(
+        _ entry: CloudDatacenterLaunchOffer.Entry,
+        lowest: Bool
+    ) -> LocalizedStringResource {
+        let ping = String(localized: entry.pingDescription)
+        var label: LocalizedStringResource = entry.answered
+            ? .playbackCloudPickerRowAdjusted(name: entry.name, ping: ping)
+            : .playbackCloudPickerRow(name: entry.name, ping: ping)
         if let bandwidth = entry.bandwidthDescription {
-            label += ", measured bandwidth \(bandwidth)"
+            label = .playbackCloudPickerRowBandwidth(
+                summary: String(localized: label),
+                bandwidth: String(localized: bandwidth)
+            )
         }
+        let summary = String(localized: label)
         if lowest {
-            label += ", lowest ping"
             if pending == nil, let remaining {
-                label += ", connecting in \(remaining) seconds"
+                return .playbackCloudPickerRowCountdown(summary: summary, seconds: remaining)
             }
-        } else if entry.highLatency {
-            label += ", high latency"
+            return .playbackCloudPickerRowLowest(summary: summary)
+        }
+        if entry.highLatency {
+            return .playbackCloudPickerRowHighLatency(summary: summary)
         }
         return label
     }

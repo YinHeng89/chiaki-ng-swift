@@ -197,7 +197,7 @@ public struct StreamFeature {
         }
 
         /// The text of the failure, when the session failed.
-        public var failureMessage: String? {
+        public var failureMessage: LocalizedStringResource? {
             guard let failure = session.failure, let kind else {
                 return nil
             }
@@ -205,7 +205,10 @@ public struct StreamFeature {
             guard kind == .cloud, let datacenter else {
                 return text
             }
-            return text + "\nDatacenter: " + datacenter.statisticsDescription + "."
+            return .playbackFailureWithDatacenter(
+                message: String(localized: text),
+                datacenter: String(localized: datacenter.statisticsDescription)
+            )
         }
 
         /// How the picture fits now: the menu's edit once it has loaded, else the fit the stream started with.
@@ -509,7 +512,7 @@ public struct StreamFeature {
             case .invitations(.delegate(.automaticJoinFailed(let failure))):
                 toast(.received(CloudSystemNotice(
                     kind: .invitationJoinFailed,
-                    detail: StreamMenuInvitationsControls.message(failure)
+                    detail: String(localized: StreamMenuInvitationsControls.message(failure))
                 )), state: state)
             case .menu, .microphone, .invitations, .trophies, .toasts, .delegate:
                 .none
@@ -854,7 +857,7 @@ extension StreamFeature {
         let route = asked == .internet
             ? "Remote"
             : "Local"
-        let text = StreamFailureMessage(failure, kind: .console).text
+        let text = StreamFailureMessage(failure, kind: .console).text.english
         return .run { [logger] _ in
             await logger.log(.diagnostic(.playback, .error, "\(route) play could not start: \(text)"))
         }

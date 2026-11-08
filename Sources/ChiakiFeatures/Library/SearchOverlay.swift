@@ -6,7 +6,7 @@ import SwiftUI
 /// outside, while what it searches keeps filtering underneath as the text changes.
 struct SearchOverlay: View {
     /// The field's placeholder.
-    let prompt: String
+    let prompt: LocalizedStringResource
     /// The text searched for.
     @Binding var query: String
     /// The overlay's accessibility identifier.
@@ -45,7 +45,7 @@ struct SearchOverlay: View {
                 Button {
                     query = ""
                 } label: {
-                    Label("Clear", systemImage: "xmark.circle.fill")
+                    Label(.commonClear, systemImage: "xmark.circle.fill")
                         .labelStyle(.iconOnly)
                         .foregroundStyle(.secondary)
                         .frame(width: 44, height: 44)
@@ -53,7 +53,7 @@ struct SearchOverlay: View {
                 }
                 .buttonStyle(.plain)
             }
-            Button("Done", action: done)
+            Button(.commonDone, action: done)
                 .buttonStyle(.plain)
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(Palette.accent)

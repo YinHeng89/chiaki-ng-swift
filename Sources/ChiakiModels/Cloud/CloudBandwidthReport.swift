@@ -1,3 +1,5 @@
+import Foundation
+
 /// The connection bandwidth a cloud launch measured or reused.
 public struct CloudBandwidthReport: Equatable, Sendable {
     /// The bandwidth in kilobits per second.
@@ -17,27 +19,31 @@ public struct CloudBandwidthReport: Equatable, Sendable {
     }
 
     /// The bandwidth in whole megabits per second.
-    public var rate: String {
-        "\(kbps / 1000) Mbps"
+    public var rate: LocalizedStringResource {
+        .cloudBandwidthRate(mbps: megabits)
     }
 
     /// The phrase shown in launch progress.
-    public var progressDescription: String {
+    public var progressDescription: LocalizedStringResource {
         guard let ageSeconds else {
             return rate
         }
         return ageSeconds < 60
-            ? "\(rate) saved moments ago"
-            : "\(rate) saved \(ageSeconds / 60) min ago"
+            ? .cloudBandwidthSavedMomentsAgo(mbps: megabits)
+            : .cloudBandwidthSavedMinutesAgo(mbps: megabits, minutes: ageSeconds / 60)
     }
 
     /// The phrase shown in stream statistics.
-    public var statisticsDescription: String {
+    public var statisticsDescription: LocalizedStringResource {
         guard let ageSeconds else {
-            return "\(rate), measured at launch"
+            return .cloudBandwidthMeasuredAtLaunch(mbps: megabits)
         }
         return ageSeconds < 60
-            ? "\(rate), measured moments before launch"
-            : "\(rate), measured \(ageSeconds / 60) min before launch"
+            ? .cloudBandwidthMeasuredMomentsBefore(mbps: megabits)
+            : .cloudBandwidthMeasuredMinutesBefore(mbps: megabits, minutes: ageSeconds / 60)
+    }
+
+    private var megabits: Int {
+        kbps / 1000
     }
 }

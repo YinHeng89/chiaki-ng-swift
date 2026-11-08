@@ -185,7 +185,7 @@ struct CloudCardStatus: View {
                     : .white.opacity(0.8))
     }
 
-    private func line(_ standing: String) -> some View {
+    private func line(_ standing: LocalizedStringResource) -> some View {
         HStack(spacing: 6) {
             icon
             Text(standing)
@@ -234,9 +234,9 @@ enum CloudStreamMark: Equatable {
     }
 
     /// The status line text for an unconfirmed game, or `nil` when the line shows the standing instead.
-    var label: String? {
+    var label: LocalizedStringResource? {
         self == .unconfirmed
-            ? "Not confirmed for cloud"
+            ? .libraryStreamMarkNotConfirmed
             : nil
     }
 
@@ -253,39 +253,39 @@ enum CloudStreamMark: Equatable {
     }
 
     /// The mark as VoiceOver reads it in the card's label, or `nil` when nothing is marked.
-    var spoken: String? {
+    var spoken: LocalizedStringResource? {
         switch self {
         case .none:
             nil
         case .unconfirmed:
-            "Not confirmed for cloud"
+            .libraryStreamMarkNotConfirmed
         case .unavailable:
-            "Not streamable"
+            .libraryStreamMarkNotStreamable
         }
     }
 
     /// The short caption the badge shows beside its icon on touch, where its help text cannot be hovered, or
     /// `nil` when nothing is marked.
-    var caption: String? {
+    var caption: LocalizedStringResource? {
         switch self {
         case .none:
             nil
         case .unconfirmed:
-            "May not stream"
+            .libraryStreamMarkMayNotStream
         case .unavailable:
-            "Not streamable"
+            .libraryStreamMarkNotStreamable
         }
     }
 
     /// The badge's help text explaining the mark, or `nil` when nothing is marked.
-    var help: String? {
+    var help: LocalizedStringResource? {
         switch self {
         case .none:
             nil
         case .unconfirmed:
-            "The PlayStation website list says this game may not stream. Check & play asks the store first."
+            .libraryStreamMarkUnconfirmedHelp
         case .unavailable:
-            "The store says this edition can't be streamed from the cloud."
+            .libraryStreamMarkUnavailableHelp
         }
     }
 }
@@ -385,13 +385,14 @@ struct CloudTrialBadge: View {
     /// The hourglass for a Play First Trial or the demo icon for an ordinary trial.
     let icon: AppIcon
     /// The trial's state, such as Trial, Demo, Trial available or Demo available.
-    let label: String
+    let label: LocalizedStringResource
 
     var body: some View {
         HStack(spacing: 5) {
             icon.image
                 .font(.system(size: 11, weight: .bold))
-            Text(label.uppercased())
+            Text(label)
+                .textCase(.uppercase)
                 .font(.system(size: 11, weight: .bold))
                 .tracking(0.6)
         }
@@ -460,7 +461,7 @@ struct CloudReleaseCountdown: View {
         if release != .unrestricted {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
                 if let label = release.label(now: catalog.serverTime() ?? timeline.date) {
-                    CloudGameMetadata(text: label, icon: .release)
+                    CloudGameMetadata(text: String(localized: label), icon: .release)
                         .accessibilityIdentifier("cloud-release")
                 }
             }
@@ -500,7 +501,7 @@ extension CloudGame {
     ///
     /// - Parameter check: The game's store page check, if one ran.
     /// - Returns: The label to show for the game.
-    func standingLabel(after check: CloudCardCheck?) -> String {
+    func standingLabel(after check: CloudCardCheck?) -> LocalizedStringResource {
         let standing = standing(after: check)
         guard let trialLabel, standing != .store, standing != .ownershipUnknown else {
             return standing.label
@@ -513,13 +514,13 @@ extension CloudGame {
     ///
     /// - Parameter check: The game's store page check, if one ran.
     /// - Returns: The spoken label.
-    func spokenTileLabel(after check: CloudCardCheck?) -> String {
+    func spokenTileLabel(after check: CloudCardCheck?) -> LocalizedStringResource {
         let notes = [CloudStreamMark(self, check: check).spoken, trialLabel ?? trialOfferLabel]
-            .compactMap { $0?.lowercased() }
+            .compactMap { $0.map { String(localized: $0).lowercased() } }
         guard !notes.isEmpty else {
-            return "Show details for \(name)"
+            return .libraryCardShowDetails(name: name)
         }
-        return "Show details for \(name), \(notes.joined(separator: ", "))"
+        return .libraryCardShowDetailsNotes(name: name, notes: notes.joined(separator: ", "))
     }
 
     /// The icon for how the game is held: the trial or demo icon for trials, library for owned games,

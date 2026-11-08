@@ -247,7 +247,7 @@ struct CompactSettingsButton: View {
                 break
             }
         }
-        .accessibilityLabel("Settings")
+        .accessibilityLabel(.commonSettings)
         .background(WindowAccessor { hostWindow = $0 })
         .onReceive(NotificationCenter.default.publisher(for: .focusSettingsControl)) { notification in
             guard let window = notification.object as? PlatformWindow, window === hostWindow,

@@ -30,7 +30,7 @@ struct LibraryHeaderBar: View {
             CompactLibraryBar(trailingReserve: trailingReserve) {
                 if KakusanBuild.included {
                     barButton(
-                        "Join a game",
+                        .libraryBarJoinGame,
                         symbol: "person.2",
                         stop: .joinGame,
                         action: joinGame
@@ -40,7 +40,7 @@ struct LibraryHeaderBar: View {
                 }
                 alertsButton
                 if shelf.graph.barAddConsole {
-                    barButton("Add console", symbol: AppIcon.add.rawValue, stop: .addConsole) {
+                    barButton(.libraryShelfAddConsole, symbol: AppIcon.add.rawValue, stop: .addConsole) {
                         store.send(.requested(.addConsole))
                     } move: { direction in
                         apply(shelf.graph.moveConsole(from: .addConsole, direction))
@@ -109,7 +109,7 @@ struct LibraryHeaderBar: View {
                 } action: { midX in
                     tabCenters[section] = midX
                 }
-                .accessibilityLabel(section.rawValue)
+                .accessibilityLabel(section.title)
                 .accessibilityAddTraits(
                     store.section == section
                         ? .isSelected
@@ -122,7 +122,7 @@ struct LibraryHeaderBar: View {
 
     private func sectionLabel(_ section: LibrarySection) -> some View {
         ViewThatFits(in: .horizontal) {
-            Label(section.rawValue, systemImage: section.icon.rawValue)
+            Label(section.title, systemImage: section.icon.rawValue)
                 .lineLimit(1)
                 .fixedSize()
                 .padding(.horizontal, 16)
@@ -154,8 +154,8 @@ struct LibraryHeaderBar: View {
     private var alertsButton: some View {
         barButton(
             store.alerts.unseen > 0
-                ? "Notifications, \(store.alerts.unseen) new"
-                : "Notifications",
+                ? .libraryBarNotificationsNew(count: store.alerts.unseen)
+                : .libraryBarNotifications,
             symbol: "bell",
             stop: .notifications,
             badge: store.alerts.unseen
@@ -188,7 +188,7 @@ struct LibraryHeaderBar: View {
     }
 
     private func barButton(
-        _ title: String,
+        _ title: LocalizedStringResource,
         symbol: String,
         stop: ConsoleLibraryFocus,
         badge: Int = 0,
@@ -352,7 +352,7 @@ private struct AutoHidingLibraryBar<Bar: View>: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Show the library bar")
+        .accessibilityLabel(.libraryBarShowLibraryBar)
         .simultaneousGesture(
             DragGesture(minimumDistance: 8)
                 .onEnded { value in

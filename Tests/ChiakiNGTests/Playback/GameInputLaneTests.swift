@@ -144,8 +144,8 @@ private let touchpad = PlayStationControl.touchpad.bit ?? 0
 }
 
 @MainActor @Test func promptsShowTheLabelledButtonForNintendoLayouts() {
-    #expect(ControllerGlyphs.button(0, family: .nintendo).name == "B")
-    #expect(ControllerGlyphs.button(0, family: .nintendo, layout: .label).name == "A")
+    #expect(String(localized: ControllerGlyphs.button(0, family: .nintendo).name) == "B")
+    #expect(String(localized: ControllerGlyphs.button(0, family: .nintendo, layout: .label).name) == "A")
     #expect(ControllerGlyphs.button(0, family: .playStation, layout: .label).name
         == ControllerGlyphs.button(0, family: .playStation).name)
 }

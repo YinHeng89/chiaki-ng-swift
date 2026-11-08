@@ -68,7 +68,7 @@ private let single = CloudGame(
     #expect(choices.map(\.id) == [firstID, secondID])
     #expect(choices.map(\.game.name) == ["First Game", "Game 2"])
     #expect(choices.map(\.refusal) == [nil, .addToLibrary])
-    #expect(choices.map(\.reason) == [
+    #expect(choices.map { $0.reason.map { String(localized: $0) } } == [
         nil, "Add this title to your library on PlayStation Store to stream it."
     ])
     #expect(choices.map(\.game.imageUrl) == [first.imageUrl, bundle.imageUrl])
@@ -104,7 +104,8 @@ private let single = CloudGame(
     #expect(store.state.bundleChoices.isEmpty)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func choosingAPlayableGameChecksThatGameOnTheBundleCard() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func choosingAPlayableGameChecksThatGameOnTheBundleCard() async throws {
     let asked = LockIsolated<[String]>([])
     let events: [CloudLaunchClearanceEvent] = [
         .check(.loadingLibrary), .check(.cloudStreaming), .check(.entitlement), .check(.cloudGame),
@@ -144,7 +145,8 @@ private let single = CloudGame(
     #expect(asked.value.isEmpty)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func leavingThePickerStopsTheChecksStillRunning() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func leavingThePickerStopsTheChecksStillRunning() async throws {
     let store = pickerStore(
         selecting: bundle, events: [.check(.loadingLibrary), .check(.cloudStreaming)], asked: LockIsolated([])
     )
@@ -160,7 +162,8 @@ private let single = CloudGame(
     #expect(store.state.launchChecks == nil)
 }
 
-@MainActor @Test(.enabled(if: PS5CloudLaunchBuild.included)) func aRefusalForAChosenGameStaysWithThePicker() async throws {
+@MainActor @Test(.enabled(if: PS5CloudLaunchBuild
+        .included)) func aRefusalForAChosenGameStaysWithThePicker() async throws {
     let refused = CloudClearanceRefusal(refusal: .purchaseNeeded)
     let store = pickerStore(
         selecting: bundle,

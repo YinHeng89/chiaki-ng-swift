@@ -23,12 +23,17 @@ struct PlayerOneController {
 
     private var primaryKey: String?
     private var primaryResolved: Bool
+    private var reserved: Set<String>
 
     /// Creates the controller from the saved preference.
     ///
-    /// - Parameter primaryKey: The preference key of the saved player one, or `nil` when none was saved.
-    init(primaryKey: String?) {
+    /// - Parameters:
+    ///   - primaryKey: The preference key of the saved player one, or `nil` when none was saved.
+    ///   - reserved: The preference keys of the controllers the other players chose, which player one never
+    ///     takes as the first available controller.
+    init(primaryKey: String?, reserved: Set<String> = []) {
         self.primaryKey = primaryKey
+        self.reserved = reserved
         primaryResolved = primaryKey != nil
     }
 
@@ -49,6 +54,9 @@ struct PlayerOneController {
     ///   - chosen: A controller the user just picked, if any.
     /// - Returns: Whether player one changes; call ``adopt(_:configuration:)`` with the new controller.
     mutating func choose(from devices: [ControllerDevice], adopting chosen: UInt32? = nil) -> Choice {
+        let devices = devices.filter {
+            $0.id == chosen || $0.preferenceKey == primaryKey || !reserved.contains($0.preferenceKey)
+        }
         if !primaryResolved, let first = devices.first {
             primaryKey = first.preferenceKey
             primaryResolved = true
@@ -101,6 +109,7 @@ struct PlayerOneController {
     /// - Parameter configuration: The configuration.
     /// - Returns: The preferences player one had before.
     mutating func reload(_ configuration: ControlsConfiguration) -> ControllerPreferences {
+        reserved = configuration.controllerKeys(takenFromPlayer: 0)
         let previous = preferences
         preferences = device.flatMap { configuration.controllers[$0.preferenceKey] } ?? .init()
         return previous

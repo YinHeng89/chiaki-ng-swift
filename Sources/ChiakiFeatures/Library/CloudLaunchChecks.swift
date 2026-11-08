@@ -11,20 +11,20 @@ public struct CloudLaunchChecks: Equatable, Sendable {
         case membership, premium, yourCopy, cloudGame, restrictions, release
 
         /// The step's short label under its symbol.
-        public var label: String {
+        public var label: LocalizedStringResource {
             switch self {
             case .membership:
-                "Membership"
+                .libraryLaunchStepMembership
             case .premium:
-                "Premium"
+                .libraryLaunchStepPremium
             case .yourCopy:
-                "Your copy"
+                .libraryLaunchStepYourCopy
             case .cloudGame:
-                "Cloud game"
+                .libraryLaunchStepCloudGame
             case .restrictions:
-                "Restrictions"
+                .libraryLaunchStepRestrictions
             case .release:
-                "Release"
+                .libraryLaunchStepRelease
             }
         }
 
@@ -126,14 +126,14 @@ public struct CloudLaunchChecks: Equatable, Sendable {
     }
 
     /// The player-facing reason the checks stopped, or `nil` while they run or once they pass.
-    public var reason: String? {
+    public var reason: LocalizedStringResource? {
         switch phase {
         case .refused(_, let refusal):
             CloudClearanceRefusalMessage.text(for: refusal)
         case .unanswered(_, let failure):
             failure.needsSignIn
                 ? CloudPlaybackFailureMessage.text(for: .signInRequired)
-                : "The launch checks couldn’t be completed. Try again."
+                : .libraryLaunchStepUnanswered
         case .starting, .checking, .cleared, .launched:
             nil
         }

@@ -1,4 +1,5 @@
 import ChiakiModels
+import Foundation
 import Testing
 @testable import ChiakiFeatures
 
@@ -28,6 +29,10 @@ private struct FormerRefusal {
         self.code = code
         self.refusal = refusal
         self.message = message
+    }
+
+    init(_ code: Int, _ refusal: StreamOutcome.StartRefusal, _ message: LocalizedStringResource) {
+        self.init(code, refusal, String(localized: message))
     }
 }
 
@@ -96,20 +101,20 @@ private let formerCodeMessages: [FormerCode] = [
 
 @Test func anEndedTrialSaysSoOnACloudStreamWithoutOfferingARetry() {
     let ended = StreamFailure.stream(.consoleQuit(.trialEnded), overInternet: true)
-    #expect(StreamFailureMessage(ended, kind: .cloud).text
+    #expect(String(localized: StreamFailureMessage(ended, kind: .cloud).text)
         == "Your game trial has ended. Buy the game from the PlayStation Store to keep playing.")
     let timedOut = StreamFailure.stream(.consoleQuit(.timeLimitReached), overInternet: true)
-    #expect(StreamFailureMessage(timedOut, kind: .cloud).text
+    #expect(String(localized: StreamFailureMessage(timedOut, kind: .cloud).text)
         == "Streaming game closed because the time limit was reached.")
     let dropped = StreamFailure.stream(.consoleQuit(.consoleDisconnected), overInternet: true)
-    #expect(StreamFailureMessage(dropped, kind: .cloud).text
+    #expect(String(localized: StreamFailureMessage(dropped, kind: .cloud).text)
         == "The cloud session could not continue (console_quit.console_disconnected). Try again.")
 }
 
 @Test func aReachedTimeLimitSaysTheStreamingGameClosed() {
     for overInternet in [false, true] {
         let failure = PlaybackFailure.stream(.consoleQuit(.timeLimitReached), overInternet: overInternet)
-        let message = PlaybackFailureMessage.text(for: failure)
+        let message = String(localized: PlaybackFailureMessage.text(for: failure))
         #expect(message == "Streaming game closed because the time limit was reached.")
     }
 }
@@ -117,7 +122,8 @@ private let formerCodeMessages: [FormerCode] = [
 @Test func everyFormerCodeMessageSurvivesAsATypedOutcome() {
     for entry in formerCodeMessages {
         #expect(
-            PlaybackFailureMessage.text(for: .stream(entry.outcome, overInternet: false)) == entry.message,
+            String(localized: PlaybackFailureMessage.text(for: .stream(entry.outcome, overInternet: false)))
+                == entry.message,
             "former code \(entry.code)"
         )
     }
@@ -141,8 +147,9 @@ private let formerRefusalMessages: [FormerRefusal] = [
 @Test func everyFormerStartRefusalMessageSurvives() {
     for entry in formerRefusalMessages {
         #expect(
-            PlaybackFailureMessage.text(for: .stream(.startRefused(entry.refusal), overInternet: false))
-                == entry.message,
+            String(localized: PlaybackFailureMessage.text(
+                for: .stream(.startRefused(entry.refusal), overInternet: false)
+            )) == entry.message,
             "former code \(entry.code)"
         )
     }
@@ -150,21 +157,21 @@ private let formerRefusalMessages: [FormerRefusal] = [
         == PlaybackFailureMessage.text(for: .consoleNotOnLocalNetwork))
     #expect(PlaybackFailureMessage.text(for: .stream(.startRefused(.consoleUnreachable), overInternet: true))
         == PlaybackFailureMessage.text(for: .remoteUnavailable))
-    #expect(PlaybackFailureMessage
-        .text(for: .busy) == "The previous stream is still closing. Try again in a moment.")
+    #expect(String(localized: PlaybackFailureMessage.text(for: .busy))
+        == "The previous stream is still closing. Try again in a moment.")
 }
 
 @Test func aNetworkFailureIsNotReportedAsAConsoleLeavingTheAccount() {
-    let internet = PlaybackFailureMessage.text(for: .stream(
+    let internet = String(localized: PlaybackFailureMessage.text(for: .stream(
         .startRefused(.networkUnreachable),
         overInternet: true
-    ))
+    )))
     #expect(internet.hasPrefix("PlayStation Network couldn’t be reached."))
-    #expect(internet != PlaybackFailureMessage.text(for: .remoteUnavailable))
-    let home = PlaybackFailureMessage.text(for: .stream(
+    #expect(internet != String(localized: PlaybackFailureMessage.text(for: .remoteUnavailable)))
+    let home = String(localized: PlaybackFailureMessage.text(for: .stream(
         .startRefused(.networkUnreachable),
         overInternet: false
-    ))
+    )))
     #expect(home.contains("Local Network access"))
 }
 
@@ -179,7 +186,7 @@ private let formerRefusalMessages: [FormerRefusal] = [
     let failure = PlaybackFailure.stream(.startFailed(.pairingRejected), overInternet: true)
     #expect(failure.rejectsPairing)
     #expect(
-        PlaybackFailureMessage.text(for: failure)
+        String(localized: PlaybackFailureMessage.text(for: failure))
             == "The console no longer accepts this pairing. Unpair, then pair again."
     )
     #expect(!PlaybackFailure.stream(.startFailed(.controlRefused), overInternet: false).rejectsPairing)
@@ -192,7 +199,7 @@ private let formerRefusalMessages: [FormerRefusal] = [
     #expect(CloudPlaybackFailureMessage.text(for: .stream(.sessionFailed(.connectionLost)))
         == CloudPlaybackFailureMessage.connectionLost)
     let broken = StreamFailure.stream(.sessionFailed(.pipelineFailed), overInternet: true)
-    #expect(StreamFailureMessage(broken, kind: .cloud).text
+    #expect(String(localized: StreamFailureMessage(broken, kind: .cloud).text)
         == "The cloud session could not continue (session_failed.pipeline_failed). Try again.")
 }
 
@@ -200,7 +207,7 @@ private let formerRefusalMessages: [FormerRefusal] = [
     let failure = PlaybackFailure.stream(.startFailed(.unpairedConsole), overInternet: true)
     #expect(!failure.rejectsPairing)
     #expect(
-        PlaybackFailureMessage.text(for: failure)
+        String(localized: PlaybackFailureMessage.text(for: failure))
             == "PlayStation Network connected to a PS4 that isn’t paired with chiaki-ng. "
             + "Pair that PS4 at home first, or make this PS4 the primary console on your account."
     )
@@ -209,7 +216,7 @@ private let formerRefusalMessages: [FormerRefusal] = [
 @Test func aLostConnectionAsksToCheckTheNetwork() {
     for outcome in [StreamOutcome.sessionFailed(.connectionLost), .startFailed(.connectionLost)] {
         #expect(
-            PlaybackFailureMessage.text(for: .stream(outcome, overInternet: false))
+            String(localized: PlaybackFailureMessage.text(for: .stream(outcome, overInternet: false)))
                 == "The connection to the console was lost. Check the network and try again."
         )
     }
@@ -217,7 +224,8 @@ private let formerRefusalMessages: [FormerRefusal] = [
 
 @Test func aHostRefusalAsksThePlayerToFreeTheDevice() {
     #expect(
-        PlaybackFailureMessage.text(for: .stream(.startRefused(.hostRefused), overInternet: false))
-            == "The stream couldn’t start on this device. Close other apps and try again."
+        String(localized: PlaybackFailureMessage.text(
+            for: .stream(.startRefused(.hostRefused), overInternet: false)
+        )) == "The stream couldn’t start on this device. Close other apps and try again."
     )
 }

@@ -27,10 +27,10 @@ public struct TokensSettingsView: View {
                     .textSelection(.enabled)
             }
             if store.phase == .ready, store.accounts.isEmpty {
-                Text("No signed-in accounts").foregroundStyle(.secondary)
+                Text(.settingsTokensNoAccounts).foregroundStyle(.secondary)
             }
             ForEach(store.accounts) { account in
-                SettingsCard(account.name) {
+                SettingsCard(verbatim: account.name) {
                     ForEach(Array(account.credentials.enumerated()),
                             id: \.element.kind) { index, credential in
                         if index > 0 {
@@ -62,7 +62,7 @@ public struct TokensSettingsView: View {
 
     private var controls: some View {
         HStack(spacing: 12) {
-            FocusButton("Refresh") {
+            FocusButton(.commonRefresh) {
                 store.send(.load)
             }
             .glassControlStyle()
@@ -86,8 +86,8 @@ public struct TokensSettingsView: View {
                     ProgressView().controlSize(.small)
                 }
                 FocusButton(shows(target)
-                    ? "Hide"
-                    : "Reveal") {
+                    ? .commonHide
+                    : .settingsTokensReveal) {
                         if shows(target) {
                             store.send(.hide)
                         } else {
@@ -131,7 +131,7 @@ public struct TokensSettingsView: View {
                 .padding(10)
                 .background(.quaternary.opacity(0.5), in: .rect(cornerRadius: 8))
                 .accessibilityIdentifier("tokens-secret-\(name)")
-            FocusButton("Copy") {
+            FocusButton(.settingsTokensCopy) {
                 copy(text)
             }
             .glassControlStyle()

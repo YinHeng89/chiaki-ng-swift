@@ -200,15 +200,15 @@ private func played(_ id: String, at seconds: TimeInterval) -> CloudRecentlyPlay
     #expect(CloudStreamMark(plain, check: nil) == .none)
     #expect(CloudStreamMark(flagged, check: nil) == .unconfirmed)
     #expect(CloudStreamMark(flagged, check: .checking) == .unconfirmed)
-    #expect(CloudStreamMark(flagged, check: .unavailable("no answer")) == .unconfirmed)
+    #expect(CloudStreamMark(flagged, check: .unavailable(.noAnswer)) == .unconfirmed)
     #expect(CloudStreamMark(flagged, check: .streams) == .none)
     #expect(CloudStreamMark(flagged, check: .notStreamable) == .unavailable)
     #expect(CloudStreamMark(plain, check: .refused) == .unavailable)
     #expect(CloudStreamMark.unconfirmed.icon == .cloudUnconfirmed)
-    #expect(CloudStreamMark.unconfirmed.label == "Not confirmed for cloud")
+    #expect(CloudStreamMark.unconfirmed.label.map { String(localized: $0) } == "Not confirmed for cloud")
     #expect(CloudStreamMark.unavailable.label == nil)
     #expect(CloudStreamMark.unavailable.statusIcon == .store)
-    #expect(CloudStreamMark.unavailable.spoken == "Not streamable")
+    #expect(CloudStreamMark.unavailable.spoken.map { String(localized: $0) } == "Not streamable")
 }
 
 @Test func aConfirmedFlaggedGameShowsItsRealStanding() throws {
@@ -218,9 +218,9 @@ private func played(_ id: String, at seconds: TimeInterval) -> CloudRecentlyPlay
     #expect(flagged.standing(after: nil) == .mayStream)
     #expect(flagged.standing(after: .checking) == .mayStream)
     #expect(flagged.standing(after: .notStreamable) == .store)
-    #expect(flagged.standing(after: .notStreamable).label == "View in Store")
+    #expect(String(localized: flagged.standing(after: .notStreamable).label) == "View in Store")
     #expect(flagged.standing(after: .streams) == .inLibrary)
-    #expect(flagged.standing(after: .streams).label == "In your library")
+    #expect(String(localized: flagged.standing(after: .streams).label) == "In your library")
     #expect(sale.standing(after: .streams) == .store)
 }
 

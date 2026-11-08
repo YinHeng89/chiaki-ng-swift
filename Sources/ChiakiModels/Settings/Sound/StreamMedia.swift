@@ -1,3 +1,5 @@
+import Foundation
+
 /// Which media a stream carries.
 public enum StreamMedia: String, Codable, CaseIterable, Sendable {
     /// Video and sound.
@@ -13,16 +15,16 @@ public enum StreamMedia: String, Codable, CaseIterable, Sendable {
     case controlsOnly
 
     /// The label shown for the choice.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .pictureAndSound:
-            "Picture and sound"
+            .settingsSoundMediaPictureAndSound
         case .soundOnly:
-            "Sound only"
+            .settingsSoundMediaSoundOnly
         case .pictureOnly:
-            "Picture only"
+            .settingsSoundMediaPictureOnly
         case .controlsOnly:
-            "Controls only"
+            .settingsSoundMediaControlsOnly
         }
     }
 

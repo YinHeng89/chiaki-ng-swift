@@ -18,7 +18,7 @@ import Foundation
         /// The log has been read.
         case ready
         /// The last read failed with this message.
-        case failed(String)
+        case failed(LocalizedStringResource)
     }
 
     /// Whether the panel is visible and polling the log.
@@ -190,7 +190,7 @@ import Foundation
                 guard state.phase == .loading(id) else {
                     return .none
                 }
-                state.phase = .failed("The requests could not be read.")
+                state.phase = .failed(.settingsRequestsUnreadable)
             case .revisionSeen(let revision):
                 guard state.watch == .watching, !state.loading, revision != state.log.revision else {
                     return .none

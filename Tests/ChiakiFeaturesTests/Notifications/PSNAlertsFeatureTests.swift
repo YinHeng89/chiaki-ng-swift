@@ -361,7 +361,7 @@ private let den = HardwareID(hex: "0123456789AB")!
         session: "p-1",
         game: false,
         consoles: [PSNAlertsFeature.PartyConsole(hardwareID: den, name: "Den")]
-    )?.hasPrefix("Den joined the party") == true)
+    ).map { String(localized: $0) }?.hasPrefix("Den joined the party") == true)
     #expect(PSNAlertsPanel.joinNote(store.state.homeJoin, session: "p-2", game: false, consoles: []) == nil)
     await store.send(.watch(nil))
     #expect(store.state.homeJoin == .idle)
@@ -374,7 +374,7 @@ private let den = HardwareID(hex: "0123456789AB")!
     await store.receive(\.homeJoinFinished)
     #expect(store.state.homeJoin == .failed(session: "p-1", console: den, .timedOut))
     #expect(PSNAlertsPanel.joinNote(store.state.homeJoin, session: "p-1", game: false, consoles: [])
-        == "Your PS5 didn't answer in time. Try again.")
+        .map { String(localized: $0) } == "Your PS5 didn't answer in time. Try again.")
     await store.send(.watch(nil))
 }
 

@@ -32,29 +32,25 @@ public struct LoggingSettingsView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Group {
-                Toggle("Show live log button", isOn: $logging.draft.showLiveLogButton)
-                Toggle("Capture API requests and responses", isOn: $logging.draft.captureAPI)
-                Text(
-                    """
-                    Local JSON captures with sensitive values redacted. \
-                    Stream capture starts with your next connection. \
-                    Saved in API Captures inside the log folder.
-                    """
-                )
-                .font(.callout).foregroundStyle(.secondary)
-                Toggle("Redact identifiers in logs", isOn: $logging.draft.redactIdentifiers)
-                SettingsRow("Verbosity") {
-                    Picker("Verbosity", selection: $logging.draft.level) {
+                Toggle(.settingsDeveloperShowLiveLog, isOn: $logging.draft.showLiveLogButton)
+                Toggle(.settingsDeveloperCaptureApi, isOn: $logging.draft.captureAPI)
+                Text(.settingsDeveloperCaptureApiDetail)
+                    .font(.callout).foregroundStyle(.secondary)
+                Toggle(.settingsDeveloperRedactIdentifiers, isOn: $logging.draft.redactIdentifiers)
+                SettingsRow(.settingsDeveloperVerbosity) {
+                    Picker(selection: $logging.draft.level) {
                         ForEach(LogLevel.allCases, id: \.self) { level in
-                            Text(level.rawValue.capitalized).tag(level)
+                            Text(Self.title(of: level)).tag(level)
                         }
+                    } label: {
+                        Text(.settingsDeveloperVerbosity)
                     }
                 }
             }
             .disabled(!logging.isEditable)
             #if DEBUG
-                Toggle("Show sample pre-orders", isOn: $samplePreorders)
-                Toggle("Layered console cards", isOn: $layeredConsoleCards)
+                Toggle(.settingsDeveloperSamplePreorders, isOn: $samplePreorders)
+                Toggle(.settingsDeveloperLayeredConsoleCards, isOn: $layeredConsoleCards)
                 SampleConsolesSettingsView()
                 DeveloperSettingsView(
                     store: developer.scope(state: \.takion, action: \.takion),
@@ -62,14 +58,14 @@ public struct LoggingSettingsView: View {
                     buildVersion: developer.state.buildTakionVersion(for:)
                 )
             #endif
-            Text("Log folder").font(.headline)
+            Text(.settingsDeveloperLogFolder).font(.headline)
             Text(logging.draft.directory).foregroundStyle(.secondary).textSelection(.enabled)
             HStack {
                 #if os(macOS)
-                    FocusButton("Choose folder…", action: chooseFolder)
+                    FocusButton(.settingsDeveloperChooseFolder, action: chooseFolder)
                         .glassControlStyle()
                         .disabled(!logging.isEditable)
-                    FocusButton("Show in Finder") {
+                    FocusButton(.settingsDeveloperShowInFinder) {
                         FolderAccess.open(logging.draft.directory, bookmark: logging.draft.directoryBookmark)
                         NSWorkspace.shared.open(URL(
                             fileURLWithPath: logging.draft.directory,
@@ -78,7 +74,7 @@ public struct LoggingSettingsView: View {
                     }
                     .glassControlStyle()
                 #endif
-                FocusButton("Export error report…") {
+                FocusButton(.settingsDeveloperExportReport) {
                     developer.send(.exportReport)
                 }
                 .glassControlStyle()
@@ -87,19 +83,19 @@ public struct LoggingSettingsView: View {
                 }
             }
             if developer.report == .failed {
-                Text("Couldn’t build the error report. Check the log folder and try again.")
+                Text(.settingsDeveloperReportBuildFailed)
                     .font(.caption)
                     .foregroundStyle(.red)
             }
             if developer.logHealth == .unwritable {
-                Text("Couldn’t write the log file. Choose a writable folder.")
+                Text(.settingsDeveloperLogUnwritable)
                     .font(.caption)
                     .foregroundStyle(.red)
             }
             SettingsPersistenceBanner(
                 logging.setting,
-                subject: "logging settings",
-                invalid: "Couldn’t use that log folder. Check its write access and try again."
+                subject: .settingsDeveloperLoggingSubject,
+                invalid: .settingsDeveloperLogFolderInvalid
             ) {
                 logging.send(.retry)
             }
@@ -110,6 +106,21 @@ public struct LoggingSettingsView: View {
         }
     }
 
+    private static func title(of level: LogLevel) -> LocalizedStringResource {
+        switch level {
+        case .off:
+            .commonOff
+        case .error:
+            .settingsDeveloperLevelError
+        case .warning:
+            .settingsDeveloperLevelWarning
+        case .info:
+            .settingsDeveloperLevelInfo
+        case .debug:
+            .settingsDeveloperLevelDebug
+        }
+    }
+
     #if os(macOS)
         private func chooseFolder() {
             let panel = NSOpenPanel()
@@ -117,7 +128,7 @@ public struct LoggingSettingsView: View {
             panel.canChooseFiles = false
             panel.allowsMultipleSelection = false
             panel.canCreateDirectories = true
-            panel.prompt = "Use for logs"
+            panel.prompt = String(localized: .settingsDeveloperUseForLogs)
             panel.directoryURL = URL(fileURLWithPath: logging.draft.directory, isDirectory: true)
             panel.begin { response in
                 guard response == .OK, let url = panel.url else {
@@ -143,14 +154,14 @@ public struct DeveloperSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Takion version").font(.headline)
+            Text(.settingsDeveloperTakionVersion).font(.headline)
             VStack(spacing: 0) {
                 ForEach(Array(TakionTarget.allCases.enumerated()), id: \.element) { index, target in
                     if index > 0 {
                         Divider()
                     }
                     SettingsRow(target.title) {
-                        Picker(target.title, selection: $store.draft[target]) {
+                        Picker(selection: $store.draft[target]) {
                             ForEach(choices(target), id: \.self) { version in
                                 Text(DeveloperSettings.versionTitle(
                                     for: version,
@@ -158,23 +169,27 @@ public struct DeveloperSettingsView: View {
                                 ))
                                 .tag(version)
                             }
+                        } label: {
+                            Text(target.title)
                         }
                     }
-                    SettingsRow("Negotiate version") {
-                        Toggle("Negotiate version", isOn: $store.draft[negotiation: target])
+                    SettingsRow(.settingsDeveloperNegotiateVersion) {
+                        Toggle(.settingsDeveloperNegotiateVersion, isOn: $store.draft[negotiation: target])
                     }
                 }
             }
-            Text("Cloud library").font(.headline)
-            SettingsRow("Refresh cooldown") {
-                Picker("Refresh cooldown", selection: $store.draft.libraryRefreshCooldownMinutes) {
+            Text(.settingsDeveloperCloudLibrary).font(.headline)
+            SettingsRow(.settingsDeveloperRefreshCooldown) {
+                Picker(selection: $store.draft.libraryRefreshCooldownMinutes) {
                     ForEach(DeveloperSettings.libraryRefreshCooldownChoices, id: \.self) { minutes in
                         Text(DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes))
                             .tag(minutes)
                     }
+                } label: {
+                    Text(.settingsDeveloperRefreshCooldown)
                 }
             }
-            SettingsPersistenceBanner(store.setting, subject: "Developer settings") {
+            SettingsPersistenceBanner(store.setting, subject: .settingsDeveloperDeveloperSubject) {
                 store.send(.retry)
             }
         }
@@ -189,45 +204,49 @@ public struct SampleConsolesSettingsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Sample consoles").font(.headline)
+            Text(.settingsDeveloperSampleConsoles).font(.headline)
             ForEach(Array(samples.consoles.enumerated()), id: \.offset) { index, sample in
                 VStack(spacing: 0) {
-                    SettingsRow(samples.name(at: index)) {
-                        Picker("Model", selection: Binding(
+                    SettingsRow(verbatim: samples.name(at: index)) {
+                        Picker(selection: Binding(
                             get: { sample.model },
                             set: { samples.setModel($0, at: index) }
                         )) {
                             ForEach(SampleConsole.Model.allCases, id: \.self) { model in
                                 Text(model.title).tag(model)
                             }
+                        } label: {
+                            Text(.settingsDeveloperSampleModel)
                         }
                         .accessibilityIdentifier("sample-console-model-\(index)")
                     }
-                    SettingsRow("Recently played") {
-                        Picker("Recently played", selection: Binding(
+                    SettingsRow(.settingsDeveloperSampleRecentlyPlayed) {
+                        Picker(selection: Binding(
                             get: { sample.shownRecentlyPlayed },
                             set: { samples.setRecentlyPlayed($0, at: index) }
                         )) {
                             ForEach(SampleConsole.RecentlyPlayed.allCases, id: \.self) { state in
                                 Text(state.title).tag(state)
                             }
+                        } label: {
+                            Text(.settingsDeveloperSampleRecentlyPlayed)
                         }
                         .disabled(sample.model == .ps4)
                         .accessibilityIdentifier("sample-console-recently-played-\(index)")
                     }
-                    SettingsRow("Remove") {
-                        FocusButton("Remove", role: .destructive) {
+                    SettingsRow(.commonRemove) {
+                        FocusButton(.commonRemove, role: .destructive) {
                             samples.remove(at: index)
                         }
                         .glassControlStyle()
-                        .accessibilityLabel("Remove \(samples.name(at: index))")
+                        .accessibilityLabel(.settingsDeveloperRemoveSample(console: samples.name(at: index)))
                         .accessibilityIdentifier("sample-console-remove-\(index)")
                     }
                     Divider()
                         .padding(.top, 8)
                 }
             }
-            FocusButton("Add sample console") {
+            FocusButton(.settingsDeveloperAddSample) {
                 samples.add()
             }
             .glassControlStyle()

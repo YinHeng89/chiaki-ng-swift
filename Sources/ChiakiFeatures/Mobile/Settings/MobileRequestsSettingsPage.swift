@@ -2,6 +2,7 @@ import ChiakiDiagnostics
 import ChiakiModels
 import ComposableArchitecture
 import DesignSystem
+import MenuFocus
 import SwiftUI
 
 /// The touch Requests page: the request totals, the log's actions and its filters, beside the recorded HTTP
@@ -40,19 +41,19 @@ struct MobileRequestsSettingsPage: View {
 
     private var totals: some View {
         let all = store.log.totals.all
-        return MobileSettingsGroup("Totals") {
-            MobileValueRow("Requests", value: "\(all.requests)")
-            MobileValueRow("HTTP Errors", value: "\(all.httpErrors)")
-            MobileValueRow("Transport Errors", value: "\(all.transportErrors)")
-            MobileValueRow("Received", value: LogFormat.size(all.bytesReceived))
-            MobileValueRow("Sent", value: LogFormat.size(all.bytesSent))
-            MobileValueRow("In Log", value: "\(store.log.exchanges.count)")
+        return MobileSettingsGroup(.mobileRequestsTotals) {
+            MobileValueRow(.mobileRequestsRequests, verbatim: "\(all.requests)")
+            MobileValueRow(.mobileRequestsHttpErrors, verbatim: "\(all.httpErrors)")
+            MobileValueRow(.mobileRequestsTransportErrors, verbatim: "\(all.transportErrors)")
+            MobileValueRow(.mobileRequestsReceived, verbatim: LogFormat.size(all.bytesReceived))
+            MobileValueRow(.mobileRequestsSent, verbatim: LogFormat.size(all.bytesSent))
+            MobileValueRow(.mobileRequestsInLog, verbatim: "\(store.log.exchanges.count)")
         }
     }
 
     private var controls: some View {
         MobileSettingsGroup {
-            MobileButtonRow("Clear Log", destructive: true) {
+            MobileButtonRow(.mobileRequestsClearLog, destructive: true) {
                 store.send(.clearLog)
             }
             .disabled(store.log.exchanges.isEmpty)
@@ -64,34 +65,34 @@ struct MobileRequestsSettingsPage: View {
                 }
             }
             .accessibilityIdentifier("requests-clear-log")
-            MobileButtonRow("Reset Counts") {
+            MobileButtonRow(.mobileRequestsResetCounts) {
                 store.send(.resetCounts)
             }
             .disabled(store.log.totals.all.requests == 0)
             .accessibilityIdentifier("requests-reset-counts")
-            MobileButtonRow("Clear Filters") {
+            MobileButtonRow(.mobileRequestsClearFilters) {
                 store.send(.clearFilters)
             }
             .disabled(store.filter.isEmpty)
             .accessibilityIdentifier("requests-clear-filters")
             if case .failed(let message) = store.phase {
-                failure(message)
+                failure(Text(message))
                     .textSelection(.enabled)
             }
         }
     }
 
     private var filters: some View {
-        MobileSettingsGroup("Filters") {
+        MobileSettingsGroup(.mobileRequestsFilters) {
             MobileSearchEntry(
-                prompt: "Search URLs",
+                prompt: .mobileRequestsSearchUrls,
                 text: Binding(get: { store.filter.search }, set: { store.send(.setSearch($0)) }),
                 kind: .url
             )
             .accessibilityIdentifier("requests-search")
             .mobileRowPadding()
             MobileToggleRow(
-                "Failures Only",
+                .mobileRequestsFailuresOnly,
                 isOn: Binding(get: { store.filter.failuresOnly }, set: { store.send(.setFailuresOnly($0)) })
             )
             .accessibilityIdentifier("requests-failures-only")
@@ -100,26 +101,32 @@ struct MobileRequestsSettingsPage: View {
 
     @ViewBuilder
     private var choices: some View {
-        MobileSettingsGroup("Credentials") {
+        MobileSettingsGroup(.mobileRequestsCredentials) {
             ForEach(RequestsReducer.CredentialFilter.allCases, id: \.self) { credential in
-                check(credential.title, chosen: store.filter.credentials.contains(credential)) {
+                check(Text(credential.title), chosen: store.filter.credentials.contains(credential)) {
                     store.send(.toggleCredential(credential))
                 }
             }
         }
-        MobileSettingsGroup("Areas") {
+        MobileSettingsGroup(.mobileRequestsAreas) {
             ForEach(CoreHTTPArea.allCases, id: \.self) { area in
-                check(area.title, chosen: store.filter.areas.contains(area)) {
+                check(Text(area.title), chosen: store.filter.areas.contains(area)) {
                     store.send(.toggleArea(area))
                 }
             }
         }
         if !store.baseChoices.isEmpty {
-            MobileSettingsGroup("Bases") {
+            MobileSettingsGroup(.mobileRequestsBases) {
                 ForEach(store.baseChoices) { choice in
                     check(
-                        choice.host,
-                        detail: "\(choice.lifetime)  \(choice.kept) in log\n\(choice.base)",
+                        Text(verbatim: choice.host),
+                        detail: Text(
+                            .mobileRequestsBaseDetail(
+                                lifetime: String(choice.lifetime),
+                                kept: String(choice.kept),
+                                base: choice.base
+                            )
+                        ),
                         chosen: choice.chosen
                     ) {
                         store.send(.toggleBase(choice.base))
@@ -130,9 +137,9 @@ struct MobileRequestsSettingsPage: View {
     }
 
     private func check(
-        _ title: String, detail: String? = nil, chosen: Bool, action: @escaping () -> Void
+        _ title: Text, detail: Text? = nil, chosen: Bool, action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        FocusButton(action: action) {
             HStack(spacing: 12) {
                 MobileRowTitle(title: title, detail: detail)
                 Spacer(minLength: 8)
@@ -156,12 +163,12 @@ struct MobileRequestsSettingsPage: View {
     @ViewBuilder
     private var list: some View {
         let shown = store.shown
-        MobileSettingsGroup("Requests") {
+        MobileSettingsGroup(.mobileRequestsRequests) {
             if shown.isEmpty {
                 Text(
                     store.log.exchanges.isEmpty
-                        ? "No requests"
-                        : "No matching requests"
+                        ? .mobileRequestsNoRequests
+                        : .mobileRequestsNoMatches
                 )
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -177,10 +184,32 @@ struct MobileRequestsSettingsPage: View {
         }
     }
 
+    private func statusSymbol(_ shown: RequestRowPresentation) -> String {
+        shown.failed
+            ? "exclamationmark.triangle.fill"
+            : "checkmark.circle"
+    }
+
+    private func summary(of shown: RequestRowPresentation) -> some View {
+        HStack(spacing: 8) {
+            Text(shown.duration)
+                .monospacedDigit()
+            Text(shown.size)
+                .monospacedDigit()
+            Text(shown.area)
+            ForEach(Array(shown.credentials.enumerated()), id: \.offset) { _, credential in
+                Text(credential)
+            }
+        }
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+    }
+
     private func row(_ exchange: CoreHTTPExchange) -> some View {
         let shown = RequestRowPresentation(exchange)
         let opened = store.detail.exchange == exchange.id
-        return Button {
+        return FocusButton {
             store.send(
                 opened
                     ? .close
@@ -192,18 +221,13 @@ struct MobileRequestsSettingsPage: View {
                     HStack(spacing: 8) {
                         Text(shown.method)
                             .font(.callout.monospaced().weight(.semibold))
-                        Label(
-                            shown.status,
-                            systemImage: shown.failed
-                                ? "exclamationmark.triangle.fill"
-                                : "checkmark.circle"
-                        )
-                        .font(.footnote)
-                        .foregroundStyle(
-                            shown.failed
-                                ? Color.red
-                                : Color.secondary
-                        )
+                        Label(shown.status, systemImage: statusSymbol(shown))
+                            .font(.footnote)
+                            .foregroundStyle(
+                                shown.failed
+                                    ? Color.red
+                                    : Color.secondary
+                            )
                         Spacer(minLength: 8)
                         Text(shown.time)
                             .font(.footnote)
@@ -218,19 +242,7 @@ struct MobileRequestsSettingsPage: View {
                         .font(.callout.monospaced())
                         .lineLimit(2)
                         .truncationMode(.middle)
-                    HStack(spacing: 8) {
-                        Text(shown.duration)
-                            .monospacedDigit()
-                        Text(shown.size)
-                            .monospacedDigit()
-                        Text(shown.area)
-                        ForEach(shown.credentials, id: \.self) { credential in
-                            Text(credential)
-                        }
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    summary(of: shown)
                 }
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
@@ -256,17 +268,17 @@ struct MobileRequestsSettingsPage: View {
     @ViewBuilder
     private func detail(_ exchange: CoreHTTPExchange) -> some View {
         let loaded = isLoaded
-        MobileButtonRow("Copy as cURL") {
+        MobileButtonRow(.mobileRequestsCopyCurl) {
             store.send(.copyCurl)
         }
         .disabled(!loaded)
         .accessibilityIdentifier("requests-copy-curl")
-        MobileButtonRow("Copy Response") {
+        MobileButtonRow(.mobileRequestsCopyResponse) {
             store.send(.copyResponse)
         }
         .disabled(!loaded)
         .accessibilityIdentifier("requests-copy-response")
-        MobileButtonRow("Close") {
+        MobileButtonRow(.commonClose) {
             store.send(.close)
         }
         .accessibilityIdentifier("requests-close-detail")
@@ -280,14 +292,14 @@ struct MobileRequestsSettingsPage: View {
                 .frame(maxWidth: .infinity)
                 .mobileRowPadding()
         case .missing:
-            failure("This request is no longer in the log.")
+            failure(Text(.mobileRequestsMissing))
         case .shown(_, let detail):
-            section("Request") {
-                marked("URL", exchange.url, part: .url)
+            section(.mobileRequestsRequest) {
+                marked(.mobileRequestsUrl, exchange.url, part: .url)
                 headers(detail.requestHeaders, request: true)
                 shownBody(detail.requestBody, part: .requestBody)
             }
-            section("Response") {
+            section(.mobileRequestsResponse) {
                 if let error = exchange.transportError {
                     Label(error.title, systemImage: "exclamationmark.triangle")
                         .foregroundStyle(.red)
@@ -308,30 +320,33 @@ struct MobileRequestsSettingsPage: View {
 
     @ViewBuilder
     private func facts(_ exchange: CoreHTTPExchange) -> some View {
-        fact("Endpoint", exchange.label)
-        fact("Credential", exchange.credentialLabel)
-        fact("Attempt", "\(exchange.attempt)")
-        fact("Started", exchange.startedAt.formatted(date: .abbreviated, time: .standard))
+        fact(.mobileRequestsEndpoint, exchange.label)
+        fact(.mobileRequestsCredential, exchange.credentialLabel)
+        fact(.mobileRequestsAttempt, "\(exchange.attempt)")
+        fact(.mobileRequestsStarted, exchange.startedAt.formatted(date: .abbreviated, time: .standard))
         fact(
-            "Status",
+            .mobileRequestsStatus,
             exchange.status.map { code in
                 exchange.reason.isEmpty
                     ? "\(code)"
                     : "\(code) \(exchange.reason)"
-            } ?? exchange.transportError?.title ?? ""
+            } ?? exchange.transportError.map { String(localized: $0.title) } ?? ""
         )
-        fact("Sent", LogFormat.size(exchange.bytesSent))
-        fact("Received", LogFormat.size(exchange.bytesReceived))
+        fact(.mobileRequestsSent, LogFormat.size(exchange.bytesSent))
+        fact(.mobileRequestsReceived, LogFormat.size(exchange.bytesReceived))
     }
 
     @ViewBuilder
-    private func fact(_ label: String, _ value: String) -> some View {
+    private func fact(_ label: LocalizedStringResource, _ value: String) -> some View {
         if !value.isEmpty {
-            MobileValueRow(label, value: value)
+            MobileValueRow(label, verbatim: value)
         }
     }
 
-    private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
+    private func section(
+        _ title: LocalizedStringResource,
+        @ViewBuilder content: () -> some View
+    ) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
@@ -342,7 +357,7 @@ struct MobileRequestsSettingsPage: View {
     }
 
     private func marked(
-        _ title: String, _ text: CoreHTTPMarkedText, part: RequestsReducer.SecretPart
+        _ title: LocalizedStringResource, _ text: CoreHTTPMarkedText, part: RequestsReducer.SecretPart
     ) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
@@ -358,7 +373,7 @@ struct MobileRequestsSettingsPage: View {
 
     private func headers(_ headers: [CoreHTTPHeader], request: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Headers")
+            Text(.mobileRequestsHeaders)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.secondary)
             ForEach(Array(headers.enumerated()), id: \.offset) { index, header in
@@ -380,21 +395,27 @@ struct MobileRequestsSettingsPage: View {
 
     private func shownBody(_ body: CoreHTTPBody, part: RequestsReducer.SecretPart) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Body")
+            Text(.mobileRequestsBody)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.secondary)
             if body.truncated {
-                Label(
-                    "Truncated: \(LogFormat.size(body.kept)) of \(LogFormat.size(body.size)) kept",
-                    systemImage: "scissors"
-                )
+                Label {
+                    Text(
+                        .mobileRequestsTruncated(
+                            kept: LogFormat.size(body.kept),
+                            size: LogFormat.size(body.size)
+                        )
+                    )
+                } icon: {
+                    Image(systemName: "scissors")
+                }
                 .foregroundStyle(.orange)
             }
             if body.binary {
-                Text("Binary, \(LogFormat.size(body.size))")
+                Text(.mobileRequestsBinary(size: LogFormat.size(body.size)))
                     .foregroundStyle(.secondary)
             } else if body.text.isEmpty {
-                Text("Empty")
+                Text(.mobileRequestsEmpty)
                     .foregroundStyle(.secondary)
             } else {
                 ScrollView {
@@ -416,10 +437,11 @@ struct MobileRequestsSettingsPage: View {
                 HStack(spacing: 8) {
                     ForEach(Array(text.spans.enumerated()), id: \.offset) { index, span in
                         let secret = RequestsReducer.Secret(part, index)
-                        Button(
+                        let kind = String(localized: span.kind.name)
+                        FocusButton(
                             store.revealed.contains(secret)
-                                ? "Hide \(span.kind.title)"
-                                : "Reveal \(span.kind.title)"
+                                ? .mobileRequestsHideSecret(kind: kind)
+                                : .mobileRequestsRevealSecret(kind: kind)
                         ) {
                             store.send(.toggleSecret(secret))
                         }
@@ -432,10 +454,14 @@ struct MobileRequestsSettingsPage: View {
         }
     }
 
-    private func failure(_ message: String) -> some View {
-        Label(message, systemImage: "exclamationmark.triangle")
-            .foregroundStyle(.red)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mobileRowPadding()
+    private func failure(_ message: Text) -> some View {
+        Label {
+            message
+        } icon: {
+            Image(systemName: "exclamationmark.triangle")
+        }
+        .foregroundStyle(.red)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mobileRowPadding()
     }
 }

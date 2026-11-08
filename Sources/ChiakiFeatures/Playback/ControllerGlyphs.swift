@@ -58,9 +58,9 @@ public enum ControllerGlyphs {
 
     private static func fallback(_ code: Int) -> ControllerGlyph {
         if (21...25).contains(code) {
-            return ControllerGlyph(symbol: nil, name: "Misc \(code - 19)")
+            return ControllerGlyph(symbol: nil, name: .playbackGlyphsMisc(number: code - 19))
         }
-        return ControllerGlyph(symbol: nil, name: "Button \(code + 1)")
+        return ControllerGlyph(symbol: nil, name: .playbackGlyphsButton(number: code + 1))
     }
 
     /// Returns the glyph for a controller button on a controller family, after applying the button layout.
@@ -94,13 +94,13 @@ public enum ControllerGlyphs {
     static func leftTrigger(family: ControllerFamily) -> ControllerGlyph {
         switch family {
         case .playStation:
-            ControllerGlyph(symbol: "l2.button.roundedtop.horizontal", name: "L2")
+            ControllerGlyph(symbol: "l2.button.roundedtop.horizontal", name: .playbackGlyphsL2)
         case .xbox:
-            ControllerGlyph(symbol: "lt.button.roundedtop.horizontal", name: "LT")
+            ControllerGlyph(symbol: "lt.button.roundedtop.horizontal", name: .playbackGlyphsLt)
         case .nintendo:
-            ControllerGlyph(symbol: "zl.button.roundedtop.horizontal", name: "ZL")
+            ControllerGlyph(symbol: "zl.button.roundedtop.horizontal", name: .playbackGlyphsZl)
         case .generic:
-            ControllerGlyph(symbol: nil, name: "Left trigger")
+            ControllerGlyph(symbol: nil, name: .playbackGlyphsLeftTrigger)
         }
     }
 
@@ -108,13 +108,13 @@ public enum ControllerGlyphs {
     static func rightTrigger(family: ControllerFamily) -> ControllerGlyph {
         switch family {
         case .playStation:
-            ControllerGlyph(symbol: "r2.button.roundedtop.horizontal", name: "R2")
+            ControllerGlyph(symbol: "r2.button.roundedtop.horizontal", name: .playbackGlyphsR2)
         case .xbox:
-            ControllerGlyph(symbol: "rt.button.roundedtop.horizontal", name: "RT")
+            ControllerGlyph(symbol: "rt.button.roundedtop.horizontal", name: .playbackGlyphsRt)
         case .nintendo:
-            ControllerGlyph(symbol: "zr.button.roundedtop.horizontal", name: "ZR")
+            ControllerGlyph(symbol: "zr.button.roundedtop.horizontal", name: .playbackGlyphsZr)
         case .generic:
-            ControllerGlyph(symbol: nil, name: "Right trigger")
+            ControllerGlyph(symbol: nil, name: .playbackGlyphsRightTrigger)
         }
     }
 
@@ -126,9 +126,9 @@ public enum ControllerGlyphs {
         }
         switch control {
         case .leftTrigger:
-            return ControllerGlyph(symbol: "l2.button.roundedtop.horizontal", name: "L2")
+            return ControllerGlyph(symbol: "l2.button.roundedtop.horizontal", name: .playbackGlyphsL2)
         case .rightTrigger:
-            return ControllerGlyph(symbol: "r2.button.roundedtop.horizontal", name: "R2")
+            return ControllerGlyph(symbol: "r2.button.roundedtop.horizontal", name: .playbackGlyphsR2)
         default:
             return ControllerGlyph(symbol: nil, name: control.label)
         }
@@ -141,85 +141,85 @@ public enum ControllerGlyphs {
     ]
 
     private static let common: [Int: ControllerGlyph] = [
-        11: ControllerGlyph(symbol: "dpad.up.filled", name: "D-pad up"),
-        12: ControllerGlyph(symbol: "dpad.down.filled", name: "D-pad down"),
-        13: ControllerGlyph(symbol: "dpad.left.filled", name: "D-pad left"),
-        14: ControllerGlyph(symbol: "dpad.right.filled", name: "D-pad right")
+        11: ControllerGlyph(symbol: "dpad.up.filled", name: .playbackGlyphsDpadUp),
+        12: ControllerGlyph(symbol: "dpad.down.filled", name: .playbackGlyphsDpadDown),
+        13: ControllerGlyph(symbol: "dpad.left.filled", name: .playbackGlyphsDpadLeft),
+        14: ControllerGlyph(symbol: "dpad.right.filled", name: .playbackGlyphsDpadRight)
     ]
 
     private static let playStation: [Int: ControllerGlyph] = [
-        0: ControllerGlyph(symbol: "xmark.circle", name: "Cross"),
-        1: ControllerGlyph(symbol: "circle.circle", name: "Circle"),
-        2: ControllerGlyph(symbol: "square.circle", name: "Square"),
-        3: ControllerGlyph(symbol: "triangle.circle", name: "Triangle"),
-        4: ControllerGlyph(symbol: nil, name: "Create"),
-        5: ControllerGlyph(symbol: "house.circle", name: "PS"),
-        6: ControllerGlyph(symbol: "line.3.horizontal.circle", name: "Options"),
-        7: ControllerGlyph(symbol: "l.joystick.press.down", name: "L3"),
-        8: ControllerGlyph(symbol: "r.joystick.press.down", name: "R3"),
-        9: ControllerGlyph(symbol: "l1.button.roundedbottom.horizontal", name: "L1"),
-        10: ControllerGlyph(symbol: "r1.button.roundedbottom.horizontal", name: "R1"),
-        15: ControllerGlyph(symbol: "mic.circle", name: "Mute"),
-        16: ControllerGlyph(symbol: "paddleshifter.right", name: "Right back button"),
-        17: ControllerGlyph(symbol: "paddleshifter.left", name: "Left back button"),
-        18: ControllerGlyph(symbol: nil, name: "Right back button 2"),
-        19: ControllerGlyph(symbol: nil, name: "Left back button 2"),
-        20: ControllerGlyph(symbol: nil, name: "Touchpad")
+        0: ControllerGlyph(symbol: "xmark.circle", name: .playbackGlyphsCross),
+        1: ControllerGlyph(symbol: "circle.circle", name: .playbackGlyphsCircle),
+        2: ControllerGlyph(symbol: "square.circle", name: .playbackGlyphsSquare),
+        3: ControllerGlyph(symbol: "triangle.circle", name: .playbackGlyphsTriangle),
+        4: ControllerGlyph(symbol: nil, name: .playbackGlyphsCreate),
+        5: ControllerGlyph(symbol: "house.circle", name: .playbackGlyphsPs),
+        6: ControllerGlyph(symbol: "line.3.horizontal.circle", name: .playbackGlyphsOptions),
+        7: ControllerGlyph(symbol: "l.joystick.press.down", name: .playbackGlyphsL3),
+        8: ControllerGlyph(symbol: "r.joystick.press.down", name: .playbackGlyphsR3),
+        9: ControllerGlyph(symbol: "l1.button.roundedbottom.horizontal", name: .playbackGlyphsL1),
+        10: ControllerGlyph(symbol: "r1.button.roundedbottom.horizontal", name: .playbackGlyphsR1),
+        15: ControllerGlyph(symbol: "mic.circle", name: .playbackGlyphsMute),
+        16: ControllerGlyph(symbol: "paddleshifter.right", name: .playbackGlyphsRightBackButton),
+        17: ControllerGlyph(symbol: "paddleshifter.left", name: .playbackGlyphsLeftBackButton),
+        18: ControllerGlyph(symbol: nil, name: .playbackGlyphsRightBackButton2),
+        19: ControllerGlyph(symbol: nil, name: .playbackGlyphsLeftBackButton2),
+        20: ControllerGlyph(symbol: nil, name: .playbackGlyphsTouchpad)
     ]
 
     private static let xbox: [Int: ControllerGlyph] = [
-        0: ControllerGlyph(symbol: "a.circle", name: "A"),
-        1: ControllerGlyph(symbol: "b.circle", name: "B"),
-        2: ControllerGlyph(symbol: "x.circle", name: "X"),
-        3: ControllerGlyph(symbol: "y.circle", name: "Y"),
-        4: ControllerGlyph(symbol: "rectangle.on.rectangle.circle", name: "View"),
-        5: ControllerGlyph(symbol: "xbox.logo", name: "Xbox"),
-        6: ControllerGlyph(symbol: "line.3.horizontal.circle", name: "Menu"),
-        7: ControllerGlyph(symbol: "l.joystick.press.down", name: "LS"),
-        8: ControllerGlyph(symbol: "r.joystick.press.down", name: "RS"),
-        9: ControllerGlyph(symbol: "lb.button.roundedbottom.horizontal", name: "LB"),
-        10: ControllerGlyph(symbol: "rb.button.roundedbottom.horizontal", name: "RB"),
-        15: ControllerGlyph(symbol: "square.and.arrow.up.circle", name: "Share"),
-        16: ControllerGlyph(symbol: "paddleshifter.right", name: "P1"),
-        17: ControllerGlyph(symbol: "paddleshifter.left", name: "P3"),
-        18: ControllerGlyph(symbol: nil, name: "P2"),
-        19: ControllerGlyph(symbol: nil, name: "P4"),
-        20: ControllerGlyph(symbol: nil, name: "Touchpad")
+        0: ControllerGlyph(symbol: "a.circle", name: .playbackGlyphsA),
+        1: ControllerGlyph(symbol: "b.circle", name: .playbackGlyphsB),
+        2: ControllerGlyph(symbol: "x.circle", name: .playbackGlyphsX),
+        3: ControllerGlyph(symbol: "y.circle", name: .playbackGlyphsY),
+        4: ControllerGlyph(symbol: "rectangle.on.rectangle.circle", name: .playbackGlyphsView),
+        5: ControllerGlyph(symbol: "xbox.logo", name: .playbackGlyphsXbox),
+        6: ControllerGlyph(symbol: "line.3.horizontal.circle", name: .playbackGlyphsMenu),
+        7: ControllerGlyph(symbol: "l.joystick.press.down", name: .playbackGlyphsLs),
+        8: ControllerGlyph(symbol: "r.joystick.press.down", name: .playbackGlyphsRs),
+        9: ControllerGlyph(symbol: "lb.button.roundedbottom.horizontal", name: .playbackGlyphsLb),
+        10: ControllerGlyph(symbol: "rb.button.roundedbottom.horizontal", name: .playbackGlyphsRb),
+        15: ControllerGlyph(symbol: "square.and.arrow.up.circle", name: .playbackGlyphsShare),
+        16: ControllerGlyph(symbol: "paddleshifter.right", name: .playbackGlyphsP1),
+        17: ControllerGlyph(symbol: "paddleshifter.left", name: .playbackGlyphsP3),
+        18: ControllerGlyph(symbol: nil, name: .playbackGlyphsP2),
+        19: ControllerGlyph(symbol: nil, name: .playbackGlyphsP4),
+        20: ControllerGlyph(symbol: nil, name: .playbackGlyphsTouchpad)
     ]
 
     private static let nintendo: [Int: ControllerGlyph] = [
-        0: ControllerGlyph(symbol: "b.circle", name: "B"),
-        1: ControllerGlyph(symbol: "a.circle", name: "A"),
-        2: ControllerGlyph(symbol: "y.circle", name: "Y"),
-        3: ControllerGlyph(symbol: "x.circle", name: "X"),
-        4: ControllerGlyph(symbol: "minus.circle", name: "Minus"),
-        5: ControllerGlyph(symbol: "house.circle", name: "Home"),
-        6: ControllerGlyph(symbol: "plus.circle", name: "Plus"),
-        7: ControllerGlyph(symbol: "l.joystick.press.down", name: "Left stick"),
-        8: ControllerGlyph(symbol: "r.joystick.press.down", name: "Right stick"),
-        9: ControllerGlyph(symbol: "l.button.roundedbottom.horizontal", name: "L"),
-        10: ControllerGlyph(symbol: "r.button.roundedbottom.horizontal", name: "R"),
-        15: ControllerGlyph(symbol: nil, name: "Capture")
+        0: ControllerGlyph(symbol: "b.circle", name: .playbackGlyphsB),
+        1: ControllerGlyph(symbol: "a.circle", name: .playbackGlyphsA),
+        2: ControllerGlyph(symbol: "y.circle", name: .playbackGlyphsY),
+        3: ControllerGlyph(symbol: "x.circle", name: .playbackGlyphsX),
+        4: ControllerGlyph(symbol: "minus.circle", name: .playbackGlyphsMinus),
+        5: ControllerGlyph(symbol: "house.circle", name: .playbackGlyphsHome),
+        6: ControllerGlyph(symbol: "plus.circle", name: .playbackGlyphsPlus),
+        7: ControllerGlyph(symbol: "l.joystick.press.down", name: .playbackGlyphsLeftStick),
+        8: ControllerGlyph(symbol: "r.joystick.press.down", name: .playbackGlyphsRightStick),
+        9: ControllerGlyph(symbol: "l.button.roundedbottom.horizontal", name: .playbackGlyphsL),
+        10: ControllerGlyph(symbol: "r.button.roundedbottom.horizontal", name: .playbackGlyphsR),
+        15: ControllerGlyph(symbol: nil, name: .playbackGlyphsCapture)
     ]
 
     private static let generic: [Int: ControllerGlyph] = [
-        0: ControllerGlyph(symbol: "circle.grid.cross.down.filled", name: "South"),
-        1: ControllerGlyph(symbol: "circle.grid.cross.right.filled", name: "East"),
-        2: ControllerGlyph(symbol: "circle.grid.cross.left.filled", name: "West"),
-        3: ControllerGlyph(symbol: "circle.grid.cross.up.filled", name: "North"),
-        4: ControllerGlyph(symbol: nil, name: "Back"),
-        5: ControllerGlyph(symbol: nil, name: "Guide"),
-        6: ControllerGlyph(symbol: "line.3.horizontal.circle", name: "Start"),
-        7: ControllerGlyph(symbol: "l.joystick.press.down", name: "Left stick"),
-        8: ControllerGlyph(symbol: "r.joystick.press.down", name: "Right stick"),
-        9: ControllerGlyph(symbol: nil, name: "Left shoulder"),
-        10: ControllerGlyph(symbol: nil, name: "Right shoulder"),
-        15: ControllerGlyph(symbol: nil, name: "Misc 1"),
-        16: ControllerGlyph(symbol: "paddleshifter.right", name: "Right paddle 1"),
-        17: ControllerGlyph(symbol: "paddleshifter.left", name: "Left paddle 1"),
-        18: ControllerGlyph(symbol: nil, name: "Right paddle 2"),
-        19: ControllerGlyph(symbol: nil, name: "Left paddle 2"),
-        20: ControllerGlyph(symbol: nil, name: "Touchpad")
+        0: ControllerGlyph(symbol: "circle.grid.cross.down.filled", name: .playbackGlyphsSouth),
+        1: ControllerGlyph(symbol: "circle.grid.cross.right.filled", name: .playbackGlyphsEast),
+        2: ControllerGlyph(symbol: "circle.grid.cross.left.filled", name: .playbackGlyphsWest),
+        3: ControllerGlyph(symbol: "circle.grid.cross.up.filled", name: .playbackGlyphsNorth),
+        4: ControllerGlyph(symbol: nil, name: .playbackGlyphsBack),
+        5: ControllerGlyph(symbol: nil, name: .playbackGlyphsGuide),
+        6: ControllerGlyph(symbol: "line.3.horizontal.circle", name: .playbackGlyphsStart),
+        7: ControllerGlyph(symbol: "l.joystick.press.down", name: .playbackGlyphsLeftStick),
+        8: ControllerGlyph(symbol: "r.joystick.press.down", name: .playbackGlyphsRightStick),
+        9: ControllerGlyph(symbol: nil, name: .playbackGlyphsLeftShoulder),
+        10: ControllerGlyph(symbol: nil, name: .playbackGlyphsRightShoulder),
+        15: ControllerGlyph(symbol: nil, name: .playbackGlyphsMisc(number: 1)),
+        16: ControllerGlyph(symbol: "paddleshifter.right", name: .playbackGlyphsRightPaddle1),
+        17: ControllerGlyph(symbol: "paddleshifter.left", name: .playbackGlyphsLeftPaddle1),
+        18: ControllerGlyph(symbol: nil, name: .playbackGlyphsRightPaddle2),
+        19: ControllerGlyph(symbol: nil, name: .playbackGlyphsLeftPaddle2),
+        20: ControllerGlyph(symbol: nil, name: .playbackGlyphsTouchpad)
     ]
 }
 

@@ -11,7 +11,7 @@ public struct InputPreset: Codable, Equatable, Sendable, Identifiable {
     /// The preset's id.
     public var id: UUID
 
-    /// The preset's name.
+    /// The preset's name as saved and edited: the user's own text, or the standard preset's English name.
     public var name: String
 
     /// The bindings.
@@ -27,6 +27,18 @@ public struct InputPreset: Codable, Equatable, Sendable, Identifiable {
         self.id = id
         self.name = name
         self.bindings = bindings
+    }
+
+    /// The preset's name as shown: the standard preset's name in the current language while it keeps its
+    /// default name, otherwise the saved name as it is.
+    public var title: LocalizedStringResource {
+        id == Self.defaultID && name == Self.standardName
+            ? .controlsPresetStandardName
+            : .verbatim(name)
+    }
+
+    private static var standardName: String {
+        LocalizedStringResource.controlsPresetStandardName.english
     }
 
     /// The built-in keyboard and gamepad layout.
@@ -45,7 +57,7 @@ public struct InputPreset: Codable, Equatable, Sendable, Identifiable {
         bindings += zip(PlayStationControl.allCases, buttons).map { target, code in
             InputBinding(source: .gamepadButton, code: code, label: "", target: target)
         }
-        return Self(id: defaultID, name: "Standard", bindings: bindings)
+        return Self(id: defaultID, name: standardName, bindings: bindings)
     }
 
     /// The preset adapted for a controller without a touchpad: Back clicks the touchpad and the misc button

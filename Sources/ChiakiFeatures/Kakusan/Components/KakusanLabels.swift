@@ -1,24 +1,25 @@
 import ChiakiModels
+import Foundation
 
 extension KakusanHostNotice {
     /// The notice's heading.
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .invitationEnded(let outcome):
             outcome == .failed(.expired)
-                ? "Invitation expired"
-                : "Invitation closed"
+                ? .kakusanNoticeInvitationExpired
+                : .kakusanNoticeInvitationClosed
         case let .ended(name, outcome):
-            Self.endedTitle(name ?? "The remote player", outcome)
+            Self.endedTitle(name ?? String(localized: .kakusanNoticeRemotePlayer), outcome)
         case .noFreeSeat:
-            "No free seat"
+            .kakusanNoticeNoFreeSeat
         case .commandFailed:
-            "Remote players hit a problem"
+            .kakusanNoticeCommandFailed
         }
     }
 
     /// The notice's detail, if it needs one.
-    var detail: String? {
+    var detail: LocalizedStringResource? {
         switch self {
         case .invitationEnded(let outcome):
             outcome == .failed(.expired)
@@ -49,14 +50,17 @@ extension KakusanHostNotice {
         }
     }
 
-    private static func endedTitle(_ player: String, _ outcome: KakusanAttemptOutcome) -> String {
+    private static func endedTitle(
+        _ player: String,
+        _ outcome: KakusanAttemptOutcome
+    ) -> LocalizedStringResource {
         switch outcome {
         case .cancelled, .left, .closed(.user, true):
-            "\(player) left"
+            .kakusanNoticeLeft(player: player)
         case .closed(.user, false):
-            "\(player) was removed"
+            .kakusanNoticeRemoved(player: player)
         case .failed, .closed:
-            "\(player) disconnected"
+            .kakusanNoticeDisconnected(player: player)
         }
     }
 
@@ -73,30 +77,30 @@ extension KakusanHostNotice {
 extension KakusanHostFeature.Guest {
     /// The name shown for the guest.
     var displayName: String {
-        name ?? "Remote player"
+        name ?? String(localized: .kakusanGuestRemotePlayer)
     }
 
     /// The guest's progress, and how it is coloured.
-    var status: (text: String, tone: CouchTone) {
+    var status: (text: LocalizedStringResource, tone: CouchTone) {
         switch attempt.phase {
         case .preparing:
-            ("Preparing an invitation", .waiting)
+            (.kakusanStatusPreparing, .waiting)
         case .invitation(_, .importing):
-            ("Checking the reply", .waiting)
+            (.kakusanStatusCheckingReply, .waiting)
         case .invitation:
-            ("Waiting for a reply", .waiting)
+            (.kakusanStatusWaitingForReply, .waiting)
         case .connecting:
-            ("Connecting", .waiting)
+            (.kakusanStatusConnecting, .waiting)
         case .verifying:
-            ("Checking codes", .waiting)
+            (.kakusanStatusCheckingCodes, .waiting)
         case .admitting:
-            ("Joining the console", .waiting)
+            (.kakusanStatusJoiningConsole, .waiting)
         case .readying:
-            ("Getting ready", .waiting)
+            (.kakusanStatusGettingReady, .waiting)
         case .active:
-            ("Playing", .ready)
+            (.kakusanStatusPlaying, .ready)
         case .closing:
-            ("Leaving", .idle)
+            (.kakusanStatusLeaving, .idle)
         case .ended(let outcome):
             (outcome.label, .failed)
         }

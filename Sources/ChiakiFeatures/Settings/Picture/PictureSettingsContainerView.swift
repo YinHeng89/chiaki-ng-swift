@@ -13,12 +13,12 @@ struct PictureSettingsContainerView: View {
         case cloud
 
         /// The stream kind's name in the segmented picker.
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .console:
-                "Console"
+                .settingsPictureKindConsole
             case .cloud:
-                "Cloud"
+                .settingsPictureKindCloud
             }
         }
     }
@@ -40,7 +40,7 @@ struct PictureSettingsContainerView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 26) {
             HStack(alignment: .center) {
-                Text("Picture").font(.title.weight(.semibold))
+                Text(.settingsPictureTitle).font(.title.weight(.semibold))
                 Spacer(minLength: 16)
                 if psnReach == .signedIn {
                     FocusableSegments(

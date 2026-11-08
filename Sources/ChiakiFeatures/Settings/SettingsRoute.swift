@@ -1,4 +1,5 @@
 import ChiakiModels
+import Foundation
 
 /// The settings tab that is shown.
 ///
@@ -44,50 +45,50 @@ public enum SettingsRoute: CaseIterable, Equatable, Hashable, Sendable {
     case about
 
     /// The tab's name.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .picture:
-            "Picture"
+            .settingsRoutePicture
         case .sound:
-            "Sound"
+            .settingsRouteSound
         case .controls:
-            "Controls"
+            .settingsRouteControls
         case .interface:
-            "Interface"
+            .settingsRouteInterface
         case .accessibility:
-            "Accessibility"
+            .settingsRouteAccessibility
         case .network:
-            "Network"
+            .settingsRouteNetwork
         case .remotePlayers:
-            "Remote players"
+            .settingsRouteRemotePlayers
         case .developer:
             #if DEBUG
-                "Developer"
+                .settingsRouteDeveloper
             #else
-                "Logging"
+                .settingsRouteLogging
             #endif
         case .entitlements:
-            "Entitlements"
+            .settingsRouteEntitlements
         case .caches:
-            "Caches"
+            .settingsRouteCaches
         case .requests:
-            "Requests"
+            .settingsRouteRequests
         case .tokens:
-            "Tokens"
+            .settingsRouteTokens
         case .about:
-            "About"
+            .settingsRouteAbout
         }
     }
 
     /// The tab's name when it is shown under its symbol, short enough to fit beneath it.
-    public var shortTitle: String {
+    public var shortTitle: LocalizedStringResource {
         switch self {
         case .remotePlayers:
-            "Players"
+            .settingsRouteRemotePlayersShort
         case .accessibility:
-            "Access"
+            .settingsRouteAccessibilityShort
         case .entitlements:
-            "Entitled"
+            .settingsRouteEntitlementsShort
         case .picture, .sound, .controls, .interface, .network, .developer, .caches, .requests, .tokens,
              .about:
             title

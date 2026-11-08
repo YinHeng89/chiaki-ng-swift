@@ -18,7 +18,7 @@ struct StreamExitConfirmationOverlay: View {
     /// Whether a console or cloud stream is being left, which sets the wording and the stop trace.
     let stream: StreamStopTrace.Stream
     /// The title of the plain disconnect choice.
-    let leaveTitle: String
+    let leaveTitle: LocalizedStringResource
     @State private var selection = Choice.stay
     @State private var hostWindow: PlatformWindow?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -29,21 +29,25 @@ struct StreamExitConfirmationOverlay: View {
         if store.exitRequest != nil {
             ZStack {
                 Dimming.standard.color
-                VStack(spacing: 22) {
-                    Image(systemName: "rectangle.portrait.and.arrow.right")
-                        .font(.system(size: 24, weight: .medium))
-                        .frame(width: 56, height: 56)
-                        .glassEffect(AppGlass.control, in: .circle)
-                    Text(stream == .cloud
-                        ? "End the cloud session?"
-                        : "Leave the stream?")
-                        .font(.title2.weight(.semibold))
-                    if store.exitChoices == .restMode {
-                        Text("Your console goes into rest mode when you leave.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+                VStack(alignment: .leading, spacing: 14) {
                     HStack(spacing: 12) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                            .font(.system(size: 17, weight: .medium))
+                            .frame(width: 38, height: 38)
+                            .glassEffect(AppGlass.control, in: .circle)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(stream == .cloud
+                                ? .playbackExitCloudTitle
+                                : .playbackExitTitle)
+                                .font(.title3.weight(.semibold))
+                            if store.exitChoices == .restMode {
+                                Text(.playbackExitRestModeNote)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    HStack(spacing: 10) {
                         ForEach(choices, id: \.self) { item in
                             choice(item, title: title(item), role: item == .stay
                                 ? nil
@@ -52,8 +56,7 @@ struct StreamExitConfirmationOverlay: View {
                         }
                     }
                 }
-                .modifier(ScrollsWhenShort())
-                .padding(30)
+                .padding(18)
                 .frame(maxWidth: choices.count > 2
                     ? 560
                     : 460)
@@ -84,46 +87,68 @@ struct StreamExitConfirmationOverlay: View {
         }
     }
 
-    private func title(_ choice: Choice) -> String {
+    private func title(_ choice: Choice) -> LocalizedStringResource {
         switch choice {
         case .stay:
-            "Keep playing"
+            .playbackExitKeepPlaying
         case .leave:
             leaveTitle
         case .rest:
             store.exitChoices == .restMode
-                ? "Leave"
-                : "Rest mode"
+                ? .playbackExitLeave
+                : .playbackExitRestMode
         }
     }
 
-    private func choice(_ choice: Choice, title: String, role: ButtonRole?) -> some View {
+    private func symbol(_ choice: Choice) -> String {
+        switch choice {
+        case .stay:
+            "play.fill"
+        case .leave:
+            "xmark"
+        case .rest:
+            "moon.fill"
+        }
+    }
+
+    private func choice(_ choice: Choice, title: LocalizedStringResource, role: ButtonRole?) -> some View {
         let focused = selection == choice
+        let tint = role == .destructive
+            ? Color(red: 1.0, green: 0.69, blue: 0.67)
+            : Color.primary
         return FocusButton(role: role) {
             perform(choice)
         } label: {
-            Text(title)
-                .font(.headline)
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .contentShape(.rect)
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: symbol(choice))
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(role == .destructive
+                        ? tint
+                        : Palette.accent)
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(14)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .drawsOwnFocusHighlight()
         .menuFocusable(false)
-        .foregroundStyle(role == .destructive
-            ? Color(red: 1.0, green: 0.69, blue: 0.67)
-            : Color.primary)
-            .background(Color.white.opacity(focused
-                    ? 0.14
-                    : 0.05), in: .rect(cornerRadius: 14))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(focused
-                            ? Palette.accent
-                            : Color.white.opacity(0.14), lineWidth: focused
-                                ? 3
-                                : 1)
-                }
+        .foregroundStyle(tint)
+        .background(Color.white.opacity(focused
+                ? 0.12
+                : 0.05), in: .rect(cornerRadius: 16))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(focused
+                    ? Palette.accent
+                    : Color.white.opacity(0.1), lineWidth: focused
+                        ? 2.5
+                        : 1)
+        }
     }
 
     private func perform(_ choice: Choice) {

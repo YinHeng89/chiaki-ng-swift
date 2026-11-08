@@ -12,7 +12,7 @@ public struct QRCodeImage: View {
     /// The side of the drawn code, in points.
     let side: CGFloat
     /// What VoiceOver says for the code.
-    let label: String
+    let label: LocalizedStringResource
 
     /// Creates the code.
     ///
@@ -20,7 +20,7 @@ public struct QRCodeImage: View {
     ///   - text: The text to encode, usually an address.
     ///   - side: The side of the drawn code, in points.
     ///   - label: What VoiceOver says for the code.
-    public init(_ text: String, side: CGFloat, label: String) {
+    public init(_ text: String, side: CGFloat, label: LocalizedStringResource) {
         self.text = text
         self.side = side
         self.label = label

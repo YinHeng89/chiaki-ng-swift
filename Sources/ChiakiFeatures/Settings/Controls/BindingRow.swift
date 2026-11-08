@@ -26,11 +26,18 @@ struct BindingRow: View {
     /// Whether a controller is connected, which enables the Detect button.
     var canDetect = true
     /// Generic names for SDL gamepad button indices, in index order.
-    nonisolated static let buttons = [
-        "South / Cross", "East / Circle", "West / Square", "North / Triangle", "Back / Create", "Guide / PS",
-        "Start / Options", "Left stick", "Right stick", "Left shoulder", "Right shoulder", "D-pad up",
-        "D-pad down", "D-pad left", "D-pad right", "Misc 1", "Right paddle 1", "Left paddle 1",
-        "Right paddle 2", "Left paddle 2", "Touchpad", "Misc 2", "Misc 3", "Misc 4", "Misc 5", "Misc 6"
+    nonisolated static let buttons: [LocalizedStringResource] = [
+        .settingsControlsButtonSouth, .settingsControlsButtonEast, .settingsControlsButtonWest,
+        .settingsControlsButtonNorth, .settingsControlsButtonBack, .settingsControlsButtonGuide,
+        .settingsControlsButtonStart, .settingsControlsButtonLeftStick, .settingsControlsButtonRightStick,
+        .settingsControlsButtonLeftShoulder, .settingsControlsButtonRightShoulder,
+        .settingsControlsButtonDpadUp, .settingsControlsButtonDpadDown, .settingsControlsButtonDpadLeft,
+        .settingsControlsButtonDpadRight, .settingsControlsButtonMisc1,
+        .settingsControlsButtonRightPaddle1, .settingsControlsButtonLeftPaddle1,
+        .settingsControlsButtonRightPaddle2,
+        .settingsControlsButtonLeftPaddle2, .settingsControlsButtonTouchpad, .settingsControlsButtonMisc2,
+        .settingsControlsButtonMisc3, .settingsControlsButtonMisc4, .settingsControlsButtonMisc5,
+        .settingsControlsButtonMisc6
     ]
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
@@ -48,23 +55,33 @@ struct BindingRow: View {
     private var keyboard: some View {
         HStack(spacing: 4) {
             FocusButton(action: capture) {
-                Text(listening
-                    ? "Press a key…"
-                    : binding(.macKey)?.label ?? "Assign key")
+                keyLabel
                     .frame(minWidth: 70)
-            }.glassControlStyle().accessibilityLabel("Keyboard binding for \(target.label)")
+            }.glassControlStyle()
+                .accessibilityLabel(
+                    .settingsControlsKeyboardBindingLabel(control: String(localized: target.label))
+                )
             FocusButton {
                 change(.macKey, -1, "")
             } label: {
                 Image(systemName: "xmark.circle").foregroundStyle(.secondary)
-            }.buttonStyle(.plain).focusHighlightShape(.circle).help("Clear key")
-                .accessibilityLabel("Clear \(target.label) key")
+            }.buttonStyle(.plain).focusHighlightShape(.circle).help(.settingsControlsClearKey)
+                .accessibilityLabel(.settingsControlsClearKeyLabel(control: String(localized: target.label)))
         }
+    }
+    private var keyLabel: Text {
+        if listening {
+            return Text(.settingsControlsPressKey)
+        }
+        if let binding = binding(.macKey) {
+            return Text(KeyCodeLabels.title(for: binding))
+        }
+        return Text(.settingsControlsAssignKey)
     }
     private var gamepad: some View {
         HStack(spacing: 8) {
-            Picker("Controller", selection: selection(.gamepadButton)) {
-                Text("Unassigned").tag(-1)
+            Picker(.settingsControlsControllerPicker, selection: selection(.gamepadButton)) {
+                Text(.settingsControlsUnassigned).tag(-1)
                 ForEach(buttonChoices, id: \.self) { code in
                     let glyph = ControllerGlyphs.button(code, family: family, layout: layout)
                     if let symbol = glyph.symbol {
@@ -74,19 +91,21 @@ struct BindingRow: View {
                     }
                 }
             }.labelsHidden().nativeFocusHighlight().frame(maxWidth: 200)
-                .accessibilityLabel("Controller binding for \(target.label)")
+                .accessibilityLabel(
+                    .settingsControlsControllerBindingLabel(control: String(localized: target.label))
+                )
             FocusButton(action: capture) {
                 Text(listening
-                    ? "Press a button…"
-                    : "Detect")
+                    ? .settingsControlsPressButton
+                    : .settingsControlsDetect)
                     .frame(minWidth: 70)
             }
             .glassControlStyle()
             .disabled(!canDetect && !listening)
             .help(canDetect
-                ? "Press a controller button to assign it, or hold any button to cancel"
-                : "Connect a controller to detect its buttons")
-                .accessibilityLabel("Detect controller button for \(target.label)")
+                ? .settingsControlsDetectHelp
+                : .settingsControlsDetectUnavailableHelp)
+                .accessibilityLabel(.settingsControlsDetectLabel(control: String(localized: target.label)))
         }
     }
     private var buttonChoices: [Int] {
@@ -102,10 +121,10 @@ struct BindingRow: View {
     ///
     /// - Parameter code: The button index.
     /// - Returns: The name from `buttons`, or "Button N" for indices past the list.
-    static func buttonName(_ code: Int) -> String {
+    static func buttonName(_ code: Int) -> LocalizedStringResource {
         buttons.indices.contains(code)
             ? buttons[code]
-            : "Button \(code)"
+            : .settingsControlsButtonNumbered(number: code)
     }
 
     /// Returns the label of a binding chosen from a row's picker.
@@ -115,19 +134,20 @@ struct BindingRow: View {
     ///   - code: The button index.
     /// - Returns: The controller button's name, or the mouse button's number.
     static func pickedLabel(source: InputSource, code: Int) -> String {
-        source == .gamepadButton && buttons.indices.contains(code)
+        let name: LocalizedStringResource = source == .gamepadButton && buttons.indices.contains(code)
             ? buttons[code]
-            : "Mouse \(code + 1)"
+            : .settingsControlsMouseNumbered(number: code + 1)
+        return name.english
     }
     private var mouse: some View {
-        Picker("Mouse", selection: selection(.mouseButton)) {
-            Text("No mouse button").tag(-1)
-            Text("Left click").tag(0)
-            Text("Right click").tag(1)
-            Text("Middle click").tag(2)
-            ForEach(3...7, id: \.self) { Text("Mouse \($0 + 1)").tag($0) }
+        Picker(.settingsControlsMousePicker, selection: selection(.mouseButton)) {
+            Text(.settingsControlsNoMouseButton).tag(-1)
+            Text(.settingsControlsLeftClick).tag(0)
+            Text(.settingsControlsRightClick).tag(1)
+            Text(.settingsControlsMiddleClick).tag(2)
+            ForEach(3...7, id: \.self) { Text(.settingsControlsMouseNumbered(number: $0 + 1)).tag($0) }
         }.labelsHidden().nativeFocusHighlight().frame(maxWidth: 160)
-            .accessibilityLabel("Mouse binding for \(target.label)")
+            .accessibilityLabel(.settingsControlsMouseBindingLabel(control: String(localized: target.label)))
     }
     private func binding(_ source: InputSource) -> InputBinding? {
         bindings.first { $0.target == target && $0.source == source }

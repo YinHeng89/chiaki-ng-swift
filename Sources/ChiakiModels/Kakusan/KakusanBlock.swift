@@ -101,19 +101,19 @@ public enum KakusanBlockAdvice {
     ///
     /// - Parameter pasted: The pasted text.
     /// - Returns: The advice.
-    public static func reply(_ pasted: String) -> String {
+    public static func reply(_ pasted: String) -> LocalizedStringResource {
         KakusanBlock(pasted: pasted)?.kind == .invitation
-            ? "That’s an invitation, not a reply. Paste the reply the other player sent back"
-            : "That isn’t a complete reply"
+            ? .kakusanAdviceInvitationNotReply
+            : .kakusanAdviceIncompleteReply
     }
 
     /// The advice for text pasted where an invitation was expected.
     ///
     /// - Parameter pasted: The pasted text.
     /// - Returns: The advice.
-    public static func invitation(_ pasted: String) -> String {
+    public static func invitation(_ pasted: String) -> LocalizedStringResource {
         KakusanBlock(pasted: pasted)?.kind == .reply
-            ? "That’s a reply, not an invitation. Paste the invitation the host sent you"
-            : "That isn’t a complete invitation"
+            ? .kakusanAdviceReplyNotInvitation
+            : .kakusanAdviceIncompleteInvitation
     }
 }

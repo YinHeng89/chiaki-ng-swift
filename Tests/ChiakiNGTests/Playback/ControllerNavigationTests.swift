@@ -213,28 +213,29 @@ import Foundation
 
 @MainActor
 @Test func controllerGlyphsFollowTheControllerFamily() {
-    #expect(ControllerGlyphs.button(.south, family: .playStation) == ControllerGlyph(
-        symbol: "xmark.circle",
-        name: "Cross"
-    ))
-    #expect(ControllerGlyphs.button(.south, family: .xbox) == ControllerGlyph(symbol: "a.circle", name: "A"))
-    #expect(ControllerGlyphs.button(.south, family: .nintendo).name == "B")
-    #expect(ControllerGlyphs.button(.east, family: .nintendo).name == "A")
-    #expect(ControllerGlyphs.button(.north, family: .generic).name == "North")
-    #expect(ControllerGlyphs.button(9, family: .xbox).name == "LB")
+    #expect(ControllerGlyphs.button(.south, family: .playStation).symbol == "xmark.circle")
+    #expect(String(localized: ControllerGlyphs.button(.south, family: .playStation).name) == "Cross")
+    #expect(ControllerGlyphs.button(.south, family: .xbox).symbol == "a.circle")
+    #expect(String(localized: ControllerGlyphs.button(.south, family: .xbox).name) == "A")
+    #expect(String(localized: ControllerGlyphs.button(.south, family: .nintendo).name) == "B")
+    #expect(String(localized: ControllerGlyphs.button(.east, family: .nintendo).name) == "A")
+    #expect(String(localized: ControllerGlyphs.button(.north, family: .generic).name) == "North")
+    #expect(String(localized: ControllerGlyphs.button(9, family: .xbox).name) == "LB")
     #expect(ControllerGlyphs.button(11, family: .xbox) == ControllerGlyphs.button(11, family: .playStation))
-    #expect(ControllerGlyphs.button(24, family: .playStation).name == "Misc 5")
-    #expect(ControllerGlyphs.button(30, family: .xbox).name == "Button 31")
+    #expect(String(localized: ControllerGlyphs.button(24, family: .playStation).name) == "Misc 5")
+    #expect(String(localized: ControllerGlyphs.button(30, family: .xbox).name) == "Button 31")
     for code in 15...25 {
-        #expect(ControllerGlyphs.button(code, family: .generic).name == BindingRow.buttonName(code))
+        #expect(String(localized: ControllerGlyphs.button(code, family: .generic).name)
+            == String(localized: BindingRow.buttonName(code)))
     }
 }
 
 @Test func consoleActionGlyphsStayPlayStation() {
-    #expect(ControllerGlyphs.action(.cross).name == "Cross")
+    #expect(String(localized: ControllerGlyphs.action(.cross).name) == "Cross")
     #expect(ControllerGlyphs.action(.system).symbol == "house.circle")
-    #expect(ControllerGlyphs.action(.leftTrigger).name == "L2")
-    #expect(ControllerGlyphs.action(.leftStickUp) == ControllerGlyph(symbol: nil, name: "Left stick up"))
+    #expect(String(localized: ControllerGlyphs.action(.leftTrigger).name) == "L2")
+    #expect(ControllerGlyphs.action(.leftStickUp).symbol == nil)
+    #expect(String(localized: ControllerGlyphs.action(.leftStickUp).name) == "Left stick up")
 }
 
 @MainActor @Test func controllerGlyphSymbolsExist() {

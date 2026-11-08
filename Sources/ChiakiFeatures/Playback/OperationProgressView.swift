@@ -37,8 +37,8 @@ struct OperationProgressView: View {
             VStack(spacing: 4) {
                 Text(text.title)
                     .font(.callout.weight(.medium))
-                ForEach(text.details, id: \.self) { detail in
-                    Text(detail)
+                ForEach(text.details.indices, id: \.self) { index in
+                    Text(text.details[index])
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

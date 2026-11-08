@@ -1,3 +1,5 @@
+import Foundation
+
 /// Why a Kakusan operation failed, as the native session reports it.
 ///
 /// The raw values are the native session's error names.
@@ -54,52 +56,52 @@ public enum KakusanError: String, Error, Equatable, Sendable, CaseIterable {
     case `internal`
 
     /// The message shown to a guest.
-    public var label: String {
+    public var label: LocalizedStringResource {
         switch self {
         case .invalidBlock:
-            "The pasted text isn’t valid"
+            .kakusanErrorInvalidBlock
         case .expired:
-            "The invitation expired"
+            .kakusanErrorExpired
         case .version:
-            "The other app uses a different version"
+            .kakusanErrorVersion
         case .identityChanged:
-            "The device’s identity changed"
+            .kakusanErrorIdentityChanged
         case .transcript:
-            "The connection couldn’t be checked"
+            .kakusanErrorTranscript
         case .pairingFailed:
-            "The codes didn’t match"
+            .kakusanErrorPairingFailed
         case .noPath:
-            "No direct path between your networks"
+            .kakusanErrorNoPath
         case .noCapacity:
-            "No free seat"
+            .kakusanReasonNoFreeSeat
         case .sourceJoinFailed:
-            "The console couldn’t add the player"
+            .kakusanErrorSourceJoinFailed
         case .codec:
-            "Unsupported video format"
+            .kakusanErrorCodec
         case .timeout:
-            "Timed out"
+            .kakusanReasonTimedOut
         case .protocol:
-            "Connection error"
+            .kakusanReasonConnectionError
         case .sourceFormat:
-            "Unsupported stream format"
+            .kakusanErrorSourceFormat
         case .congestion:
-            "The connection was too slow"
+            .kakusanErrorCongestion
         case .sourceEnded:
-            "The host’s stream ended"
+            .kakusanErrorSourceEnded
         case .cryptoUnavailable:
-            "Encryption is unavailable"
+            .kakusanErrorCryptoUnavailable
         case .internal:
-            "Something went wrong"
+            .kakusanErrorInternal
         }
     }
 
     /// The message shown to the host, which explains what the host can change.
-    public var hostingLabel: String {
+    public var hostingLabel: LocalizedStringResource {
         switch self {
         case .codec:
-            "Use H.264 or H.265 without HDR, at 1080p and 60 fps or lower"
+            .kakusanErrorHostCodec
         case .version:
-            "This console connection can’t be shared"
+            .kakusanErrorHostVersion
         default:
             label
         }

@@ -1,3 +1,5 @@
+import Foundation
+
 /// A kind of stream whose Takion protocol version can be overridden.
 public enum TakionTarget: String, CaseIterable, Codable, Sendable {
     /// PS4 streams, local and remote.
@@ -13,16 +15,16 @@ public enum TakionTarget: String, CaseIterable, Codable, Sendable {
     case psCloud
 
     /// The label shown for the target.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .localPS4:
-            "PS4, local and remote"
+            .settingsDeveloperTakionLocalPs4
         case .localPS5:
-            "PS5, local and remote"
+            .settingsDeveloperTakionLocalPs5
         case .psNow:
-            "PS Now, PS3 and PS4 cloud"
+            .settingsDeveloperTakionPsNow
         case .psCloud:
-            "PS Cloud, PS5 cloud"
+            .settingsDeveloperTakionPsCloud
         }
     }
 

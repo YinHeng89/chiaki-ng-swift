@@ -14,7 +14,7 @@ public struct ControllerOnScreenKeyboard: View {
         case navigating
     }
 
-    private let title: String
+    private let title: LocalizedStringResource
     @Binding private var text: String
     private let secure: Bool
     private let numberPad: Bool
@@ -38,7 +38,7 @@ public struct ControllerOnScreenKeyboard: View {
     ///   - sourceWindow: The window the keyboard was opened from.
     ///   - dismiss: Closes the keyboard; receives whether Done was chosen.
     public init(
-        title: String,
+        title: LocalizedStringResource,
         text: Binding<String>,
         secure: Bool,
         numberPad: Bool,
@@ -98,22 +98,22 @@ public struct ControllerOnScreenKeyboard: View {
             ForEach(layout.rows.indices, id: \.self) { row in
                 HStack(spacing: 6) {
                     ForEach(layout.rows[row].indices, id: \.self) { column in
-                        key(.glyph(row, column), title: layout.rows[row][column])
+                        key(.glyph(row, column), label: Text(verbatim: layout.rows[row][column]))
                     }
                 }
             }
             HStack(spacing: 6) {
                 if !numberPad {
-                    key(.shift, title: "Shift")
-                    key(.symbols, title: "123")
-                    key(.space, title: "Space")
+                    key(.shift, label: Text(.keyboardShift))
+                    key(.symbols, label: Text(verbatim: "123"))
+                    key(.space, label: Text(.keyboardSpace))
                     if allowsNewline {
-                        key(.newline, title: "Return")
+                        key(.newline, label: Text(.keyboardReturn))
                     }
                 }
-                key(.clear, title: "Clear")
-                key(.delete, title: "Delete")
-                key(.done, title: "Done")
+                key(.clear, label: Text(.keyboardClear))
+                key(.delete, label: Text(.keyboardDelete))
+                key(.done, label: Text(.keyboardDone))
             }
         }
     }
@@ -198,8 +198,10 @@ public struct ControllerOnScreenKeyboard: View {
     @ViewBuilder private var textEntry: some View {
         Group {
             if secure {
-                SecureField(title, text: $text)
-                    .menuFocusBinding($typingFocused)
+                SecureField(text: $text) {
+                    Text(title)
+                }
+                .menuFocusBinding($typingFocused)
             } else {
                 TextField(title, text: $text)
                     .menuFocusBinding($typingFocused)
@@ -234,13 +236,13 @@ public struct ControllerOnScreenKeyboard: View {
         }
     }
 
-    private func key(_ value: ControllerKeyboardLayout.Key, title: String) -> some View {
+    private func key(_ value: ControllerKeyboardLayout.Key, label: Text) -> some View {
         FocusButton {
             selectedKey = value
             activate(value)
             typingFocused = true
         } label: {
-            Text(title)
+            label
                 .font(.system(size: 14, weight: .medium))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
@@ -256,7 +258,7 @@ public struct ControllerOnScreenKeyboard: View {
         .environment(\.menuMove) { direction in
             selectedKey = layout.moved(from: value, direction: direction)
         }
-        .accessibilityLabel(title)
+        .accessibilityLabel(label)
     }
 
     private func navigate(_ key: KeyEquivalent) -> MenuKeyPress.Result {
@@ -290,13 +292,13 @@ private struct ControllerKeyboardHints: View {
     /// One hint per shortcut, in the connected controller's glyphs.
     var body: some View {
         HStack(spacing: 14) {
-            ControllerPrompt(button: .west, text: "Delete")
+            ControllerPrompt(button: .west, text: .keyboardDelete)
             if !numberPad {
-                ControllerPrompt(button: .north, text: "Space")
-                ControllerPrompt(control: .leftTrigger, text: "Shift")
+                ControllerPrompt(button: .north, text: .keyboardSpace)
+                ControllerPrompt(control: .leftTrigger, text: .keyboardShift)
             }
-            ControllerPrompt(control: .rightTrigger, text: "Done")
-            ControllerPrompt(button: .east, text: "Close")
+            ControllerPrompt(control: .rightTrigger, text: .keyboardDone)
+            ControllerPrompt(button: .east, text: .keyboardClose)
         }
         .font(.caption)
         .foregroundStyle(.secondary)

@@ -1,4 +1,5 @@
 import ChiakiModels
+import Foundation
 
 /// The words the app shows for an account or console step that failed.
 public enum RegistrationFailureMessage {
@@ -6,22 +7,22 @@ public enum RegistrationFailureMessage {
     ///
     /// - Parameter failure: Why the step failed.
     /// - Returns: One sentence with what to do next.
-    public static func text(for failure: RegistrationFailure) -> String {
+    public static func text(for failure: RegistrationFailure) -> LocalizedStringResource {
         switch failure {
         case .invalidInput:
-            "Enter a valid console address and eight-digit PIN."
+            .consolesRegistrationInvalidInput
         case .rejected:
-            "Registration failed. Check the console address and generate a new PIN."
+            .consolesRegistrationRejected
         case .unreachable:
-            "The console didn't answer. Check the address and that the console is on, then try again."
+            .consolesRegistrationUnreachable
         case .remoteRejected:
-            "PlayStation registration failed. Retry or use a local PIN."
+            .consolesRegistrationRemoteRejected
         case .unavailable:
-            "The registration service is unavailable."
+            .consolesRegistrationUnavailable
         case .storage:
-            "Couldn't save the registration. Try again."
+            .consolesRegistrationNotSaved
         case .sessionPlaying:
-            "A session is playing"
+            .consolesRegistrationSessionPlaying
         }
     }
 }

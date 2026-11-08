@@ -45,13 +45,13 @@ public struct CachesSettingsView: View {
 
     private var controls: some View {
         HStack(spacing: 12) {
-            FocusButton("Refresh") {
+            FocusButton(.commonRefresh) {
                 store.send(.load)
             }
             .glassControlStyle()
             .disabled(store.busy)
             .accessibilityIdentifier("caches-refresh")
-            FocusButton("Clear all", role: .destructive) {
+            FocusButton(.settingsCachesClearAll, role: .destructive) {
                 store.send(.askClear(.all))
             }
             .glassControlStyle()
@@ -87,7 +87,7 @@ public struct CachesSettingsView: View {
     }
 
     @ViewBuilder private func cacheFigures(_ cache: CacheSummaryPresentation) -> some View {
-        Text(cache.memory ?? "").foregroundStyle(.secondary).monospacedDigit()
+        (cache.memory.map { Text($0) } ?? Text(verbatim: "")).foregroundStyle(.secondary).monospacedDigit()
             .frame(width: 110, alignment: .trailing)
         Text(cache.entries).foregroundStyle(.secondary).monospacedDigit()
             .frame(width: 110, alignment: .trailing)
@@ -98,8 +98,8 @@ public struct CachesSettingsView: View {
     @ViewBuilder private func cacheButtons(_ cache: CacheSummaryPresentation) -> some View {
         let opened = store.entries.cache == cache.id
         FocusButton(opened
-            ? "Hide entries"
-            : "Show entries") {
+            ? .settingsCachesHideEntries
+            : .settingsCachesShowEntries) {
                 store.send(opened
                     ? .close
                     : .open(cache.id))
@@ -107,7 +107,7 @@ public struct CachesSettingsView: View {
             .glassControlStyle()
             .disabled(cache.isEmpty && !opened)
             .accessibilityIdentifier("caches-entries-\(cache.id)")
-        FocusButton("Clear", role: .destructive) {
+        FocusButton(.commonClear, role: .destructive) {
             store.send(.askClear(.one(cache.id)))
         }
         .glassControlStyle()
@@ -138,10 +138,10 @@ public struct CachesSettingsView: View {
 
     private var entryHeader: some View {
         HStack(alignment: .top, spacing: 16) {
-            Text("About").frame(maxWidth: .infinity, alignment: .leading)
-            Text("Size").frame(width: CacheEntryRow.sizeWidth, alignment: .trailing)
-            Text("Stored").frame(width: CacheEntryRow.dateWidth, alignment: .trailing)
-            Text("Expires").frame(width: CacheEntryRow.dateWidth, alignment: .trailing)
+            Text(.settingsCachesColumnAbout).frame(maxWidth: .infinity, alignment: .leading)
+            Text(.settingsCachesColumnSize).frame(width: CacheEntryRow.sizeWidth, alignment: .trailing)
+            Text(.settingsCachesColumnStored).frame(width: CacheEntryRow.dateWidth, alignment: .trailing)
+            Text(.settingsCachesColumnExpires).frame(width: CacheEntryRow.dateWidth, alignment: .trailing)
         }
         .font(.caption.weight(.semibold))
         .foregroundStyle(.secondary)
@@ -181,24 +181,24 @@ private struct CacheEntryRow: View {
 
 extension CacheKind {
     /// The human-readable name shown for this cache in the caches settings pane.
-    public var title: String {
+    public var title: LocalizedStringResource {
         switch self {
         case .streamableLists:
-            "Streamable game lists"
+            .settingsCachesKindStreamableLists
         case .includedTitles:
-            "PlayStation Plus titles"
+            .settingsCachesKindIncludedTitles
         case .libraries:
-            "Libraries"
+            .settingsCachesKindLibraries
         case .refusals:
-            "Stream refusals"
+            .settingsCachesKindRefusals
         case .gameDetails:
-            "Game details"
+            .settingsCachesKindGameDetails
         case .images:
-            "Images"
+            .settingsCachesKindImages
         case .forSaleTitles:
-            "Available to buy"
+            .settingsCachesKindForSaleTitles
         case .playedGames:
-            "Played games"
+            .settingsCachesKindPlayedGames
         }
     }
 }
@@ -209,13 +209,13 @@ public struct CacheSummaryPresentation: Equatable, Identifiable {
     /// The cache this row describes.
     public let id: CacheKind
     /// The display name of the cache.
-    public let title: String
+    public let title: LocalizedStringResource
     /// The entry count, worded as "1 entry" or "N entries".
-    public let entries: String
+    public let entries: LocalizedStringResource
     /// The bytes stored on disk, formatted for display.
     public let size: String
     /// How many decoded artwork images are held in memory; only set for the images cache.
-    public let memory: String?
+    public let memory: LocalizedStringResource?
     /// Whether the cache has no entries and, for images, no decoded artwork either.
     public let isEmpty: Bool
 
@@ -227,15 +227,13 @@ public struct CacheSummaryPresentation: Equatable, Identifiable {
     public init(_ summary: CacheSummary, decoded: Int = 0) {
         id = summary.id
         title = summary.id.title
-        entries = summary.entries == 1
-            ? "1 entry"
-            : "\(summary.entries) entries"
+        entries = .settingsCachesEntryCount(count: summary.entries)
         size = LogFormat.size(summary.bytes)
         let artwork = summary.id == .images
             ? decoded
             : 0
         memory = summary.id == .images
-            ? "\(artwork) in memory"
+            ? .settingsCachesInMemory(count: artwork)
             : nil
         isEmpty = summary.entries == 0 && artwork == 0
     }
@@ -247,13 +245,44 @@ public struct CacheEntryPresentation: Equatable {
     /// A labelled fact identifying what a cache record belongs to, such as its account, store region or
     /// product.
     public struct Subject: Equatable, Identifiable {
-        /// The kind of fact, such as "Account" or "Product".
-        public let label: String
+        /// What a fact is about.
+        public enum Kind: Equatable, Hashable, Sendable {
+            /// The account the record belongs to.
+            case account
+            /// The store region the record was fetched for.
+            case storeRegion
+            /// The product the record describes.
+            case product
+            /// The image the record holds.
+            case image
+            /// A record the core could not describe.
+            case record
+        }
+
+        /// What the fact is about, which is unique within one record.
+        public let kind: Kind
         /// The fact's value.
         public let value: String
-        /// Identifies the subject by its label, which is unique within one record.
-        public var id: String {
-            label
+
+        /// Identifies the subject by its kind.
+        public var id: Kind {
+            kind
+        }
+
+        /// The kind of fact, such as "Account" or "Product".
+        public var label: LocalizedStringResource {
+            switch kind {
+            case .account:
+                .settingsCachesSubjectAccount
+            case .storeRegion:
+                .settingsCachesSubjectStoreRegion
+            case .product:
+                .settingsCachesSubjectProduct
+            case .image:
+                .settingsCachesSubjectImage
+            case .record:
+                .settingsCachesSubjectRecord
+            }
         }
     }
 
@@ -280,25 +309,28 @@ public struct CacheEntryPresentation: Equatable {
     ) {
         var subjects: [Subject] = []
         if let account = entry.account {
-            subjects.append(Subject(label: "Account", value: accountNames[account] ?? "Unsaved account"))
+            subjects.append(Subject(
+                kind: .account,
+                value: accountNames[account] ?? String(localized: .settingsCachesUnsavedAccount)
+            ))
         }
         if let region = entry.locale {
-            subjects.append(Subject(label: "Store region", value: region))
+            subjects.append(Subject(kind: .storeRegion, value: region))
         }
         if let product = entry.productID {
-            subjects.append(Subject(label: "Product", value: product))
+            subjects.append(Subject(kind: .product, value: product))
         }
         if let image = entry.imageURL {
-            subjects.append(Subject(label: "Image", value: image))
+            subjects.append(Subject(kind: .image, value: image))
         }
         if subjects.isEmpty {
-            subjects.append(Subject(label: "Record", value: "Unreadable"))
+            subjects.append(Subject(kind: .record, value: String(localized: .settingsCachesUnreadable)))
         }
         self.subjects = subjects
         let style = Date.FormatStyle(date: .abbreviated, time: .shortened, locale: locale, timeZone: timeZone)
         size = LogFormat.size(entry.bytes)
         stored = entry.storedAt.formatted(style)
-        expires = entry.expiresAt.map { $0.formatted(style) } ?? "No expiry"
+        expires = entry.expiresAt.map { $0.formatted(style) } ?? String(localized: .settingsCachesNoExpiry)
     }
 }
 
@@ -308,12 +340,16 @@ extension CacheClearing {
         switch self {
         case .one(let cache):
             AppConfirmation(
-                title: "Clear \(cache.title)?", systemImage: "trash", confirmTitle: "Clear",
+                title: .settingsCachesClearOneTitle(cache: String(localized: cache.title)),
+                systemImage: "trash",
+                confirmTitle: .commonClear,
                 tone: .destructive
             )
         case .all:
             AppConfirmation(
-                title: "Clear all caches?", systemImage: "trash", confirmTitle: "Clear all",
+                title: .settingsCachesClearAllTitle,
+                systemImage: "trash",
+                confirmTitle: .settingsCachesClearAll,
                 tone: .destructive
             )
         }

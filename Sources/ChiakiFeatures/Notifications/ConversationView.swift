@@ -121,13 +121,13 @@ struct ConversationView: View {
     private var header: some View {
         HStack(spacing: 12) {
             stopButton(.back, action: close) {
-                Label("Back", systemImage: "chevron.left")
+                Label(.commonBack, systemImage: "chevron.left")
                     .labelStyle(.iconOnly)
                     .font(.callout.weight(.semibold))
                     .frame(width: 22, height: 22)
             }
             .focusBorderShape(.circle)
-            .accessibilityLabel("Back to notifications")
+            .accessibilityLabel(.notificationsConversationBackToNotifications)
             Text(store.title)
                 .font(.title3.weight(.semibold))
                 .lineLimit(1)
@@ -139,7 +139,7 @@ struct ConversationView: View {
         switch store.reading {
         case .idle, .loading:
             if store.messages.isEmpty {
-                status("Loading messages")
+                status(.notificationsConversationLoading)
             } else {
                 list
             }
@@ -151,14 +151,14 @@ struct ConversationView: View {
             }
         case .loaded:
             if store.messages.isEmpty {
-                status("No messages yet. Say hello.")
+                status(.notificationsConversationEmpty)
             } else {
                 list
             }
         }
     }
 
-    private func status(_ text: String) -> some View {
+    private func status(_ text: LocalizedStringResource) -> some View {
         Text(text)
             .font(.callout)
             .foregroundStyle(.secondary)
@@ -212,14 +212,14 @@ struct ConversationView: View {
         }
     }
 
-    private var olderTitle: String {
+    private var olderTitle: LocalizedStringResource {
         switch store.older {
         case .loading:
-            "Loading earlier messages"
+            .notificationsConversationOlderLoading
         case .failed:
-            "Couldn't load earlier messages. Try again."
+            .notificationsConversationOlderFailed
         case .idle:
-            "Earlier messages"
+            .notificationsConversationOlder
         }
     }
 
@@ -245,7 +245,7 @@ struct ConversationView: View {
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }
-                    Text(message.text ?? "Sent something that can't be shown here")
+                    messageText(message)
                         .font(message.text == nil
                             ? .callout.italic()
                             : .callout)
@@ -284,16 +284,27 @@ struct ConversationView: View {
         }
     }
 
+    private func messageText(_ message: PSNChatMessage) -> Text {
+        guard let text = message.text else {
+            return Text(.notificationsConversationUnsupportedMessage)
+        }
+        return Text(verbatim: text)
+    }
+
     private var reply: some View {
         VStack(alignment: .leading, spacing: 8) {
-            TextField("Message", text: draft, axis: .vertical)
+            TextField(.notificationsConversationMessagePlaceholder, text: draft, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(1...4)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .glassEffect(AppGlass.control, in: .rect(cornerRadius: 12))
                 .menuFocusBinding($focus, equals: .field)
-                .controllerKeyboard(title: "Message \(store.title)", text: draft, isFocused: focus == .field)
+                .controllerKeyboard(
+                    title: .notificationsConversationMessageKeyboard(name: store.title),
+                    text: draft,
+                    isFocused: focus == .field
+                )
                 .onMenuKeyPress(keys: [.upArrow, .downArrow], phases: .down) { press in
                     move(from: .field, press.key == .upArrow
                         ? .up
@@ -336,25 +347,25 @@ struct ConversationView: View {
         )
     }
 
-    private var sendTitle: String {
+    private var sendTitle: LocalizedStringResource {
         if case .sending = store.sending {
-            return "Sending"
+            return .notificationsConversationSending
         }
-        return "Send"
+        return .notificationsConversationSend
     }
 
     /// What a failed read tells the person.
     ///
     /// - Parameter failure: Why the read failed.
     /// - Returns: The line.
-    static func readFailure(_ failure: PSNMessagesFailure) -> String {
+    static func readFailure(_ failure: PSNMessagesFailure) -> LocalizedStringResource {
         switch failure {
         case .signedOut, .auth:
-            "Sign in to PlayStation Network again to read messages."
+            .notificationsConversationReadSignedOut
         case .rateLimited:
-            "PlayStation Network asked to slow down. Try again in a moment."
+            .notificationsConversationSlowDown
         case .rejected, .unavailable, .cancelled:
-            "Couldn't load this conversation. Try again."
+            .notificationsConversationReadFailed
         }
     }
 
@@ -362,16 +373,16 @@ struct ConversationView: View {
     ///
     /// - Parameter failure: Why the send failed.
     /// - Returns: The line.
-    static func sendFailure(_ failure: PSNMessagesFailure) -> String {
+    static func sendFailure(_ failure: PSNMessagesFailure) -> LocalizedStringResource {
         switch failure {
         case .signedOut, .auth:
-            "Sign in to PlayStation Network again to send messages."
+            .notificationsConversationSendSignedOut
         case .rejected:
-            "PlayStation Network didn't accept this message."
+            .notificationsConversationSendRejected
         case .rateLimited:
-            "PlayStation Network asked to slow down. Try again in a moment."
+            .notificationsConversationSlowDown
         case .unavailable, .cancelled:
-            "Couldn't send. Your message is still here; try again."
+            .notificationsConversationSendFailed
         }
     }
 

@@ -187,14 +187,42 @@ public enum MicrophoneFailure: Equatable, Sendable {
     /// No stream is running to send audio to.
     case streamUnavailable
 
-    /// The input device could not be opened; the text is the system's reason.
-    case captureUnavailable(String)
+    /// The input device could not be opened, with the explanation shown to the user.
+    case captureUnavailable(LocalizedStringResource)
 
     /// The console refused microphone audio.
     case consoleRejected
 
-    /// Capture stopped unexpectedly; the text is the system's reason.
-    case interrupted(String)
+    /// Capture stopped unexpectedly, with the explanation shown to the user.
+    case interrupted(LocalizedStringResource)
+
+    /// No microphone input exists.
+    public static let noInput = MicrophoneFailure.captureUnavailable(.streamMicrophoneNoInput)
+
+    /// The audio encoder for the microphone could not be created.
+    public static let encoderFailed = MicrophoneFailure.captureUnavailable(.streamMicrophoneEncoderFailed)
+
+    /// The console never answered the request to open the microphone.
+    public static let noAnswer = MicrophoneFailure.interrupted(.streamMicrophoneNoAnswer)
+
+    /// The input device changed or went away while capturing.
+    public static let inputChanged = MicrophoneFailure.interrupted(.streamMicrophoneInputChanged)
+
+    /// The capture engine could not start.
+    ///
+    /// - Parameter reason: The system's reason, in its own words.
+    /// - Returns: The failure.
+    public static func startFailed(_ reason: String) -> MicrophoneFailure {
+        .captureUnavailable(.streamMicrophoneStartFailed(reason: reason))
+    }
+
+    /// The capture engine stopped and could not restart.
+    ///
+    /// - Parameter reason: The system's reason, in its own words.
+    /// - Returns: The failure.
+    public static func stopped(_ reason: String) -> MicrophoneFailure {
+        .interrupted(.streamMicrophoneStopped(reason: reason))
+    }
 }
 
 /// How captured microphone audio is processed before it is sent.

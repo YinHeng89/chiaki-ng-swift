@@ -144,6 +144,8 @@ struct LiveLogControl: View {
     @Environment(\.topControlsLayout) private var topControlsLayout
     @State private var hostWindow: PlatformWindow?
     @State private var backHandlerID: MenuHandlerID?
+    @State private var buttonOffset: CGSize = .zero
+    @GestureState private var buttonDrag: CGSize = .zero
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 12) {
@@ -160,14 +162,18 @@ struct LiveLogControl: View {
                     .environment(\.menuMove, move)
                     .accessibilityLabel(
                         store.visible
-                            ? "Hide developer log"
-                            : "Show developer log"
+                            ? .appDeveloperLogHide
+                            : .appDeveloperLogShow
                     )
-                    .help("Toggle live developer log")
+                    .help(.appDeveloperLogToggleHelp)
                     .streamChromeFocus(.topTrailing)
                     .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: { minX in
-                        topControlsLayout?.logMinX = minX
+                        topControlsLayout?.logMinX = buttonOffset == .zero
+                            ? minX
+                            : nil
                     }
+                    .offset(clampedOffset(by: buttonDrag))
+                    .highPriorityGesture(buttonDragGesture)
                     .padding(.trailing, trailingInset)
             }
             if store.visible {
@@ -245,6 +251,28 @@ struct LiveLogControl: View {
             }
             updateBackHandler(active: false)
         }
+    }
+
+    private static let dockSnapDistance: CGFloat = 32
+
+    private var buttonDragGesture: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .updating($buttonDrag) { value, drag, _ in
+                drag = value.translation
+            }
+            .onEnded { value in
+                let dropped = clampedOffset(by: value.translation)
+                buttonOffset = hypot(dropped.width, dropped.height) < Self.dockSnapDistance
+                    ? .zero
+                    : dropped
+            }
+    }
+
+    private func clampedOffset(by translation: CGSize) -> CGSize {
+        CGSize(
+            width: min(0, max(buttonOffset.width + translation.width, 80 - size.width)),
+            height: max(0, min(buttonOffset.height + translation.height, size.height - 120))
+        )
     }
 
     private static let panelMoves: [LiveLogFocus: [MenuMoveDirection: LiveLogFocus]] = [

@@ -12,22 +12,27 @@ extension StreamDiagnosticsReport {
         let server = stats.server ?? CloudServerStatistics()
         let used = Double(server.usedDownKbps) / 1000
         let available = Double(server.availableDownKbps) / 1000
-        let bandwidth = available > 0
-            ? "\(oneDecimal(used)) of \(oneDecimal(available)) Mbps"
-            : "\(oneDecimal(used)) Mbps"
+        let bandwidth: LocalizedStringResource = available > 0
+            ? .playbackDiagnosticsMegabitsOf(value: oneDecimal(used), total: oneDecimal(available))
+            : .playbackDiagnosticsMegabits(value: oneDecimal(used))
         let corrupt = UInt64(max(0, server.corruptFrames))
-        return Section(title: "Cloud server", rows: [
-            Row("Bandwidth", bandwidth),
-            Row("Upload", "\(oneDecimal(Double(server.usedUpKbps) / 1000)) Mbps"),
-            Row("Round trip", millisecondsValue(Double(server.roundTripMilliseconds))),
+        return Section(title: .playbackDiagnosticsSectionServer, rows: [
+            Row(.playbackDiagnosticsRowServerBandwidth, bandwidth),
             Row(
-                "Loss",
-                "\(percent(server.lossPercent)) down, "
-                    + "\(percent(server.upstreamLossPercent)) up"
+                .playbackDiagnosticsRowUpload,
+                .playbackDiagnosticsMegabits(value: oneDecimal(Double(server.usedUpKbps) / 1000))
             ),
-            Row("Picture sent", resolution(server.width, server.height)),
-            Row("Audio channels", String(server.audioChannels)),
-            Row("Corrupt frames", String(corrupt), countTone(corrupt))
+            Row(.playbackDiagnosticsRowRoundTrip, millisecondsValue(Double(server.roundTripMilliseconds))),
+            Row(
+                .playbackDiagnosticsRowLoss,
+                .playbackDiagnosticsServerLoss(
+                    down: percent(server.lossPercent),
+                    up: percent(server.upstreamLossPercent)
+                )
+            ),
+            Row(.playbackDiagnosticsRowPictureSent, resolution(server.width, server.height)),
+            Row(.playbackDiagnosticsRowAudioChannels, .verbatim(String(server.audioChannels))),
+            Row(.playbackDiagnosticsRowCorruptFrames, .verbatim(String(corrupt)), countTone(corrupt))
         ])
     }
 }

@@ -67,16 +67,16 @@ struct KakusanSettingsView: View {
         switch store.identity {
         case .idle, .loading:
             HStack(spacing: 10) {
-                Text("This device").font(.subheadline.weight(.semibold))
+                Text(.kakusanSettingsThisDevice).font(.subheadline.weight(.semibold))
                 ProgressView().controlSize(.small)
             }
         case .ready(let value):
-            KakusanFingerprintView(title: "This device", fingerprint: value.fingerprint)
+            KakusanFingerprintView(title: .kakusanSettingsThisDevice, fingerprint: value.fingerprint)
         case .failed:
             VStack(alignment: .leading, spacing: 8) {
-                Text("This device").font(.subheadline.weight(.semibold))
-                KakusanErrorText(text: "Couldn’t load this device’s identity")
-                FocusButton("Try again") {
+                Text(.kakusanSettingsThisDevice).font(.subheadline.weight(.semibold))
+                KakusanErrorText(text: .kakusanSettingsIdentityFailed)
+                FocusButton(.commonTryAgain) {
                     store.send(.load)
                 }
                 .glassControlStyle()
@@ -87,14 +87,14 @@ struct KakusanSettingsView: View {
     @ViewBuilder
     private var peers: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Remembered devices").font(.subheadline.weight(.semibold))
+            Text(.kakusanSettingsRememberedDevices).font(.subheadline.weight(.semibold))
             switch store.peers {
             case .idle, .loading:
                 ProgressView().controlSize(.small)
             case .failed:
-                KakusanErrorText(text: "Couldn’t load remembered devices")
+                KakusanErrorText(text: .kakusanSettingsPeersFailed)
             case .ready(let list) where list.isEmpty:
-                Text("No remembered devices")
+                Text(.kakusanSettingsNoPeers)
                     .foregroundStyle(.secondary)
             case .ready(let list):
                 ForEach(list) { peer in
@@ -102,7 +102,7 @@ struct KakusanSettingsView: View {
                 }
             }
             if case .failed = store.forget {
-                KakusanErrorText(text: "Couldn’t forget that device")
+                KakusanErrorText(text: .kakusanSettingsForgetFailed)
             }
         }
     }
@@ -127,13 +127,13 @@ struct KakusanSettingsView: View {
                 Text(peer.lastSeenAt, format: .relative(presentation: .named))
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                FocusButton("Rename") {
+                FocusButton(.kakusanSettingsRename) {
                     store.send(.startRename(peer.publicKey))
                 }
                 .glassControlStyle()
                 .menuFocused($focus, equals: .renameButton(peer.publicKey))
                 .disabled(store.rename != nil)
-                FocusButton("Forget device", role: .destructive) {
+                FocusButton(.kakusanSettingsForgetDevice, role: .destructive) {
                     store.send(.requestForget(peer.publicKey))
                 }
                 .glassControlStyle()
@@ -155,32 +155,32 @@ struct KakusanSettingsView: View {
         }
         return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 10) {
-                TextField("Name", text: name)
+                TextField(.kakusanRememberName, text: name)
                     .textFieldStyle(.roundedBorder)
                     .menuFocusBinding($focus, equals: .rename)
                     .onSubmit {
                         rename.send(.view(.nameSubmitted))
                     }
                     .controllerKeyboard(
-                        title: "Name",
+                        title: .kakusanRememberName,
                         text: name,
                         isFocused: focus == .rename
                     )
-                FocusButton("Save") {
+                FocusButton(.commonSave) {
                     rename.send(.view(.controlActivated(.save)))
                 }
                 .glassProminentControlStyle()
                 .disabled(!rename.canSave)
-                FocusButton("Cancel") {
+                FocusButton(.commonCancel) {
                     rename.send(.view(.controlActivated(.cancel)))
                 }
                 .glassControlStyle()
             }
             switch rename.phase {
             case .conflict(let holder):
-                KakusanErrorText(text: "Another device is saved as \(holder.nickname)")
+                KakusanErrorText(text: .kakusanRememberNameConflict(name: holder.nickname))
             case .failed:
-                KakusanErrorText(text: "Couldn’t rename this device")
+                KakusanErrorText(text: .kakusanSettingsRenameFailed)
             case .editing, .saving:
                 EmptyView()
             }
@@ -191,18 +191,18 @@ struct KakusanSettingsView: View {
 
     private var stun: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Your own STUN servers").font(.subheadline.weight(.semibold))
+            Text(.kakusanSettingsStunServers).font(.subheadline.weight(.semibold))
             stunEditor
                 .padding(12)
                 .glassPanel(.small)
-                .accessibilityLabel("Your own STUN servers")
+                .accessibilityLabel(.kakusanSettingsStunServers)
             HStack(spacing: 10) {
-                FocusButton("Apply") {
+                FocusButton(.kakusanSettingsApply) {
                     store.send(.saveStun)
                 }
                 .glassControlStyle()
                 .disabled(!store.stunChanged || store.settingsBusy)
-                FocusButton("Use built-in servers") {
+                FocusButton(.kakusanSettingsUseBuiltIn) {
                     store.send(.restoreDefaultStun)
                 }
                 .glassControlStyle()
@@ -213,9 +213,9 @@ struct KakusanSettingsView: View {
             }
             switch store.stun {
             case .invalid:
-                KakusanErrorText(text: "Use host:port, one server per line, up to eight")
+                KakusanErrorText(text: .kakusanSettingsStunInvalid)
             case .failed:
-                KakusanErrorText(text: "Couldn’t load or save STUN servers")
+                KakusanErrorText(text: .kakusanSettingsStunFailed)
             case .idle, .loading, .ready, .saving:
                 EmptyView()
             }
@@ -233,15 +233,15 @@ struct KakusanSettingsView: View {
 
     private func forgetRow(_ peer: KakusanPeer) -> some View {
         HStack(spacing: 10) {
-            Text("Forget \(peer.nickname)?")
+            Text(.kakusanSettingsForgetConfirm(name: peer.nickname))
                 .font(.callout.weight(.semibold))
             Spacer(minLength: 12)
-            FocusButton("Cancel") {
+            FocusButton(.commonCancel) {
                 store.send(.cancelForget)
             }
             .glassControlStyle()
             .menuFocused($focus, equals: .forgetCancel(peer.publicKey))
-            FocusButton("Forget device", role: .destructive) {
+            FocusButton(.kakusanSettingsForgetDevice, role: .destructive) {
                 store.send(.confirmForget)
             }
             .glassProminentControlStyle()
@@ -273,7 +273,7 @@ extension KakusanSettingsView {
                 }
                 .menuFocusBinding($focus, equals: .stun)
                 .controllerKeyboard(
-                    title: "Your own STUN servers",
+                    title: .kakusanSettingsStunServers,
                     text: $store.stunDraft,
                     isFocused: focus == .stun,
                     allowsNewline: true
@@ -292,7 +292,7 @@ extension KakusanSettingsView {
     }
 
     private var stunPlaceholder: some View {
-        Text("Leave empty to use the built-in servers")
+        Text(.kakusanSettingsStunPlaceholder)
             .font(.callout.monospaced())
             .foregroundStyle(.tertiary)
     }
@@ -351,7 +351,7 @@ private struct KakusanTuningSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Media tuning").font(.subheadline.weight(.semibold))
+            Text(.kakusanSettingsMediaTuning).font(.subheadline.weight(.semibold))
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(KakusanMediaTuning.Field.allCases, id: \.self) { field in
                     row(field)
@@ -361,12 +361,12 @@ private struct KakusanTuningSection: View {
             .frame(maxWidth: 640, alignment: .leading)
             .glassPanel(.small)
             HStack(spacing: 10) {
-                FocusButton("Save") {
+                FocusButton(.commonSave) {
                     store.send(.saveTuning)
                 }
                 .glassControlStyle()
                 .disabled(store.tuningSaveBlocked)
-                FocusButton("Restore defaults") {
+                FocusButton(.kakusanSettingsRestoreDefaults) {
                     store.send(.restoreDefaultTuning)
                 }
                 .glassControlStyle()
@@ -376,7 +376,7 @@ private struct KakusanTuningSection: View {
                 }
             }
             if store.tuning == .failed {
-                KakusanErrorText(text: "Couldn’t load or save media tuning")
+                KakusanErrorText(text: .kakusanSettingsTuningFailed)
             }
         }
     }
@@ -407,7 +407,10 @@ private struct KakusanTuningSection: View {
                     .accessibilityLabel(field.label)
             }
             if store.tuningDraft.value(field) == nil {
-                KakusanErrorText(text: "\(field.range.lowerBound) to \(field.range.upperBound)")
+                KakusanErrorText(text: .kakusanSettingsTuningRange(
+                    lower: field.range.lowerBound,
+                    upper: field.range.upperBound
+                ))
             }
         }
     }

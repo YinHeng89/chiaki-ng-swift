@@ -274,7 +274,7 @@ extension CatalogClient: TestDependencyKey {
             throw CloudLibraryFailure.unavailable
         },
         refreshTitle: { _, _ in
-            .failed(CloudTitleRefreshFailure("unavailable"))
+            .failed(.checkFailed)
         },
         recentlyPlayed: { _ in
             []
@@ -289,7 +289,7 @@ extension CatalogClient: TestDependencyKey {
             .failure(CatalogFailure(reason: .coreClosed))
         },
         storefrontCheck: { _, _ in
-            CloudStoreCheck(card: .unavailable("no answer"))
+            CloudStoreCheck(card: .unavailable(.noAnswer))
         },
         storePage: { _, _ in
             nil

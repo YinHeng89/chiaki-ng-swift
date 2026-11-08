@@ -21,10 +21,10 @@ public struct TouchKeyboardRequest: Identifiable {
     public let id = UUID()
 
     /// The field's title, shown above the value.
-    public let title: String
+    public let title: LocalizedStringResource
 
     /// The placeholder shown while the value is empty.
-    public let prompt: String
+    public let prompt: LocalizedStringResource
 
     /// The value.
     public let text: Binding<String>
@@ -52,8 +52,8 @@ public struct TouchKeyboardRequest: Identifiable {
     ///   - secure: Whether the value is hidden as it is typed.
     ///   - finished: Runs when editing finishes.
     public init(
-        title: String,
-        prompt: String,
+        title: LocalizedStringResource,
+        prompt: LocalizedStringResource,
         text: Binding<String>,
         kind: Kind = .text,
         multiline: Bool = false,

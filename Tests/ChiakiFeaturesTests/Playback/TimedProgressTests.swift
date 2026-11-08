@@ -22,11 +22,11 @@ private let lockWait = OperationProgress(
 
 @Test func aTimedProgressCountsDownFromTheMomentItWasReported() {
     let timed = TimedProgress(lockWait, at: reportedAt)
-    #expect(timed.text(at: reportedAt).lines == [
+    #expect(timed.text(at: reportedAt).lines.map { String(localized: $0) } == [
         "Reserving a server", "Step 7 of 10",
         "Waiting for your previous session to close, trying again in 10 s", "Tried once", "4 s elapsed"
     ])
-    #expect(timed.text(at: reportedAt.addingTimeInterval(3)).details == [
+    #expect(timed.text(at: reportedAt.addingTimeInterval(3)).details.map { String(localized: $0) } == [
         "Step 7 of 10", "Waiting for your previous session to close, trying again in 7 s", "Tried once",
         "7 s elapsed"
     ])

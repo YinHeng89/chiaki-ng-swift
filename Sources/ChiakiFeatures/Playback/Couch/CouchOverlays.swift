@@ -32,12 +32,12 @@ struct CouchAccountPickerOverlay: View {
                     VStack(spacing: 8) {
                         Text(store.seats.accountQuestion(for: choice))
                             .font(.title2.weight(.semibold))
-                        Text("The account must also be a user on this PS5")
+                        Text(.playbackCouchAccountMustBeUser)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                     if store.accounts.isEmpty {
-                        Text("Loading saved accounts")
+                        Text(.playbackCouchLoadingAccounts)
                             .foregroundStyle(.secondary)
                             .frame(minHeight: 120)
                     } else {
@@ -50,7 +50,7 @@ struct CouchAccountPickerOverlay: View {
                     FocusButton {
                         cancel(choice)
                     } label: {
-                        Text("Cancel")
+                        Text(.commonCancel)
                             .frame(maxWidth: .infinity)
                     }
                     .glassControlStyle()
@@ -138,18 +138,18 @@ struct CouchAccountPickerOverlay: View {
         }
     }
 
-    private func note(_ availability: CouchAccountAvailability) -> String? {
+    private func note(_ availability: CouchAccountAvailability) -> LocalizedStringResource? {
         switch availability {
         case .available:
             nil
         case .host:
-            "Player 1"
+            .playbackCouchPlayer(number: 1)
         case .seated(let other):
-            "Player \(Int(other) + 1)"
+            .playbackCouchPlayer(number: Int(other) + 1)
         case .joiningRemote:
-            "Joining"
+            .playbackCouchAccountJoining
         case .unrecognised:
-            "Not on this PS5"
+            .playbackCouchAccountNotOnConsole
         }
     }
 

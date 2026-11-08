@@ -17,32 +17,38 @@ struct StreamMenuLaunchControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Stream").font(.title2.weight(.semibold))
+            Text(.playbackMenuStreamTitle).font(.title2.weight(.semibold))
             if options.heights.count > 1 {
-                dropdown("Resolution", options: options.heights, selection: $configuration.launch.height,
-                         target: .streamResolution) { "\($0)p" }
+                dropdown(.playbackMenuStreamResolution, options: options.heights,
+                         selection: $configuration.launch.height, target: .streamResolution) {
+                    .playbackMenuStreamResolutionOption(height: String($0))
+                }
             }
             if options.frameRates.count > 1 {
                 dropdown(
-                    "Frame rate",
+                    .playbackMenuStreamFrameRate,
                     options: options.frameRates,
                     selection: $configuration.launch.frameRate,
                     target: .streamFrameRate
-                ) { "\($0) fps" }
+                ) { .playbackMenuStreamFrameRateOption(fps: $0) }
             }
             if options.codecs.count > 1 {
-                dropdown("Codec", options: options.codecs, selection: $configuration.launch.codec,
-                         target: .streamCodec) { $0.title }
+                dropdown(.playbackMenuStreamCodec, options: options.codecs,
+                         selection: $configuration.launch.codec, target: .streamCodec) { $0.title }
             }
             if options.offersHDR(for: configuration.launch) {
-                focused(Toggle("HDR", isOn: $configuration.launch.hdr), target: .streamHDR, highlight: false)
+                focused(
+                    Toggle(.playbackMenuStreamHdr, isOn: $configuration.launch.hdr),
+                    target: .streamHDR,
+                    highlight: false
+                )
                 Text(hdrDetail)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             if options.quality {
                 dropdown(
-                    "Quality",
+                    .playbackMenuStreamQuality,
                     options: CloudStreamQuality.allCases,
                     selection: $configuration.launch.quality,
                     target: .streamQuality
@@ -96,22 +102,22 @@ struct StreamMenuLaunchControls: View {
     }
 
     private func dropdown<Option: Hashable>(
-        _ title: String,
+        _ title: LocalizedStringResource,
         options: [Option],
         selection: Binding<Option>,
         target: StreamMenuControl,
-        optionTitle: @escaping (Option) -> String
+        optionTitle: @escaping (Option) -> LocalizedStringResource
     ) -> some View {
         StreamMenuDropdown(title: title, options: options, optionTitle: optionTitle, selection: selection,
                            target: target, focus: focus, focused: focusedControl == target)
     }
 
     @ViewBuilder private var bitrateControls: some View {
-        LabeledContent("Bitrate") {
-            Text(verbatim: "\(shownBitrate) Mbps").monospacedDigit()
+        LabeledContent(.playbackMenuStreamBitrate) {
+            Text(.playbackMenuStreamBitrateValue(mbps: shownBitrate)).monospacedDigit()
         }
         focused(
-            Toggle("Automatic bitrate", isOn: $configuration.launch.automaticBitrate),
+            Toggle(.playbackMenuStreamAutomaticBitrate, isOn: $configuration.launch.automaticBitrate),
             target: .streamAutomaticBitrate,
             highlight: false
         )
@@ -137,8 +143,10 @@ struct StreamMenuLaunchControls: View {
             in: Double(StreamProfile.bitrateRange.lowerBound)...Double(StreamProfile.bitrateRange.upperBound),
             step: 1
         )
-        .accessibilityLabel("Bitrate")
-        .accessibilityValue("\(configuration.launch.bitrateMbps) megabits per second")
+        .accessibilityLabel(.playbackMenuStreamBitrate)
+        .accessibilityValue(
+            .playbackMenuStreamBitrateAccessibilityValue(mbps: configuration.launch.bitrateMbps)
+        )
         if let focus {
             slider
                 .modifier(StreamMenuControlFocus(
@@ -180,42 +188,43 @@ struct StreamMenuLaunchControls: View {
             : configuration.launch.bitrateMbps
     }
 
-    private var automaticDetail: String {
+    private var automaticDetail: LocalizedStringResource {
         let fallback = options.automaticBitrateMbps(height: configuration.launch.height)
         if options.bitrates == .measuredCloud {
-            return "Measures your connection at launch, or uses \(fallback) Mbps if it cannot."
+            return .playbackMenuStreamAutomaticBitrateMeasured(mbps: fallback)
         }
-        return "Uses \(fallback) Mbps for \(configuration.launch.height)p."
+        return .playbackMenuStreamAutomaticBitrateFixed(
+            mbps: fallback,
+            height: String(configuration.launch.height)
+        )
     }
 
-    private var hdrDetail: String {
+    private var hdrDetail: LocalizedStringResource {
         switch options.relaunch {
         case .restart:
             configuration.launch.height > CloudPictureSettings.maximumSDRHeight
-                ? "Streams in HDR when the display supports it."
-                : "PS5 cloud streams HDR only at 1440p and 4K. At \(configuration.launch.height)p the stream "
-                    + "stays in SDR."
+                ? .playbackMenuStreamHdrWhenDisplaySupports
+                : .playbackMenuStreamHdrCloudHeightLimit(height: String(configuration.launch.height))
         case .reconnect:
-            "Streams in HDR when the screen supports it. Bright highlights also need an HDR TV connected to "
-                + "the PS5."
+            .playbackMenuStreamHdrConsole
         }
     }
 
-    private var relaunchTitle: String {
+    private var relaunchTitle: LocalizedStringResource {
         switch options.relaunch {
         case .reconnect:
-            "Apply and reconnect"
+            .playbackMenuStreamApplyReconnect
         case .restart:
-            "Apply and restart"
+            .playbackMenuStreamApplyRestart
         }
     }
 
-    private var relaunchDetail: String {
+    private var relaunchDetail: LocalizedStringResource {
         switch options.relaunch {
         case .reconnect:
-            "The stream reconnects with the new settings. The game keeps running on the console."
+            .playbackMenuStreamReconnectDetail
         case .restart:
-            "The game restarts with the new settings. Unsaved progress is lost."
+            .playbackMenuStreamRestartDetail
         }
     }
 
@@ -223,7 +232,7 @@ struct StreamMenuLaunchControls: View {
     private func focused<Content: View>(
         _ content: Content,
         target: StreamMenuControl,
-        title: String? = nil,
+        title: LocalizedStringResource? = nil,
         highlight: Bool = true
     ) -> some View {
         if let focus {

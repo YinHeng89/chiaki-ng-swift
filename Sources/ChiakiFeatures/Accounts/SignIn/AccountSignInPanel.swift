@@ -91,16 +91,14 @@ public struct AccountSignInPanel: View {
             }
             .buttonStyle(.glass)
             .buttonBorderShape(.circle)
-            .accessibilityLabel("Cancel sign-in")
+            .accessibilityLabel(.accountsPanelCancel)
             VStack(alignment: .leading, spacing: 1) {
-                Text("PlayStation sign-in").font(.headline)
-                Text(
-                    "If your account uses a passkey, choose the QR code option. This window cannot use passkeys."
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .truncationMode(.tail)
+                Text(.accountsPanelTitle).font(.headline)
+                Text(.accountsPanelPasskeyNote)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
             Spacer(minLength: 8)
             if let certificate = store.certificate {
@@ -112,7 +110,7 @@ public struct AccountSignInPanel: View {
                         .lineLimit(1)
                 }
                 .buttonStyle(.glass)
-                .accessibilityHint("Shows the page's certificate")
+                .accessibilityHint(.accountsPanelCertificateHint)
                 .popover(isPresented: $certificateShown) {
                     ScrollView {
                         SignInCertificateBar(certificate: certificate)
@@ -193,7 +191,7 @@ public struct AccountSignInPanel: View {
     private var completingProgress: some View {
         VStack(spacing: 14) {
             ProgressView().controlSize(.large)
-            Text("Completing PlayStation sign-in")
+            Text(.accountsPanelCompleting)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         }
@@ -202,18 +200,16 @@ public struct AccountSignInPanel: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("PlayStation sign-in").font(.headline)
-                Text(
-                    "If your account uses a passkey, choose the QR code option. This window cannot use passkeys."
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(
-                    layout.isCompact
-                        ? 2
-                        : nil
-                )
-                .fixedSize(horizontal: false, vertical: true)
+                Text(.accountsPanelTitle).font(.headline)
+                Text(.accountsPanelPasskeyNote)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(
+                        layout.isCompact
+                            ? 2
+                            : nil
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
             FocusButton {
@@ -224,8 +220,8 @@ public struct AccountSignInPanel: View {
             .glassControlStyle()
             .focusBorderShape(.circle)
             .keyboardShortcut(.cancelAction)
-            .help("Cancel sign-in")
-            .accessibilityLabel("Cancel sign-in")
+            .help(Text(.accountsPanelCancel))
+            .accessibilityLabel(.accountsPanelCancel)
         }
         .padding(.horizontal, 20)
         .padding(

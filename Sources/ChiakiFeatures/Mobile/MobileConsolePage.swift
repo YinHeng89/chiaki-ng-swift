@@ -22,6 +22,7 @@ struct MobileConsolePage: View {
                 HStack(alignment: .top, spacing: 24) {
                     controls(status)
                         .frame(width: 300)
+                        .modifier(MobileStickyColumn())
                     games
                         .frame(minWidth: 320, alignment: .topLeading)
                 }
@@ -56,14 +57,9 @@ struct MobileConsolePage: View {
             Button {
                 start(status.route)
             } label: {
-                Label(
-                    status.presence == .restMode && !status.away
-                        ? "Wake and Play"
-                        : status.actionTitle,
-                    systemImage: status.actionSymbol
-                )
-                .font(.headline)
-                .frame(maxWidth: .infinity)
+                Label(playTitle(status), systemImage: status.actionSymbol)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.glassProminent)
             .tint(Palette.accent)
@@ -72,10 +68,10 @@ struct MobileConsolePage: View {
             .disabled(store.consolesBusy)
             if console.remoteDeviceID != nil {
                 VStack(spacing: 0) {
-                    routeRow("Play on Home Network", symbol: "wifi", route: .local)
+                    routeRow(.mobileConsolePlayHome, symbol: "wifi", route: .local)
                         .disabled(status.away)
                     Divider().padding(.leading, 16)
-                    routeRow("Play over the Internet", symbol: "globe", route: .remote)
+                    routeRow(.mobileConsolePlayInternet, symbol: "globe", route: .remote)
                 }
                 .background(.fill.quaternary, in: .rect(cornerRadius: 20))
             }
@@ -83,7 +79,7 @@ struct MobileConsolePage: View {
                 Button {
                     edit()
                 } label: {
-                    Label("Edit", systemImage: "pencil")
+                    Label(.mobileConsoleEdit, systemImage: "pencil")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glass)
@@ -92,7 +88,7 @@ struct MobileConsolePage: View {
                         store.send(.requested(.deleteConsole(id)))
                     }
                 } label: {
-                    Label("Remove", systemImage: "trash")
+                    Label(.commonRemove, systemImage: "trash")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glass)
@@ -102,7 +98,17 @@ struct MobileConsolePage: View {
         }
     }
 
-    private func routeRow(_ title: String, symbol: String, route: PlaybackRoute) -> some View {
+    private func playTitle(_ status: MobileConsoleStatus) -> LocalizedStringResource {
+        status.presence == .restMode && !status.away
+            ? .mobileConsoleWakeAndPlay
+            : status.actionTitle
+    }
+
+    private func routeRow(
+        _ title: LocalizedStringResource,
+        symbol: String,
+        route: PlaybackRoute
+    ) -> some View {
         Button {
             start(route)
         } label: {
@@ -125,7 +131,7 @@ struct MobileConsolePage: View {
     @ViewBuilder private var games: some View {
         if let id = console.id, let titles = store.recentlyPlayed.rail(for: id)?.titles, !titles.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Recently Played")
+                Text(.mobileConsolesRecentlyPlayed)
                     .font(.title3.bold())
                 LazyVGrid(
                     columns: [GridItem(.adaptive(minimum: 100, maximum: 150), spacing: 14, alignment: .top)],

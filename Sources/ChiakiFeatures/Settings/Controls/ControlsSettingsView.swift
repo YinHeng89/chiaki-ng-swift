@@ -45,7 +45,11 @@ struct ControlsSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            SettingsPersistenceBanner(store.setting, subject: "controls", reportsInvalid: false) {
+            SettingsPersistenceBanner(
+                store.setting,
+                subject: .settingsControlsPersistenceSubject,
+                reportsInvalid: false
+            ) {
                 store.send(.retry)
             }
         }
@@ -110,7 +114,7 @@ struct ControlsSettingsView: View {
     }
 
     private var title: some View {
-        Text("Controls").font(.system(size: 28, weight: .semibold))
+        Text(.settingsControlsTitle).font(.system(size: 28, weight: .semibold))
     }
 
     private var keyCapture: ControlsCapture? {
@@ -207,13 +211,10 @@ private struct BackgroundInputCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Toggle("Keep controllers working when chiaki-ng is in the background", isOn: enabled)
-            Text(
-                "Controllers keep playing the stream while another app is in front. The keyboard and mouse "
-                    + "only reach the stream while its window is active."
-            )
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            Toggle(.settingsControlsBackgroundInput, isOn: enabled)
+            Text(.settingsControlsBackgroundInputFooter)
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -243,13 +244,10 @@ private struct DeviceMotionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Toggle("Use this device's motion as the controller's gyro", isOn: enabled)
-            Text(
-                "Turning and tilting the device moves the game's motion controls while you play with the touch "
-                    + "controls, the keyboard or a controller without a gyro."
-            )
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            Toggle(.settingsControlsDeviceMotion, isOn: enabled)
+            Text(.settingsControlsDeviceMotionFooter)
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -266,7 +264,7 @@ private struct VirtualGamepadCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("On-screen controller")
+            Text(.settingsControlsOnScreenController)
                 .font(.headline)
             FocusableSegments(
                 options: VirtualGamepadPresence.allCases,
@@ -283,27 +281,25 @@ private struct VirtualGamepadCard: View {
         .disabled(!store.isEditable)
     }
 
-    private var note: String {
+    private var note: LocalizedStringResource {
         switch store.draft.virtualGamepad {
         case .automatic:
-            "Shown while no controller is connected. The controller button at the bottom of a stream still "
-                + "shows or hides it until the stream ends."
+            .settingsControlsGamepadAutomaticNote
         case .shown:
-            "Shown on every stream, even with a controller connected."
+            .settingsControlsGamepadShownNote
         case .hidden:
-            "Never shown. The controller button at the bottom of a stream can still bring it back until the "
-                + "stream ends."
+            .settingsControlsGamepadHiddenNote
         }
     }
 
-    private static func title(_ presence: VirtualGamepadPresence) -> String {
+    private static func title(_ presence: VirtualGamepadPresence) -> LocalizedStringResource {
         switch presence {
         case .automatic:
-            "Automatic"
+            .commonAutomatic
         case .shown:
-            "Always"
+            .settingsControlsGamepadAlways
         case .hidden:
-            "Off"
+            .commonOff
         }
     }
 }
@@ -324,18 +320,18 @@ struct StreamMenuShortcutCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Stream menu").font(.headline)
-            Text("Press these controller buttons together during a stream to open the stream menu.")
+            Text(.settingsControlsStreamMenu).font(.headline)
+            Text(.settingsControlsStreamMenuFooter)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 8) {
-                    Text("Buttons")
+                    Text(.settingsControlsButtons)
                     Spacer()
                     pickers(Self.slots)
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Buttons")
+                    Text(.settingsControlsButtons)
                     HStack(spacing: 8) {
                         pickers(Self.slots.prefix(Self.slots.count / 2))
                     }
@@ -364,7 +360,7 @@ struct StreamMenuShortcutCard: View {
     }
 
     private func picker(slot: Int) -> some View {
-        Picker("Stream menu button \(slot + 1)", selection: Binding(
+        Picker(.settingsControlsStreamMenuButtonPicker(number: slot + 1), selection: Binding(
             get: {
                 buttons.indices.contains(slot)
                     ? buttons[slot]
@@ -375,7 +371,7 @@ struct StreamMenuShortcutCard: View {
             }
         )) {
             if slot >= StreamMenuShortcut.buttonLimit.lowerBound {
-                Text("Not used").tag(Self.unused)
+                Text(.settingsControlsNotUsed).tag(Self.unused)
             }
             ForEach(Self.buttonChoices, id: \.self) { code in
                 Text(BindingRow.buttonName(code)).tag(code)

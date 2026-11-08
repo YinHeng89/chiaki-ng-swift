@@ -40,10 +40,10 @@ public enum RegistrationDiagnostic {
             case .success:
                 return "Registration succeeded and credentials were saved."
             case .failure(let failure):
-                return PairingFailureMessage.text(for: failure)
+                return PairingFailureMessage.text(for: failure).english
             }
         } catch let error as RegistrationFailure {
-            return RegistrationFailureMessage.text(for: error)
+            return RegistrationFailureMessage.text(for: error).english
         } catch {
             return "Registration diagnostic failed before native registration."
         }

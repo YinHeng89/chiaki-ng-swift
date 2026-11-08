@@ -201,7 +201,7 @@ private struct CloudRecordingPill: View {
                 .foregroundStyle(.red)
                 .symbolEffect(.pulse, options: .repeating)
                 .accessibilityHidden(true)
-            Text("Recording")
+            Text(.playbackCloudRecording)
                 .font(.callout.weight(.semibold))
             if !banner.elapsed.isEmpty {
                 Text(banner.elapsed)
@@ -214,10 +214,11 @@ private struct CloudRecordingPill: View {
         .glassEffect(AppGlass.notice, in: .capsule)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(banner.elapsed.isEmpty
-            ? "Recording"
-            : "Recording \(banner.elapsed)")
+            ? .playbackCloudRecording
+            : .playbackCloudRecordingElapsed(elapsed: banner.elapsed))
             .onAppear {
-                AccessibilityNotification.Announcement("Recording started").post()
+                AccessibilityNotification.Announcement(String(localized: .playbackCloudRecordingStarted))
+                    .post()
             }
     }
 }

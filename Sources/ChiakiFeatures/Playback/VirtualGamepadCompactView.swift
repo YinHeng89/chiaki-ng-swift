@@ -49,7 +49,7 @@ import SwiftUI
                     Group {
                         VirtualArcButton(
                             control: .leftTrigger,
-                            text: "L2",
+                            text: .playbackGlyphsL2,
                             radius: 166,
                             from: -110,
                             until: -30
@@ -57,7 +57,7 @@ import SwiftUI
                         .position(left)
                         VirtualArcButton(
                             control: .leftShoulder,
-                            text: "L1",
+                            text: .playbackGlyphsL1,
                             radius: 118,
                             from: -110,
                             until: -30
@@ -65,7 +65,7 @@ import SwiftUI
                         .position(left)
                         VirtualArcButton(
                             control: .rightTrigger,
-                            text: "R2",
+                            text: .playbackGlyphsR2,
                             radius: 172,
                             from: -150,
                             until: -70
@@ -73,7 +73,7 @@ import SwiftUI
                         .position(right)
                         VirtualArcButton(
                             control: .rightShoulder,
-                            text: "R1",
+                            text: .playbackGlyphsR1,
                             radius: 124,
                             from: -150,
                             until: -70
@@ -175,7 +175,7 @@ import SwiftUI
         /// The console control the button presses.
         let control: PlayStationControl
         /// The label drawn on the arc, such as L2 or R1.
-        let text: String
+        let text: LocalizedStringResource
         /// The distance from the arc's centre to the middle of the band.
         let radius: CGFloat
         /// The angle in degrees where the arc starts.

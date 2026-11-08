@@ -39,7 +39,7 @@
         #expect(seats.pad(for: remote.guest) == nil)
         let ready = seats.seatRemote(remote, at: 2)
         #expect(ready.commands.isEmpty)
-        #expect(ready.notice?.title == "Alex joined as Player 3")
+        #expect(ready.notice.map { String(localized: $0.title) } == "Alex joined as Player 3")
         #expect(seats.waiting.isEmpty)
         #expect(seats[2] == .ready(CouchPlayer(input: .remote(remote), account: mika), color: nil))
         #expect(seats[2].device == nil)
@@ -65,13 +65,13 @@
         _ = seats.claimRemote(remote)
         _ = seats.chooseAccount(mika, forRemote: remote.guest)
         let seated = seats.seatRemote(remote, at: 3)
-        #expect(seated.notice?.title == "Alex joined as Player 4")
+        #expect(seated.notice.map { String(localized: $0.title) } == "Alex joined as Player 4")
         #expect(seats[1] == .open)
         #expect(seats[3] == .ready(CouchPlayer(input: .remote(remote), account: mika), color: 0x112233))
         let repeated = seats.seatRemote(remote, at: 3)
         #expect(repeated == CouchOutcome())
         let moved = seats.seatRemote(remote, at: 1)
-        #expect(moved.notice?.title == "Alex joined as Player 2")
+        #expect(moved.notice.map { String(localized: $0.title) } == "Alex joined as Player 2")
         #expect(seats[3] == .open)
         #expect(seats[1] == .ready(CouchPlayer(input: .remote(remote), account: mika), color: nil))
         #expect(seats.remoteCount == 1)
@@ -186,7 +186,7 @@
         #expect(seats[2] == .joining(CouchPlayer(input: .remote(remote), account: mika)))
         let joined = seats.seatRemote(remote, at: 2)
         #expect(joined.commands.isEmpty)
-        #expect(joined.notice?.title == "Alex joined as Player 3")
+        #expect(joined.notice.map { String(localized: $0.title) } == "Alex joined as Player 3")
         #expect(seats[2] == .ready(CouchPlayer(input: .remote(remote), account: mika), color: 0x00ff00))
         #expect(!seats.heldForRemote(2))
         #expect(seats.reserveRemote(remote, at: 2) == CouchOutcome())
@@ -239,8 +239,12 @@
         #expect(rejected.commands.isEmpty)
         #expect(rejected.remote.isEmpty)
         #expect(rejected.notice == .joinFailed(pad: 2, failure: .accountUnresolvable))
-        #expect(rejected.notice?.title == "Player 3 couldn’t join")
-        #expect(rejected.notice?.detail == "This PS5 doesn’t recognise that account.")
+        #expect(rejected.notice.map { String(localized: $0.title) } == "Player 3 couldn’t join")
+        #expect(
+            rejected.notice?.detail.map { String(
+                localized: $0
+            ) } == "This PS5 doesn’t recognise that account."
+        )
         #expect(seats.unrecognisedAccounts == [mika.accountID.data])
         #expect(seats.availability(of: mika, for: nil) == .unrecognised)
         #expect(seats.pad(for: remote.guest) == 2)
@@ -281,7 +285,9 @@
             CouchPlayer(input: .remote(remote), account: mika),
             color: 0x112233
         ))
-        #expect(store.state.notices.map(\.notice.title) == ["Alex joined as Player 3"])
+        #expect(
+            store.state.notices.map { String(localized: $0.notice.title) } == ["Alex joined as Player 3"]
+        )
         await store.send(.event(.dropped(pad: 2)))
         #expect(store.state.seats.pad(for: remote.guest) == 2)
         await store.send(.cancel(pad: 2))
