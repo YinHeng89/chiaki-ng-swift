@@ -9,6 +9,12 @@
             "state" : "translated",
             "value" : "chiaki-ng logo"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "chiaki-ng 标志"
+          }
         }
       }
     },
@@ -19,6 +25,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restart logo animation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重播 Logo 动画"
           }
         }
       }
@@ -31,6 +43,12 @@
             "state" : "translated",
             "value" : "%(button)@: %(action)@"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(button)@：%(action)@"
+          }
         }
       }
     },
@@ -41,6 +59,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adjust slider"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "调整滑块"
           }
         }
       }
@@ -53,6 +77,12 @@
             "state" : "translated",
             "value" : "Cancel adjustment"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消调整"
+          }
         }
       }
     },
@@ -64,6 +94,12 @@
             "state" : "translated",
             "value" : "Finish adjusting"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成调整"
+          }
         }
       }
     },
@@ -74,6 +110,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hidden"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已隐藏"
           }
         }
       }

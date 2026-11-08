@@ -9,6 +9,12 @@
             "state" : "translated",
             "value" : "%(mbps)lld Mbps, measured at launch"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps，启动时测得"
+          }
         }
       }
     },
@@ -19,6 +25,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(mbps)lld Mbps, measured %(minutes)lld min before launch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps，启动前 %(minutes)lld 分钟测得"
           }
         }
       }
@@ -31,6 +43,12 @@
             "state" : "translated",
             "value" : "%(mbps)lld Mbps, measured moments before launch"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps，启动前片刻测得"
+          }
         }
       }
     },
@@ -38,6 +56,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(mbps)lld Mbps"
@@ -53,6 +77,12 @@
             "state" : "translated",
             "value" : "%(mbps)lld Mbps saved %(minutes)lld min ago"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps，%(minutes)lld 分钟前保存"
+          }
         }
       }
     },
@@ -63,6 +93,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(mbps)lld Mbps saved moments ago"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(mbps)lld Mbps，片刻前保存"
           }
         }
       }
@@ -75,6 +111,12 @@
             "state" : "translated",
             "value" : "Screenshot"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "屏幕截图"
+          }
         }
       }
     },
@@ -85,6 +127,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Video clip"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频片段"
           }
         }
       }
@@ -97,6 +145,12 @@
             "state" : "translated",
             "value" : "Couldn't check the store: this edition was not in the store's answer"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查商店：商店返回结果中没有此版本"
+          }
         }
       }
     },
@@ -107,6 +161,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couldn't check the store: no answer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查商店：没有响应"
           }
         }
       }
@@ -119,6 +179,12 @@
             "state" : "translated",
             "value" : "Couldn't check the store: the store publishes no streaming notice for this edition"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查商店：商店未发布此版本的串流说明"
+          }
         }
       }
     },
@@ -130,6 +196,12 @@
             "state" : "translated",
             "value" : "Couldn't check the store: no PSN sign-in"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查商店：未登录 PSN"
+          }
         }
       }
     },
@@ -140,6 +212,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The streaming server goes down for maintenance in %(hours)lld hours and the game will close. Save your progress."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流服务器将在 %(hours)lld 小时后停机维护，游戏将关闭。请先保存进度。"
           }
         }
       }
@@ -164,6 +242,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "串流服务器将在 %(minutes)lld 分钟后停机维护，游戏将关闭。请先保存进度。"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -174,6 +264,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The game closes in %(hours)lld hours because of the streaming time limit. Save your progress."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于达到串流时长上限，游戏将在 %(hours)lld 小时后关闭。请先保存进度。"
           }
         }
       }
@@ -198,6 +294,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "由于达到串流时长上限，游戏将在 %(minutes)lld 分钟后关闭。请先保存进度。"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -208,6 +316,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The streaming service closes the game in %(hours)lld hours. Save your progress."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流服务将在 %(hours)lld 小时后关闭游戏。请先保存进度。"
           }
         }
       }
@@ -232,6 +346,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "串流服务将在 %(minutes)lld 分钟后关闭游戏。请先保存进度。"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -242,6 +368,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connecting to %(name)@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接 %(name)@"
           }
         }
       }
@@ -254,6 +386,12 @@
             "state" : "translated",
             "value" : "Connecting to %(name)@ (%(ping)lld ms)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接 %(name)@（%(ping)lld ms）"
+          }
         }
       }
     },
@@ -264,6 +402,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chosen at launch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动时选定"
           }
         }
       }
@@ -276,6 +420,12 @@
             "state" : "translated",
             "value" : "Automatic"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动"
+          }
         }
       }
     },
@@ -286,6 +436,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chosen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已选择"
           }
         }
       }
@@ -298,6 +454,12 @@
             "state" : "translated",
             "value" : "No reply"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无响应"
+          }
         }
       }
     },
@@ -308,6 +470,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(ping)lld ms"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(ping)lld 毫秒"
           }
         }
       }
@@ -320,6 +488,12 @@
             "state" : "translated",
             "value" : "last measured %(ping)lld ms"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次测得 %(ping)lld ms"
+          }
         }
       }
     },
@@ -330,6 +504,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ping is the adjusted value the stream core reports"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ping 为串流核心报告的调整值。"
           }
         }
       }
@@ -342,6 +522,12 @@
             "state" : "translated",
             "value" : "%(name)@, chosen at launch"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@，启动时选择"
+          }
         }
       }
     },
@@ -352,6 +538,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(name)@, automatic"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@，自动"
           }
         }
       }
@@ -364,6 +556,12 @@
             "state" : "translated",
             "value" : "%(name)@, chosen"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@，已选择"
+          }
         }
       }
     },
@@ -374,6 +572,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(name)@ at %(ping)lld ms, chosen at launch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@，%(ping)lld ms，启动时选择"
           }
         }
       }
@@ -386,6 +590,12 @@
             "state" : "translated",
             "value" : "%(name)@ at %(ping)lld ms, automatic"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@，%(ping)lld ms，自动"
+          }
         }
       }
     },
@@ -396,6 +606,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(name)@ at last measured %(ping)lld ms, chosen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(name)@，上次测得 %(ping)lld ms，已选择"
           }
         }
       }
@@ -408,6 +624,12 @@
             "state" : "translated",
             "value" : "All streamable"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部可串流"
+          }
         }
       }
     },
@@ -418,6 +640,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Available to buy"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可购买"
           }
         }
       }
@@ -430,6 +658,12 @@
             "state" : "translated",
             "value" : "My library"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的游戏库"
+          }
         }
       }
     },
@@ -437,6 +671,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PlayStation Plus"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PlayStation Plus"
@@ -452,6 +692,12 @@
             "state" : "translated",
             "value" : "Pre-orders"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预购"
+          }
         }
       }
     },
@@ -462,6 +708,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recently played"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近游玩"
           }
         }
       }
@@ -474,6 +726,12 @@
             "state" : "translated",
             "value" : "All"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
+          }
         }
       }
     },
@@ -485,6 +743,12 @@
             "state" : "translated",
             "value" : "All platforms"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有平台"
+          }
         }
       }
     },
@@ -492,6 +756,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS3"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS3"
@@ -507,6 +777,12 @@
             "state" : "translated",
             "value" : "PS4"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4"
+          }
         }
       }
     },
@@ -514,6 +790,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS5"
@@ -529,6 +811,12 @@
             "state" : "translated",
             "value" : "Your captures are still uploading"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的截图仍在上传"
+          }
         }
       }
     },
@@ -539,6 +827,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Game invitation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏邀请"
           }
         }
       }
@@ -551,6 +845,12 @@
             "state" : "translated",
             "value" : "Couldn't join the invitation"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法加入该邀请"
+          }
         }
       }
     },
@@ -561,6 +861,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "New message"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新消息"
           }
         }
       }
@@ -573,6 +879,12 @@
             "state" : "translated",
             "value" : "The clip reached its longest length"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "片段已达最大长度"
+          }
         }
       }
     },
@@ -583,6 +895,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recording paused during this scene"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此场景期间录制已暂停"
           }
         }
       }
@@ -595,6 +913,12 @@
             "state" : "translated",
             "value" : "This game doesn't allow recording here"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此游戏不允许在此处录制"
+          }
         }
       }
     },
@@ -605,6 +929,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recording resumed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "录制已恢复"
           }
         }
       }
@@ -617,6 +947,12 @@
             "state" : "translated",
             "value" : "Video clip saved"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频片段已保存"
+          }
         }
       }
     },
@@ -627,6 +963,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This game doesn't allow screenshots here"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此游戏不允许在此处截图"
           }
         }
       }
@@ -639,6 +981,12 @@
             "state" : "translated",
             "value" : "Screenshot saved"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "屏幕截图已保存"
+          }
         }
       }
     },
@@ -649,6 +997,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your game trial is running out"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的游戏试玩即将结束"
           }
         }
       }
@@ -661,6 +1015,12 @@
             "state" : "translated",
             "value" : "Bronze trophy earned"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已获得铜奖杯"
+          }
         }
       }
     },
@@ -671,6 +1031,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gold trophy earned"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已获得金奖杯"
           }
         }
       }
@@ -683,6 +1049,12 @@
             "state" : "translated",
             "value" : "Platinum trophy earned"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已获得白金奖杯"
+          }
         }
       }
     },
@@ -694,6 +1066,12 @@
             "state" : "translated",
             "value" : "Silver trophy earned"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已获得银奖杯"
+          }
         }
       }
     },
@@ -701,6 +1079,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Plus Essential"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS Plus Essential"
@@ -716,6 +1100,12 @@
             "state" : "translated",
             "value" : "PS Plus Extra"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Plus Extra"
+          }
         }
       }
     },
@@ -727,6 +1117,12 @@
             "state" : "translated",
             "value" : "No PS Plus"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无 PS Plus"
+          }
         }
       }
     },
@@ -734,6 +1130,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Plus Premium"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS Plus Premium"
@@ -749,6 +1151,12 @@
             "state" : "translated",
             "value" : "The ownership check was cancelled."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有权检查已取消。"
+          }
         }
       }
     },
@@ -759,6 +1167,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The ownership check failed. Try again in a moment."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有权检查失败。请稍后重试。"
           }
         }
       }
@@ -771,6 +1185,12 @@
             "state" : "translated",
             "value" : "No PlayStation sign-in is saved for this account, or it has expired. Sign in again in Accounts."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此账户未保存 PlayStation 登录信息，或已过期。请在账户中重新登录。"
+          }
         }
       }
     },
@@ -781,6 +1201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PlayStation refused the ownership check. Sign in again in Accounts."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PlayStation 拒绝了所有权检查。请在账户中重新登录。"
           }
         }
       }
@@ -793,6 +1219,12 @@
             "state" : "translated",
             "value" : "The ownership check did not return the updated title. Refresh the whole library instead."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有权检查未返回更新后的游戏。请改为刷新整个游戏库。"
+          }
         }
       }
     },
@@ -803,6 +1235,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Releases in %(countdown)@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距离发行还有 %(countdown)@"
           }
         }
       }
@@ -815,6 +1253,12 @@
             "state" : "translated",
             "value" : "%(days)lldd %(clock)@"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(days)lld 天 %(clock)@"
+          }
         }
       }
     },
@@ -825,6 +1269,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Releases %(date)@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发行日期 %(date)@"
           }
         }
       }
@@ -837,6 +1287,12 @@
             "state" : "translated",
             "value" : "Release date not announced"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发行日期未公布"
+          }
         }
       }
     },
@@ -847,6 +1303,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Measured your connection at %(mbps)lld Mbps %(days)lld days ago. Measures again at launch when that is out of date."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %(days)lld 天前测得连接速度为 %(mbps)lld Mbps。数据过期后会在启动时重新测量。"
           }
         }
       }
@@ -859,6 +1321,12 @@
             "state" : "translated",
             "value" : "Measured your connection at %(mbps)lld Mbps %(hours)lld h ago. Measures again at launch when that is out of date."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %(hours)lld 小时前测得连接速度为 %(mbps)lld Mbps。数据过期后会在启动时重新测量。"
+          }
         }
       }
     },
@@ -869,6 +1337,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Measured your connection at %(mbps)lld Mbps %(minutes)lld min ago. Measures again at launch when that is out of date."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %(minutes)lld 分钟前测得连接速度为 %(mbps)lld Mbps。数据过期后会在启动时重新测量。"
           }
         }
       }
@@ -881,6 +1355,12 @@
             "state" : "translated",
             "value" : "Measured your connection at %(mbps)lld Mbps moments ago. Measures again at launch when that is out of date."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "片刻前测得连接速度为 %(mbps)lld Mbps。数据过期后会在启动时重新测量。"
+          }
         }
       }
     },
@@ -888,6 +1368,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Cloud"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS Cloud"
@@ -903,6 +1389,12 @@
             "state" : "translated",
             "value" : "PS Now"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Now"
+          }
         }
       }
     },
@@ -913,6 +1405,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "In your library"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在你的游戏库中"
           }
         }
       }
@@ -925,6 +1423,12 @@
             "state" : "translated",
             "value" : "Included with Premium"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含在 Premium 中"
+          }
         }
       }
     },
@@ -935,6 +1439,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "May stream"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以串流"
           }
         }
       }
@@ -947,6 +1457,12 @@
             "state" : "translated",
             "value" : "View in Store"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在商店中查看"
+          }
         }
       }
     },
@@ -957,6 +1473,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Main PS4 Console"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主用 PS4 主机"
           }
         }
       }
@@ -969,6 +1491,12 @@
             "state" : "translated",
             "value" : "Circle"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圈"
+          }
         }
       }
     },
@@ -979,6 +1507,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cross"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "叉"
           }
         }
       }
@@ -991,6 +1525,12 @@
             "state" : "translated",
             "value" : "D-pad down"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键下"
+          }
         }
       }
     },
@@ -1001,6 +1541,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "D-pad left"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键左"
           }
         }
       }
@@ -1013,6 +1559,12 @@
             "state" : "translated",
             "value" : "D-pad right"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键右"
+          }
         }
       }
     },
@@ -1023,6 +1575,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "D-pad up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键上"
           }
         }
       }
@@ -1035,6 +1593,12 @@
             "state" : "translated",
             "value" : "Gyro (hold)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "陀螺仪（按住）"
+          }
         }
       }
     },
@@ -1042,6 +1606,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L1"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L1"
@@ -1057,6 +1627,12 @@
             "state" : "translated",
             "value" : "L2"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L2"
+          }
         }
       }
     },
@@ -1064,6 +1640,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L3"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L3"
@@ -1079,6 +1661,12 @@
             "state" : "translated",
             "value" : "Left stick down"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆向下"
+          }
         }
       }
     },
@@ -1089,6 +1677,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Left stick left"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆向左"
           }
         }
       }
@@ -1101,6 +1695,12 @@
             "state" : "translated",
             "value" : "Left stick right"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆向右"
+          }
         }
       }
     },
@@ -1111,6 +1711,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Left stick up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆向上"
           }
         }
       }
@@ -1123,6 +1729,12 @@
             "state" : "translated",
             "value" : "Options"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项"
+          }
         }
       }
     },
@@ -1134,6 +1746,12 @@
             "state" : "translated",
             "value" : "PS"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS 键"
+          }
         }
       }
     },
@@ -1141,6 +1759,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R1"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "R1"
@@ -1156,6 +1780,12 @@
             "state" : "translated",
             "value" : "R2"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R2"
+          }
         }
       }
     },
@@ -1163,6 +1793,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R3"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "R3"
@@ -1178,6 +1814,12 @@
             "state" : "translated",
             "value" : "Right stick down"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆向下"
+          }
         }
       }
     },
@@ -1188,6 +1830,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Right stick left"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆向左"
           }
         }
       }
@@ -1200,6 +1848,12 @@
             "state" : "translated",
             "value" : "Right stick right"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆向右"
+          }
         }
       }
     },
@@ -1210,6 +1864,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Right stick up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆向上"
           }
         }
       }
@@ -1222,6 +1882,12 @@
             "state" : "translated",
             "value" : "Share"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享"
+          }
         }
       }
     },
@@ -1232,6 +1898,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Square"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "方"
           }
         }
       }
@@ -1244,6 +1916,12 @@
             "state" : "translated",
             "value" : "Touchpad"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触摸板"
+          }
         }
       }
     },
@@ -1254,6 +1932,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Touchpad left"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触摸板左侧"
           }
         }
       }
@@ -1266,6 +1950,12 @@
             "state" : "translated",
             "value" : "Touchpad right"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触摸板右侧"
+          }
         }
       }
     },
@@ -1276,6 +1966,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Triangle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "三角"
           }
         }
       }
@@ -1288,6 +1984,12 @@
             "state" : "translated",
             "value" : "Keyboard and mouse"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "键盘与鼠标"
+          }
         }
       }
     },
@@ -1298,6 +2000,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Built in"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
           }
         }
       }
@@ -1310,6 +2018,12 @@
             "state" : "translated",
             "value" : "Not connected"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未连接"
+          }
         }
       }
     },
@@ -1320,6 +2034,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blue"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "蓝色"
           }
         }
       }
@@ -1332,6 +2052,12 @@
             "state" : "translated",
             "value" : "Cyan"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "青色"
+          }
         }
       }
     },
@@ -1342,6 +2068,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Green"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绿色"
           }
         }
       }
@@ -1354,6 +2086,12 @@
             "state" : "translated",
             "value" : "Off"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关"
+          }
         }
       }
     },
@@ -1364,6 +2102,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Orange"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橙色"
           }
         }
       }
@@ -1376,6 +2120,12 @@
             "state" : "translated",
             "value" : "Pink"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粉色"
+          }
         }
       }
     },
@@ -1386,6 +2136,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Purple"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紫色"
           }
         }
       }
@@ -1398,6 +2154,12 @@
             "state" : "translated",
             "value" : "Red"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "红色"
+          }
         }
       }
     },
@@ -1408,6 +2170,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "White"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "白色"
           }
         }
       }
@@ -1420,6 +2188,12 @@
             "state" : "translated",
             "value" : "Couldn’t read controllers. Check the connection and try again."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取控制器。请检查连接后重试。"
+          }
         }
       }
     },
@@ -1430,6 +2204,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Use each input once per preset and give every preset a name. Changes are saved once they are valid."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个预设中每个输入只能使用一次，并为每个预设命名。更改在有效后即会保存。"
           }
         }
       }
@@ -1442,6 +2222,12 @@
             "state" : "translated",
             "value" : "Delete a preset to change this controller’s buttons on their own; the limit is %(limit)lld."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请删除一个预设，才能单独更改此控制器的按键；上限为 %(limit)lld 个。"
+          }
         }
       }
     },
@@ -1452,6 +2238,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The controller did not accept the rumble test."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器未接受震动测试。"
           }
         }
       }
@@ -1464,6 +2256,12 @@
             "state" : "translated",
             "value" : "Use Command, Control or Option with a key the app does not already use."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 Command、Control 或 Option 与应用尚未使用的按键组合。"
+          }
         }
       }
     },
@@ -1474,6 +2272,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose two to four different buttons that don’t contain, or sit inside, the touchpad shortcut."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择两到四个不同的按键，且不能包含触摸板快捷键的组合，也不能被其包含。"
           }
         }
       }
@@ -1486,6 +2290,12 @@
             "state" : "translated",
             "value" : "Choose two or three different buttons that don’t contain, or sit inside, the stream menu shortcut."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择两个或三个不同的按键，且不能包含串流菜单快捷键的组合，也不能被其包含。"
+          }
         }
       }
     },
@@ -1496,6 +2306,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Controller"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器"
           }
         }
       }
@@ -1508,6 +2324,12 @@
             "state" : "translated",
             "value" : "Standard"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标准"
+          }
         }
       }
     },
@@ -1518,6 +2340,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "That isn’t a complete invitation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是完整的邀请"
           }
         }
       }
@@ -1530,6 +2358,12 @@
             "state" : "translated",
             "value" : "That isn’t a complete reply"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是完整的回复"
+          }
         }
       }
     },
@@ -1540,6 +2374,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "That’s an invitation, not a reply. Paste the reply the other player sent back"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是邀请，不是回复。请粘贴对方玩家发回的回复"
           }
         }
       }
@@ -1552,6 +2392,12 @@
             "state" : "translated",
             "value" : "That’s a reply, not an invitation. Paste the invitation the host sent you"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是回复，不是邀请。请粘贴房主发给你的邀请"
+          }
         }
       }
     },
@@ -1562,6 +2408,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancelled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已取消"
           }
         }
       }
@@ -1574,6 +2426,12 @@
             "state" : "translated",
             "value" : "Connection ended"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接已结束"
+          }
         }
       }
     },
@@ -1584,6 +2442,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invitation expired"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邀请已过期"
           }
         }
       }
@@ -1596,6 +2460,12 @@
             "state" : "translated",
             "value" : "A direct path wasn’t available"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法建立直连路径。"
+          }
         }
       }
     },
@@ -1606,6 +2476,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "We couldn’t verify this pairing"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我们无法验证此配对"
           }
         }
       }
@@ -1618,6 +2494,12 @@
             "state" : "translated",
             "value" : "Kakusan invitation"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kakusan 邀请"
+          }
         }
       }
     },
@@ -1629,6 +2511,12 @@
             "state" : "translated",
             "value" : "Kakusan reply"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kakusan 回复"
+          }
         }
       }
     },
@@ -1636,6 +2524,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kakusan"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kakusan"
@@ -1651,6 +2545,12 @@
             "state" : "translated",
             "value" : "Unsupported video format"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持的视频格式"
+          }
         }
       }
     },
@@ -1661,6 +2561,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The connection was too slow"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接速度过慢"
           }
         }
       }
@@ -1673,6 +2579,12 @@
             "state" : "translated",
             "value" : "Encryption is unavailable"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加密不可用"
+          }
         }
       }
     },
@@ -1683,6 +2595,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The invitation expired"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "邀请已过期"
           }
         }
       }
@@ -1695,6 +2613,12 @@
             "state" : "translated",
             "value" : "Use H.264 or H.265 without HDR, at 1080p and 60 fps or lower"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用不带 HDR 的 H.264 或 H.265，采用 1080p 和 60 fps 或更低"
+          }
         }
       }
     },
@@ -1705,6 +2629,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This console connection can’t be shared"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此主机连接无法共享"
           }
         }
       }
@@ -1717,6 +2647,12 @@
             "state" : "translated",
             "value" : "The device’s identity changed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备身份已更改"
+          }
         }
       }
     },
@@ -1727,6 +2663,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Something went wrong"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出错了"
           }
         }
       }
@@ -1739,6 +2681,12 @@
             "state" : "translated",
             "value" : "The pasted text isn’t valid"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴的文本无效"
+          }
         }
       }
     },
@@ -1749,6 +2697,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No direct path between your networks"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的网络之间没有直连路径"
           }
         }
       }
@@ -1761,6 +2715,12 @@
             "state" : "translated",
             "value" : "The codes didn’t match"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "代码不匹配"
+          }
         }
       }
     },
@@ -1771,6 +2731,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The host’s stream ended"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "房主的串流已结束"
           }
         }
       }
@@ -1783,6 +2749,12 @@
             "state" : "translated",
             "value" : "Unsupported stream format"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持的串流格式"
+          }
         }
       }
     },
@@ -1793,6 +2765,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The console couldn’t add the player"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机无法添加玩家"
           }
         }
       }
@@ -1805,6 +2783,12 @@
             "state" : "translated",
             "value" : "The connection couldn’t be checked"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查连接"
+          }
         }
       }
     },
@@ -1815,6 +2799,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The other app uses a different version"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另一个应用使用不同的版本"
           }
         }
       }
@@ -1827,6 +2817,12 @@
             "state" : "translated",
             "value" : "This invitation is closed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此邀请已关闭"
+          }
         }
       }
     },
@@ -1837,6 +2833,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The game ended"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏已结束"
           }
         }
       }
@@ -1849,6 +2851,12 @@
             "state" : "translated",
             "value" : "The host removed you"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "房主已将你移出"
+          }
         }
       }
     },
@@ -1859,6 +2867,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This looks like a device you’ve played with. That’s confirmed once you’re connected"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这看起来像你曾用过的设备。连接后即可确认"
           }
         }
       }
@@ -1871,6 +2885,12 @@
             "state" : "translated",
             "value" : "You’ll see this device’s fingerprint once you’re connected"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接后即可看到此设备的指纹"
+          }
         }
       }
     },
@@ -1881,6 +2901,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connection error"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接错误"
           }
         }
       }
@@ -1893,6 +2919,12 @@
             "state" : "translated",
             "value" : "Connection lost"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接丢失"
+          }
         }
       }
     },
@@ -1903,6 +2935,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Left the game"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已离开游戏"
           }
         }
       }
@@ -1915,6 +2953,12 @@
             "state" : "translated",
             "value" : "No free seat"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有空闲席位"
+          }
         }
       }
     },
@@ -1925,6 +2969,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Removed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已移除"
           }
         }
       }
@@ -1937,6 +2987,12 @@
             "state" : "translated",
             "value" : "The stream ended"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流已结束"
+          }
         }
       }
     },
@@ -1947,6 +3003,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Timed out"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已超时"
           }
         }
       }
@@ -1959,6 +3021,12 @@
             "state" : "translated",
             "value" : "Choose either --list or --stream, not both."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择 --list 或 --stream，不能同时指定。"
+          }
         }
       }
     },
@@ -1969,6 +3037,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose only one of --fullscreen, --zoom or --stretch."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请仅选择 --fullscreen、--zoom 或 --stretch 中的一项。"
           }
         }
       }
@@ -1981,6 +3055,12 @@
             "state" : "translated",
             "value" : "Name the console to stream, for example --stream \"Living Room\"."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为要串流的主机命名，例如 --stream \"客厅\"。"
+          }
         }
       }
     },
@@ -1991,6 +3071,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(option)@ only applies together with --stream."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(option)@ 仅在与 --stream 一起使用时生效。"
           }
         }
       }
@@ -2003,6 +3089,12 @@
             "state" : "translated",
             "value" : "Unknown exit value \"%(value)@\". Use 1 or 0."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知的退出值“%(value)@”。请使用 1 或 0。"
+          }
         }
       }
     },
@@ -2013,6 +3105,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unknown display mode \"%(mode)@\". Use window, fullscreen, zoom or stretch."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知的显示模式“%(mode)@”。请使用 window、fullscreen、zoom 或 stretch。"
           }
         }
       }
@@ -2025,6 +3123,12 @@
             "state" : "translated",
             "value" : "Unknown route \"%(route)@\". Use local or remote."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知的路由“%(route)@”。请使用 local 或 remote。"
+          }
         }
       }
     },
@@ -2035,6 +3139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "chiaki-ng can’t open %(url)@. Use chiaki-ng://stream/<console>."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "chiaki-ng 无法打开 %(url)@。请使用 chiaki-ng://stream/<console>。"
           }
         }
       }
@@ -2047,6 +3157,12 @@
             "state" : "translated",
             "value" : "Conversation"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话"
+          }
         }
       }
     },
@@ -2057,6 +3173,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Attempt %(number)lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %(number)lld 次尝试"
           }
         }
       }
@@ -2069,6 +3191,12 @@
             "state" : "translated",
             "value" : "%(total)lld addresses: %(local)lld local, %(publicAddress)lld public, %(guessed)lld guessed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共 %(total)lld 个地址：%(local)lld 个本地、%(publicAddress)lld 个公网、%(guessed)lld 个推测"
+          }
         }
       }
     },
@@ -2079,6 +3207,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the connection was lost"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连接已断开"
           }
         }
       }
@@ -2091,6 +3225,12 @@
             "state" : "translated",
             "value" : "the console refused the control connection"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机拒绝了控制连接"
+          }
         }
       }
     },
@@ -2101,6 +3241,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the control connection failed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制连接失败"
           }
         }
       }
@@ -2113,6 +3259,12 @@
             "state" : "translated",
             "value" : "the control connection could not be moved"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法迁移控制连接"
+          }
         }
       }
     },
@@ -2123,6 +3275,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the control answer was not understood"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法理解控制响应"
           }
         }
       }
@@ -2135,6 +3293,12 @@
             "state" : "translated",
             "value" : "the control connection was lost"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制连接已断开"
+          }
         }
       }
     },
@@ -2145,6 +3309,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the control connection was refused"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制连接被拒绝"
           }
         }
       }
@@ -2157,6 +3327,12 @@
             "state" : "translated",
             "value" : "the control connection timed out"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制连接超时"
+          }
         }
       }
     },
@@ -2167,6 +3343,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the control answer was too large"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制响应过大"
           }
         }
       }
@@ -2179,6 +3361,12 @@
             "state" : "translated",
             "value" : "the control answer was cut short"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制响应被截断"
+          }
         }
       }
     },
@@ -2189,6 +3377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the controller was rejected"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制器被拒绝"
           }
         }
       }
@@ -2201,6 +3395,12 @@
             "state" : "translated",
             "value" : "the request was not valid"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求无效"
+          }
         }
       }
     },
@@ -2211,6 +3411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the stream settings were rejected"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流设置被拒绝"
           }
         }
       }
@@ -2223,6 +3429,12 @@
             "state" : "translated",
             "value" : "the session was in the wrong state"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话状态错误"
+          }
         }
       }
     },
@@ -2233,6 +3445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the login PIN was rejected"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录 PIN 被拒绝"
           }
         }
       }
@@ -2245,6 +3463,12 @@
             "state" : "translated",
             "value" : "the console no longer accepts this pairing"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机不再接受此配对"
+          }
         }
       }
     },
@@ -2255,6 +3479,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the stream could not be set up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法建立串流"
           }
         }
       }
@@ -2267,6 +3497,12 @@
             "state" : "translated",
             "value" : "a system service was unavailable"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系统服务不可用"
+          }
         }
       }
     },
@@ -2277,6 +3513,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "this Mac ran out of resources"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这台 Mac 资源耗尽"
           }
         }
       }
@@ -2289,6 +3531,12 @@
             "state" : "translated",
             "value" : "no route to the console worked"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可用的主机路由"
+          }
         }
       }
     },
@@ -2299,6 +3547,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the session connection was refused"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话连接被拒绝"
           }
         }
       }
@@ -2311,6 +3565,12 @@
             "state" : "translated",
             "value" : "the session request failed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话请求失败"
+          }
         }
       }
     },
@@ -2321,6 +3581,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the console is in use"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机正在使用中"
           }
         }
       }
@@ -2333,6 +3599,12 @@
             "state" : "translated",
             "value" : "the session answer was not understood"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法理解会话响应"
+          }
         }
       }
     },
@@ -2343,6 +3615,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the session request was lost"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话请求丢失"
           }
         }
       }
@@ -2355,6 +3633,12 @@
             "state" : "translated",
             "value" : "the session request was refused"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话请求被拒绝"
+          }
         }
       }
     },
@@ -2365,6 +3649,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the session request timed out"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话请求超时"
           }
         }
       }
@@ -2377,6 +3667,12 @@
             "state" : "translated",
             "value" : "the session answer was too large"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话响应过大"
+          }
         }
       }
     },
@@ -2387,6 +3683,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the session answer was cut short"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话响应被截断"
           }
         }
       }
@@ -2399,6 +3701,12 @@
             "state" : "translated",
             "value" : "the console expects another Remote Play version"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机需要其他 Remote Play 版本"
+          }
         }
       }
     },
@@ -2409,6 +3717,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the session did not close cleanly"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话未正常关闭"
           }
         }
       }
@@ -2421,6 +3735,12 @@
             "state" : "translated",
             "value" : "PSN reached your primary PS4, which is not paired with this app; pair it at home or make the intended PS4 your primary one"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PSN 已连接到你的主要 PS4，但它未与此应用配对；请在家中完成配对，或将目标 PS4 设为你的主要 PS4。"
+          }
         }
       }
     },
@@ -2431,6 +3751,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Finding the console"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在查找主机"
           }
         }
       }
@@ -2443,6 +3769,12 @@
             "state" : "translated",
             "value" : "Measuring the connection"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在测量连接"
+          }
         }
       }
     },
@@ -2453,6 +3785,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opening the account session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开账户会话"
           }
         }
       }
@@ -2465,6 +3803,12 @@
             "state" : "translated",
             "value" : "Opening the control connection"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开控制连接"
+          }
         }
       }
     },
@@ -2475,6 +3819,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opening the stream route"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开串流通道"
           }
         }
       }
@@ -2487,6 +3837,12 @@
             "state" : "translated",
             "value" : "Pairing with the console"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在与主机配对"
+          }
         }
       }
     },
@@ -2497,6 +3853,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reaching the console"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接主机"
           }
         }
       }
@@ -2509,6 +3871,12 @@
             "state" : "translated",
             "value" : "Requesting the session"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在请求会话"
+          }
         }
       }
     },
@@ -2519,6 +3887,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Starting the stream"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在启动串流"
           }
         }
       }
@@ -2531,6 +3905,12 @@
             "state" : "translated",
             "value" : "Waking the console"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在唤醒主机"
+          }
         }
       }
     },
@@ -2541,6 +3921,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(seconds)lld s elapsed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(seconds)lld 秒已过去"
           }
         }
       }
@@ -2553,6 +3939,12 @@
             "state" : "translated",
             "value" : "Route over an address the console answered from"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过主机回应所用的地址路由"
+          }
         }
       }
     },
@@ -2563,6 +3955,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Route over the local network"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过本地网络路由"
           }
         }
       }
@@ -2575,6 +3973,12 @@
             "state" : "translated",
             "value" : "Route over a guessed port"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过推测的端口路由"
+          }
         }
       }
     },
@@ -2585,6 +3989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Route over the public address"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过公网地址路由"
           }
         }
       }
@@ -2597,6 +4007,12 @@
             "state" : "translated",
             "value" : "The last attempt failed: %(reason)@"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次尝试失败：%(reason)@"
+          }
         }
       }
     },
@@ -2607,6 +4023,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allocating a server"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在分配服务器"
           }
         }
       }
@@ -2619,6 +4041,12 @@
             "state" : "translated",
             "value" : "Checking PlayStation Plus Premium"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查 PlayStation Plus Premium"
+          }
         }
       }
     },
@@ -2629,6 +4057,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Checking this device"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查此设备"
           }
         }
       }
@@ -2641,6 +4075,12 @@
             "state" : "translated",
             "value" : "Checking your copy of the game"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查你拥有的游戏版本"
+          }
         }
       }
     },
@@ -2651,6 +4091,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Checking PlayStation's restrictions"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查 PlayStation 的限制"
           }
         }
       }
@@ -2663,6 +4109,12 @@
             "state" : "translated",
             "value" : "Checking your membership"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查你的会员资格"
+          }
         }
       }
     },
@@ -2673,6 +4125,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Checking ownership"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查所有权"
           }
         }
       }
@@ -2685,6 +4143,12 @@
             "state" : "translated",
             "value" : "Checking the release date"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查发行日期"
+          }
         }
       }
     },
@@ -2695,6 +4159,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Checking the title with the catalog"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在对照目录检查游戏"
           }
         }
       }
@@ -2707,6 +4177,12 @@
             "state" : "translated",
             "value" : "Connecting to the server"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接服务器"
+          }
         }
       }
     },
@@ -2717,6 +4193,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Loading your library"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在加载你的游戏库"
           }
         }
       }
@@ -2729,6 +4211,12 @@
             "state" : "translated",
             "value" : "Measuring your connection"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在测量你的连接"
+          }
         }
       }
     },
@@ -2739,6 +4227,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Measuring datacenters"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在测量数据中心"
           }
         }
       }
@@ -2751,6 +4245,12 @@
             "state" : "translated",
             "value" : "Moving your data"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在迁移你的数据"
+          }
         }
       }
     },
@@ -2761,6 +4261,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opening the account session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开账户会话"
           }
         }
       }
@@ -2773,6 +4279,12 @@
             "state" : "translated",
             "value" : "Opening the title session"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开游戏会话"
+          }
         }
       }
     },
@@ -2783,6 +4295,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reserving a server"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在预留服务器"
           }
         }
       }
@@ -2795,6 +4313,12 @@
             "state" : "translated",
             "value" : "Finding the cloud game"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在查找云端游戏"
+          }
         }
       }
     },
@@ -2805,6 +4329,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Finding the title"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在查找游戏"
           }
         }
       }
@@ -2817,6 +4347,12 @@
             "state" : "translated",
             "value" : "Taking the free licence"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在获取免费许可"
+          }
         }
       }
     },
@@ -2827,6 +4363,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choosing a datacenter"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在选择数据中心"
           }
         }
       }
@@ -2839,6 +4381,12 @@
             "state" : "translated",
             "value" : "Measured %(number)lld of %(total)lld datacenters"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已测量 %(number)lld / %(total)lld 个数据中心"
+          }
         }
       }
     },
@@ -2849,6 +4397,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(percent)lld%% moved"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已迁移 %(percent)lld%%"
           }
         }
       }
@@ -2861,6 +4415,12 @@
             "state" : "translated",
             "value" : "Opening the account session"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开账户会话"
+          }
         }
       }
     },
@@ -2871,6 +4431,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reaching the console"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接主机"
           }
         }
       }
@@ -2883,6 +4449,12 @@
             "state" : "translated",
             "value" : "Saving the pairing"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在保存配对"
+          }
         }
       }
     },
@@ -2893,6 +4465,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sending the pairing request"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在发送配对请求"
           }
         }
       }
@@ -2905,6 +4483,12 @@
             "state" : "translated",
             "value" : "Starting"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在启动"
+          }
         }
       }
     },
@@ -2915,6 +4499,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Waiting for the console's answer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待主机响应"
           }
         }
       }
@@ -2927,6 +4517,12 @@
             "state" : "translated",
             "value" : "Asking the console to join"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在请求主机加入"
+          }
         }
       }
     },
@@ -2937,6 +4533,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Position %(position)lld in the queue"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "队列中的位置：%(position)lld"
           }
         }
       }
@@ -2949,6 +4551,12 @@
             "state" : "translated",
             "value" : "the console disconnected"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机已断开连接"
+          }
         }
       }
     },
@@ -2959,6 +4567,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the console is in use"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机正在使用中"
           }
         }
       }
@@ -2971,6 +4585,12 @@
             "state" : "translated",
             "value" : "the console shut down"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机已关机"
+          }
         }
       }
     },
@@ -2981,6 +4601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the console could not open the control connection"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机无法打开控制连接"
           }
         }
       }
@@ -2993,6 +4619,12 @@
             "state" : "translated",
             "value" : "the console refused the control connection"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机拒绝了控制连接"
+          }
         }
       }
     },
@@ -3003,6 +4635,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the console closed the control connection"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机关闭了控制连接"
           }
         }
       }
@@ -3015,6 +4653,12 @@
             "state" : "translated",
             "value" : "pairing over the internet failed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过互联网配对失败"
+          }
         }
       }
     },
@@ -3025,6 +4669,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Remote Play crashed on the console"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "远程游玩在主机上崩溃"
           }
         }
       }
@@ -3037,6 +4687,12 @@
             "state" : "translated",
             "value" : "the console expects another Remote Play version"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机需要其他 Remote Play 版本"
+          }
         }
       }
     },
@@ -3047,6 +4703,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the console refused the session connection"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机拒绝了会话连接"
           }
         }
       }
@@ -3059,6 +4721,12 @@
             "state" : "translated",
             "value" : "the console refused the session request"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机拒绝了会话请求"
+          }
         }
       }
     },
@@ -3069,6 +4737,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the console stopped the session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机停止了会话"
           }
         }
       }
@@ -3081,6 +4755,12 @@
             "state" : "translated",
             "value" : "the console closed the stream"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机关闭了串流"
+          }
         }
       }
     },
@@ -3091,6 +4771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "the streaming time limit was reached"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已达到串流时长上限"
           }
         }
       }
@@ -3103,6 +4789,12 @@
             "state" : "translated",
             "value" : "the game trial ended"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏试玩已结束"
+          }
         }
       }
     },
@@ -3113,6 +4805,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The control route is chosen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制路由已选定"
           }
         }
       }
@@ -3125,6 +4823,12 @@
             "state" : "translated",
             "value" : "The stream route is chosen"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流路由已选定"
+          }
         }
       }
     },
@@ -3135,6 +4839,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confirming the control route"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在确认控制路由"
           }
         }
       }
@@ -3147,6 +4857,12 @@
             "state" : "translated",
             "value" : "Confirming the stream route"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在确认串流路由"
+          }
         }
       }
     },
@@ -3157,6 +4873,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exchanging offers for the control route"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在交换控制路由的 offer"
           }
         }
       }
@@ -3169,6 +4891,12 @@
             "state" : "translated",
             "value" : "Exchanging offers for the stream route"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在交换串流路由的 offer"
+          }
         }
       }
     },
@@ -3179,6 +4907,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gathering addresses for the control route"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在收集控制路由的地址"
           }
         }
       }
@@ -3191,6 +4925,12 @@
             "state" : "translated",
             "value" : "Gathering addresses for the stream route"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在收集串流路由的地址"
+          }
         }
       }
     },
@@ -3201,6 +4941,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opening the account session"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开账户会话"
           }
         }
       }
@@ -3213,6 +4959,12 @@
             "state" : "translated",
             "value" : "Switching control to the stream route"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在将控制切换到串流路由"
+          }
         }
       }
     },
@@ -3223,6 +4975,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Testing the control route"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在测试控制路由"
           }
         }
       }
@@ -3235,6 +4993,12 @@
             "state" : "translated",
             "value" : "Testing the stream route"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在测试串流路由"
+          }
         }
       }
     },
@@ -3245,6 +5009,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Waiting for the console to join"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待主机加入"
           }
         }
       }
@@ -3269,6 +5039,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "距上次云端串流已等待 %(seconds)lld 秒"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -3279,6 +5061,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Step %(number)lld of %(total)lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %(number)lld 步，共 %(total)lld 步"
           }
         }
       }
@@ -3303,6 +5091,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "已尝试 %(count)lld 次"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -3313,6 +5113,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Waiting before the next attempt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待下一次尝试"
           }
         }
       }
@@ -3325,6 +5131,12 @@
             "state" : "translated",
             "value" : "Waiting for the console to answer"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待主机响应"
+          }
         }
       }
     },
@@ -3335,6 +5147,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Waiting for the console to join"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待主机加入"
           }
         }
       }
@@ -3347,6 +5165,12 @@
             "state" : "translated",
             "value" : "Waiting for the console to wake"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待主机唤醒"
+          }
         }
       }
     },
@@ -3357,6 +5181,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Waiting for your data to move"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待你的数据迁移"
           }
         }
       }
@@ -3369,6 +5199,12 @@
             "state" : "translated",
             "value" : "Waiting for a datacenter choice"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待选择数据中心"
+          }
         }
       }
     },
@@ -3379,6 +5215,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The network is unreachable"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络不可达"
           }
         }
       }
@@ -3391,6 +5233,12 @@
             "state" : "translated",
             "value" : "Waiting for your previous session to close"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待上一个会话关闭"
+          }
         }
       }
     },
@@ -3401,6 +5249,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Waiting since last cloud stream"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自上次云端串流后一直在等待"
           }
         }
       }
@@ -3413,6 +5267,12 @@
             "state" : "translated",
             "value" : "%(reason)@, trying again in %(seconds)lld s"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(reason)@，将在 %(seconds)lld 秒后重试"
+          }
         }
       }
     },
@@ -3423,6 +5283,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%(reason)@, trying again now"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%(reason)@，正在重试"
           }
         }
       }
@@ -3435,6 +5301,12 @@
             "state" : "translated",
             "value" : "Waiting in the server queue"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在服务器队列中等待"
+          }
         }
       }
     },
@@ -3445,6 +5317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The title is not ready yet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该游戏尚未就绪"
           }
         }
       }
@@ -3469,6 +5347,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "预计等待：约 %(minutes)lld 分钟"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -3479,6 +5369,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Estimated wait: under a minute"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预计等待：不到一分钟"
           }
         }
       }
@@ -3503,6 +5399,18 @@
               }
             }
           }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%(minutes)lld 分钟"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -3513,6 +5421,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Off"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关"
           }
         }
       }
@@ -3525,6 +5439,12 @@
             "state" : "translated",
             "value" : "PS4, local and remote"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4，本地与远程"
+          }
         }
       }
     },
@@ -3535,6 +5455,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS5, local and remote"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5，本地与远程"
           }
         }
       }
@@ -3547,6 +5473,12 @@
             "state" : "translated",
             "value" : "PS Cloud, PS5 cloud"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Cloud，PS5 云端"
+          }
         }
       }
     },
@@ -3558,6 +5490,12 @@
             "state" : "translated",
             "value" : "PS Now, PS3 and PS4 cloud"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Now，PS3 与 PS4 云端"
+          }
         }
       }
     },
@@ -3565,6 +5503,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "v%(version)@"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "v%(version)@"
@@ -3580,6 +5524,12 @@
             "state" : "translated",
             "value" : "Automatic"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动"
+          }
         }
       }
     },
@@ -3590,6 +5540,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Automatic (v%(build)@)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动（v%(build)@）"
           }
         }
       }
@@ -3602,6 +5558,12 @@
             "state" : "translated",
             "value" : "HDR heatmap"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HDR 热图"
+          }
         }
       }
     },
@@ -3612,6 +5574,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Highlight clipping"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高光剪切"
           }
         }
       }
@@ -3624,6 +5592,12 @@
             "state" : "translated",
             "value" : "Off"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关"
+          }
         }
       }
     },
@@ -3634,6 +5608,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除"
           }
         }
       }
@@ -3646,6 +5626,12 @@
             "state" : "translated",
             "value" : "Dimmed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "变暗"
+          }
         }
       }
     },
@@ -3656,6 +5642,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Health tint"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "健康色调"
           }
         }
       }
@@ -3668,6 +5660,12 @@
             "state" : "translated",
             "value" : "Regular"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常规"
+          }
         }
       }
     },
@@ -3678,6 +5676,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solid"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实心"
           }
         }
       }
@@ -3690,6 +5694,12 @@
             "state" : "translated",
             "value" : "Floating"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浮动"
+          }
         }
       }
     },
@@ -3700,6 +5710,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "One sheet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单个表单"
           }
         }
       }
@@ -3712,6 +5728,12 @@
             "state" : "translated",
             "value" : "Compact"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紧凑"
+          }
         }
       }
     },
@@ -3722,6 +5744,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Full"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完整"
           }
         }
       }
@@ -3734,6 +5762,12 @@
             "state" : "translated",
             "value" : "Off"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关"
+          }
         }
       }
     },
@@ -3744,6 +5778,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standard"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标准"
           }
         }
       }
@@ -3756,6 +5796,12 @@
             "state" : "translated",
             "value" : "Acknowledgement timeout (ms)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确认超时（毫秒）"
+          }
         }
       }
     },
@@ -3766,6 +5812,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seconds of heavy shedding before ending"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "结束前严重丢包持续的秒数"
           }
         }
       }
@@ -3778,6 +5830,12 @@
             "state" : "translated",
             "value" : "Shortest gap between keyframes (ms)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关键帧之间的最短间隔（ms）"
+          }
         }
       }
     },
@@ -3788,6 +5846,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Longest queue wait (ms)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最长排队等待（ms）"
           }
         }
       }
@@ -3800,6 +5864,12 @@
             "state" : "translated",
             "value" : "Shortest queue wait (ms)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最短队列等待时间（ms）"
+          }
         }
       }
     },
@@ -3810,6 +5880,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Queue wait in round trips"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "队列等待（往返次数）"
           }
         }
       }
@@ -3822,6 +5898,12 @@
             "state" : "translated",
             "value" : "Queue size (KB)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "队列大小（KB）"
+          }
         }
       }
     },
@@ -3832,6 +5914,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Queue size (packets)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "队列大小（包数）"
           }
         }
       }
@@ -3844,6 +5932,12 @@
             "state" : "translated",
             "value" : "Start-up grace (ms)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动宽限时间（ms）"
+          }
         }
       }
     },
@@ -3851,6 +5945,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H.264"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "H.264"
@@ -3866,6 +5966,12 @@
             "state" : "translated",
             "value" : "HEVC"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HEVC"
+          }
         }
       }
     },
@@ -3873,6 +5979,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HEVC HDR"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "HEVC HDR"
@@ -3888,6 +6000,12 @@
             "state" : "translated",
             "value" : "1080p"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1080p"
+          }
         }
       }
     },
@@ -3895,6 +6013,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1440p"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "1440p"
@@ -3910,6 +6034,12 @@
             "state" : "translated",
             "value" : "4K (2160p)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4K (2160p)"
+          }
         }
       }
     },
@@ -3920,6 +6050,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已禁用"
           }
         }
       }
@@ -3932,6 +6068,12 @@
             "state" : "translated",
             "value" : "Fit"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适应"
+          }
         }
       }
     },
@@ -3942,6 +6084,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拉伸"
           }
         }
       }
@@ -3954,6 +6102,12 @@
             "state" : "translated",
             "value" : "Zoom"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缩放"
+          }
         }
       }
     },
@@ -3964,6 +6118,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Controls only"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅控制器"
           }
         }
       }
@@ -3976,6 +6136,12 @@
             "state" : "translated",
             "value" : "Picture and sound"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画质和声音"
+          }
         }
       }
     },
@@ -3986,6 +6152,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Picture only"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅画质"
           }
         }
       }
@@ -3998,6 +6170,12 @@
             "state" : "translated",
             "value" : "Sound only"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅声音"
+          }
         }
       }
     },
@@ -4005,6 +6183,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS4"
@@ -4020,6 +6204,12 @@
             "state" : "translated",
             "value" : "PS5"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5"
+          }
         }
       }
     },
@@ -4027,6 +6217,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Cloud"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS Cloud"
@@ -4042,6 +6238,12 @@
             "state" : "translated",
             "value" : "PS Now"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Now"
+          }
         }
       }
     },
@@ -4052,6 +6254,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The microphone encoder could not start."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风编码器无法启动。"
           }
         }
       }
@@ -4064,6 +6272,12 @@
             "state" : "translated",
             "value" : "The microphone input changed or was disconnected."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风输入已更改或已断开。"
+          }
         }
       }
     },
@@ -4074,6 +6288,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The console didn’t answer the microphone request."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机未响应麦克风请求。"
           }
         }
       }
@@ -4086,6 +6306,12 @@
             "state" : "translated",
             "value" : "No microphone input is available."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可用的麦克风输入。"
+          }
         }
       }
     },
@@ -4096,6 +6322,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The microphone could not start (%(reason)@)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风无法启动（%(reason)@）。"
           }
         }
       }
@@ -4108,6 +6340,12 @@
             "state" : "translated",
             "value" : "The microphone stopped (%(reason)@)."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风已停止（%(reason)@）。"
+          }
         }
       }
     },
@@ -4118,6 +6356,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "All"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
           }
         }
       }
@@ -4130,6 +6374,12 @@
             "state" : "translated",
             "value" : "Earned"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已获得"
+          }
         }
       }
     },
@@ -4140,6 +6390,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not earned"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未获得"
           }
         }
       }
@@ -4152,6 +6408,12 @@
             "state" : "translated",
             "value" : "Bronze"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "铜"
+          }
         }
       }
     },
@@ -4162,6 +6424,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gold"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "金色"
           }
         }
       }
@@ -4174,6 +6442,12 @@
             "state" : "translated",
             "value" : "Platinum"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "白金"
+          }
         }
       }
     },
@@ -4185,6 +6459,12 @@
             "state" : "translated",
             "value" : "Silver"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "银色"
+          }
         }
       }
     },
@@ -4192,6 +6472,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS3"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS3"
@@ -4207,6 +6493,12 @@
             "state" : "translated",
             "value" : "PS4"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS4"
+          }
         }
       }
     },
@@ -4214,6 +6506,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS5"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PS5"
@@ -4229,6 +6527,12 @@
             "state" : "translated",
             "value" : "PS Vita"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PS Vita"
+          }
         }
       }
     },
@@ -4236,6 +6540,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PC"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PC"
@@ -4251,6 +6561,12 @@
             "state" : "translated",
             "value" : "Common"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通用"
+          }
         }
       }
     },
@@ -4261,6 +6577,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rare"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稀有"
           }
         }
       }
@@ -4273,6 +6595,12 @@
             "state" : "translated",
             "value" : "Ultra rare"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "极其稀有"
+          }
         }
       }
     },
@@ -4283,6 +6611,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Very rare"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非常稀有"
           }
         }
       }
@@ -4295,6 +6629,12 @@
             "state" : "translated",
             "value" : "Default"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认"
+          }
         }
       }
     },
@@ -4305,6 +6645,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grade"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分级"
           }
         }
       }
@@ -4317,6 +6663,12 @@
             "state" : "translated",
             "value" : "Name"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称"
+          }
         }
       }
     },
@@ -4327,6 +6679,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rarity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稀有度"
           }
         }
       }
@@ -4339,6 +6697,12 @@
             "state" : "translated",
             "value" : "Recently earned"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近获得"
+          }
         }
       }
     },
@@ -4349,6 +6713,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "All"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
           }
         }
       }
@@ -4361,6 +6731,12 @@
             "state" : "translated",
             "value" : "Completed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成"
+          }
         }
       }
     },
@@ -4371,6 +6747,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "In progress"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进行中"
           }
         }
       }
@@ -4383,6 +6765,12 @@
             "state" : "translated",
             "value" : "Not started"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未开始"
+          }
         }
       }
     },
@@ -4393,6 +6781,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Name"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称"
           }
         }
       }
@@ -4405,6 +6799,12 @@
             "state" : "translated",
             "value" : "Progress"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进度"
+          }
         }
       }
     },
@@ -4415,6 +6815,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recent"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近"
           }
         }
       }
